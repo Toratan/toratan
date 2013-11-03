@@ -3,3 +3,6 @@
 	url = https://github.com/dariushha/zinux.git
 	branch = master 
 
+[submodule "core/activeRecord/lib"]
+	path = core/activeRecord/lib
+	url = git@github.com:jpfuentes2/php-activerecord.git
