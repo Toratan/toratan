@@ -30,6 +30,6 @@ class indexController extends authController
     */
     public function logoutAction()
     {
-        
+        $this->Redirect();
     }
 }
