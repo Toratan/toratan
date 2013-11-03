@@ -1,0 +1,10 @@
+# add this to apache vhost.conf files
+<VirtualHost *:80>
+	ServerAdmin webmaster@localhost
+	ServerName toratan.local
+	DocumentRoot "/var/www/toratan/public_html"
+</VirtualHost>
+
+# add this to /etc/hosts
+# 127.0.0.1 toratan.local
+

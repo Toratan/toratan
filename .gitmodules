@@ -1,0 +1,5 @@
+[submodule "zinux"]
+	path = zinux
+	url = https://github.com/dariushha/zinux.git
+	branch = master 
+

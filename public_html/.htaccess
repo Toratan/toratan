@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteCond public_html/.htaccess !\.(gif|jpe?g|png|ico|js)$ [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.+)$ /index.php/public_html/.htaccess
