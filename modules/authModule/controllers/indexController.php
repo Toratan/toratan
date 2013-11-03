@@ -5,7 +5,7 @@ namespace modules\authModule\controllers;
  * The modules\authModule\controllers\indexController
  * @by Zinux Generator <b.g.dariush@gmail.com>
  */
-class indexController extends \zinux\kernel\controller\baseController
+class indexController extends authController
 {
     /**
     * The modules\authModule\controllers\indexController::IndexAction()
