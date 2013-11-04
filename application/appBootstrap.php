@@ -5,12 +5,27 @@ namespace application;
 */
 class appBootstrap extends \zinux\kernel\application\applicationBootstrap
 {
-    public function PRE_CHECK(\zinux\kernel\routing\request  $request)
+    /** 
+     * setups db using activerecord 
+     */
+    public function PRE_db_setup()
     {
-        /**
-         * this is a pre-strap function use this on pre-bootstrap opt.
-         * @param \zinux\kernel\routing\request $request 
-         */
+        # init activerecord configs
+        \ActiveRecord\Config::initialize(function($cfg)
+        {
+            # fetching db related configurations
+            $dbcfg = \zinux\kernel\application\config::GetConfig("toratan", "db");
+            # setting connection string
+            $cfg->set_connections(array(
+                RUNNING_ENV =>  
+                    "{$dbcfg["type"]}://{$dbcfg["username"]}:{$dbcfg["password"]}@{$dbcfg["host"]}/{$dbcfg["name"]}?charset=utf8")
+            );
+           # enable the connection string as to RUNNING_ENV
+            $cfg->set_default_connection(RUNNING_ENV);
+        });
+        # testing db connection
+        \ActiveRecord\Connection::instance();
+        # if we reach here we are all OK
     }
     
     public function POST_CHECK(\zinux\kernel\routing\request $request)
