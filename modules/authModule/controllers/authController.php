@@ -18,7 +18,7 @@ abstract class authController extends \zinux\kernel\controller\baseController
      */
     protected function Redirect()
     {
-        $request = $this->rerequest;
+        $request = $this->request;
         
         if(headers_sent())
         {

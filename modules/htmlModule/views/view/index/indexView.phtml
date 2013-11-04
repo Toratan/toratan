@@ -1,8 +1,30 @@
-<!--
- The modules\htmlModule\views\view\index\indexView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for <b>indexController</b>.<br />
-    Location '<b>/var/www/toratan/modules/htmlModule/views/view/index/indexView.phtml</b>'.
-</p>
+<style>
+    td{padding: 10px;min-width: 10%;}
+    td .last{border-bottom: 1px solid #e6e6e6}
+</style>
+<hr />
+<table>
+    <thead>
+        <tr>
+            <td>User ID</td>
+            <td>Username</td>
+            <td>Email</td>
+            <td class="last">Password</td>
+        </tr>
+    </thead>
+    <tbody>
+<?php
+        foreach($this->users as $user)
+        {
+?>
+        <tr>
+            <td><?php echo $user->user_id ?></td>
+            <td><?php echo $user->username ?></td>
+            <td><?php echo $user->email ?></td>
+            <td class="last"><?php echo $user->password ?></td>
+        </tr>
+<?php
+        }
+?>
+    </tbody>
+</table>

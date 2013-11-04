@@ -1,8 +1,10 @@
-<!--
- The modules\authModule\views\view\index\signupView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for <b>indexController</b>.<br />
-    Location '<b>/var/www/toratan//modules/authModule/views/view/index/signupView.phtml</b>'.
-</p>
+<style>
+    input{display: block}
+</style>
+<form action="/auth/signup" method="post">
+    <input type="text" name="username" placeholder="Your username" />
+    <input type="text" name="email" placeholder="Email address" />
+    <input type="text" name="password" placeholder="Password" />
+    <input type="text" name="conf-password" placeholder="Confirm Password" />
+    <input type="submit" value="Signup" />
+</form>

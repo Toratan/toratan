@@ -13,5 +13,6 @@ class indexController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
+        $this->view->users = \core\db\models\user::all();
     }
 }
