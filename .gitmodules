@@ -1,8 +1,7 @@
 [submodule "zinux"]
 	path = zinux
-	url = https://github.com/dariushha/zinux.git
+	url = git@github.com:dariushha/zinux.git
 	branch = master 
-
-[submodule "core/activeRecord/lib"]
-	path = core/activeRecord/lib
+[submodule "core/db/activeRecord/lib"]
+	path = core/db/activeRecord/lib
 	url = git@github.com:jpfuentes2/php-activerecord.git

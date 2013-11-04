@@ -27,10 +27,16 @@ try
             ->SetCacheDirectory("../cache")
             
             # setting router's bootstrap which will route /note/:id:/edit => /note/edit/:id:
-            #->SetRouterBootstrap(new \application\appRoutes)
+            ->SetRouterBootstrap(new \application\appRoutes)
             
             # set application's bootstrap 
-            #->SetBootstrap(new application\appBootstrap)
+            ->SetBootstrap(new application\appBootstrap)
+            
+            # init activerecord as db handler
+            ->SetDBInitializer(new \core\db\activeRecord\ARInitializer())
+            
+            # load project basic config initializer
+            ->SetConfigIniliazer(new \zinux\kernel\utilities\iniParser(PROJECT_ROOT."/config/default.cfg", RUNNING_ENV))
             
             # init the application's optz.
             ->Startup()

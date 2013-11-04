@@ -7,6 +7,10 @@ namespace modules\authModule\controllers;
  */
 abstract class authController extends \zinux\kernel\controller\baseController
 {
+    public function Initiate() {
+        parent::Initiate();
+        $this->layout->SuppressLayout();
+    }
     /**
      * Redirects header to pointed URL
      * @param string $this->request->params["continue"] if $this->request->params["continue"] 
