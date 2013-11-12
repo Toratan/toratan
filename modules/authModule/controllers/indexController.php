@@ -21,7 +21,25 @@ class indexController extends authController
     */
     public function signinAction()
     {
+        if(!$this->request->IsPOST())
+            return;
         
+        \zinux\kernel\security\security::IsSecure(
+                $this->request->POST,
+                array("username", "password")
+        );
+        
+        $user = new \core\db\models\user;
+        
+        $fetched_user = $user->Fetch($this->request->params['username'], $this->request->params["password"]);
+        
+        if(!$fetched_user)
+            $this->view->errors[] = "username/email didn't match.";
+        else
+        {
+            $user->Signin($fetched_user);
+            $this->Redirect();
+        }
     }
 
     /**
@@ -30,6 +48,7 @@ class indexController extends authController
     */
     public function signoutAction()
     {
+        \core\db\models\user::Signout();
         $this->Redirect();
     }
 
@@ -42,27 +61,25 @@ class indexController extends authController
         if(!$this->request->IsPOST())
             return;
         \zinux\kernel\security\security::IsSecure(
-                $this->request->params, 
+                $this->request->POST, 
                 array("username","email", "password", "conf-password"), 
                 array(),
                 array('password'=>'conf-password')
         );
         
-        try
-        {
-            $new_user = new \core\db\models\user;
-            $new_user -> email = $this->request->params["email"];
-            $new_user -> username = $this->request->params["username"];
-            $new_user -> password = \zinux\kernel\security\hash::Generate($this->request->params["password"],1);
-            $new_user -> user_id = \zinux\kernel\security\hash::Generate($new_user->email);
-            $new_user->save();
-            $this->Redirect();
-            exit;
-        }
-        catch(Exception $pdoe)
-        {
-            die("OPS");
-        }
+        $new_user = new \core\db\models\user;
+        $new_user ->Signup(
+                    $this->request->params["username"], 
+                    $this->request->params["email"],
+                    $this->request->params["password"]);
+        
+        $this->signinAction();
+    }
+    
+    public function clearAction()
+    {
+        \core\db\models\user::delete_all();
+        $this->Redirect();
     }
 }
 

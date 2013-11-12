@@ -1,8 +1,13 @@
-<!--
- The modules\authModule\views\view\index\signinView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for <b>indexController</b>.<br />
-    Location '<b>/var/www/toratan//modules/authModule/views/view/index/signinView.phtml</b>'.
-</p>
+<ol style="color:red;">
+<?php foreach ($this->errors as $error) : ?>
+    <li><?php echo $error ?></li>
+<?php endforeach; ?>
+</ol>
+<style>
+    input{display: block}
+</style>
+<form action="/auth/signin" method="post">
+    <input type="text" name="username" placeholder="Username or Email" />
+    <input type="password" name="password" placeholder="Password" />
+    <input type="submit" value="Signin" />
+</form>

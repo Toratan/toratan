@@ -10,6 +10,7 @@ abstract class authController extends \zinux\kernel\controller\baseController
     public function Initiate() {
         parent::Initiate();
         $this->layout->SuppressLayout();
+        $this->view->errors = array();
     }
     /**
      * Redirects header to pointed URL
@@ -29,5 +30,6 @@ abstract class authController extends \zinux\kernel\controller\baseController
             header("location: ".$request->params["continue"]);
         else
             header("location: /");
+        exit;
     }
 }

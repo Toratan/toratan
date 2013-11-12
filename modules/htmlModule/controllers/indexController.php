@@ -14,5 +14,11 @@ class indexController extends \zinux\kernel\controller\baseController
     public function IndexAction()
     {
         $this->view->users = \core\db\models\user::all();
+        if(\core\db\models\user::IsSignedin())
+        {
+            echo "YOU ARE SIGNED IN";
+            \zinux\kernel\utilities\debug::_var(\core\db\models\user::GetInstance());
+        }
+            \zinux\kernel\utilities\debug::_var($_SESSION);
     }
 }
