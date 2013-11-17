@@ -32,7 +32,7 @@ abstract class item extends \ActiveRecord\Model
             $this->item_table_name =
                     # we need to use \ActiveRecord\Inflector to normalize our table in activerecord way
                     \ActiveRecord\Inflector::instance()->tableize(($this->item_name = substr($cache_sig, strrpos($cache_sig, "\\")+1)));
-             # create a item info package
+             # create an item info package
              $item_info = array("item_table_name" => $this->item_table_name, "item_name" => $this->item_name);
              # save the { namespace\class => class } comb.
              $fc->save($cache_sig, $item_info);
