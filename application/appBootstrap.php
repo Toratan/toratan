@@ -27,12 +27,4 @@ class appBootstrap extends \zinux\kernel\application\applicationBootstrap
         \ActiveRecord\Connection::instance();
         # if we reach here we are all OK
     }
-    
-    public function POST_CHECK(\zinux\kernel\routing\request $request)
-    {
-        /**
-         * this is a post-strap function use this on post-bootstrap opt.
-         * @param \zinux\kernel\routing\request $request 
-         */
-    }
 }
