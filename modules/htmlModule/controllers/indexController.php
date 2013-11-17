@@ -13,13 +13,28 @@ class indexController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
+        if(array_key_exists("clear_session",$this->request->params))
+        {
+            echo "SESSION CLEARED";
+            session_destroy();
+            unset($_SESSION);
+        }
         $this->layout->AddTitle("Home");
         $this->view->users = \core\db\models\user::all();
-        if(\core\db\models\user::IsSignedin())
+        if(array_key_exists("show_session",$this->request->params))
         {
-            echo "YOU ARE SIGNED IN";
-            \zinux\kernel\utilities\debug::_var(\core\db\models\user::GetInstance());
-        }
+            if(\core\db\models\user::IsSignedin())
+            {
+                echo "YOU ARE SIGNED IN";
+                \zinux\kernel\utilities\debug::_var(\core\db\models\user::GetInstance());
+            }
             \zinux\kernel\utilities\debug::_var($_SESSION);
+        }
+        $f = new \core\db\models\folder();
+        $f->addAnItem();
+        echo "<div>";
+        echo "ALL {$f->whoami()} count : {$f->count()}";
+        echo "</div>";
+        \zinux\kernel\utilities\debug::_var(\zinux\kernel\caching\fileCache::getInternalCaches());
     }
 }
