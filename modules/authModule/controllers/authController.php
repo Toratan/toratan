@@ -9,7 +9,6 @@ abstract class authController extends \zinux\kernel\controller\baseController
 {
     public function Initiate() {
         parent::Initiate();
-        $this->layout->SuppressLayout();
         $this->view->errors = array();
     }
     /**

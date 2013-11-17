@@ -13,6 +13,7 @@ class indexController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
+        $this->layout->AddTitle("Home");
         $this->view->users = \core\db\models\user::all();
         if(\core\db\models\user::IsSignedin())
         {

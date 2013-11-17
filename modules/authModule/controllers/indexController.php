@@ -21,6 +21,7 @@ class indexController extends authController
     */
     public function signinAction()
     {
+        $this->layout->AddTitle("Signin....");
         if(!$this->request->IsPOST())
             return;
         
@@ -48,6 +49,7 @@ class indexController extends authController
     */
     public function signoutAction()
     {
+        $this->layout->AddTitle("Signing out....");
         \core\db\models\user::Signout();
         $this->Redirect();
     }
@@ -58,6 +60,7 @@ class indexController extends authController
     */
     public function signupAction()
     {
+        $this->view->layout->AddTitle("Signup....");
         if(!$this->request->IsPOST())
             return;
         \zinux\kernel\security\security::IsSecure(
@@ -68,10 +71,19 @@ class indexController extends authController
         );
         
         $new_user = new \core\db\models\user;
-        $new_user ->Signup(
-                    $this->request->params["username"], 
-                    $this->request->params["email"],
-                    $this->request->params["password"]);
+        try
+        {
+            $new_user ->Signup(
+                        $this->request->params["username"],
+                        $this->request->params["email"],
+                        $this->request->params["password"]);
+        }
+        catch(\core\exceptions\exceptionCollection $ec)
+        {
+            foreach ($ec->getCollection() as $e)                
+                $this->view->errors[] = $e->getMessage();
+            return;
+        }
         
         $this->signinAction();
     }
