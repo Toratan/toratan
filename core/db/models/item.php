@@ -1,0 +1,60 @@
+<?php
+namespace core\db\models;
+
+abstract class item extends \ActiveRecord\Model
+{
+    /**
+     * Get/Set item's table name
+     * @var string
+     */
+    private $item_table_name;
+    /**
+     * Get/Set item's raw name
+     * @var type 
+     */
+    private $item_name;
+    
+    public function __construct(array $attributes = array(), $guard_attributes = true, $instantiating_via_find = false, $new_record = true) 
+    {
+        parent::__construct($attributes, $guard_attributes, $instantiating_via_find, $new_record);
+        # fetch the cache sig.
+        $cache_sig = get_called_class();
+        # create a new cache
+        # don't use xCache it will overload the session file
+        $fc = new \zinux\kernel\caching\fileCache(__CLASS__);
+        $fc->deleteAll();
+        # check the cache if the $cache_sig loaded before
+        if($fc->isCached($cache_sig))
+            # just fetch from cache system
+            $this->item_table_name = $fc->fetch ($cache_sig);
+        else 
+        {
+            # a fast class name fetching [ do not use (str/preg)_replace we need it to be fast ]
+            $this->item_table_name =
+                    # we need to use \ActiveRecord\Inflector to normalize our table in activerecord way
+                    \ActiveRecord\Inflector::instance()->tableize(($this->item_name = substr($cache_sig, strrpos($cache_sig, "\\")+1)));
+             # save the { namespace\class => class } comb.
+             $fc->save($cache_sig, $this->item_table_name);
+        }
+        # we have now fetched our item name
+        # we will set our table name to its proper item name
+        parent::$table_name = $this->item_table_name;
+    }
+    /**
+     * Get the current item's behavioral name
+     * @return string
+     */
+    public function WhoAmI(){ return $this->item_table_name; }
+    
+    /**
+     * TEST: add a new item to db
+     */
+    public function addAnItem()
+    {
+        $l = $this->last();
+        if(!$l)
+            $l = new \ActiveRecord\Model(array("folder_id" => 0));
+        $this->{"{$this->item_name}_id"} = $l->{"{$this->item_name}_id"} + 1;
+        $this->save();
+    }    
+}
