@@ -14,6 +14,7 @@ class user extends \ActiveRecord\Model
      * @param string $email the new user's email
      * @param strign $password the new user's password
      * @throws \zinux\kernel\exceptions\invalideArgumentException is any of params were not string or an empty passed through
+     * @throws \core\exceptions\exceptionCollection a collection exception that produced during the signup opt.
      */
     public function Signup($username, $email, $password)
     {
@@ -21,6 +22,16 @@ class user extends \ActiveRecord\Model
         foreach (array($username, $email, $password) as $param)
             if(!is_string($param) || !strlen($param))
                 throw new \zinux\kernel\exceptions\invalideArgumentException;
+        # define a new execption collector
+        $ec = new \core\exceptions\exceptionCollection;
+        # validate username
+        if(preg_match('#[^a-z0-9]#i', $username))
+                $ec->addException (new \zinux\kernel\exceptions\invalideArgumentException("Username '$username' contains <a href='http://en.wikipedia.org/wiki/Special_characters' title='See wikipedia' target='__blank'>special characters</a>!"));
+        # validate email address
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL))
+               $ec->addException (new \zinux\kernel\exceptions\invalideArgumentException("Email '$email' is not a valid email address!"));
+        # throw if any exception collected
+        $ec->ThrowCollected();
         # add email
         $this -> email = $email;
         # add username
