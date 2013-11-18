@@ -3,6 +3,19 @@
     td .last{border-bottom: 1px solid #e6e6e6}
 </style>
 <hr />
+<?php if(\core\db\models\user::IsSignedin()): ?>
+<div>
+        <a href="/ops/new/folder/?pid=0<?php echo \zinux\kernel\security\security::GetHashString(array("folder", 0,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>">
+            Create new folder
+        </a>| 
+        <a href="/ops/new/link/?pid=0<?php echo \zinux\kernel\security\security::GetHashString(array("link", 0,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>">
+            Create new link
+        </a>| 
+        <a href="/ops/new/note/?pid=0<?php echo \zinux\kernel\security\security::GetHashString(array("note", 0,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>">
+            Create new note
+        </a>
+</div>
+<?php endif; ?>
 <table>
     <thead>
         <tr>

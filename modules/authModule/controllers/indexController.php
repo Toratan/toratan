@@ -71,7 +71,7 @@ class indexController extends authController
                 $this->request->POST, 
                 array("username","email", "password", "conf-password"), 
                 array(),
-                array('password'=>'conf-password')
+                array('password'=>$this->request->POST['conf-password'])
         );
         
         $new_user = new \core\db\models\user;

@@ -1,8 +1,11 @@
-<!--
- The modules\opsModule\views\view\index\newNoteView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for <b>indexController</b>.<br />
-    Location '<b>/var/www/toratan//modules/opsModule/views/view/index/newNoteView.phtml</b>'.
-</p>
+<ol style="color:red;">
+<?php foreach ($this->errors as $error) : ?>
+    <li><?php echo $error ?></li>
+<?php endforeach; ?>
+</ol>
+<form action="/ops/new/note?<?php echo $this->hash ?>" method="POST">
+    <input type="hidden" value="<?php echo $this->pid ?>" name="pid" />
+    <input type="text" name="note_title" maxlength="250" placeholder="Note's title" value="<?php echo isset($this->values['note_title'])?$this->values['note_title']:"" ?>"/><br />
+    <textarea rows="10" cols="80" name="note_body" placeholder="Note's body" value="<?php echo isset($this->values['note_body'])?$this->values['note_body']:"" ?>"></textarea>
+    <input type="submit" value="Create" />
+</form>
