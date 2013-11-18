@@ -18,15 +18,14 @@ abstract class authController extends \zinux\kernel\controller\baseController
      */
     protected function Redirect()
     {
-        $request = $this->request;
+        $params = $this->request->params;
         
         if(headers_sent())
         {
-            echo "<div><b>Header has been sent, Please click on <a href='".(isset($request->params["continue"])?$request->params["continue"]:"/")."'>this</a> to redirect.</b></div>";
+            echo "<div><b>Header has been sent, Please click on <a href='".(isset($params["continue"])?$request->params["continue"]:"/")."'>this</a> to redirect.</b></div>";
         }
-        
-        if(isset($request->params["continue"]))
-            header("location: ".$request->params["continue"]);
+        if(isset($params["continue"]))
+            header("location: {$params["continue"]}");
         else
             header("location: /");
         exit;

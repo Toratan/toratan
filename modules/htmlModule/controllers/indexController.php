@@ -31,7 +31,7 @@ class indexController extends \zinux\kernel\controller\baseController
             \zinux\kernel\utilities\debug::_var($_SESSION);
         }
         $f = new \core\db\models\folder();
-        $f->addAnItem();
+        #$f->addAnItem();
         echo "<div>";
         echo "ALL {$f->whoami()} count : {$f->count()}";
         echo "</div>";
