@@ -1,6 +1,8 @@
 <?php
 namespace core\db\models;
-
+/**
+ * General item entity
+ */
 abstract class item extends \ActiveRecord\Model
 {
     /**
@@ -51,26 +53,48 @@ abstract class item extends \ActiveRecord\Model
      */
     public function WhoAmI(){ return $this->item_name; }
     
-    public function newItem($title, $body, $parent_id, $user_id)
+    /**
+     * Creates a new item in { title | body } datastructure
+     * @param string $title the item's title
+     * @param string $body the item's body
+     * @param string $parent_id the item's parent id
+     * @param string $owner_id the item's owner
+     * @throws \zinux\kernel\exceptions\invalideArgumentException if title not string or be empty
+     * @throws \zinux\kernel\exceptions\invalideOperationException if duplication problem raise during saving item to db
+     * @throws \core\db\models\Exception if any other exception raised that didn't match with previous excepions
+    */
+    public function newItem($title, $body, $parent_id, $owner_id)
     {
+        # check inputs
         foreach(array('title' => $title) as $key => $value)
         {
-              if(!\is_string($value) || empty($value))
+            # it should be string and not empty
+            if(!\is_string($value) || empty($value))
                 throw new \zinux\kernel\exceptions\invalideArgumentException("the $key has not been properly setted!");
         }
+        # set the title
         $this->{"{$this->item_name}_title"} = $title;
+        # set the body
         $this->{"{$this->item_name}_body"} = $body;
-        $this->user_id = $user_id;
+        # set the user name
+        $this->owner_id = $owner_id;
+        # set the parent id
         $this->parent_id = $parent_id;
-        $this->{"{$this->item_name}_id"} = \zinux\kernel\security\hash::Generate($parent_id.$title.$user_id);
+        # generate an id
+        $this->{"{$this->item_name}_id"} = \zinux\kernel\security\hash::Generate($parent_id.$title.$owner_id);
         try
         {
-                $this->save();
+            # try to save it
+            $this->save();
         }
+        # cache if anything happened
         catch(\Exception $e)
         {
+            # if it was a duplication error
             if(preg_match("#1062 Duplicate entry#i", $e->getMessage()))
+                    # throw an invalid operation exception
                     throw new \zinux\kernel\exceptions\invalideOperationException("The item your are tring to create already exists!");
+            # otherwise throw just as is
             else throw $e;
         }
     }
