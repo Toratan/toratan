@@ -39,7 +39,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 $this->request->params,
                 array("pid")
         );
-        # checking hash-sum with PID.PHPSESSID.USER_ID
+        # checking hash-sum with PID.PHPSESSID.user_id
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params, 
                 array($this->request->GetIndexedParam(0), $this->request->params["pid"], session_id(), \core\db\models\user::GetInstance()->user_id));
@@ -57,16 +57,18 @@ class indexController extends \zinux\kernel\controller\baseController
                 # if no NEW opt matched, raise an exception
                 throw new \zinux\kernel\exceptions\invalideOperationException;
         }
+        # fetch the user id
+        $uid = \core\db\models\user::GetInstance()->user_id;
+        # pass PID to the view
+        $this->view->pid = $this->request->params["pid"];
         # generate new hash for the view
         $this->view->hash = 
                 \zinux\kernel\security\security::GetHashString(
                         array(
                             $this->request->GetIndexedParam(0),
-                            $this->request->params["pid"], 
+                            $this->view->pid,
                             session_id(), 
-                            \core\db\models\user::GetInstance()->user_id));
-        # pass PID to the view
-        $this->view->pid = $this->request->params["pid"];
+                            $uid));
         # the error container
         $this->view->errors = array();
         # views values container in case of errors
@@ -77,31 +79,46 @@ class indexController extends \zinux\kernel\controller\baseController
         # otherwise do the ops
         switch(strtoupper($this->request->GetIndexedParam(0)))
         {
+            # for each valid items defined down here
             case "NOTE":
             case "FOLDER":
             case "LINK":
+                # fetch the items name
                 $item = strtolower($this->request->GetIndexedParam(0));
                 if($item == "folder")
+                    # if it was a folder, define a fake body for it to pass the blow security checkpoint
                     $this->request->params["{$item}_body"] = "NULL";
+                # checkpoint for item body and title existance
                 \zinux\kernel\security\security::IsSecure($this->request->params, array("{$item}_title", "{$item}_body"));
-                $uid = \core\db\models\user::GetInstance()->user_id;
+                # generate a proper handler for item creatation
                 $item_class = "\\core\\db\\models\\$item";
+                # invoke an instance of item handler
                 $item_ins = new $item_class;
+                # try adding the item to db
                 try
                 {
+                    # if the item was a folder
                     if($item == "folder")
+                        # we don't need to pass the fake body generated above, so we deal with it differently
                         $item_ins->newItem($this->request->params["{$item}_title"], $this->view->pid, $uid);
                     else
+                        # otherwise we use the same interface for it
                         $item_ins->newItem($this->request->params["{$item}_title"], $this->request->params["{$item}_body"], $this->view->pid, $uid);
                 }
+                # catch any exception raised
                 catch(\zinux\kernel\exceptions\appException $e)
                 {
+                    # fetch the message
                     $this->view->errors[] = $e->getMessage();
+                    # resore back the values to views
                     $this->view->values["{$item}_title"] = $this->request->params["{$item}_title"];
                     $this->view->values["{$item}_body"] = $this->request->params["{$item}_body"];
+                    # return
                     return;
                 }
+                # relocate the browser
                 header("location: /directory/{$this->view->pid}.folders");
+                # halt the PHP
                 exit;
         }
     }

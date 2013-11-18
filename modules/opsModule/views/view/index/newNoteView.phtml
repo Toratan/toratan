@@ -6,6 +6,6 @@
 <form action="/ops/new/note?<?php echo $this->hash ?>" method="POST">
     <input type="hidden" value="<?php echo $this->pid ?>" name="pid" />
     <input type="text" name="note_title" maxlength="250" placeholder="Note's title" value="<?php echo isset($this->values['note_title'])?$this->values['note_title']:"" ?>"/><br />
-    <textarea rows="10" cols="80" name="note_body" placeholder="Note's body" value="<?php echo isset($this->values['note_body'])?$this->values['note_body']:"" ?>"></textarea>
+    <textarea rows="10" cols="80" name="note_body" placeholder="Note's body" ><?php echo isset($this->values['note_body'])?$this->values['note_body']:"" ?></textarea>
     <input type="submit" value="Create" />
 </form>
