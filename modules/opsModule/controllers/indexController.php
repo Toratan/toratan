@@ -42,7 +42,7 @@ class indexController extends \zinux\kernel\controller\baseController
         # checking hash-sum with PID.PHPSESSID.USER_ID
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params, 
-                array($this->request->params["pid"], session_id(), \core\db\models\user::GetInstance()->user_id));
+                array($this->request->GetIndexedParam(0), $this->request->params["pid"], session_id(), \core\db\models\user::GetInstance()->user_id));
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
@@ -61,13 +61,49 @@ class indexController extends \zinux\kernel\controller\baseController
         $this->view->hash = 
                 \zinux\kernel\security\security::GetHashString(
                         array(
+                            $this->request->GetIndexedParam(0),
                             $this->request->params["pid"], 
                             session_id(), 
                             \core\db\models\user::GetInstance()->user_id));
         # pass PID to the view
         $this->view->pid = $this->request->params["pid"];
-        # pass the UID to the view
-        $this->view->uid = \core\db\models\user::GetInstance()->user_id;
+        # the error container
+        $this->view->errors = array();
+        # views values container in case of errors
+        $this->view->values = array();
+        # if it is a get return
+        if(!$this->request->IsPOST())
+            return;
+        # otherwise do the ops
+        switch(strtoupper($this->request->GetIndexedParam(0)))
+        {
+            case "NOTE":
+            case "FOLDER":
+            case "LINK":
+                $item = strtolower($this->request->GetIndexedParam(0));
+                if($item == "folder")
+                    $this->request->params["{$item}_body"] = "NULL";
+                \zinux\kernel\security\security::IsSecure($this->request->params, array("{$item}_title", "{$item}_body"));
+                $uid = \core\db\models\user::GetInstance()->user_id;
+                $item_class = "\\core\\db\\models\\$item";
+                $item_ins = new $item_class;
+                try
+                {
+                    if($item == "folder")
+                        $item_ins->newItem($this->request->params["{$item}_title"], $this->view->pid, $uid);
+                    else
+                        $item_ins->newItem($this->request->params["{$item}_title"], $this->request->params["{$item}_body"], $this->view->pid, $uid);
+                }
+                catch(\zinux\kernel\exceptions\appException $e)
+                {
+                    $this->view->errors[] = $e->getMessage();
+                    $this->view->values["{$item}_title"] = $this->request->params["{$item}_title"];
+                    $this->view->values["{$item}_body"] = $this->request->params["{$item}_body"];
+                    return;
+                }
+                header("location: /directory/{$this->view->pid}.folders");
+                exit;
+        }
     }
 
     /**

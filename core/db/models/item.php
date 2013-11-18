@@ -50,4 +50,28 @@ abstract class item extends \ActiveRecord\Model
      * @return string
      */
     public function WhoAmI(){ return $this->item_name; }
+    
+    public function newItem($title, $body, $parent_id, $user_id)
+    {
+        foreach(array('title' => $title) as $key => $value)
+        {
+              if(!\is_string($value) || empty($value))
+                throw new \zinux\kernel\exceptions\invalideArgumentException("the $key has not been properly setted!");
+        }
+        $this->{"{$this->item_name}_title"} = $title;
+        $this->{"{$this->item_name}_body"} = $body;
+        $this->user_id = $user_id;
+        $this->parent_id = $parent_id;
+        $this->{"{$this->item_name}_id"} = \zinux\kernel\security\hash::Generate($parent_id.$title.$user_id);
+        try
+        {
+                $this->save();
+        }
+        catch(\Exception $e)
+        {
+            if(preg_match("#1062 Duplicate entry#i", $e->getMessage()))
+                    throw new \zinux\kernel\exceptions\invalideOperationException("The item your are tring to create already exists!");
+            else throw $e;
+        }
+    }
 }

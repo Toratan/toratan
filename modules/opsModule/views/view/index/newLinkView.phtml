@@ -1,8 +1,11 @@
-<!--
- The modules\opsModule\views\view\index\newLinkView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for <b>indexController</b>.<br />
-    Location '<b>/var/www/toratan//modules/opsModule/views/view/index/newLinkView.phtml</b>'.
-</p>
+<ol style="color:red;">
+<?php foreach ($this->errors as $error) : ?>
+    <li><?php echo $error ?></li>
+<?php endforeach; ?>
+</ol>
+<form action="/ops/new/link?<?php echo $this->hash ?>" method="POST">
+    <input type="hidden" value="<?php echo $this->pid ?>" name="pid" />
+    <input type="text" name="link_title" maxlength="250" placeholder="Link's title" value="<?php echo isset($this->values['link_title'])?$this->values['link_title']:"" ?>"/>
+    <input type="text" name="link_body" maxlength="250" placeholder="Link's body" value="<?php echo isset($this->values['link_body'])?$this->values['link_body']:"" ?>"/>
+    <input type="submit" value="Create" />
+</form>
