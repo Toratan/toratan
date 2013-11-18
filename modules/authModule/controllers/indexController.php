@@ -22,6 +22,10 @@ class indexController extends authController
     public function signinAction()
     {
         $this->layout->AddTitle("Signin....");
+        $this->view->continue = "/";
+        if(isset($this->request->params["continue"]))
+            $this->view->continue = $this->request->params["continue"];
+        
         if(!$this->request->IsPOST())
             return;
         

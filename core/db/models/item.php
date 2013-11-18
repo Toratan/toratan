@@ -50,16 +50,4 @@ abstract class item extends \ActiveRecord\Model
      * @return string
      */
     public function WhoAmI(){ return $this->item_name; }
-
-    /**
-     * TEST: add a new item to db
-     */
-    public function addAnItem()
-    {
-        $l = $this->last();
-        if(!$l)
-            $l = new \ActiveRecord\Model(array("folder_id" => 0));
-        $this->{"{$this->item_name}_id"} = $l->{"{$this->item_name}_id"} + 1;
-        $this->save();
-    }
 }
