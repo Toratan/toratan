@@ -9,7 +9,7 @@ abstract class item extends \ActiveRecord\Model
             array('is_public', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
             array('is_trash', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
     );
-    # genaral validation on is_public and 
+    # genaral presence validation container
     static $validates_presence_of;
     /**
      * Get/Set item's table name
@@ -22,7 +22,7 @@ abstract class item extends \ActiveRecord\Model
      */
     private $item_name;
 
-    public function __construct(array $attributes = array(), $guard_attributes = true, $instantiating_via_find = false, $new_record = true) 
+    public function __construct(array $attributes = array(), $guard_attributes = true, $instantiating_via_find = false, $new_record = true)
     {
         # fetch the cache sig.
         $cache_sig = get_called_class();
@@ -51,13 +51,12 @@ abstract class item extends \ActiveRecord\Model
         # we have now fetched our item info
         # we will set our table name's to its proper value
         parent::$table_name = $this->item_table_name;
-        # set a title validation 
+        # set a title validation
         self::$validates_presence_of["id"] = array("{$this->item_name}_id", 'message' => 'cannot be blank!');
         # set an id validation
         self::$validates_presence_of["title"] = array("{$this->item_name}_title", 'message' => 'cannot be blank!');
         # after setting the table's name we go for parent contruction
         parent::__construct($attributes, $guard_attributes, $instantiating_via_find, $new_record);
-        
     }
     /**
      * Destruct the item
@@ -110,7 +109,6 @@ abstract class item extends \ActiveRecord\Model
      * @return string
      */
     public function WhoAmI(){ return $this->item_name; }
-    
     /**
      * Creates a new item in { title | body } datastructure
      * @param string $title the item's title
@@ -207,10 +205,44 @@ abstract class item extends \ActiveRecord\Model
      */
     public function edit($item_id, $owner_id, $title, $body, $is_public = -1, $is_trash = -1)
     {
-        # delete the item, because we are going re-generate the item's ID
-        $deleted_item = $this->delete($item_id, $owner_id, 0);
-        # creates a new item 
-        $item = $this->newItem($title, $body, $deleted_item->parent_id, $owner_id);
+        # the only time which exception could raise in this
+        # method is when $title is empty
+        # since we delete the item and re-create it
+        # we don't want to wast time on restoring failed edition on title's emptiness
+        if(empty($title) || !strlen($title))
+        {
+           # so we fore-playing the senario here
+           throw new \zinux\kernel\exceptions\dbException("{$this->item_name} title cannot be blank!");
+        }
+        # fetch the deleting item, because we are going re-generate the item's ID
+        $deleted_item = $this->fetch($item_id, $owner_id);
+        if($owner_id == $deleted_item->owner_id && $title == $deleted_item->{"{$this->item_name}_title"} && $body == $deleted_item->{"{$this->item_name}_body"})
+            $item = $deleted_item;
+        else
+        {
+            # the only the body changed we don't need to delete the item because our item's ID generating
+            # depends on them and by changing the body the item's ID won't change so we are OK by just
+            # changing the item's body part
+            if($title == $deleted_item->{"{$this->item_name}_title"})
+            {
+                # just change the body part
+                $deleted_item->{"{$this->item_name}_body"} = $body;
+                # consider it as a new item
+                $item = $deleted_item;
+            }
+            # otherwise if item's title has been changed we need to create a new item
+            # because by changing the title the ID will change too
+            else
+            {
+                # creates a new item
+                $item = $this->newItem($title, $body, $deleted_item->parent_id, $owner_id);
+                # restore the creation time
+                $item->created_at = $deleted_item->created_at;
+                # if the creatation was success and no exception get thrown
+                # delete the old item
+                $this->delete($deleted_item->{"{$this->item_name}_id"}, $owner_id, 0);
+            }
+        }
         # modify the publicity of the item if necessary
         if($is_public==-1)
             $item->is_public = $deleted_item->is_public;
@@ -236,7 +268,7 @@ abstract class item extends \ActiveRecord\Model
     public function generate_item_id($parent_id, $owner_id, $title)
     {
         # generate a hash-sum
-        return substr($owner_id, 0, 7).substr($parent_id, 0, 7).\zinux\kernel\security\hash::Generate($title);
+        return substr($owner_id, 0, 7).substr($parent_id, 0, 7).substr(sha1($title), 0, 7).\zinux\kernel\security\hash::Generate($title);
     }
     /**
      * Deletes an item
