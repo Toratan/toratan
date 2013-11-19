@@ -1,0 +1,11 @@
+<?php
+    $writer = \core\db\models\user::find($this->instance->owner_id);
+    $parent_info = core\db\models\folder::find($this->instance->parent_id);
+?>
+<div style="margin-bottom: 10;border-bottom: 1px solid #6a6a6a;padding-bottom: 10px;">
+    <h2 style="margin-bottom: 0"><?php echo $this->instance->note_title; ?></h2>
+    <small>
+        <?php echo "Written by <a href='/author/{$writer->user_id}'>{$writer->username}</a> at {$this->instance->created_at} placed at {$parent_info->folder_title}"?>
+    </small>
+</div>
+<?php echo $this->instance->note_body; ?>
