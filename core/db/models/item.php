@@ -230,8 +230,8 @@ abstract class item extends \ActiveRecord\Model
                 # consider it as a new item
                 $item = $deleted_item;
             }
-            # otherwise if any of item's title changed we need to create a new item
-            # because the item's ID will change by changing the title the ID will change too
+            # otherwise if item's title has been changed we need to create a new item
+            # because by changing the title the ID will change too
             else
             {
                 # creates a new item
