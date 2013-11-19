@@ -34,7 +34,15 @@ class indexController extends \zinux\kernel\controller\baseController
         #$f->addAnItem();
         echo "<div>";
         echo "ALL {$f->whoami()} count : {$f->count()}";
-        echo "</div>";
-#        \zinux\kernel\utilities\debug::_var(\zinux\kernel\caching\fileCache::getInternalCaches());
+        echo "</div>";        
+        if(!isset($this->request->params["directory"]))
+            $this->request->params["directory"] = 0;
+        $pid = $this->request->params["directory"];
+        $uid = \core\db\models\user::GetInstance()->user_id;
+        $this->view->folders = ($f->fetchItems($uid, $pid));
+        $n = new \core\db\models\note;
+        $this->view->notes = ($n->fetchItems($uid, $pid));
+        $l = new \core\db\models\link;
+        $this->view->links = ($l->fetchItems($uid, $pid));
     }
 }

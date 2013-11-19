@@ -5,6 +5,7 @@ namespace core\db\models;
  */
 abstract class item extends \ActiveRecord\Model
 {
+    static $validates_presence_of = array();
     /**
      * Get/Set item's table name
      * @var string
@@ -18,7 +19,6 @@ abstract class item extends \ActiveRecord\Model
 
     public function __construct(array $attributes = array(), $guard_attributes = true, $instantiating_via_find = false, $new_record = true) 
     {
-        parent::__construct($attributes, $guard_attributes, $instantiating_via_find, $new_record);
         # fetch the cache sig.
         $cache_sig = get_called_class();
         # create a new cache
@@ -46,6 +46,59 @@ abstract class item extends \ActiveRecord\Model
         # we have now fetched our item info
         # we will set our table name's to its proper value
         parent::$table_name = $this->item_table_name;
+        # set a title validation 
+        self::$validates_presence_of[] = array("{$this->item_name}_id", 'message' => 'cannot be blank!');
+        # set an id validation
+        self::$validates_presence_of[] = array("{$this->item_name}_title", 'message' => 'cannot be blank!');
+        # after setting the table's name we go for parent contruction
+        parent::__construct($attributes, $guard_attributes, $instantiating_via_find, $new_record);
+        
+    }
+    /**
+     * Destruct the item
+     */
+    public function __destruct()
+    {
+        # unset the static table name
+        self::$table_name = "";
+    }
+    /**
+     * The save procedure interface for item
+     * @param boolean $validate should it validate the attribs
+     * @throws \zinux\kernel\exceptions\invalideOperationException if duplication error happen
+     * @throws \core\db\models\Exception if any other error happen
+     */
+    public function save($validate = true)
+    {
+        try
+        {
+            # try to save it
+            parent::save($validate);
+        }
+        # cache if anything happened
+        catch(\Exception $e)
+        {
+            # if it was a duplication error
+            if(preg_match("#1062 Duplicate entry#i", $e->getMessage()))
+                    # throw an invalid operation exception
+                    throw new \zinux\kernel\exceptions\invalideOperationException("The item your are tring to create already exists!");
+            # otherwise throw just as is
+            else throw $e;
+        }
+        # to boost up the speed we don't put it in the try/catch to prevent to getting thrown twice
+        # check if it is an invalid
+        if($this->is_invalid())
+        {
+            # create an exception collector
+            $ec = new \core\exceptions\exceptionCollection;
+            foreach($this->errors->full_messages() as $error_msg)
+            {
+                # add the message as an exception in the collector
+                $ec->addException(new \zinux\kernel\exceptions\dbException($error_msg));
+            }
+            # throw the exceptions
+            $ec->ThrowCollected();
+        }
     }
     /**
      * Get the current item's behavioral name
@@ -65,13 +118,6 @@ abstract class item extends \ActiveRecord\Model
     */
     public function newItem($title, $body, $parent_id, $owner_id)
     {
-        # check inputs
-        foreach(array('title' => $title) as $key => $value)
-        {
-            # it should be string and not empty
-            if(!\is_string($value) || empty($value))
-                throw new \zinux\kernel\exceptions\invalideArgumentException("the $key has not been properly setted!");
-        }
         # set the title
         $this->{"{$this->item_name}_title"} = $title;
         # set the body
@@ -81,21 +127,69 @@ abstract class item extends \ActiveRecord\Model
         # set the parent id
         $this->parent_id = $parent_id;
         # generate an id
-        $this->{"{$this->item_name}_id"} = \zinux\kernel\security\hash::Generate($parent_id.$title.$owner_id);
-        try
-        {
-            # try to save it
-            $this->save();
-        }
-        # cache if anything happened
-        catch(\Exception $e)
-        {
-            # if it was a duplication error
-            if(preg_match("#1062 Duplicate entry#i", $e->getMessage()))
-                    # throw an invalid operation exception
-                    throw new \zinux\kernel\exceptions\invalideOperationException("The item your are tring to create already exists!");
-            # otherwise throw just as is
-            else throw $e;
-        }
+        $this->{"{$this->item_name}_id"} = $this->generate_item_id($parent_id, $owner_id, $title);
+        #save it
+        $this->save();
+       
+    }
+    /**
+     * Fetches a single item from database
+     * @param string $item_id item's id
+     * @return item
+     */
+    public function fetch($item_id)
+    {
+        return $this->find($item_id);
+    }
+    /**
+     * Fetches all sub-items under a parent directory with an owner
+     * @param string $owner_id items' owner id
+     * @param string $parent_id items' parent id
+     * @return array of items
+     */
+    public function fetchItems($owner_id, $parent_id)
+    {
+        # returns all items with given owner and parent id
+        return $this->find("all", array("conditions" => array("owner_id = ? AND parent_id = ?", $owner_id, $parent_id)));
+    }
+    /**
+     * Edits an item
+     * @param string $item_id the item's id
+     * @param string $owner_id the item's owner id
+     * @param string $title string the item's title
+     * @param string $body the item's body
+     * @param boolean $is_public should it be public or noy
+     * @throws \core\db\exceptions\dbNotFound if the item not found
+     */
+    public function edit($item_id, $owner_id, $title, $body, $is_public = -1)
+    {
+        # fetch the item
+        $item = $this->fetch($item_id);
+        # check if item not found or the owner didn't matched
+        if(!$item || $owner_id != $item->owner_id)
+            throw new \core\db\exceptions\dbNotFound;
+        # set the title
+        $item->{"{$this->item_name}_title"} = $title;
+        # set the body
+        $item->{"{$this->item_name}_body"} = $body;
+        # if is_public setted right
+        if($is_public>-1 && $is_public<2)
+            $item->is_public = $is_public;
+        # generates new item id
+        $item->{"{$this->item_name}_id"} = $this->generate_item_id($item->parent_id, $owner_id, $title);
+        # save it
+        $item->save();
+    }
+    /**
+     * Generates item id based on passed arguments
+     * @param string $parent_id
+     * @param string $owner_id
+     * @param string $title
+     * @return string
+     */
+    public function generate_item_id($parent_id, $owner_id, $title)
+    {
+        # generate a hash-sum
+        return \zinux\kernel\security\hash::Generate($parent_id.$title.$owner_id);
     }
 }

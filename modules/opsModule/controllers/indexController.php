@@ -108,8 +108,14 @@ class indexController extends \zinux\kernel\controller\baseController
                 # catch any exception raised
                 catch(\zinux\kernel\exceptions\appException $e)
                 {
-                    # fetch the message
-                    $this->view->errors[] = $e->getMessage();
+                    # if it was a collection of exceptions
+                    if($e instanceof \core\exceptions\exceptionCollection)
+                        # fetch each of exceptions messages
+                        foreach($e->getCollection() as $exception)
+                            $this->view->errors[] = $exception->getMessage();
+                    else
+                        # fetch the message
+                        $this->view->errors[] = $e->getMessage();
                     # resore back the values to views
                     $this->view->values["{$item}_title"] = $this->request->params["{$item}_title"];
                     $this->view->values["{$item}_body"] = $this->request->params["{$item}_body"];
