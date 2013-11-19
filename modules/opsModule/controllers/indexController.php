@@ -1,13 +1,13 @@
 <?php
 namespace modules\opsModule\controllers;
-    
+
 /**
  * The modules\opsModule\controllers\indexController
  * @by Zinux Generator <b.g.dariush@gmail.com>
  */
 class indexController extends \zinux\kernel\controller\baseController
 {
-    public function Initiate() 
+    public function Initiate()
     {
         parent::Initiate();
         if(array_key_exists("suppress_layout", $this->request->params))
@@ -42,7 +42,7 @@ class indexController extends \zinux\kernel\controller\baseController
         );
         # checking hash-sum with PID.PHPSESSID.user_id
         \zinux\kernel\security\security::ArrayHashCheck(
-                $this->request->params, 
+                $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->params["pid"], session_id(), \core\db\models\user::GetInstance()->user_id));
         if($this->request->params["pid"])
         {
@@ -70,12 +70,12 @@ class indexController extends \zinux\kernel\controller\baseController
         # pass PID to the view
         $this->view->pid = $this->request->params["pid"];
         # generate new hash for the view
-        $this->view->hash = 
+        $this->view->hash =
                 \zinux\kernel\security\security::GetHashString(
                         array(
                             $this->request->GetIndexedParam(0),
                             $this->view->pid,
-                            session_id(), 
+                            session_id(),
                             $uid));
         # the error container
         $this->view->errors = array();
@@ -125,7 +125,7 @@ class indexController extends \zinux\kernel\controller\baseController
             return;
         }
         # relocate the browser
-        header("location: /directory/{$this->view->pid}.folders");
+        header("location: /directory/{$this->view->pid}.{$item}s");
         # halt the PHP
         exit;
     }
@@ -141,7 +141,7 @@ class indexController extends \zinux\kernel\controller\baseController
             throw new \zinux\kernel\exceptions\invalideOperationException;
         # checking hash-sum with PID.PHPSESSID.user_id
         \zinux\kernel\security\security::ArrayHashCheck(
-                $this->request->params, 
+                $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
@@ -187,10 +187,10 @@ class indexController extends \zinux\kernel\controller\baseController
             # if the item was a folder
             if($item == "folder")
                 # we don't need to pass the fake body generated above, so we deal with it differently
-                $item_ins->edit($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $this->request->params["{$item}_title"]);
+                $item_value = $item_ins->edit($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $this->request->params["{$item}_title"]);
             else
                 # we don't need to pass the fake body generated above, so we deal with it differently
-                $item_ins->edit($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $this->request->params["{$item}_title"], $this->request->params["{$item}_body"]);
+                $item_value = $item_ins->edit($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $this->request->params["{$item}_title"], $this->request->params["{$item}_body"]);
         }
         # catch any exception raised
         catch(\zinux\kernel\exceptions\appException $e)
@@ -210,7 +210,7 @@ class indexController extends \zinux\kernel\controller\baseController
             return;
         }
         # relocate the browser
-        header("location: /{$item_value->parent_id}.{$item}s");
+        header("location: /directory/{$item_value->parent_id}.{$item}s");
         exit;
     }
 
@@ -273,7 +273,7 @@ class indexController extends \zinux\kernel\controller\baseController
             throw new \zinux\kernel\exceptions\invalideOperationException;
         # checking hash-sum with PID.PHPSESSID.user_id
         \zinux\kernel\security\security::ArrayHashCheck(
-                $this->request->params, 
+                $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
@@ -297,7 +297,7 @@ class indexController extends \zinux\kernel\controller\baseController
         # delete the item
         $deleted_item = $item_ins->delete($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_trash);
         # relocate the browser
-        header("location: /{$deleted_item->parent_id}.{$item}s");
+        header("location: /directory/{$deleted_item->parent_id}.{$item}s");
         exit;
     }
 }
