@@ -31,18 +31,21 @@ class indexController extends \zinux\kernel\controller\baseController
             \zinux\kernel\utilities\debug::_var($_SESSION);
         }
         $f = new \core\db\models\folder();
+//        \zinux\kernel\utilities\debug::_var($f->fetch("0a52819e8266130877dea08a6622f0fe", \core\db\models\user::GetInstance()->user_id."A"));
         #$f->addAnItem();
         echo "<div>";
         echo "ALL {$f->whoami()} count : {$f->count()}";
         echo "</div>";        
         if(!isset($this->request->params["directory"]))
             $this->request->params["directory"] = 0;
-        $pid = $this->request->params["directory"];
+        $this->view->pid = $pid = $this->request->params["directory"];
         $uid = \core\db\models\user::GetInstance()->user_id;
-        $this->view->folders = ($f->fetchItems($uid, $pid));
+        if($pid)
+            $this->view->cwd = $f->fetch($pid, $uid);
+        $this->view->folders = ($f->fetchItems($pid, $uid, -1, 0));
         $n = new \core\db\models\note;
-        $this->view->notes = ($n->fetchItems($uid, $pid));
+        $this->view->notes = ($n->fetchItems($pid, $uid, -1, 0));
         $l = new \core\db\models\link;
-        $this->view->links = ($l->fetchItems($uid, $pid));
+        $this->view->links = ($l->fetchItems($pid, $uid, -1, 0));
     }
 }

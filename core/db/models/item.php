@@ -5,7 +5,12 @@ namespace core\db\models;
  */
 abstract class item extends \ActiveRecord\Model
 {
-    static $validates_presence_of = array();
+    static $validates_numericality_of = array(
+            array('is_public', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
+            array('is_trash', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
+    );
+    # genaral validation on is_public and 
+    static $validates_presence_of;
     /**
      * Get/Set item's table name
      * @var string
@@ -47,9 +52,9 @@ abstract class item extends \ActiveRecord\Model
         # we will set our table name's to its proper value
         parent::$table_name = $this->item_table_name;
         # set a title validation 
-        self::$validates_presence_of[] = array("{$this->item_name}_id", 'message' => 'cannot be blank!');
+        self::$validates_presence_of["id"] = array("{$this->item_name}_id", 'message' => 'cannot be blank!');
         # set an id validation
-        self::$validates_presence_of[] = array("{$this->item_name}_title", 'message' => 'cannot be blank!');
+        self::$validates_presence_of["title"] = array("{$this->item_name}_title", 'message' => 'cannot be blank!');
         # after setting the table's name we go for parent contruction
         parent::__construct($attributes, $guard_attributes, $instantiating_via_find, $new_record);
         
@@ -115,42 +120,80 @@ abstract class item extends \ActiveRecord\Model
      * @throws \zinux\kernel\exceptions\invalideArgumentException if title not string or be empty
      * @throws \zinux\kernel\exceptions\invalideOperationException if duplication problem raise during saving item to db
      * @throws \core\db\models\Exception if any other exception raised that didn't match with previous excepions
+     * @return item the create item
     */
     public function newItem($title, $body, $parent_id, $owner_id)
     {
+        # normalizing the inputs
+        $title = trim($title);
+        $body = trim($body);
+        # fetch the item's handler
+        $item_class = get_called_class();
+        # revoke an instance of item
+        $item = new $item_class;
         # set the title
-        $this->{"{$this->item_name}_title"} = $title;
+       $item->{"{$this->item_name}_title"} = $title;
         # set the body
-        $this->{"{$this->item_name}_body"} = $body;
+       $item->{"{$this->item_name}_body"} = $body;
         # set the user name
-        $this->owner_id = $owner_id;
+       $item->owner_id = $owner_id;
         # set the parent id
-        $this->parent_id = $parent_id;
+       $item->parent_id = $parent_id;
+        # by default it is not public
+       $item->is_public = b'0';
+        # by default it is not trash
+       $item->is_trash = b'0';
         # generate an id
-        $this->{"{$this->item_name}_id"} = $this->generate_item_id($parent_id, $owner_id, $title);
+       $item->{"{$this->item_name}_id"} = $this->generate_item_id($parent_id, $owner_id, $title);
         #save it
-        $this->save();
-       
+       $item->save();
+       # return the created item
+       return $item;
     }
     /**
      * Fetches a single item from database
      * @param string $item_id item's id
      * @return item
      */
-    public function fetch($item_id)
+    public function fetch($item_id, $owner_id = NULL)
     {
-        return $this->find($item_id);
+        $cond = array("conditions" => array("{$this->item_name}_id = ?", $item_id));
+        if($owner_id)
+            $cond = array("conditions" => array("{$this->item_name}_id = ? AND owner_id = ?", $item_id, $owner_id));
+        $item = $this->find($item_id, $cond);
+        if(!$item)
+            throw new \core\db\exceptions\dbNotFound("$this->item_name with ID=`$item_id` not found or you don't have the access premission!");
+        return $item;
     }
     /**
      * Fetches all sub-items under a parent directory with an owner
      * @param string $owner_id items' owner id
      * @param string $parent_id items' parent id
+     * @param boolean $is_public should it be public or not, pass -1 to no difference
+     * @param boolean $is_trash should it be trashed or not, pass -1 to no difference
      * @return array of items
      */
-    public function fetchItems($owner_id, $parent_id)
+    public function fetchItems($parent_id, $owner_id, $is_public = -1, $is_trash = -1)
     {
+        # general conditions
+        $item_cond = "owner_id = ? AND parent_id = ? ";
+        $cond = array($item_cond, $owner_id, $parent_id);
+        # if is public revoked
+        if($is_public>-1 && $is_public<2)
+        {
+            # flag it
+            $cond[0] .= "AND is_public =  ?";
+            $cond[] = $is_public;
+        }
+        # if is trash revoked
+        if($is_trash>-1 && $is_trash<2)
+        {
+            # flag it
+            $cond[0] .= "AND is_trash =  ?";
+            $cond[] = $is_trash;
+        }
         # returns all items with given owner and parent id
-        return $this->find("all", array("conditions" => array("owner_id = ? AND parent_id = ?", $owner_id, $parent_id)));
+        return $this->find("all", array("conditions" => $cond));
     }
     /**
      * Edits an item
@@ -158,27 +201,30 @@ abstract class item extends \ActiveRecord\Model
      * @param string $owner_id the item's owner id
      * @param string $title string the item's title
      * @param string $body the item's body
-     * @param boolean $is_public should it be public or noy
+     * @param boolean $is_public should it be public or not, pass -1 to no change
+     * @param boolean $is_trash should it be trashed or not, pass -1 to no change
      * @throws \core\db\exceptions\dbNotFound if the item not found
      */
-    public function edit($item_id, $owner_id, $title, $body, $is_public = -1)
+    public function edit($item_id, $owner_id, $title, $body, $is_public = -1, $is_trash = -1)
     {
-        # fetch the item
-        $item = $this->fetch($item_id);
-        # check if item not found or the owner didn't matched
-        if(!$item || $owner_id != $item->owner_id)
-            throw new \core\db\exceptions\dbNotFound;
-        # set the title
-        $item->{"{$this->item_name}_title"} = $title;
-        # set the body
-        $item->{"{$this->item_name}_body"} = $body;
-        # if is_public setted right
-        if($is_public>-1 && $is_public<2)
+        # delete the item, because we are going re-generate the item's ID
+        $deleted_item = $this->delete($item_id, $owner_id, 0);
+        # creates a new item 
+        $item = $this->newItem($title, $body, $deleted_item->parent_id, $owner_id);
+        # modify the publicity of the item if necessary
+        if($is_public==-1)
+            $item->is_public = $deleted_item->is_public;
+        else
             $item->is_public = $is_public;
-        # generates new item id
-        $item->{"{$this->item_name}_id"} = $this->generate_item_id($item->parent_id, $owner_id, $title);
-        # save it
+        # modify the trash flag of the item if necessary
+        if($is_trash==-1)
+            $item->is_trash = $deleted_item->is_trash;
+        else
+            $item->is_trash = $is_trash;
+        # save the item
         $item->save();
+        # return the edited item
+        return $item;
     }
     /**
      * Generates item id based on passed arguments
@@ -190,6 +236,30 @@ abstract class item extends \ActiveRecord\Model
     public function generate_item_id($parent_id, $owner_id, $title)
     {
         # generate a hash-sum
-        return \zinux\kernel\security\hash::Generate($parent_id.$title.$owner_id);
+        return substr($owner_id, 0, 7).substr($parent_id, 0, 7).\zinux\kernel\security\hash::Generate($title);
+    }
+    /**
+     * Deletes an item
+     * @param string $item_id the item's ID
+     * @param string $owner_id the item's owner's ID
+     * @param boolean $make_trash should just flag it as trash or delete it permanently
+     * @return item the deleted item
+     */
+    public function delete($item_id, $owner_id, $make_trash = 1)
+    {
+        # fetch the item
+        $item = $this->fetch($item_id, $owner_id);
+        # if we should flag it as trash
+        if($make_trash)
+        {
+            # so be it
+            $item->is_trash = 1;
+            $item->save();
+        }
+        else
+            # detele permanent
+            $item->delete_all(array("conditions" => array("{$this->item_name}_id = ?", $item_id)));
+        # return the deleted item
+        return $item;
     }
 }
