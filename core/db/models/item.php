@@ -18,7 +18,6 @@ abstract class item extends \ActiveRecord\Model
 
     public function __construct(array $attributes = array(), $guard_attributes = true, $instantiating_via_find = false, $new_record = true) 
     {
-        parent::__construct($attributes, $guard_attributes, $instantiating_via_find, $new_record);
         # fetch the cache sig.
         $cache_sig = get_called_class();
         # create a new cache
@@ -46,6 +45,16 @@ abstract class item extends \ActiveRecord\Model
         # we have now fetched our item info
         # we will set our table name's to its proper value
         parent::$table_name = $this->item_table_name;
+        #  after setting the table's name we go for parent contruction
+        parent::__construct($attributes, $guard_attributes, $instantiating_via_find, $new_record);
+    }
+    /**
+     * Destruct the item
+     */
+    public function __destruct()
+    {
+        # unset the static table name
+        self::$table_name = "";
     }
     /**
      * Get the current item's behavioral name
@@ -97,5 +106,13 @@ abstract class item extends \ActiveRecord\Model
             # otherwise throw just as is
             else throw $e;
         }
+    }
+    public function fetch($item_id)
+    {
+        return $this->find($item_id);
+    }
+    public function fetchItems($user_id, $parent_id)
+    {
+        return $this->find("all", array("conditions" => array("owner_id = ? AND parent_id = ?", $user_id, $parent_id)));
     }
 }
