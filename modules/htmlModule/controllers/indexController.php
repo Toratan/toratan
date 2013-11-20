@@ -34,7 +34,7 @@ class indexController extends \zinux\kernel\controller\baseController
     public function trashesAction()
     {
         if(!\core\db\models\user::IsSignedin()) return;
-        $this->layout->AddTitle("Home");
+        $this->layout->AddTitle("Trashes");
         $f = new \core\db\models\folder();
         if(!isset($this->request->params["directory"]))
             $this->request->params["directory"] = 0;
