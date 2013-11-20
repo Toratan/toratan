@@ -26,42 +26,6 @@ class folder extends item
      */
     public function edit($item_id, $owner_id, $folder_name, $is_public = -1, $is_trash = -1)
     {
-        # the only time which exception could raise in this
-        # method is when $title is empty
-        # since we delete the item and re-create it
-        # we don't want to wast time on restoring failed edition on title's emptiness
-        if(empty($folder_name) || !strlen($folder_name))
-        {
-           # so we fore-playing the senario here
-           throw new \zinux\kernel\exceptions\dbException("Folder title cannot be blank!");
-        }
-        # delete the item, because we are going re-generate the item's ID
-        $deleted_item = $this->fetch($item_id, $owner_id);
-        if($owner_id == $deleted_item->owner_id && $folder_name == $deleted_item->folder_title)
-            $item = $deleted_item;
-        else
-        {
-            # creates a new item
-            $item = $this->newItem($folder_name, $deleted_item->parent_id, $owner_id);
-            # restore the creation time
-            $item->created_at = $deleted_item->created_at;
-            # if the creatation was success and no exception get thrown
-            # delete the old item
-            $this->delete($deleted_item->folder_id, $owner_id, 0);
-        }
-        # modify the publicity of the item if necessary
-        if($is_public==-1)
-            $item->is_public = $deleted_item->is_public;
-        else
-            $item->is_public = $is_public;
-        # modify the trash flag of the item if necessary
-        if($is_trash==-1)
-            $item->is_trash = $deleted_item->is_trash;
-        else
-            $item->is_trash = $is_trash;
-        # save the item
-        $item->save();
-        # return the edited item
-        return $item;
+        parent::edit($item_id, $owner_id, $folder_name, NULL, $is_public, $is_trash);
     }
 }
