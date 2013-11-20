@@ -33,6 +33,7 @@ CREATE TABLE `folders` (
   `folder_body` bit(1) DEFAULT NULL,
   `is_public` tinyint(1) NOT NULL DEFAULT '0',
   `is_trash` tinyint(1) NOT NULL DEFAULT '0',
+  `is_archive` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`folder_id`),
@@ -49,7 +50,7 @@ CREATE TABLE `folders` (
 
 LOCK TABLES `folders` WRITE;
 /*!40000 ALTER TABLE `folders` DISABLE KEYS */;
-INSERT INTO `folders` VALUES ('0','0','0','ROOT',NULL,0,0,NOW(),NOW());
+INSERT INTO `folders` VALUES ('0','0','0','ROOT',NULL,0,0,0,NOW(),NOW());
 /*!40000 ALTER TABLE `folders` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -88,6 +89,7 @@ CREATE TABLE `links` (
   `link_body` text COLLATE utf8_persian_ci NOT NULL,
   `is_public` tinyint(1) NOT NULL DEFAULT '0',
   `is_trash` tinyint(1) NOT NULL DEFAULT '0',
+  `is_archive` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`link_id`),
@@ -122,6 +124,7 @@ CREATE TABLE `notes` (
   `note_body` text COLLATE utf8_persian_ci NOT NULL,
   `is_public` tinyint(1) NOT NULL DEFAULT '0',
   `is_trash` tinyint(1) NOT NULL DEFAULT '0',
+  `is_archive` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`note_id`),
