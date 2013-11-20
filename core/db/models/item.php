@@ -8,28 +8,39 @@ abstract class item extends \ActiveRecord\Model
     static $validates_numericality_of = array(
             array('is_public', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
             array('is_trash', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
+            array('is_archive', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
     );
-    /**
-     * It can pass as 3rd argument to delete() method 
-     * And it means the we demand that item get deleted for ever
-     */
-    const DELETE_PERIOD = 0;
-    /**
-     * It can pass as 3rd argument to delete() method 
-     * And it means the we demand that item get put in trash
-     */
-    const DELETE_PUT_TARSH = 1;
-    /**
-     * It can pass as 3rd argument to delete() method 
-     * And it means the we demand that item get restored
-     */
-    const DELETE_RESTORE = -1;
     /**
      * In certain operations that we want to do NOOP on some
      * prespective of item we pass this
      */
     const NOOP = -1;
-    # genaral presence validation container
+    /**
+     * the set flag value
+     */
+    const FLAG_SET = 1;
+    /**
+     * the unset flag value
+     */
+    const FLAG_UNSET = 0;
+    /**
+     * It can pass as 3rd argument to delete() method 
+     * And it means the we demand that item get deleted for ever
+     */
+    const DELETE_PERIOD = self::FLAG_UNSET;
+    /**
+     * It can pass as 3rd argument to delete() method 
+     * And it means the we demand that item get put in trash
+     */
+    const DELETE_PUT_TARSH = self::FLAG_SET;
+    /**
+     * It can pass as 3rd argument to delete() method 
+     * And it means the we demand that item get restored
+     */
+    const DELETE_RESTORE = self::NOOP;
+    /**
+     *  genaral presence validation container
+     */
     static $validates_presence_of;
     /**
      * Get/Set item's table name
@@ -187,24 +198,23 @@ abstract class item extends \ActiveRecord\Model
      * @param boolean $is_trash should it be trashed or not, pass '<b>item::NOOP</b>' to don't chnage
      * @return array of items
      */
-    public function fetchItems($parent_id, $owner_id, $is_public = self::NOOP , $is_trash = self::NOOP)
+    public function fetchItems($parent_id, $owner_id, $is_public = self::NOOP , $is_trash = self::NOOP, $is_archive = self::NOOP)
     {
         # general conditions
         $item_cond = "owner_id = ? AND parent_id = ? ";
         $cond = array($item_cond, $owner_id, $parent_id);
-        # if is public revoked
-        if($is_public>-1 && $is_public<2)
+
+        foreach(
+                array("is_public" => $is_public, "is_trash"=>$is_trash, "is_archive" => $is_archive) 
+                as $name => $value)
         {
-            # flag it
-            $cond[0] .= "AND is_public =  ?";
-            $cond[] = $is_public;
-        }
-        # if is trash revoked
-        if($is_trash>-1 && $is_trash<2)
-        {
-            # flag it
-            $cond[0] .= "AND is_trash =  ?";
-            $cond[] = $is_trash;
+            # if is public revoked
+            if($value>-1 && $value<2)
+            {
+                # flag it
+                $cond[0] .= "AND $name =  ?";
+                $cond[] = $value;
+            }
         }
         # returns all items with given owner and parent id
         return $this->find("all", array("conditions" => $cond));
@@ -219,7 +229,7 @@ abstract class item extends \ActiveRecord\Model
      * @param boolean $is_trash should it be trashed or not, pass '<b>item::NOOP</b>' to don't chnage
      * @throws \core\db\exceptions\dbNotFound if the item not found
      */
-    public function edit($item_id, $owner_id, $title, $body, $is_public = self::NOOP, $is_trash = self::NOOP)
+    public function edit($item_id, $owner_id, $title, $body, $is_public = self::NOOP, $is_trash = self::NOOP,  $is_archive = self::NOOP)
     {
         # fetch the item
         $item = $this->fetch($item_id, $owner_id);
@@ -239,7 +249,7 @@ abstract class item extends \ActiveRecord\Model
         return $item;
     }
     /**
-     * Deletes an item
+     * Deletes/Restores an item
      * @param string $item_id the item's ID
      * @param string $owner_id the item's owner's ID
      * @param integet $TRASH_OPS can be one of <b>item::DELETE_RESTORE</b>, <b>item::DELETE_PUT_TARSH</b>, <b>item::DELETE_PERIOD</b>
@@ -272,8 +282,39 @@ abstract class item extends \ActiveRecord\Model
         # return the deleted item
         return $item;
     }
+    /**
+     * Fetches all trash items that the owner has
+     * @param string $owner_id
+     * @return array the trash items
+     */
     public function fetchTrashes($owner_id)
     {
         return $this->find("all", array("conditions" => array("owner_id = ? AND is_trash = ?", $owner_id, 1)));
+    }
+    /**
+     * Arhives/De-archives an item
+     * @param string $item_id the item's ID
+     * @param string $owner_id the item's owner's ID
+     * @param integer $ARCHIVE_STATUS valid input for this are <b>self::FLAG_SET</b>, <b>self::FLAG_UNSET</b>
+     * @return item the modified item
+     * @throws \zinux\kernel\exceptions\invalideOperationException if $ARCHIVE_STATUS is not valid
+     */
+    public function archive($item_id, $owner_id, $ARCHIVE_STATUS = self::FLAG_SET)
+    {
+        # fetch the item
+        $item = $this->fetch($item_id, $owner_id);
+        # validate the archive status
+        switch($ARCHIVE_STATUS)
+        {
+            case self::FLAG_SET:
+            case self::FLAG_UNSET:
+                $item->is_archive = $ARCHIVE_STATUS;
+                $item->save();
+                break;
+            default:
+                throw new \zinux\kernel\exceptions\invalideOperationException;
+        }
+        # return the item
+        return $item;
     }
 }
