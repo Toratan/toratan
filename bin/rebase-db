@@ -1,4 +1,7 @@
 #!/bin/bash
 echo -e "\e[33mReloading database.....\e[m";
-mysql -u root -p < db/mysql/toratan\ -\ basic\ project\ entities\ datastructure.sql
+# fetch parent directory of this bash
+DIR=$(dirname `dirname $0`);
+# feed the mysql
+mysql -u root -p < $DIR/db/mysql/toratan\ -\ basic\ project\ entities\ datastructure.sql
 
