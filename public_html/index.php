@@ -53,6 +53,9 @@ catch(Exception $e)
      */
     echo "<legend>Oops!</legend>";
     echo "<p>Error happened ...</p>";
-    echo "<p><b>Message: </b></p><p>{$e->getMessage()}</p>";
+    echo "<p><b>Message: </b></p><p>";
+    zinux\kernel\utilities\debug::_var($e->getMessage());
+    echo "</p>";
     echo "<p><b>Stack Trace: </b></p><pre>".$e->getTraceAsString()."</pre>";
+    zinux\kernel\utilities\debug::_var($e->getTrace());
 }
