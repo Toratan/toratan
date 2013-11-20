@@ -1,8 +1,4 @@
-<!--
- The modules\htmlModule\views\view\index\archivesView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for <b>indexController</b>.<br />
-    Location '<b>/var/www/toratan//modules/htmlModule/views/view/index/archivesView.phtml</b>'.
-</p>
+<?php
+    $this->RenderPartial("item_table", array("folders" => $this->folders, "links"=> $this->links, "notes" => $this->notes, "is_archive" => 1));
+    
+    
