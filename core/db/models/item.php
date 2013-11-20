@@ -9,6 +9,26 @@ abstract class item extends \ActiveRecord\Model
             array('is_public', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
             array('is_trash', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
     );
+    /**
+     * It can pass as 3rd argument to delete() method 
+     * And it means the we demand that item get deleted for ever
+     */
+    const DELETE_PERIOD = 0;
+    /**
+     * It can pass as 3rd argument to delete() method 
+     * And it means the we demand that item get put in trash
+     */
+    const DELETE_PUT_TARSH = 1;
+    /**
+     * It can pass as 3rd argument to delete() method 
+     * And it means the we demand that item get restored
+     */
+    const DELETE_RESTORE = -1;
+    /**
+     * In certain operations that we want to do NOOP on some
+     * prespective of item we pass this
+     */
+    const NOOP = -1;
     # genaral presence validation container
     static $validates_presence_of;
     /**
@@ -167,11 +187,11 @@ abstract class item extends \ActiveRecord\Model
      * Fetches all sub-items under a parent directory with an owner
      * @param string $owner_id items' owner id
      * @param string $parent_id items' parent id
-     * @param boolean $is_public should it be public or not, pass -1 to no difference
-     * @param boolean $is_trash should it be trashed or not, pass -1 to no difference
+     * @param boolean $is_public should it be public or not, pass '<b>item::NOOP</b>' to don't change
+     * @param boolean $is_trash should it be trashed or not, pass '<b>item::NOOP</b>' to don't chnage
      * @return array of items
      */
-    public function fetchItems($parent_id, $owner_id, $is_public = -1, $is_trash = -1)
+    public function fetchItems($parent_id, $owner_id, $is_public = self::NOOP , $is_trash = self::NOOP)
     {
         # general conditions
         $item_cond = "owner_id = ? AND parent_id = ? ";
@@ -199,11 +219,11 @@ abstract class item extends \ActiveRecord\Model
      * @param string $owner_id the item's owner id
      * @param string $title string the item's title
      * @param string $body the item's body
-     * @param boolean $is_public should it be public or not, pass -1 to no change
-     * @param boolean $is_trash should it be trashed or not, pass -1 to no change
+     * @param boolean $is_public should it be public or not, pass '<b>item::NOOP</b>' to don't chnage
+     * @param boolean $is_trash should it be trashed or not, pass '<b>item::NOOP</b>' to don't chnage
      * @throws \core\db\exceptions\dbNotFound if the item not found
      */
-    public function edit($item_id, $owner_id, $title, $body, $is_public = -1, $is_trash = -1)
+    public function edit($item_id, $owner_id, $title, $body, $is_public = self::NOOP, $is_trash = self::NOOP)
     {
         # the only time which exception could raise in this
         # method is when $title is empty
@@ -244,12 +264,12 @@ abstract class item extends \ActiveRecord\Model
             }
         }
         # modify the publicity of the item if necessary
-        if($is_public==-1)
+        if($is_public==self::NOOP)
             $item->is_public = $deleted_item->is_public;
         else
             $item->is_public = $is_public;
         # modify the trash flag of the item if necessary
-        if($is_trash==-1)
+        if($is_trash==self::NOOP)
             $item->is_trash = $deleted_item->is_trash;
         else
             $item->is_trash = $is_trash;
@@ -274,24 +294,38 @@ abstract class item extends \ActiveRecord\Model
      * Deletes an item
      * @param string $item_id the item's ID
      * @param string $owner_id the item's owner's ID
-     * @param boolean $make_trash should just flag it as trash or delete it permanently
+     * @param integet $TRASH_OPS can be one of <b>item::DELETE_RESTORE</b>, <b>item::DELETE_PUT_TARSH</b>, <b>item::DELETE_PERIOD</b>
      * @return item the deleted item
      */
-    public function delete($item_id, $owner_id, $make_trash = 1)
+    public function delete($item_id, $owner_id, $TRASH_OPS = self::DELETE_PUT_TARSH)
     {
         # fetch the item
         $item = $this->fetch($item_id, $owner_id);
         # if we should flag it as trash
-        if($make_trash)
+        switch($TRASH_OPS)
         {
-            # so be it
-            $item->is_trash = 1;
-            $item->save();
+            case self::DELETE_PUT_TARSH:
+                # so be it
+                $item->is_trash = 1;
+                $item->save();
+                break;
+            case self::DELETE_PERIOD:
+                # detele permanent
+                $item->delete_all(array("conditions" => array("{$this->item_name}_id = ?", $item_id)));
+                break;
+            case self::DELETE_RESTORE:
+                # restore the item
+                $item->is_trash = 0;
+                $item->save();
+                break;
+            default:
+                throw new \zinux\kernel\exceptions\invalideArgumentException("undefined ops demand!");
         }
-        else
-            # detele permanent
-            $item->delete_all(array("conditions" => array("{$this->item_name}_id = ?", $item_id)));
         # return the deleted item
         return $item;
+    }
+    public function fetchTrashes($owner_id)
+    {
+        return $this->find("all", array("conditions" => array("owner_id = ? AND is_trash = ?", $owner_id, 1)));
     }
 }
