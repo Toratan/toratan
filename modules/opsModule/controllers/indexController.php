@@ -17,7 +17,6 @@ class indexController extends \zinux\kernel\controller\baseController
         }
     }
     /**
-    * The modules\opsModule\controllers\indexController::IndexAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function IndexAction()
@@ -28,6 +27,7 @@ class indexController extends \zinux\kernel\controller\baseController
     /**
     * Creates new items
      * @access via /ops/new/{folder|note|link}/pid/(PID)?hash_sum
+    * @hash-sum {folder|note|link}.(PID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function newAction()
@@ -40,7 +40,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 $this->request->params,
                 array("pid")
         );
-        # checking hash-sum with PID.PHPSESSID.user_id
+        # checking hash-sum with {folder|note|link}.(PID).session_id().user_id
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->params["pid"], session_id(), \core\db\models\user::GetInstance()->user_id));
@@ -54,7 +54,7 @@ class indexController extends \zinux\kernel\controller\baseController
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
-            # the valid 'NEW' opts are
+            # the valid 'new' opts are
             case "FOLDER":
             case "NOTE":
             case "LINK":
@@ -62,7 +62,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 $this->view->setView("new{$this->request->GetIndexedParam(0)}");
                 break;
             default:
-                # if no NEW opt matched, raise an exception
+                # if no ops matched, raise an exception
                 throw new \zinux\kernel\exceptions\invalideOperationException;
         }
         # fetch the user id
@@ -131,22 +131,23 @@ class indexController extends \zinux\kernel\controller\baseController
     }
 
     /**
-    * The \modules\opsModule\controllers\indexController::editAction()
+    * @access via /ops/edit/{folder|note|link}/(ID)?hash_sum
+    * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function editAction()
     {
-        # we need at least a param to go for
+        # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
             throw new \zinux\kernel\exceptions\invalideOperationException;
-        # checking hash-sum with PID.PHPSESSID.user_id
+        # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
-            # the valid 'NEW' opts are
+            # the valid 'edit' opts are
             case "FOLDER":
             case "NOTE":
             case "LINK":
@@ -154,7 +155,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 $this->view->setView("new{$this->request->GetIndexedParam(0)}");
                 break;
             default:
-                # if no NEW opt matched, raise an exception
+                # if no ops matched, raise an exception
                 throw new \zinux\kernel\exceptions\invalideOperationException;
         }
         # the error container
@@ -215,7 +216,7 @@ class indexController extends \zinux\kernel\controller\baseController
     }
 
     /**
-    * Views content of items
+    * @access via /ops/view/note/(ID)
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function viewAction()
@@ -226,13 +227,13 @@ class indexController extends \zinux\kernel\controller\baseController
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
-            # the valid 'NEW' opts are
+            # the valid 'view' opts are
             case "NOTE":
                 # set the proper view
                 $this->view->setView("view{$this->request->GetIndexedParam(0)}");
                 break;
             default:
-                # if no NEW opt matched, raise an exception
+                # if no ops matched, raise an exception
                 throw new \zinux\kernel\exceptions\invalideOperationException;
         }
         # fetch the user id
@@ -264,36 +265,37 @@ class indexController extends \zinux\kernel\controller\baseController
     /**
     * The \modules\opsModule\controllers\indexController::deleteAction()
     * @access via /ops/delete/{folder|note|link}/(ID)/trash/(-1,0,1)?hash_sum
-    * If you set the 
+    * If you set the
     * trash : -1 => retores the item from trash
     * trash : 0  => deletes permanently
-    * trash : 1  => logically flag items as trash 
+    * trash : 1  => logically flag items as trash
+    * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function deleteAction()
     {
-        # we need at least a param to go for
+        # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
             throw new \zinux\kernel\exceptions\invalideOperationException;
-        # checking hash-sum with PID.PHPSESSID.user_id
+        # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
-            # the valid 'NEW' opts are
+            # the valid 'delete' opts are
             case "FOLDER":
             case "NOTE":
             case "LINK":
                 break;
             default:
-                # if no NEW opt matched, raise an exception
+                # if no ops matched, raise an exception
                 throw new \zinux\kernel\exceptions\invalideOperationException;
         }
         if(!isset($this->request->params["trash"]))
             $is_trash = 0;
-        else 
+        else
         {
             switch ($this->request->params["trash"])
             {
@@ -318,5 +320,57 @@ class indexController extends \zinux\kernel\controller\baseController
         header("location: /directory/{$deleted_item->parent_id}.{$item}s");
         exit;
     }
-}
 
+    /**
+    * @access via /ops/archive/{folder|note|link}/(ID)/archive/(0,1)?hash_sum
+    * @hash-sum {folder|note|link}.(ID).session_id().user_id
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function archiveAction()
+    {
+        # we need at least 2 params to go for
+        if($this->request->CountIndexedParam()<2)
+            throw new \zinux\kernel\exceptions\invalideOperationException;
+        # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
+        \zinux\kernel\security\security::ArrayHashCheck(
+                $this->request->params,
+                array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
+        # if reach here we are OK to proceed the opt
+        switch (strtoupper($this->request->GetIndexedParam(0)))
+        {
+            # the valid 'archive' opts are
+            case "FOLDER":
+            case "NOTE":
+            case "LINK":
+                break;
+            default:
+                # if no ops matched, raise an exception
+                throw new \zinux\kernel\exceptions\invalideOperationException;
+        }
+        if(!isset($this->request->params["archive"]))
+            $is_archive = 0;
+        else
+        {
+            switch ($this->request->params["archive"])
+            {
+                case \core\db\models\item::FLAG_SET:
+                case \core\db\models\item::FLAG_UNSET:
+                    $is_archive = $this->request->params["archive"];
+                    break;
+                default:
+                    throw new \zinux\kernel\exceptions\invalideOperationException;
+            }
+        }
+        # fetch the items name
+        $item = strtolower($this->request->GetIndexedParam(0));
+        # generate a proper handler for item creatation
+        $item_class = "\\core\\db\\models\\$item";
+        # create an instance of item
+        $item_ins = new $item_class;
+        # archive the item
+        $deleted_item = $item_ins->archive($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_archive);
+        # relocate the browser
+        header("location: /directory/{$deleted_item->parent_id}.{$item}s");
+        exit;
+    }
+}
