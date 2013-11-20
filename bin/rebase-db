@@ -1,0 +1,4 @@
+#!/bin/bash
+echo -e "\e[33mReloading database.....\e[m";
+mysql -u root -p < db/mysql/toratan\ -\ basic\ project\ entities\ datastructure.sql
+
