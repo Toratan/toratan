@@ -1,5 +1,6 @@
 <?php
     $this->is_trash = isset($this->is_trash) && $this->is_trash;
+    $this->is_archive = isset($this->is_archive) && $this->is_archive;
 ?>
 <style>
     td{padding: 10px;min-width: 10%;}
@@ -24,6 +25,8 @@
                             <a href="/ops/edit/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array("folder", $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
                             <?php if($this->is_trash): ?> | 
                                 <a href="/ops/delete/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">restore</a>
+                            <?php else: ?> | 
+                                <a href="/ops/archive/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style=""><?php echo $this->is_archive?"de-":""?>archive</a>
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>
@@ -36,6 +39,8 @@
                             <a href="/ops/edit/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
                             <?php if($this->is_trash): ?> | 
                                 <a href="/ops/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">restore</a>
+                            <?php else: ?> | 
+                                <a href="/ops/archive/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style=""><?php echo $this->is_archive?"de-":""?>archive</a>
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>
@@ -48,6 +53,8 @@
                             <a href="/ops/edit/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
                             <?php if($this->is_trash): ?> | 
                                 <a href="/ops/delete/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="">restore</a>
+                            <?php else: ?> | 
+                                <a href="/ops/archive/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style=""><?php echo $this->is_archive?"de-":""?>archive</a>
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>

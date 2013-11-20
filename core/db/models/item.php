@@ -24,6 +24,10 @@ abstract class item extends \ActiveRecord\Model
      */
     const FLAG_UNSET = 0;
     /**
+     * flag whatever
+     */
+    const WHATEVER = self::NOOP;
+    /**
      * It can pass as 3rd argument to delete() method 
      * And it means the we demand that item get deleted for ever
      */
@@ -316,5 +320,14 @@ abstract class item extends \ActiveRecord\Model
         }
         # return the item
         return $item;
+    }
+    /**
+     * Fetches all archived items that the owner has
+     * @param string $owner_id
+     * @return array the archive items
+     */
+    public function fetchArchives($owner_id)
+    {
+        return $this->find("all", array("conditions" => array("owner_id = ? AND is_archive = ? AND is_trash <> 1", $owner_id, 1)));
     }
 }
