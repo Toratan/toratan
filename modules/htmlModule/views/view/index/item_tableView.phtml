@@ -1,0 +1,62 @@
+<?php
+    $this->is_trash = isset($this->is_trash) && $this->is_trash;
+?>
+<style>
+    td{padding: 10px;min-width: 10%;}
+    td .last{border-bottom: 1px solid #e6e6e6}
+</style>
+<table style="clear: both">
+    <thead>
+        <tr>
+            <td>Folders</td>
+            <td>Notes</td>
+            <td class="last">Links</td>
+        </tr>
+    </thead>
+    <tbody>
+        <?php while(true): ?>
+            <tr>
+                <td>
+                    <?php if(count($this->folders)): $f = array_shift($this->folders);?>
+                        <div style="float:left;min-width: 100px;"><?php echo "<a href='/directory/{$f->folder_id}.folders'>{$f->folder_title}</a>"; ?></div>
+                        <div style="float:right;">
+                            <a href="/ops/delete/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/trash/<?php echo $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">delete</a> | 
+                            <a href="/ops/edit/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array("folder", $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
+                            <?php if($this->is_trash): ?> | 
+                                <a href="/ops/delete/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">restore</a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?php if(count($this->notes)): $n = array_shift($this->notes);?>
+                        <div style="float:left;min-width: 100px;"><?php echo "<a href='/ops/view/note/{$n->note_id}' target='__blank'>{$n->note_title}</a>"; ?></div>
+                        <div style="float:right;">
+                            <a href="/ops/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">delete</a> | 
+                            <a href="/ops/edit/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
+                            <?php if($this->is_trash): ?> | 
+                                <a href="/ops/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">restore</a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?php if(count($this->links)): $l = array_shift($this->links);?>
+                    <div style="float:left;min-width: 100px;"><?php echo "<a href='{$l->link_body}' target='__blank'>{$l->link_title}</a>"; ?></div>
+                    <div style="float:right;">
+                            <a href="/ops/delete/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/trash/<?php echo  $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">delete</a> | 
+                            <a href="/ops/edit/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
+                            <?php if($this->is_trash): ?> | 
+                                <a href="/ops/delete/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="">restore</a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                </td>
+            </tr>
+        <?php
+        if(!count($this->folders) && !count($this->notes) && !count($this->links))
+            break;
+        ?>
+        <?php endwhile; ?>
+    </tbody>
+</table>

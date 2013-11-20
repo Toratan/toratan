@@ -263,7 +263,11 @@ class indexController extends \zinux\kernel\controller\baseController
 
     /**
     * The \modules\opsModule\controllers\indexController::deleteAction()
-    * @access via /ops/delete/{folder|note|link}/(ID)?hash_sum
+    * @access via /ops/delete/{folder|note|link}/(ID)/trash/(-1,0,1)?hash_sum
+    * If you set the 
+    * trash : -1 => retores the item from trash
+    * trash : 0  => deletes permanently
+    * trash : 1  => logically flag items as trash 
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function deleteAction()
@@ -287,7 +291,21 @@ class indexController extends \zinux\kernel\controller\baseController
                 # if no NEW opt matched, raise an exception
                 throw new \zinux\kernel\exceptions\invalideOperationException;
         }
-        $is_trash = isset($this->request->params["trash"]) && $this->request->params["trash"];
+        if(!isset($this->request->params["trash"]))
+            $is_trash = 0;
+        else 
+        {
+            switch ($this->request->params["trash"])
+            {
+                case \core\db\models\item::DELETE_PERIOD:
+                case \core\db\models\item::DELETE_PUT_TARSH:
+                case \core\db\models\item::DELETE_RESTORE:
+                    $is_trash = $this->request->params["trash"];
+                    break;
+                default:
+                    throw new \zinux\kernel\exceptions\invalideOperationException;
+            }
+        }
         # fetch the items name
         $item = strtolower($this->request->GetIndexedParam(0));
         # generate a proper handler for item creatation

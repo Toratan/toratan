@@ -1,3 +1,6 @@
+DROP DATABASE IF EXISTS `toratan`;
+CREATE DATABASE `toratan`;
+use `toratan`;
 -- MySQL dump 10.13  Distrib 5.5.32, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: toratan
@@ -23,8 +26,8 @@ DROP TABLE IF EXISTS `folders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `folders` (
-  `folder_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
-  `parent_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
+  `folder_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `parent_id` BIGINT(20) NOT NULL,
   `owner_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `folder_title` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `folder_body` bit(1) DEFAULT NULL,
@@ -46,7 +49,7 @@ CREATE TABLE `folders` (
 
 LOCK TABLES `folders` WRITE;
 /*!40000 ALTER TABLE `folders` DISABLE KEYS */;
-INSERT INTO `folders` VALUES ('0','0','0','ROOT',NULL,0,0,'2013-11-19 21:21:53','2013-11-19 21:21:53');
+INSERT INTO `folders` VALUES ('0','0','0','ROOT',NULL,0,0,NOW(),NOW());
 /*!40000 ALTER TABLE `folders` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -78,8 +81,8 @@ DROP TABLE IF EXISTS `links`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `links` (
-  `link_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
-  `parent_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
+  `link_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `parent_id` BIGINT(20) NOT NULL,
   `owner_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `link_title` varchar(300) COLLATE utf8_persian_ci NOT NULL,
   `link_body` text COLLATE utf8_persian_ci NOT NULL,
@@ -112,8 +115,8 @@ DROP TABLE IF EXISTS `notes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notes` (
-  `note_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
-  `parent_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
+  `note_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `parent_id` BIGINT(20) NOT NULL,
   `owner_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `note_title` varchar(300) COLLATE utf8_persian_ci NOT NULL,
   `note_body` text COLLATE utf8_persian_ci NOT NULL,
@@ -151,7 +154,7 @@ CREATE TABLE `users` (
   `username` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `password` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `is_deactive` bit(1) NOT NULL DEFAULT b'0',
-  `deactivate_at` bit(1) DEFAULT NULL,
+  `deactivate_at` DATETIME NULL DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`user_id`),
@@ -166,7 +169,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('0','NULL','ROOT','NULL','\0',NULL,'2013-11-18 22:22:08','2013-11-18 22:22:08'),('0d01e5d6df681a262fa493130d9dfb04','b.g.dariush@gmail.com','badguy','43fbb4a472eb5a9ec6085e2b1217dd0e','\0',NULL,'2013-11-19 10:52:14','2013-11-19 10:52:14');
+INSERT INTO `users` VALUES ('0','NULL','ROOT','NULL','\0',NULL,NOW(),NOW());
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;

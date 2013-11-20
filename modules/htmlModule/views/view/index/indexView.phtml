@@ -1,9 +1,5 @@
-<style>
-    td{padding: 10px;min-width: 10%;}
-    td .last{border-bottom: 1px solid #e6e6e6}
-</style>
 <hr />
-<?php if(\core\db\models\user::IsSignedin()): ?>
+<?php if(!\core\db\models\user::IsSignedin()) return; ?>
 <div style="float: left">
         <a href="/ops/new/folder/?pid=<?php echo $this->pid.\zinux\kernel\security\security::GetHashString(array("folder", $this->pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>">
             Create new folder
@@ -15,55 +11,9 @@
             Create new note
         </a>
 </div>
-<?php if(isset($this->cwd)): ?>
-<div style="float:right;">
-    <a href="/ops/delete/folder/<?php echo $this->cwd->folder_id ?>/trash/1?<?php echo zinux\kernel\security\security::GetHashString(array("folder", $this->cwd->folder_id, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#a6a6a6">delete <span style="color:#000"><?php echo $this->cwd->folder_title?></span></a>
+<div style="float: right">
+    <a href="/trashes">Trashes</a> | 
+    <a href="/archives">Archives</a>
 </div>
-<?php endif; ?>
-<?php endif; ?>
-<table style="clear: both">
-    <thead>
-        <tr>
-            <td>Folders</td>
-            <td>Notes</td>
-            <td class="last">Links</td>
-        </tr>
-    </thead>
-    <tbody>
-        <?php while(true): ?>
-            <tr>
-                <td>
-                    <?php if(count($this->folders)): $f = array_shift($this->folders);?>
-                        <div style="float:left;min-width: 100px;"><?php echo "<a href='/directory/{$f->folder_id}.folders'>{$f->folder_title}</a>"; ?></div>
-                        <div style="float:right;">
-                            <a href="/ops/delete/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/trash/1?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">delete</span></a> | 
-                            <a href="/ops/edit/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/?<?php echo zinux\kernel\security\security::GetHashString(array("folder", $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
-                        </div>
-                    <?php endif; ?>
-                </td>
-                <td>
-                    <?php if(count($this->notes)): $n = array_shift($this->notes);?>
-                        <div style="float:left;min-width: 100px;"><?php echo "<a href='/ops/view/note/{$n->note_id}' target='__blank'>{$n->note_title}</a>"; ?></div>
-                        <div style="float:right;">
-                            <a href="/ops/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/1?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">delete</span></a> | 
-                            <a href="/ops/edit/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
-                        </div>
-                    <?php endif; ?>
-                </td>
-                <td>
-                    <?php if(count($this->links)): $l = array_shift($this->links);?>
-                    <div style="float:left;min-width: 100px;"><?php echo "<a href='{$l->link_body}' target='__blank'>{$l->link_title}</a>"; ?></div>
-                    <div style="float:right;">
-                            <a href="/ops/delete/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/trash/1?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">delete</span></a> | 
-                            <a href="/ops/edit/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
-                        </div>
-                    <?php endif; ?>
-                </td>
-            </tr>
-        <?php
-        if(!count($this->folders) && !count($this->notes) && !count($this->links))
-            break;
-        ?>
-        <?php endwhile; ?>
-    </tbody>
-</table>
+<?php
+    $this->RenderPartial("item_table", array("folders" => $this->folders, "links"=> $this->links, "notes" => $this->notes));
