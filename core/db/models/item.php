@@ -28,17 +28,21 @@ abstract class item extends \ActiveRecord\Model
      */
     const WHATEVER = self::NOOP;
     /**
-     * It can pass as 3rd argument to delete() method 
+     * flag no-change
+     */
+    const NOCHANGE= self::NOOP;
+    /**
+     * It can pass as 3rd argument to delete() method
      * And it means the we demand that item get deleted for ever
      */
     const DELETE_PERIOD = self::FLAG_UNSET;
     /**
-     * It can pass as 3rd argument to delete() method 
+     * It can pass as 3rd argument to delete() method
      * And it means the we demand that item get put in trash
      */
     const DELETE_PUT_TARSH = self::FLAG_SET;
     /**
-     * It can pass as 3rd argument to delete() method 
+     * It can pass as 3rd argument to delete() method
      * And it means the we demand that item get restored
      */
     const DELETE_RESTORE = self::NOOP;
@@ -153,7 +157,11 @@ abstract class item extends \ActiveRecord\Model
      * @throws \core\db\models\Exception if any other exception raised that didn't match with previous excepions
      * @return item the create item
     */
-    public function newItem($title, $body, $parent_id, $owner_id)
+    public function newItem(
+            $title,
+            $body,
+            $parent_id,
+            $owner_id)
     {
         # normalizing the inputs
         $title = trim($title);
@@ -180,16 +188,62 @@ abstract class item extends \ActiveRecord\Model
        return $item;
     }
     /**
+     * normalize the conditions and options to use in \ActiveRecord::Model::find()
+     * @param array $conditions the find conditons
+     * @param array $options the other options this also can have conditons in it
+     * @return array the genaral options
+     * @throws \zinux\kernel\exceptions\invalideArgumentException if $options has "condition" and it does not have the conditons string
+     */
+    protected function normalize_conditions_options_ops(
+            $conditions = array(),
+            $options = array())
+    {
+        # normalize the array
+        if(!$conditions) $conditions = array();
+        if(!$options) $options = array();
+        # normalize the conditions array
+        if(!isset($conditions["conditions"]))
+            $conditions = array("conditions" => $conditions);
+        # if we have conditions in $options
+        # then we have merging conflict problem
+        if(isset($options["conditions"]) && count($options["conditions"]))
+        {
+            # if the option has invalid conditions format
+            if(!is_string($options["conditions"][0]))
+                # flag the error
+                throw new \zinux\kernel\exceptions\invalideArgumentException("invalid \$options format");
+            # merge the $options' conditional string with genuine $conditions array
+            $conditions["conditions"][0] .= " AND (".array_shift($options["conditions"]).")";
+            # fetch the othe condition arguments, if any exists
+            while(count($options["conditions"]))
+                $conditions["conditions"][] = array_shift($options["conditions"]);
+            # replace the new generated conditions
+            $options["conditions"] = $conditions["conditions"];
+        }
+        else
+            # if no conditions presence at $options, just make a room for it
+            $options ["conditions"] = $conditions["conditions"];
+        # return the re-configured $options array
+        return $options;
+    }
+    /**
      * Fetches a single item from database
      * @param string $item_id item's id
+     * @param string $owner_id item's owner id
+     * @param array $options see \ActiveRecord\Model::find()
      * @return item
      */
-    public function fetch($item_id, $owner_id = NULL)
+    public function fetch(
+            $item_id,
+            $owner_id = NULL,
+            $options = array())
     {
         $cond = array("conditions" => array("{$this->item_name}_id = ?", $item_id));
         if($owner_id)
             $cond = array("conditions" => array("{$this->item_name}_id = ? AND owner_id = ?", $item_id, $owner_id));
-        $item = $this->find($item_id, $cond);
+        # normalize the conditions with any passed options
+        $options = $this->normalize_conditions_options_ops($cond, $options);
+        $item = $this->find($item_id, $options);
         if(!$item)
             throw new \core\db\exceptions\dbNotFound("$this->item_name with ID=`$item_id` not found or you don't have the access premission!");
         return $item;
@@ -198,11 +252,19 @@ abstract class item extends \ActiveRecord\Model
      * Fetches all sub-items under a parent directory with an owner
      * @param string $owner_id items' owner id
      * @param string $parent_id items' parent id
-     * @param boolean $is_public should it be public or not, pass '<b>item::NOOP</b>' to don't change
-     * @param boolean $is_trash should it be trashed or not, pass '<b>item::NOOP</b>' to don't chnage
+     * @param boolean $is_public should it be public or not, pass '<b>item::WHATEVER</b>' to don't matter
+     * @param boolean $is_trash should it be trashed or not, pass '<b>item::WHATEVER</b>' to don't matter
+     * @param boolean $is_archive should it be archive or not, pass '<b>item::WHATEVER</b>' to don't matter
+     * @param array $options see \ActiveRecord\Model::find()
      * @return array of items
      */
-    public function fetchItems($parent_id, $owner_id, $is_public = self::NOOP , $is_trash = self::NOOP, $is_archive = self::NOOP)
+    public function fetchItems(
+            $parent_id,
+            $owner_id,
+            $is_public = self::WHATEVER,
+            $is_trash = self::WHATEVER,
+            $is_archive = self::WHATEVER,
+            $options = array())
     {
         # general conditions
         $item_cond = "owner_id = ? AND parent_id = ? ";
@@ -216,12 +278,14 @@ abstract class item extends \ActiveRecord\Model
             if($value>-1 && $value<2)
             {
                 # flag it
-                $cond[0] .= "AND $name =  ?";
+                $cond[0] .= "AND $name =  ? ";
                 $cond[] = $value;
             }
         }
+        # normalize the conditions with any passed options
+        $options = $this->normalize_conditions_options_ops($cond, $options);
         # returns all items with given owner and parent id
-        return $this->find("all", array("conditions" => $cond));
+        return $this->find("all", $options);
     }
     /**
      * Edits an item
@@ -229,11 +293,19 @@ abstract class item extends \ActiveRecord\Model
      * @param string $owner_id the item's owner id
      * @param string $title string the item's title
      * @param string $body the item's body
-     * @param boolean $is_public should it be public or not, pass '<b>item::NOOP</b>' to don't chnage
-     * @param boolean $is_trash should it be trashed or not, pass '<b>item::NOOP</b>' to don't chnage
+     * @param boolean $is_public should it be public or not, pass '<b>item::NOCHANGE</b>' to don't chnage
+     * @param boolean $is_trash should it be trashed or not, pass '<b>item::NOCHANGE</b>' to don't chnage
+     * @param boolean $is_archive should it be archived or not, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @throws \core\db\exceptions\dbNotFound if the item not found
      */
-    public function edit($item_id, $owner_id, $title, $body, $is_public = self::NOOP, $is_trash = self::NOOP,  $is_archive = self::NOOP)
+    public function edit(
+            $item_id,
+            $owner_id,
+            $title,
+            $body,
+            $is_public = self::NOCHANGE,
+            $is_trash = self::NOCHANGE,
+            $is_archive = self::NOCHANGE)
     {
         # fetch the item
         $item = $this->fetch($item_id, $owner_id);
@@ -242,11 +314,14 @@ abstract class item extends \ActiveRecord\Model
         # set the body
         $item->{"{$this->item_name}_body"} = $body;
         # modify the publicity of the item if necessary
-        if($is_public!=self::NOOP)
+        if($is_public!=self::NOCHANGE)
             $item->is_public = $is_public;
         # modify the trash flag of the item if necessary
-        if($is_trash!=self::NOOP)
+        if($is_trash!=self::NOCHANGE)
             $item->is_trash = $is_trash;
+        # modify the archive flag of the item if necessary
+        if($is_archive!=self::NOCHANGE)
+            $item->is_archive = $is_archive;
         # save the item
         $item->save();
         # return the edited item
@@ -259,7 +334,10 @@ abstract class item extends \ActiveRecord\Model
      * @param integet $TRASH_OPS can be one of <b>item::DELETE_RESTORE</b>, <b>item::DELETE_PUT_TARSH</b>, <b>item::DELETE_PERIOD</b>
      * @return item the deleted item
      */
-    public function delete($item_id, $owner_id, $TRASH_OPS = self::DELETE_PUT_TARSH)
+    public function delete(
+            $item_id,
+            $owner_id,
+            $TRASH_OPS = self::DELETE_PUT_TARSH)
     {
         # fetch the item
         $item = $this->fetch($item_id, $owner_id);
@@ -303,7 +381,10 @@ abstract class item extends \ActiveRecord\Model
      * @return item the modified item
      * @throws \zinux\kernel\exceptions\invalideOperationException if $ARCHIVE_STATUS is not valid
      */
-    public function archive($item_id, $owner_id, $ARCHIVE_STATUS = self::FLAG_SET)
+    public function archive(
+            $item_id,
+            $owner_id,
+            $ARCHIVE_STATUS = self::FLAG_SET)
     {
         # fetch the item
         $item = $this->fetch($item_id, $owner_id);
