@@ -1,0 +1,7 @@
+#!/bin/bash
+echo -e "\e[33mBacking up the database.....\e[m";
+# fetch parent directory of this bash
+DIR=$(dirname `dirname $0`);
+# feed the mysql
+mysqldump -u root toratan -p > $DIR/db/mysql/toratan\ -\ basic\ project\ entities\ datastructure.sql
+
