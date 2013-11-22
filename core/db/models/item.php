@@ -94,12 +94,6 @@ abstract class item extends \ActiveRecord\Model
         self::$validates_presence_of["title"] = array("{$this->item_name}_title", 'message' => 'cannot be blank!');
         # after setting the table's name we go for parent contruction
         parent::__construct($attributes, $guard_attributes, $instantiating_via_find, $new_record);
-    }
-    /**
-     * Destruct the item
-     */
-    public function __destruct()
-    {
         # unset the static table name
         self::$table_name = "";
     }
@@ -427,7 +421,7 @@ abstract class item extends \ActiveRecord\Model
         }
         catch(\core\db\exceptions\dbNotFound $dbnf)
         {
-            throw new \core\db\exceptions\dbNotFound("Couldn't locate the item....");
+            throw new \core\db\exceptions\dbNotFound("Couldn't locate the item....", NULL, $dbnf);
         }
         $item->parent_id = $new_parent_id;
         $item->save();
