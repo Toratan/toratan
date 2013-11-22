@@ -1,4 +1,3 @@
-<hr />
 <?php if(!\core\db\models\user::IsSignedin()) return; ?>
 <div style="float: left">
         <a href="/ops/new/folder/?pid=<?php echo $this->pid.\zinux\kernel\security\security::GetHashString(array("folder", $this->pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>">

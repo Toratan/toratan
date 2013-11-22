@@ -12,7 +12,13 @@
             <a href="/auth/signup">Signup</a> | 
             <a href="/auth/clear">Clear All</a> | 
             <a href="/">Home</a>
+<?php if(\core\db\models\user::IsSignedin()) :?>
+            <a href="/messages/new/<?php echo \core\db\models\user::GetInstance()->user_id ?>?<?php 
+                echo \zinux\kernel\security\security::GetHashString(array(core\db\models\user::GetInstance()->user_id, core\db\models\user::GetInstance()->user_id, session_id())) 
+            ?>" style="float:right">Send Message</a>
+<?php endif; ?>
         </div>
+        <hr />
         <?php echo $this->content; ?>
     </body>
 </html>
