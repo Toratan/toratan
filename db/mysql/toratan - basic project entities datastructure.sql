@@ -1,11 +1,8 @@
-DROP DATABASE IF EXISTS `toratan`;
-CREATE DATABASE `toratan`;
-use `toratan`;
--- MySQL dump 10.13  Distrib 5.5.32, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.34, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: toratan
 -- ------------------------------------------------------
--- Server version	5.5.32-0ubuntu0.12.04.1
+-- Server version	5.5.34-0ubuntu0.12.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -26,8 +23,8 @@ DROP TABLE IF EXISTS `folders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `folders` (
-  `folder_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `parent_id` BIGINT(20) NOT NULL,
+  `folder_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `parent_id` bigint(20) NOT NULL,
   `owner_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `folder_title` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `folder_body` bit(1) DEFAULT NULL,
@@ -41,7 +38,7 @@ CREATE TABLE `folders` (
   KEY `parent_id` (`parent_id`),
   CONSTRAINT `folders_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `folders_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `folders` (`folder_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -50,7 +47,7 @@ CREATE TABLE `folders` (
 
 LOCK TABLES `folders` WRITE;
 /*!40000 ALTER TABLE `folders` DISABLE KEYS */;
-INSERT INTO `folders` VALUES ('0','0','0','ROOT',NULL,0,0,0,NOW(),NOW());
+INSERT INTO `folders` VALUES (0,0,'0','ROOT',NULL,0,0,0,'2013-11-20 20:19:40','2013-11-20 20:19:40');
 /*!40000 ALTER TABLE `folders` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -82,8 +79,8 @@ DROP TABLE IF EXISTS `links`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `links` (
-  `link_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `parent_id` BIGINT(20) NOT NULL,
+  `link_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `parent_id` bigint(20) NOT NULL,
   `owner_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `link_title` varchar(300) COLLATE utf8_persian_ci NOT NULL,
   `link_body` text COLLATE utf8_persian_ci NOT NULL,
@@ -117,8 +114,8 @@ DROP TABLE IF EXISTS `notes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notes` (
-  `note_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `parent_id` BIGINT(20) NOT NULL,
+  `note_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `parent_id` bigint(20) NOT NULL,
   `owner_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `note_title` varchar(300) COLLATE utf8_persian_ci NOT NULL,
   `note_body` text COLLATE utf8_persian_ci NOT NULL,
@@ -145,6 +142,35 @@ LOCK TABLES `notes` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `profiles`
+--
+
+DROP TABLE IF EXISTS `profiles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `profiles` (
+  `owner_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
+  `options` text COLLATE utf8_persian_ci NOT NULL,
+  `first_qname` varchar(100) COLLATE utf8_persian_ci NOT NULL,
+  `nice_name` varchar(100) COLLATE utf8_persian_ci NOT NULL,
+  `last_name` varchar(100) COLLATE utf8_persian_ci NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`owner_id`),
+  CONSTRAINT `profiles_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `profiles`
+--
+
+LOCK TABLES `profiles` WRITE;
+/*!40000 ALTER TABLE `profiles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `profiles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `users`
 --
 
@@ -157,7 +183,7 @@ CREATE TABLE `users` (
   `username` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `password` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `is_deactive` bit(1) NOT NULL DEFAULT b'0',
-  `deactivate_at` DATETIME NULL DEFAULT NULL,
+  `deactivate_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`user_id`),
@@ -172,7 +198,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('0','NULL','ROOT','NULL','\0',NULL,NOW(),NOW());
+INSERT INTO `users` VALUES ('0','NULL','ROOT','NULL','\0',NULL,'2013-11-20 20:19:41','2013-11-20 20:19:41');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -205,4 +231,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-11-19 23:07:58
+-- Dump completed on 2013-11-22 14:24:23
