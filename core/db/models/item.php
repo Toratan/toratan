@@ -3,7 +3,7 @@ namespace core\db\models;
 /**
  * General item entity
  */
-abstract class item extends \ActiveRecord\Model
+abstract class item extends baseModel
 {
     static $validates_numericality_of = array(
             array('is_public', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
@@ -96,44 +96,6 @@ abstract class item extends \ActiveRecord\Model
         parent::__construct($attributes, $guard_attributes, $instantiating_via_find, $new_record);
         # unset the static table name
         self::$table_name = "";
-    }
-    /**
-     * The save procedure interface for item
-     * @param boolean $validate should it validate the attribs
-     * @throws \zinux\kernel\exceptions\invalideOperationException if duplication error happen
-     * @throws \core\db\models\Exception if any other error happen
-     */
-    public function save($validate = true)
-    {
-        try
-        {
-            # try to save it
-            parent::save($validate);
-        }
-        # cache if anything happened
-        catch(\Exception $e)
-        {
-            # if it was a duplication error
-            if(preg_match("#1062 Duplicate entry#i", $e->getMessage()))
-                    # throw an invalid operation exception
-                    throw new \zinux\kernel\exceptions\invalideOperationException("The item your are tring to create already exists!");
-            # otherwise throw just as is
-            else throw $e;
-        }
-        # to boost up the speed we don't put it in the try/catch to prevent to getting thrown twice
-        # check if it is an invalid
-        if($this->is_invalid())
-        {
-            # create an exception collector
-            $ec = new \core\exceptions\exceptionCollection;
-            foreach($this->errors->full_messages() as $error_msg)
-            {
-                # add the message as an exception in the collector
-                $ec->addException(new \zinux\kernel\exceptions\dbException($error_msg));
-            }
-            # throw the exceptions
-            $ec->ThrowCollected();
-        }
     }
     /**
      * Get the current item's behavioral name

@@ -1,7 +1,7 @@
 <?php
 namespace core\db\models;
 
-class user extends \ActiveRecord\Model
+class user extends baseModel
 {
     /**
      * User object alias in this class' cache registery
