@@ -411,4 +411,26 @@ abstract class item extends \ActiveRecord\Model
     {
         return $this->find("all", array("conditions" => array("owner_id = ? AND is_archive = ? AND is_trash <> 1", $owner_id, 1)));
     }
+    /**
+     * moves an item
+     * @param string $item_id the item's id
+     * @param string $owner_id the item's owner id
+     * @param string $parent_id the item's currently parent id
+     * @param string $new_parent_id the new parent id
+     * @return item the moved item
+     */
+    public function move($item_id, $owner_id, $parent_id, $new_parent_id)
+    {
+        try
+        {
+            $item = $this->fetch($item_id, $owner_id, array("conditions" => array("parent_id = ?", $parent_id)));
+        }
+        catch(\core\db\exceptions\dbNotFound $dbnf)
+        {
+            throw new \core\db\exceptions\dbNotFound("Couldn't locate the item....");
+        }
+        $item->parent_id = $new_parent_id;
+        $item->save();
+        return $item;
+    }
 }
