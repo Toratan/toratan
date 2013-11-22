@@ -3,6 +3,9 @@ namespace core\db\models;
 
 class user extends baseModel
 {
+    static $has_one = array(
+            array("profile", "select" => "first_name, nick_name, last_name")
+    );
     /**
      * User object alias in this class' cache registery
      */
