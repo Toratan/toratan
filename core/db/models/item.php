@@ -427,4 +427,26 @@ abstract class item extends baseModel
     {
         return $this->find("all", array("conditions" => array("owner_id = ? AND is_public = ? AND is_trash <> 1", $owner_id, 1)));
     }
+    /**
+     * Fetches verbal route to toot from an item
+     * @param string $item_id the item's ID
+     * @param string $owner_id the item's owner's ID
+     * @return array An array of item which shows the route to the item
+     */
+    public function fetchRouteToRoot($item_id, $owner_id)
+    {
+        $route = array();
+        if(!$item_id)
+            goto __RETURN;
+        $item = $this->fetch($item_id, $owner_id);
+        array_push($route, $item);
+        while($item->{"parent_id"}!=0)
+        {
+            $item = $this->fetch($item->parent_id, $owner_id);
+            array_push($route, $item);
+        }
+__RETURN:
+        array_push($route, $this->fetch(0));
+        return array_reverse($route);
+    }
 }
