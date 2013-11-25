@@ -15,5 +15,13 @@
     <a href="/archives">Archives</a> |
     <a href="/shared">Shared</a>
 </div>
+<div style="clear: both;padding: 10px">
+<?php 
+    foreach ($this->route as $folder) 
+    {
+        echo "<a href='/directory/{$folder->folder_id}.{$this->request->type}'>{$folder->folder_title}</a> > ";
+    }
+ ?>
+</div>
 <?php
     $this->RenderPartial("item_table", array("folders" => $this->folders, "links"=> $this->links, "notes" => $this->notes));

@@ -25,6 +25,7 @@ class indexController extends \zinux\kernel\controller\baseController
         $this->view->notes = ($n->fetchItems($pid, $uid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
         $l = new \core\db\models\link;
         $this->view->links = ($l->fetchItems($pid, $uid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
+        $this->view->route = $f->fetchRouteToRoot($pid, $uid);
     }
 
     /**
