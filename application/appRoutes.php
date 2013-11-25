@@ -14,6 +14,6 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
      */
     protected function routeMessages()
     {
-        $this->addRoute("^/messages","^/ops/messages");
+        $this->addRoute("^/messages","/ops/messages");
     }
 }

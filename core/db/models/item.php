@@ -359,6 +359,35 @@ abstract class item extends baseModel
         return $item;
     }
     /**
+     * Arhives/De-shares an item
+     * @param string $item_id the item's ID
+     * @param string $owner_id the item's owner's ID
+     * @param integer $SHARE_STATUS valid input for this are <b>self::FLAG_SET</b>, <b>self::FLAG_UNSET</b>
+     * @return item the modified item
+     * @throws \zinux\kernel\exceptions\invalideOperationException if $SHARE_STATUS is not valid
+     */
+    public function share(
+            $item_id,
+            $owner_id,
+            $SHARE_STATUS = self::FLAG_SET)
+    {
+        # fetch the item
+        $item = $this->fetch($item_id, $owner_id);
+        # validate the share status
+        switch($SHARE_STATUS)
+        {
+            case self::FLAG_SET:
+            case self::FLAG_UNSET:
+                $item->is_public = $SHARE_STATUS;
+                $item->save();
+                break;
+            default:
+                throw new \zinux\kernel\exceptions\invalideOperationException;
+        }
+        # return the item
+        return $item;
+    }
+    /**
      * Fetches all archived items that the owner has
      * @param string $owner_id
      * @return array the archive items
@@ -388,5 +417,14 @@ abstract class item extends baseModel
         $item->parent_id = $new_parent_id;
         $item->save();
         return $item;
+    }
+    /**
+     * Fetches all shared items that the owner has
+     * @param string $owner_id
+     * @return array the shared items
+     */
+    public function fetchShared($owner_id)
+    {
+        return $this->find("all", array("conditions" => array("owner_id = ? AND is_public = ? AND is_trash <> 1", $owner_id, 1)));
     }
 }

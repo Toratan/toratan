@@ -373,4 +373,57 @@ class indexController extends \zinux\kernel\controller\baseController
         header("location: /directory/{$deleted_item->parent_id}.{$item}s");
         exit;
     }
+
+    /**
+    * @access via /ops/share/{folder|note|link}/(ID)/share/(0,1)?hash_sum
+    * @hash-sum {folder|note|link}.(ID).session_id().user_id
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function shareAction()
+    {
+        # we need at least 2 params to go for
+        if($this->request->CountIndexedParam()<2)
+            throw new \zinux\kernel\exceptions\invalideOperationException;
+        # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
+        \zinux\kernel\security\security::ArrayHashCheck(
+                $this->request->params,
+                array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
+        # if reach here we are OK to proceed the opt
+        switch (strtoupper($this->request->GetIndexedParam(0)))
+        {
+            # the valid 'share' opts are
+            case "FOLDER":
+            case "NOTE":
+            case "LINK":
+                break;
+            default:
+                # if no ops matched, raise an exception
+                throw new \zinux\kernel\exceptions\invalideOperationException;
+        }
+        if(!isset($this->request->params["share"]))
+            $is_share = 0;
+        else
+        {
+            switch ($this->request->params["share"])
+            {
+                case \core\db\models\item::FLAG_SET:
+                case \core\db\models\item::FLAG_UNSET:
+                    $is_share = $this->request->params["share"];
+                    break;
+                default:
+                    throw new \zinux\kernel\exceptions\invalideOperationException;
+            }
+        }
+        # fetch the items name
+        $item = strtolower($this->request->GetIndexedParam(0));
+        # generate a proper handler for item creatation
+        $item_class = "\\core\\db\\models\\$item";
+        # create an instance of item
+        $item_ins = new $item_class;
+        # share the item
+        $deleted_item = $item_ins->share($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_share);
+        # relocate the browser
+        header("location: /directory/{$deleted_item->parent_id}.{$item}s");
+        exit;        
+    }
 }
