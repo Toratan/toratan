@@ -21,6 +21,8 @@ class indexController extends authController
     */
     public function signinAction()
     {
+        if(\core\db\models\user::IsSignedin())
+            $this->Redirect();
         $this->layout->AddTitle("Signin....");
         $this->view->continue = "/";
         if(isset($this->request->params["continue"]))
@@ -64,6 +66,8 @@ class indexController extends authController
     */
     public function signupAction()
     {
+        if(\core\db\models\user::IsSignedin())
+            $this->Redirect();
         $this->view->layout->AddTitle("Signup....");
         if(!$this->request->IsPOST())
             return;
@@ -91,12 +95,4 @@ class indexController extends authController
         
         $this->signinAction();
     }
-    
-    public function clearAction()
-    {
-        \core\db\models\user::delete_all();
-        $this->Redirect();
-    }
 }
-
-
