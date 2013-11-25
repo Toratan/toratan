@@ -60,4 +60,21 @@ class indexController extends \zinux\kernel\controller\baseController
         $l = new \core\db\models\link;
         $this->view->links = ($l->fetchArchives($uid));
     }
+
+    /**
+    * The \modules\htmlModule\controllers\indexController::sharedAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function sharedAction()
+    {
+        if(!\core\db\models\user::IsSignedin()) return;
+        $this->layout->AddTitle("Shared");
+        $f = new \core\db\models\folder();
+        $uid = \core\db\models\user::GetInstance()->user_id;
+        $this->view->folders = ($f->fetchShared($uid));
+        $n = new \core\db\models\note;
+        $this->view->notes = ($n->fetchShared($uid));
+        $l = new \core\db\models\link;
+        $this->view->links = ($l->fetchShared($uid));
+    }
 }
