@@ -32,15 +32,7 @@ class messagesController extends \zinux\kernel\controller\baseController
     {
         
     }
-
-    /**
-    * The \modules\opsModule\controllers\messagesController::editAction()
-    * @by Zinux Generator <b.g.dariush@gmail.com>
-    */
-    public function editAction()
-    {
-        
-    }
+    
 
     /**
     * The \modules\opsModule\controllers\messagesController::newAction()
@@ -50,4 +42,14 @@ class messagesController extends \zinux\kernel\controller\baseController
     {
         
     }
+
+    /**
+    * The \modules\opsModule\controllers\messagesController::composeAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function composeAction()
+    {
+        
+    }
 }
+
