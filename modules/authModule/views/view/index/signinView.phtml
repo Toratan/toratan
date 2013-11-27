@@ -3,12 +3,15 @@
     <li><?php echo $error ?></li>
 <?php endforeach; ?>
 </ol>
-<style>
-    input{display: block}
-</style>
-<form action="/auth/signin" method="post">
+<form action="/auth/signin" method="post" role="form">
     <input type="hidden" name="continue" value="<?php echo $this->continue; ?>" />
-    <input type="text" name="username" placeholder="Username or Email" />
-    <input type="password" name="password" placeholder="Password" />
-    <input type="submit" value="Signin" />
+    <div class="form-group">
+        <label for="username">Username or Email</label>
+        <input type="text" name="username" class="form-control" id="username" placeholder="Enter your username or email">
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name ="password" class="form-control" id="password" placeholder="Password">
+    </div>
+    <button type="submit" class="btn btn-default">Sign in</button>
 </form>
