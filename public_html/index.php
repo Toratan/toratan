@@ -39,7 +39,7 @@ try
             ->SetConfigIniliazer(new \zinux\kernel\utilities\iniParser(PROJECT_ROOT."/config/default.cfg", RUNNING_ENV))
             # register php markdown parser 
             # repo : https://github.com/michelf/php-markdown
-            ->registerPlugin("PHP-MARKDOWN", "/core/markdown/lib")
+            ->registerPlugin("PHP-MARKDOWN", "/core/ui/markdown/lib")
             # init the application's optz.
             ->Startup()
             # run the application 
