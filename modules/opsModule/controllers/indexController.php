@@ -17,6 +17,25 @@ class indexController extends \zinux\kernel\controller\baseController
         }
     }
     /**
+     * Redirects header to pointed URL
+     * @param string $this->request->params["continue"] if $this->request->params["continue"] 
+     * provided it will set the header location to the point, otherwise redirects to site's root
+     */
+    protected function Redirect()
+    {
+        $params = $this->request->params;
+        
+        if(headers_sent())
+            return false;
+        
+        if(isset($params["continue"]))
+        {
+            header("location: {$params["continue"]}");
+            exit;
+        }
+        return false;
+    }
+    /**
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function IndexAction()
@@ -96,16 +115,17 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_class = "\\core\\db\\models\\$item";
         # invoke an instance of item handler
         $item_ins = new $item_class;
+        $item_value = NULL;
         # try adding the item to db
         try
         {
             # if the item was a folder
             if($item == "folder")
                 # we don't need to pass the fake body generated above, so we deal with it differently
-                $item_ins->newItem($this->request->params["{$item}_title"], $this->view->pid, $uid);
+                $item_value = $item_ins->newItem($this->request->params["{$item}_title"], $this->view->pid, $uid);
             else
                 # otherwise we use the same interface for it
-                $item_ins->newItem($this->request->params["{$item}_title"], $this->request->params["{$item}_body"], $this->view->pid, $uid);
+                $item_value = $item_ins->newItem($this->request->params["{$item}_title"], $this->request->params["{$item}_body"], $this->view->pid, $uid);
         }
         # catch any exception raised
         catch(\zinux\kernel\exceptions\appException $e)
@@ -123,6 +143,24 @@ class indexController extends \zinux\kernel\controller\baseController
             $this->view->values["{$item}_body"] = $this->request->params["{$item}_body"];
             # return
             return;
+        }
+        # redirect if any redirection provided
+        $this->Redirect();
+        # otherwise relocate properly
+        switch (strtoupper($this->request->GetIndexedParam(0)))
+        {
+            # the valid 'edit' opts are
+            case "FOLDER":
+            case "LINK":
+                # relocate the browser
+                header("location: /directory/{$item_value->parent_id}.{$item}s");
+            case "NOTE":
+                # relocate the browser
+                header("location: /ops/view/note/{$item_value->note_id}");
+                break;
+            default:
+                # if no ops matched, raise an exception
+                throw new \zinux\kernel\exceptions\invalideOperationException;
         }
         # relocate the browser
         header("location: /directory/{$this->view->pid}.{$item}s");
@@ -210,8 +248,24 @@ class indexController extends \zinux\kernel\controller\baseController
             # return
             return;
         }
-        # relocate the browser
-        header("location: /directory/{$item_value->parent_id}.{$item}s");
+        # redirect if any redirection provided
+        $this->Redirect();
+        # otherwise relocate properly
+        switch (strtoupper($this->request->GetIndexedParam(0)))
+        {
+            # the valid 'edit' opts are
+            case "FOLDER":
+            case "LINK":
+                # relocate the browser
+                header("location: /directory/{$item_value->parent_id}.{$item}s");
+            case "NOTE":
+                # relocate the browser
+                header("location: /ops/view/note/{$item_value->note_id}");
+                break;
+            default:
+                # if no ops matched, raise an exception
+                throw new \zinux\kernel\exceptions\invalideOperationException;
+        }
         exit;
     }
 
@@ -316,7 +370,9 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_ins = new $item_class;
         # delete the item
         $deleted_item = $item_ins->delete($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_trash);
-        # relocate the browser
+        # redirect if any redirection provided
+        $this->Redirect();
+        # otherwise relocate properly
         header("location: /directory/{$deleted_item->parent_id}.{$item}s");
         exit;
     }
@@ -369,7 +425,9 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_ins = new $item_class;
         # archive the item
         $deleted_item = $item_ins->archive($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_archive);
-        # relocate the browser
+        # redirect if any redirection provided
+        $this->Redirect();
+        # otherwise relocate properly
         header("location: /directory/{$deleted_item->parent_id}.{$item}s");
         exit;
     }
@@ -422,7 +480,9 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_ins = new $item_class;
         # share the item
         $deleted_item = $item_ins->share($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_share);
-        # relocate the browser
+        # redirect if any redirection provided
+        $this->Redirect();
+        # otherwise relocate properly
         header("location: /directory/{$deleted_item->parent_id}.{$item}s");
         exit;        
     }
