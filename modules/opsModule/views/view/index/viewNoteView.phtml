@@ -1,11 +1,24 @@
 <?php
     $writer = \core\db\models\user::find($this->instance->owner_id);
     $parent_info = core\db\models\folder::find($this->instance->parent_id);
+    $n = $this->instance;
+    $this->is_archive = $n->is_archive;
+    $this->is_trash = $n->is_trash;
 ?>
 <div style="margin-bottom: 10;border-bottom: 1px solid #6a6a6a;padding-bottom: 10px;">
     <h2 style="margin-bottom: 0"><?php echo $this->instance->note_title; ?></h2>
     <small>
         <?php echo "Written by <a href='/author/{$writer->user_id}'>{$writer->username}</a> at {$this->instance->created_at} placed at {$parent_info->folder_title}"?>
     </small>
+                        <div style="float:right;">
+                            <a href="/ops/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">delete</a> | 
+                            <a href="/ops/edit/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
+                            <?php if($this->is_trash): ?> | 
+                                <a href="/ops/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">restore</a>
+                            <?php else: ?> | 
+                                <a href="/ops/archive/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style=""><?php echo $this->is_archive?"de-":""?>archive</a>| 
+                                <a href="/ops/share/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/share/<?php echo  $n->is_public?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style=""><?php echo $n->is_public?"de-":""?>share</a>
+                            <?php endif; ?>
+                        </div>
 </div>
-<?php echo $this->instance->note_body; ?>
+<?php echo Michelf\MarkdownExtra::defaultTransform($this->instance->note_body); ?>
