@@ -1,10 +1,50 @@
+<script>
+    $(document).ready(function()
+    {
+        $("div#editor").show();
+        $("#editor-title").show();
+        $("form[name='note']").hide(); 
+        var editor = ace.edit("editor");
+        editor.resize();
+        editor.setTheme("ace/theme/monokai");
+        editor.setTheme("ace/theme/twilight");
+        editor.getSession().setMode("ace/mode/markdown");
+        editor.getSession().setTabSize(4);
+        editor.getSession().setUseWrapMode(true);
+        editor.commands.addCommand({
+            name: 'save',
+            bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+            exec: save
+        });
+    });
+    function save(editor) 
+    {
+        $("form[name='note'] input[name='note_title']").val($("#editor-title").val());
+        $("form[name='note'] textarea[name='note_body']").html(editor.getValue());
+        $("form[name='note']").submit();
+    }        
+</script>
+<style type="text/css" media="screen">
+    #editor { 
+        position: fixed;
+        top: 10%;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+</style>
 <ol style="color:red;">
 <?php foreach ($this->errors as $error) : ?>
     <li><?php echo $error ?></li>
 <?php endforeach; ?>
 </ol>
-<form action="<?php echo $this->request->GetURI() ?>" method="POST">
-    <input type="text" name="note_title" maxlength="250" placeholder="Note's title" value="<?php echo isset($this->values['note_title'])?$this->values['note_title']:"" ?>"/><br />
+<input type='text' class='form-control ' id='editor-title' style='display: none' placeholder="Note's title" value='<?php echo (isset($this->values['note_title'])?$this->values['note_title']:"Your note's title here") ?>' required="required"/>
+<div id="editor" style='display: none'><?php echo isset($this->values['note_body'])?$this->values['note_body']:"Your note's body here." ?></div>
+    
+<script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<form action="<?php echo $this->request->GetURI() ?>" method="POST" name='note'>
+    <input type="text" name="note_title" maxlength="250" placeholder="Note's title" value="<?php echo isset($this->values['note_title'])?$this->values['note_title']:"" ?>" required="required"/><br />
     <textarea rows="10" cols="80" name="note_body" placeholder="Note's body" ><?php echo isset($this->values['note_body'])?$this->values['note_body']:"" ?></textarea>
     <input type="submit" value="Create" />
 </form>
