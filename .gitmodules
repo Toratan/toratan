@@ -8,3 +8,9 @@
 [submodule "core/ui/markdown/lib"]
 	path = core/ui/markdown/lib
 	url = git@github.com:michelf/php-markdown.git
+[submodule "public_html/access/rte/ckeditor"]
+	path = public_html/access/rte/ckeditor
+	url = git@github.com:ckeditor/ckeditor-releases.git
+[submodule "public_html/access/rte/ace"]
+	path = public_html/access/rte/ace
+	url = git@github.com:ajaxorg/ace-builds.git
