@@ -13,6 +13,5 @@ class indexController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
-        \zinux\kernel\utilities\debug::_var($this->request->params);
     }
 }
