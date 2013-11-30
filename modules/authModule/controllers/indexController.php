@@ -71,13 +71,17 @@ class indexController extends authController
         $this->view->layout->AddTitle("Signup....");
         if(!$this->request->IsPOST())
             return;
-        \zinux\kernel\security\security::IsSecure(
+        $valid = \zinux\kernel\security\security::IsSecure(
                 $this->request->POST, 
                 array("username","email", "password", "conf-password"), 
                 array(),
-                array('password'=>$this->request->POST['conf-password'])
+                array('password'=>$this->request->POST['conf-password']), 0, 0
         );
-        
+        if(!$valid)
+        {
+            $this->view->errors[] = "All fields are required and password should match!";
+            return;
+        }
         $new_user = new \core\db\models\user;
         try
         {
