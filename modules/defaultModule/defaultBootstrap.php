@@ -11,8 +11,8 @@ class defaultBootstrap
      */
     public function pre_CHECK(\zinux\kernel\routing\request $request)
     {
-        header("location: /html".$_SERVER['REQUEST_URI']);
-        exit;
+        #header("location: /html".$_SERVER['REQUEST_URI']);
+        #exit;
     }
     /**
      * A post-dispatch function

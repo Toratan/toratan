@@ -1,0 +1,3 @@
+source ~/.gitsa
+alias js='co imp-js-ui'
+alias jd='d;merge imp-js-ui --no-edit;js'
