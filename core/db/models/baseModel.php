@@ -25,7 +25,7 @@ abstract class baseModel extends \ActiveRecord\Model
             # if it was a duplication error
             if(preg_match("#1062 Duplicate entry#i", $e->getMessage()))
                     # throw an invalid operation exception
-                    throw new \zinux\kernel\exceptions\invalideOperationException("The item your are tring to create already exists!");
+                    throw new \core\db\exceptions\alreadyExistsException("Entity already exists!");
             # otherwise throw just as is
             else throw $e;
         }
