@@ -4,8 +4,8 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
-        <meta name="author" content="">
+        <meta name="description" content="Sign in page">
+        <title>Sign in toratan</title>
         <!-- twitter bootstrap -->
         <link rel="stylesheet" href="/access/css/bootstrap.min.css">
         <link rel="stylesheet" href="/access/css/bootstrap-theme.min.css">
@@ -16,14 +16,17 @@
             body {
                 padding-top: 40px;
                 padding-bottom: 40px;
-                margin-top:10%;
+            }
+            .form
+            {  
+                margin-top:4%;
             }
             .form-signin {
                 max-width: 430px;
                 padding: 45px;
                 margin: 0 auto;
-                background-color: #eaeaea;
-                border: 1px solid #e6e6e6;
+                background-color: #efefef;
+                border: 1px solid #e4e4e4;
             }
             .form-signin .form-signin-heading,
             .form-signin .checkbox {
@@ -54,6 +57,45 @@
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
             }
+
+            /* Responsive: Portrait tablets and up */
+            @media screen and (min-width: 768px) {
+              /* Remove the padding we set earlier */
+              .header,
+              .sign,
+              .footer {
+                padding-left: 0;
+                padding-right: 0;
+              }
+              /* Space out the masthead */
+              .header {
+                margin-bottom: 30px;
+              }
+            }
+            /* Space out content a bit */
+            body {
+              padding-top: 20px;
+              padding-bottom: 20px;
+            }
+
+            /* Custom page header */
+            .header {
+              border-bottom: 1px solid #e5e5e5;
+            }
+            /* Make the masthead heading the same height as the navigation */
+            .header h3 {
+              margin-top: 0;
+              margin-bottom: 0;
+              line-height: 40px;
+              padding-bottom: 19px;
+            }
+
+            /* Custom page footer */
+            .footer {
+              padding-top: 19px;
+              color: #777;
+              border-top: 1px solid #e5e5e5;
+            }
         </style>
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
@@ -67,8 +109,14 @@
   </head>
 
   <body>
-
     <div class="container">
+        <div class="header">
+            <ul class="nav nav-pills pull-right">
+                <li><a href="index.html#">Home</a></li>
+                <li><a href="/signup">Signup</a></li>
+            </ul>
+            <h3 class="text-muted">Sign in toratan</h3>
+        </div>
         <div class="form">
             <form class="form-signin" action="/auth/signin" method="post"  role="form">
                 <input type="hidden" name="continue" value="<?php echo $this->continue; ?>" />
@@ -82,7 +130,13 @@
                 <label class="checkbox">
                     <input type="checkbox" name="remember-me"> Remember me
                 </label>
-                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                <div class='form-group' style="margin: 0px;">
+                    <label for="submit-btn" class="control-label" style="padding-top:4%"><a href="/recovery" class="pull-left" style>Recover your account</a></label>
+                    <div class="pull-right">
+                        <button class="btn btn-lg btn-primary " type="submit" id="submit-btn">Sign in</button>
+                    </div>
+                </div>
+                <div class='clearfix'></div>
             </form>
         </div>
     </div> <!-- /container -->

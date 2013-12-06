@@ -13,6 +13,7 @@ class indexController extends authController
     */
     public function IndexAction()
     {
+        $this->signinAction();
     }
 
     /**
@@ -22,13 +23,13 @@ class indexController extends authController
     public function signinAction()
     {
         # no layout for signin, it has embed layout in it.
-        $this->layout->SuppressLayout();
+        $this->layout->SuppressLayout();#SetLayout("signing");
         # if user already signed in
         if(\core\db\models\user::IsSignedin())
             # abort
             $this->Redirect();
         # set the title
-        $this->layout->AddTitle("Signin....");
+        $this->layout->AddTitle("Sign in toratan");
         # set default continue value
         $this->view->continue = "/";
         # update the continue value if provided
@@ -81,9 +82,16 @@ class indexController extends authController
     */
     public function signupAction()
     {
+        $this->layout->SetLayout("signing");
+        $this->view->username = $this->view->email = "";
         if(\core\db\models\user::IsSignedin())
             $this->Redirect();
-        $this->view->layout->AddTitle("Signup....");
+        $this->view->layout->AddTitle("Sign up in toratan");
+        # set default continue value
+        $this->view->continue = "/";
+        # update the continue value if provided
+        if(isset($this->request->params["continue"]))
+            $this->view->continue = $this->request->params["continue"];
         if(!$this->request->IsPOST())
             return;
         $valid = \zinux\kernel\security\security::IsSecure(
@@ -100,18 +108,36 @@ class indexController extends authController
         $new_user = new \core\db\models\user;
         try
         {
-            $new_user ->Signup(
-                        $this->request->params["username"],
-                        $this->request->params["email"],
-                        $this->request->params["password"]);
+            try{
+                $new_user ->Signup(
+                            $this->request->params["username"],
+                            $this->request->params["email"],
+                            $this->request->params["password"]);
+            }
+            catch(\core\db\exceptions\alreadyExistsException $aee)
+            {
+                $this->view->errors[] = "The user already exists!";
+                return;
+            }
         }
         catch(\core\exceptions\exceptionCollection $ec)
         {
             foreach ($ec->getCollection() as $e)                
                 $this->view->errors[] = $e->getMessage();
+            $this->view->username = $this->request->params["username"];
+            $this->view->email = $this->request->params["email"];
             return;
         }
         
         $this->signinAction();
+    }
+
+    /**
+    * The \modules\authModule\controllers\indexController::recoveryAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function recoveryAction()
+    {
+        
     }
 }
