@@ -21,30 +21,43 @@ class indexController extends authController
     */
     public function signinAction()
     {
+        # no layout for signin, it has embed layout in it.
+        $this->layout->SuppressLayout();
+        # if user already signed in
         if(\core\db\models\user::IsSignedin())
+            # abort
             $this->Redirect();
+        # set the title
         $this->layout->AddTitle("Signin....");
+        # set default continue value
         $this->view->continue = "/";
+        # update the continue value if provided
         if(isset($this->request->params["continue"]))
             $this->view->continue = $this->request->params["continue"];
-        
+        # if it is GET print the view
         if(!$this->request->IsPOST())
             return;
-        
+        # if it is POST?
+        # validate the input data
         \zinux\kernel\security\security::IsSecure(
                 $this->request->POST,
                 array("username", "password")
         );
-        
+        # user instance
         $user = new \core\db\models\user;
-        
+        # fetch the user
         $fetched_user = $user->Fetch($this->request->params['username'], $this->request->params["password"]);
-        
+        # if no user found 
         if(!$fetched_user)
-            $this->view->errors[] = "username/email didn't match.";
+            # promt if
+            $this->view->errors[] = "Username/Email or Password didn't match.";
         else
         {
-            $user->Signin($fetched_user);
+            # if we find the user
+            # sign in the user & should we remember the user!?
+            $user->Signin($fetched_user, isset($this->request->params["remember-me"]));
+            # mission is success 
+            # redirect
             $this->Redirect();
         }
     }
@@ -57,6 +70,8 @@ class indexController extends authController
     {
         $this->layout->AddTitle("Signing out....");
         \core\db\models\user::Signout();
+        $sec_cookie = new \zinux\kernel\security\secureCookie;
+        $sec_cookie->delete(\zinux\kernel\security\hash::Generate(\core\db\models\user::USER_OBJECT), "/", __SERVER_NAME__);
         $this->Redirect();
     }
 

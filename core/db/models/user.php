@@ -35,7 +35,9 @@ class user extends baseModel
         if(!strlen($username))
             $ec->addException(new \zinux\kernel\exceptions\invalideArgumentException("Username cannot be empty!"));
         elseif(preg_match('#[^a-z0-9]#i', $username))
-            $ec->addException (new \zinux\kernel\exceptions\invalideArgumentException("Username '$username' contains <a href='http://en.wikipedia.org/wiki/Special_characters' title='See wikipedia' target='__blank'>special characters</a>!"));
+            $ec->addException (
+                new \zinux\kernel\exceptions\invalideArgumentException(
+                    "Username '$username' contains <a href='http://en.wikipedia.org/wiki/Special_characters' title='See wikipedia' target='__blank'>special characters</a>!"));
         # validate email address
         # validate username
         if(!strlen($email))
@@ -77,13 +79,27 @@ class user extends baseModel
     /**
      * Signin's users into its session
      * @param \core\db\models\user $user the target user to register
+     * @param boolean $set_cookie set to the cookie!?
+     * @param integer $expire_from_now expire time from now, the deafult is for a full year from now
      */
-    public function Signin(user $user)
+    public function Signin(user $user, $set_cookie = 0, $expire_from_now = 31536000)
     {
         # open up a session cache related to this class
         $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
         # store the USER_OBJECT into session cache
         $sc->save(self::USER_OBJECT, $user);
+        # if we don't want to set cookie, just return
+        if(!$set_cookie)
+            return;
+        # cryption isntance
+        $crpt = new \zinux\kernel\security\cryption();
+        # cryption key
+        $crpt_key = \zinux\kernel\security\hash::Generate(\core\db\models\user::USER_OBJECT);
+        # cookie name
+        $cookie_name = \zinux\kernel\security\hash::Generate(\core\db\models\user::USER_OBJECT);
+        # encrypt the user's ID
+        self::setCookie($cookie_name, $crpt->encrypt($user->user_id, $crpt_key), $expire_from_now);
+        
     }
     /**
      * Check if the users is signed in or not
@@ -91,8 +107,39 @@ class user extends baseModel
      */
     public static function IsSignedin()
     {
-        # returns the value of user's instance
-        return self::GetInstance();
+        if(self::GetInstance())
+            return TRUE;
+        # cryption isntance
+        $crpt = new \zinux\kernel\security\cryption();
+        # secure cookie instance
+        $sec_cookie = new \zinux\kernel\security\secureCookie; 
+        # cryption key
+        $crpt_key = \zinux\kernel\security\hash::Generate(\core\db\models\user::USER_OBJECT);
+        # cookie name
+        $cookie_name = \zinux\kernel\security\hash::Generate(\core\db\models\user::USER_OBJECT);
+        # if cookie contains the user's ID
+        if($sec_cookie->contains($cookie_name))
+        {
+            # decrypt the user's ID 
+            $user_id = $crpt->decrypt($_COOKIE[$cookie_name], $crpt_key);
+            # fetch the user
+            $fetched_user = self::find("first", array("conditions"=>array("user_id = ?", $user_id)));
+            # if not found?
+            if(!$fetched_user)
+            {
+                # delete the user's ID from cookie, it's invalid either
+                $sec_cookie->delete($cookie_name,  "/", __SERVER_NAME__);
+                # not FOUND
+                return  FALSE;
+            }
+            else
+            {
+                # if we find the user
+                # sign in the user
+                self::Signin($fetched_user);
+            }
+        }
+        return self::GetInstance() != NULL;
     }
     /**
      * Signout the user from its session
@@ -114,5 +161,23 @@ class user extends baseModel
         $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
         # return the USER_OBJECT stored in the session
         return $sc->fetch(self::USER_OBJECT);
+    }
+    /**
+    * Set a domain-wide cookie 
+    * @link http://php.net/manual/en/function.setcookie.php
+    * @param string $name cookie's name
+    * @param string $value cookie's value
+    * @param integer $expire_from_now expire time from now, the deafult is for a full year from now
+    * @param string $path cookie's path default is /
+    * @param string $host cookie's domain default would be $_SERVER["HTTP_HOST"]
+    */
+    public static function setCookie($name, $value = null,  $expire_from_now = 31536000, $path = "/", $domain = null, $secure = false, $httponly = false)
+    {
+        if(!$domain)
+            $domain = $_SERVER["HTTP_HOST"];
+        # secure cookie instance
+        $sec_cookie = new \zinux\kernel\security\secureCookie; 
+        # set the cookie
+        $sec_cookie->set($name, $value, $expire_from_now, $path, $domain, $secure, $httponly);
     }
 }
