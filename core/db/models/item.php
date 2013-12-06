@@ -201,7 +201,7 @@ abstract class item extends baseModel
         $options = $this->normalize_conditions_options_ops($cond, $options);
         $item = $this->find($item_id, $options);
         if(!$item)
-            throw new \core\db\exceptions\dbNotFound("$this->item_name with ID=`$item_id` not found or you don't have the access premission!");
+            throw new \core\db\exceptions\dbNotFoundException("$this->item_name with ID=`$item_id` not found or you don't have the access premission!");
         return $item;
     }
     /**
@@ -252,7 +252,7 @@ abstract class item extends baseModel
      * @param boolean $is_public should it be public or not, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @param boolean $is_trash should it be trashed or not, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @param boolean $is_archive should it be archived or not, pass '<b>item::NOCHANGE</b>' to don't chnage
-     * @throws \core\db\exceptions\dbNotFound if the item not found
+     * @throws \core\db\exceptions\dbNotFoundException if the item not found
      */
     public function edit(
             $item_id,
@@ -410,9 +410,9 @@ abstract class item extends baseModel
         {
             $item = $this->fetch($item_id, $owner_id, array("conditions" => array("parent_id = ?", $parent_id)));
         }
-        catch(\core\db\exceptions\dbNotFound $dbnf)
+        catch(\core\db\exceptions\dbNotFoundException $dbnf)
         {
-            throw new \core\db\exceptions\dbNotFound("Couldn't locate the item....", NULL, $dbnf);
+            throw new \core\db\exceptions\dbNotFoundException("Couldn't locate the item....", NULL, $dbnf);
         }
         $item->parent_id = $new_parent_id;
         $item->save();
