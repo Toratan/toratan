@@ -23,7 +23,9 @@ class indexController extends authController
     public function signinAction()
     {
         # no layout for signin, it has embed layout in it.
-        $this->layout->SuppressLayout();#SetLayout("signing");
+        $this->layout->SetLayout("signin");
+        # set title
+        $this->layout->AddTitle("Sign in toratan");
         # if user already signed in
         if(\core\db\models\user::IsSignedin())
             # abort
@@ -82,7 +84,7 @@ class indexController extends authController
     */
     public function signupAction()
     {
-        $this->layout->SetLayout("signing");
+        $this->layout->SetLayout("signup");
         $this->view->username = $this->view->email = "";
         if(\core\db\models\user::IsSignedin())
             $this->Redirect();
@@ -116,6 +118,7 @@ class indexController extends authController
             }
             catch(\core\db\exceptions\alreadyExistsException $aee)
             {
+                unset($aee);
                 $this->view->errors[] = "The user already exists!";
                 return;
             }
@@ -138,6 +141,29 @@ class indexController extends authController
     */
     public function recoveryAction()
     {
-        
+        $this->layout->SetLayout("signin");
+        $this->layout->AddTitle("Account Recovery...");
+        if(!$this->request->IsPOST())
+            return;
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("email"));
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(session_id(), "r3c0veRI"));
+        # we are all good
+        $user = new \core\db\models\user;
+        $fetched_user = $user->Fetch($this->request->params["email"]);
+        if(!$fetched_user)
+        {
+            $this->view->errors[] = "The email not registered ...";
+            return;
+        }
+        /**
+         * Send a recovery email here
+         */
+        /**
+         * indicate the recovery has been sent
+         */
+        # open up a message pipe
+        $mp = new \core\utiles\messagePipe;
+        # purge the message
+        $mp->write("The recovery link has been sent to your email address...");
     }
 }
