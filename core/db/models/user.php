@@ -63,18 +63,21 @@ class user extends baseModel
     /**
      * Fetches a user's info by either its username or its email and its password 
      * @param string $username_or_email The users email or username 
-     * @param string $password the user's email or password
+     * @param string $password the user's email or password if password no set it only will search by username or email
      * @return user
      */
-    public function Fetch($username_or_email, $password)
+    public function Fetch($username_or_email, $password = NULL)
     {
         # find the user with its username or email and password
-        return $this->find(
-                array('conditions' => array("(username = ? OR email = ?) AND password = ?", 
+        $cond = array("(username = ? OR email = ?)", 
                     $username_or_email,
-                    $username_or_email,
-                    \zinux\kernel\security\hash::Generate($password)))
-        );
+                    $username_or_email);
+        if($password)
+        {
+            $cond[0].= " AND password = ?";
+            $cond[] = \zinux\kernel\security\hash::Generate($password);
+        }
+        return $this->find("first", array('conditions' => $cond));
     }
     /**
      * Signin's users into its session
