@@ -151,9 +151,17 @@ class indexController extends \zinux\kernel\controller\baseController
             # the valid 'edit' opts are
             case "FOLDER":
             case "LINK":
+                # invoke a message pipe line
+                $mp = new \core\utiles\messagePipe;
+                # indicate the success
+                $mp->write("One $item has been <b>created</b> successfully....");
+                # redirect if any redirection provided
+                $this->Redirect();
                 # relocate the browser
                 header("location: /directory/{$item_value->parent_id}.{$item}s");
             case "NOTE":
+                # redirect if any redirection provided
+                $this->Redirect();
                 # relocate the browser
                 header("location: /ops/view/note/{$item_value->note_id}");
                 break;
@@ -247,18 +255,24 @@ class indexController extends \zinux\kernel\controller\baseController
             # return
             return;
         }
-        # redirect if any redirection provided
-        $this->Redirect();
         # otherwise relocate properly
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
             # the valid 'edit' opts are
             case "FOLDER":
             case "LINK":
+                # invoke a message pipe line
+                $mp = new \core\utiles\messagePipe;
+                # indicate the success
+                $mp->write("One $item has been <b>edited</b> successfully....");
+                # redirect if any redirection provided
+                $this->Redirect();
                 # relocate the browser
                 header("location: /directory/{$item_value->parent_id}.{$item}s");
                 break;
             case "NOTE":
+                # redirect if any redirection provided
+                $this->Redirect();
                 # relocate the browser
                 header("location: /ops/view/note/{$item_value->note_id}");
                 break;
@@ -370,6 +384,10 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_ins = new $item_class;
         # delete the item
         $deleted_item = $item_ins->delete($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_trash);
+        # invoke a message pipe line
+        $mp = new \core\utiles\messagePipe;
+        # indicate the success
+        $mp->write("One $item has been <b>".($is_trash?"deleted":"restored")."</b> successfully....");
         # redirect if any redirection provided
         $this->Redirect();
         # otherwise relocate properly
@@ -424,11 +442,15 @@ class indexController extends \zinux\kernel\controller\baseController
         # create an instance of item
         $item_ins = new $item_class;
         # archive the item
-        $deleted_item = $item_ins->archive($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_archive);
+        $archived_item = $item_ins->archive($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_archive);
+        # invoke a message pipe line
+        $mp = new \core\utiles\messagePipe;
+        # indicate the success
+        $mp->write("One $item has been <b>".($is_archive?"archived":"un-archived")."</b> successfully....");
         # redirect if any redirection provided
         $this->Redirect();
         # otherwise relocate properly
-        header("location: /directory/{$deleted_item->parent_id}.{$item}s");
+        header("location: /directory/{$archived_item->parent_id}.{$item}s");
         exit;
     }
 
@@ -479,11 +501,15 @@ class indexController extends \zinux\kernel\controller\baseController
         # create an instance of item
         $item_ins = new $item_class;
         # share the item
-        $deleted_item = $item_ins->share($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_share);
+        $shared_item = $item_ins->share($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_share);
+        # invoke a message pipe line
+        $mp = new \core\utiles\messagePipe;
+        # indicate the success
+        $mp->write("One $item has been <b>".($is_share?"shared":"un-shared")."</b> successfully....");
         # redirect if any redirection provided
         $this->Redirect();
         # otherwise relocate properly
-        header("location: /directory/{$deleted_item->parent_id}.{$item}s");
+        header("location: /directory/{$shared_item->parent_id}.{$item}s");
         exit;        
     }
 }
