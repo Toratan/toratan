@@ -5,8 +5,8 @@ namespace core\utiles;
  */
 class messagePipe extends \zinux\kernel\utilities\pipe
 {
-    public function __construct()
+    public function __construct($name = __CLASS__)
     {
-        parent::__construct(__CLASS__);
+        parent::__construct($name);
     }
 }
