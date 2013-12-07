@@ -162,8 +162,8 @@ class indexController extends authController
          * indicate the recovery has been sent
          */
         # open up a message pipe
-        $mp = new \core\utiles\messagePipe;
-        # purge the message
-        $mp->write("The recovery link has been sent to your email address...");
+        $mp = new \core\utiles\messagePipe("recovery");
+        # purge the message, with 60 second expiration time
+        $mp->write("The recovery link has been sent to your email address...", 60);
     }
 }

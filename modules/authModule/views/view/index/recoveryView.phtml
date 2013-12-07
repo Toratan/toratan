@@ -1,5 +1,5 @@
 <?php
-    $mp = new core\utiles\messagePipe;
+    $mp = new core\utiles\messagePipe("recovery");
     $message = $mp->read();
     if($message)
         \core\ui\html\alert::Cout($message, \core\ui\html\alert::ALERT_INFO);

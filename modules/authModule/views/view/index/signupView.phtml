@@ -1,26 +1,38 @@
-<!--style>
-    input{display: block}
-</style>
-<form action="/auth/signup" method="post">
-    <input type="text" name="username" placeholder="Your username" />
-    <input type="text" name="email" placeholder="Email address" />
-    <input type="password" name="password" placeholder="Password" />
-    <input type="password" name="conf-password" placeholder="Confirm Password" />
-    <input type="submit" value="Signup" />
-</form-->
-
+<h3></h3>
 <div class="form">
     <form class="form-sign" action="/auth/signup" method="post"  role="form">
         <input type="hidden" name="continue" value="<?php echo $this->continue; ?>" />
+        <?php if(count($this->errors)) : ?>
         <ul style="color:red;font-variant: small-caps;padding:10px;padding-left: 0;font-weight: bold" class="list-unstyled">
         <?php foreach ($this->errors as $error) : ?>
             <li>&gt;&nbsp<?php echo $error ?></li>
         <?php endforeach; ?>
         </ul>
-        <input type="text" name="username" placeholder="Your username" class='form-control'  value='<?php echo $this->username ?>' required <?php echo strlen($this->username)?"":"autofocus" ?>/>
-        <input type="text" name="email" placeholder="Email address" class='form-control' value='<?php echo $this->email ?>' required/>
-        <input type="password" name="password" placeholder="Password" class='form-control' required/>
-        <input type="password" name="conf-password" placeholder="Confirm Password" class='form-control' style='margin-bottom: 10px;' required/>
+        <?php endif; ?>
+        <div class="form-group">
+            <label for="username" class="col-sm-2">Username</label>
+            <div class="col-sm-10">
+                <input type="text" id="username" name="username" placeholder="Your username" class='form-control'  value='<?php echo $this->username ?>' required <?php echo strlen($this->username)?"":"autofocus" ?>/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="email" class="col-sm-2">Email</label>
+            <div class="col-sm-10">
+                <input type="text" id="email" name="email" placeholder="Email address" class='form-control' value='<?php echo $this->email ?>' required/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password" class="col-sm-2">Password</label>
+            <div class="col-sm-10">
+                <input type="password" id="password" name="password" placeholder="Password" class='form-control' required/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="conf-password" class="col-sm-2">Password</label>
+            <div class="col-sm-10">
+                <input type="password" id="conf-password" name="conf-password" placeholder="Confirm Password" class='form-control' style='margin-bottom: 10px;' required/>
+            </div>
+        </div>
         <input type="submit" value="Signup" class="btn btn-lg btn-primary pull-right" style='margin: 10px auto 10px 10px;' />
         <!--input type="text" class="form-control" placeholder="Username or Email address" name="username"  required autofocus>
         <input type="password" class="form-control" placeholder="Password"  name ="password" required>
@@ -28,5 +40,6 @@
             <input type="checkbox" name="remember-me"> Remember me
         </label>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button-->
+        <div class="clearfix "></div>
     </form>
 </div>
