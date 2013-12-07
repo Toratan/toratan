@@ -110,7 +110,7 @@
             <h3>Explorer Navigators</h3>
         </div>
         <div class="container pull-left">
-            <?php zinux\kernel\application\api::call("/ops/explorer{$this->request->GetURI()}"); ?>
+            <?php echo $this->content?>
             <div class="footer"></div>
         </div> <!-- /container -->
         <div class="pull-right" style="width: 18%;overflow-x: auto">
