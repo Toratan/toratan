@@ -14,4 +14,11 @@ class indexController extends \zinux\kernel\controller\baseController
     public function IndexAction()
     {
     }
+
+    /**
+    * The \modules\defaultModule\controllers\indexController::explorerAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    
 }
+

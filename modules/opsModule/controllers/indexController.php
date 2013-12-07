@@ -486,4 +486,13 @@ class indexController extends \zinux\kernel\controller\baseController
         header("location: /directory/{$deleted_item->parent_id}.{$item}s");
         exit;        
     }
+
+    /**
+    * The \modules\opsModule\controllers\indexController::explorerAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function explorerAction()
+    {
+        $this->layout->SetLayout("explorer");
+    }
 }
