@@ -1,8 +1,27 @@
-<!--
- The modules\opsModule\views\view\index\explorerView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for <b>indexController</b>.<br />
-    Location '<b>/var/www/toratan//modules/opsModule/views/view/index/explorerView.phtml</b>'.
-</p>
+<?php if(!\core\db\models\user::IsSignedin()) return; ?>
+<div style="float: left">
+        <a href="/ops/new/folder/?pid=<?php echo $this->pid.\zinux\kernel\security\security::GetHashString(array("folder", $this->pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>">
+            Create new folder
+        </a>| 
+        <a href="/ops/new/link/?pid=<?php echo $this->pid.\zinux\kernel\security\security::GetHashString(array("link", $this->pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>">
+            Create new link
+        </a>| 
+        <a href="/ops/new/note/?pid=<?php echo $this->pid.\zinux\kernel\security\security::GetHashString(array("note", $this->pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>">
+            Create new note
+        </a>
+</div>
+<div style="float: right">
+    <a href="/trashes">Trashes</a> | 
+    <a href="/archives">Archives</a> |
+    <a href="/shared">Shared</a>
+</div>
+<div style="clear: both;padding: 10px">
+<?php 
+    foreach ($this->route as $folder) 
+    {
+        echo "<a href='/directory/{$folder->folder_id}.{$this->request->type}'>{$folder->folder_title}</a> > ";
+    }
+ ?>
+</div>
+<?php
+    $this->RenderPartial("item_table", array("folders" => $this->folders, "links"=> $this->links, "notes" => $this->notes));

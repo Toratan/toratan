@@ -1,6 +1,6 @@
 <?php
 namespace modules\opsModule\controllers;
-
+use core\db\models\item;
 /**
  * The modules\opsModule\controllers\indexController
  * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -493,6 +493,28 @@ class indexController extends \zinux\kernel\controller\baseController
     */
     public function explorerAction()
     {
-        $this->layout->SetLayout("explorer");
+        $this->layout->SuppressLayout();
+        if(!\core\db\models\user::IsSignedin()) return;
+        $this->layout->AddTitle("Home");
+        $f = new \core\db\models\folder();
+        if(!isset($this->request->params["directory"]))
+            $this->request->params["directory"] = 0;
+        $this->view->pid = $pid = $this->request->params["directory"];
+        $uid = \core\db\models\user::GetInstance()->user_id;
+        $this->view->folders = ($f->fetchItems($pid, $uid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
+        $n = new \core\db\models\note;
+        $this->view->notes = ($n->fetchItems($pid, $uid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
+        $l = new \core\db\models\link;
+        $this->view->links = ($l->fetchItems($pid, $uid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
+        $this->view->route = $f->fetchRouteToRoot($pid, $uid);
+    }
+
+    /**
+    * The \modules\opsModule\controllers\indexController::navigateAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function navigateAction()
+    {
+        
     }
 }
