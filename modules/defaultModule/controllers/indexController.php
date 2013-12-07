@@ -137,4 +137,3 @@ class indexController extends \zinux\kernel\controller\baseController
         $this->view->items = ($instance->fetchShared($uid));
     }
 }
-
