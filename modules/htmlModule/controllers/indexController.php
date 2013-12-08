@@ -7,6 +7,7 @@ use core\db\models\item;
  */
 class indexController extends \zinux\kernel\controller\baseController
 {
+    public function rteAction(){$this->layout->SuppressLayout();}
     /**
     * The modules\htmlModule\controllers\indexController::IndexAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
