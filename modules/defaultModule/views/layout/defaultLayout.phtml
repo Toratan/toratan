@@ -31,42 +31,21 @@
         <style>
             /* Space out content a bit */
             body {
-              padding-top: 20px;
-              padding-bottom: 20px;
+              padding-top: 1%;
+              padding-bottom: 1%;
             }
 
             /* Custom page header */
             .header {
               border-bottom: 1px solid #e5e5e5;
             }
-            /* Make the masthead heading the same height as the navigation */
-            .header h3 {
-              margin-top: 0;
-              margin-bottom: 0;
-              line-height: 40px;
-              padding-bottom: 19px;
-            }
 
             /* Custom page footer */
             .footer {
-              padding-top: 19px;
+              padding-top: 1%;
               color: #777;
               border-top: 1px solid #e5e5e5;
-            }
-
-            /* Customize container */
-            /*@media (min-width: 768px) {
-              .container {
-                max-width: 930px;
-              }
-            }*/
-
-            /* Supportingtor content */
-            .tor {
-              margin: 40px 0;
-            }
-            .tor p + h4 {
-              margin-top: 28px;
+              clear: both;
             }
 
             /* Responsive: Portrait tablets and up */
@@ -80,7 +59,7 @@
               }
               /* Space out the masthead */
               .header {
-                margin-bottom: 30px;
+                margin-bottom: 1%;
               }
             }
         </style>
@@ -91,57 +70,80 @@
         </no-script>
         <div class="header container">
             <ul class="nav nav-pills pull-right">
-                <li><a href="/">Home</a></li>
                 <?php if(\core\db\models\user::IsSignedin()): ?>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> Account <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Profile</a></li>
-                            <li><a href="#">Account Settings</a></li>
-                            <li class="divider"></li>
-                            <li><a href="/signout">Signout</a></li>
-                        </ul>
-                  </li>
+                <li><a href="#"><span class="badge">0</span> Messages</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge">2</span> Notifications<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Some stuff</a></li>
+                        <li><a href="#">Some other stuff</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> Account <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Profile</a></li>
+                        <li><a href="#">Account Settings</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/signout">Signout</a></li>
+                    </ul>
+                </li>
                 <?php else: ?>
                     <li><a href="/signin">Signin</a></li>
                     <li><a href="/signup">Signup</a></li>
                 <?php endif; ?>
             </ul>
-            <h3 class="text-muted">Toratan</h3>
+            <a href="/" style="font-size: x-large;padding:1%" class="navbar-brand text-muted" >Toratan</a>
         </div>
-        <div class="pull-left" style="width: 18%;overflow-x: auto">
-            <!-- Placeholder for explorer navigators -->
-            <h3>&nbsp;</h3>
-            <ul class="nav nav-pills nav-stacked">
-                <li <?php echo preg_match("#^(/directory*|/(\.folders|\.notes|\.links){0,1}$)#i", $this->request->GetURI())? 'class="active"':''?>>
-                  <a href="/"><span class="glyphicon glyphicon-th-large"></span> My Root</a>
-                </li>
-                <li <?php echo preg_match("#^/archives*#i", $this->request->GetURI())? 'class="active"':''?>>
-                    <a href="/archives"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
-                </li>
-                <li <?php echo preg_match("#^/shared*#i", $this->request->GetURI())? 'class="active"':''?>>
-                    <a href="/shared"><span class="glyphicon glyphicon-share-alt"></span> Shared</a></li>
-                <li <?php echo preg_match("#^/trashes*#i", $this->request->GetURI())? 'class="active"':''?>>
-                    <a href="/trashes"><span class="glyphicon glyphicon-trash"></span> Trashes</a>
-                </li>
-            </ul>
-        </div>
-        <div class="container pull-left">
-            <?php
-                $mp = new core\utiles\messagePipe;
-                $msg = $mp->read();
-                if($msg)
-                {
-                    \core\ui\html\alert::Cout($msg);
-                }
-            ?>
-            <?php echo $this->content?>
-            <div class="footer"></div>
+        <div class="container" style="width: 100%;">
+            <div class="pull-left col-lg-2 col-md-2 col-sm-3 col-xs-3">
+                <h3>&nbsp;</h3>
+                <ul class="nav nav-pills nav-stacked">
+                    <li <?php echo preg_match("#^(/directory*|/(\.folders|\.notes|\.links){0,1}$)#i", $this->request->GetURI())? 'class="active"':''?>>
+                      <a href="/"><span class="glyphicon glyphicon-th-large"></span> My Root</a>
+                    </li>
+                    <li <?php echo preg_match("#^/archives*#i", $this->request->GetURI())? 'class="active"':''?>>
+                        <a href="/archives"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
+                    </li>
+                    <li <?php echo preg_match("#^/shared*#i", $this->request->GetURI())? 'class="active"':''?>>
+                        <a href="/shared"><span class="glyphicon glyphicon-share-alt"></span> Shared</a></li>
+                    <li <?php echo preg_match("#^/trashes*#i", $this->request->GetURI())? 'class="active"':''?>>
+                        <a href="/trashes"><span class="glyphicon glyphicon-trash"></span> Trashes</a>
+                    </li>
+                    <li class="visible-sm visible-xs">
+                        <a href="#"><span class="glyphicon glyphicon-flash"></span> Your Feeds</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pull-left col-lg-8 col-md-8 col-sm-9 col-xs-9" >
+                <?php
+                    $mp = new core\utiles\messagePipe;
+                    $msg = $mp->read();
+                    if($msg)
+                    {
+                        \core\ui\html\alert::Cout($msg);
+                    }
+                ?>
+                <?php echo $this->content?>
+            </div>
+            <div class="pull-left col-lg-2 col-md-2 col-sm-2 hidden-sm hidden-xs">
+                <h3>&nbsp;</h3>
+                <ul class="nav nav-pills nav-stacked">
+                    <li <?php echo preg_match("#^(/directory*|/(\.folders|\.notes|\.links){0,1}$)#i", $this->request->GetURI())? 'class="active"':''?>>
+                      <a href="/"><span class="glyphicon glyphicon-th-large"></span> My Root</a>
+                    </li>
+                    <li <?php echo preg_match("#^/archives*#i", $this->request->GetURI())? 'class="active"':''?>>
+                        <a href="/archives"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
+                    </li>
+                    <li <?php echo preg_match("#^/shared*#i", $this->request->GetURI())? 'class="active"':''?>>
+                        <a href="/shared"><span class="glyphicon glyphicon-share-alt"></span> Shared</a></li>
+                    <li <?php echo preg_match("#^/trashes*#i", $this->request->GetURI())? 'class="active"':''?>>
+                        <a href="/trashes"><span class="glyphicon glyphicon-trash"></span> Trashes</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer container"></div>
         </div> <!-- /container -->
-        <div class="pull-right" style="width: 18%;overflow-x: auto">
-            <!-- Placeholder for feed reader -->
-            <h3>Feed Reader</h3>
-        </div>
         <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
   </body>
 </html>
