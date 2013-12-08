@@ -20,7 +20,7 @@
                     echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/shared.$key'>$value</a></li>";
                     break;
                 default :
-                    echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/directories/{$view->pid}.$key'>$value</a></li>";
+                    echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/directory/{$view->pid}.$key'>$value</a></li>";
                     break;
             }
         }
