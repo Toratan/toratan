@@ -98,7 +98,7 @@
         </div>
         <div class="clearfix"></div>
         <div class="container" style="width: 100%;">
-            <div class="pull-left col-lg-2 col-md-2 col-sm-3 col-xs-3">
+            <div class="pull-left col-lg-2 col-md-2 col-sm-3 col-xs-12">
                 <h3>&nbsp;</h3>
                 <ul class="nav nav-pills nav-stacked">
                     <li <?php echo preg_match("#^(/directory*|/(\.folders|\.notes|\.links){0,1}$)#i", $this->request->GetURI())? 'class="active"':''?>>
@@ -117,7 +117,8 @@
                     </li>
                 </ul>
             </div>
-            <div class="pull-left col-lg-7  col-md-7 col-sm-9 col-xs-9" >
+            <div class="visible-xs" style="clear:both"></div>
+            <div class="pull-left col-lg-7  col-md-6 col-sm-9 col-xs-12" >
                 <?php
                     $mp = new core\utiles\messagePipe;
                     $msg = $mp->read();
@@ -140,7 +141,7 @@
                     background-color: #efefef;
                 }
             </style>
-            <div id="feed-reader-section" class="pull-left col-lg-3 col-md-3 col-sm-2 hidden-sm hidden-xs">
+            <div id="feed-reader-section" class="pull-left col-lg-3 col-md-4 col-sm-2 hidden-sm hidden-xs">
                 <h3><span class="glyphicon glyphicon-flash"></span> Feeds</h3>
                 <ul class="nav nav-stacked">
                     <li>
