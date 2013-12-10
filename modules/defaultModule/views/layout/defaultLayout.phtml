@@ -70,7 +70,7 @@
         </no-script>
         <div class="header">
             <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
-                <?php if(\core\db\models\user::IsSignedin()): ?>
+                <?php if($user_logged = \core\db\models\user::IsSignedin()): ?>
                 <li><a href="#"><span class="badge">0</span> Messages</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge">2</span> Notifications<b class="caret"></b></a>
@@ -98,6 +98,7 @@
         </div>
         <div class="clearfix"></div>
         <div class="container" style="width: 100%;">
+            <?php if ($user_logged) : ?>
             <div class="pull-left col-lg-2 col-md-2 col-sm-3 col-xs-12">
                 <h3>&nbsp;</h3>
                 <ul class="nav nav-pills nav-stacked">
@@ -119,6 +120,7 @@
             </div>
             <div class="visible-xs" style="clear:both"></div>
             <div class="pull-left col-lg-7  col-md-6 col-sm-9 col-xs-12" >
+            <?php endif; ?>
                 <?php
                     $mp = new core\utiles\messagePipe;
                     $msg = $mp->read();
@@ -129,6 +131,7 @@
                 ?>
                 <?php echo $this->content?>
                 <div class="footer"></div>
+            <?php if($user_logged): ?>
             </div>
             <style>
                 div#feed-reader-section ul{
@@ -161,6 +164,7 @@
                     </li>
                 </ul>
             </div>
+            <?php endif; ?>
         </div> <!-- /container -->
         <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
   </body>
