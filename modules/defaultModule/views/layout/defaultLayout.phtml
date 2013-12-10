@@ -31,8 +31,8 @@
         <style>
             /* Space out content a bit */
             body {
-              padding-top: 1%;
-              padding-bottom: 1%;
+              padding-top: 0;
+              padding-bottom: 0;
             }
 
             /* Custom page header */
@@ -68,9 +68,9 @@
         <no-script>
             <?php \core\ui\html\alert::Cout("Your browser javascript is not enabled, the browser will relocate to html version in 10 seconds!!", \core\ui\html\alert::ALERT_DANGER); ?>
         </no-script>
-        <div class="header container">
-            <ul class="nav nav-pills pull-right">
-                <?php if(\core\db\models\user::IsSignedin()): ?>
+        <div class="header">
+            <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
+                <?php if($user_logged = \core\db\models\user::IsSignedin()): ?>
                 <li><a href="#"><span class="badge">0</span> Messages</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge">2</span> Notifications<b class="caret"></b></a>
@@ -93,10 +93,13 @@
                     <li><a href="/signup">Signup</a></li>
                 <?php endif; ?>
             </ul>
-            <a href="/" style="font-size: x-large;padding:1%" class="navbar-brand text-muted" >Toratan</a>
+            <a href="/" style="font-size: x-large;" class="navbar-brand text-muted" >Toratan</a>
+            <div class="clearfix"></div>
         </div>
+        <div class="clearfix"></div>
         <div class="container" style="width: 100%;">
-            <div class="pull-left col-lg-2 col-md-2 col-sm-3 col-xs-3">
+            <?php if ($user_logged) : ?>
+            <div class="pull-left col-lg-2 col-md-2 col-sm-3 col-xs-12">
                 <h3>&nbsp;</h3>
                 <ul class="nav nav-pills nav-stacked">
                     <li <?php echo preg_match("#^(/directory*|/(\.folders|\.notes|\.links){0,1}$)#i", $this->request->GetURI())? 'class="active"':''?>>
@@ -115,7 +118,9 @@
                     </li>
                 </ul>
             </div>
-            <div class="pull-left col-lg-8 col-md-8 col-sm-9 col-xs-9" >
+            <div class="visible-xs" style="clear:both"></div>
+            <div class="pull-left col-lg-7  col-md-6 col-sm-9 col-xs-12" >
+            <?php endif; ?>
                 <?php
                     $mp = new core\utiles\messagePipe;
                     $msg = $mp->read();
@@ -125,24 +130,41 @@
                     }
                 ?>
                 <?php echo $this->content?>
+                <div class="footer"></div>
+            <?php if($user_logged): ?>
             </div>
-            <div class="pull-left col-lg-2 col-md-2 col-sm-2 hidden-sm hidden-xs">
-                <h3>&nbsp;</h3>
-                <ul class="nav nav-pills nav-stacked">
-                    <li <?php echo preg_match("#^(/directory*|/(\.folders|\.notes|\.links){0,1}$)#i", $this->request->GetURI())? 'class="active"':''?>>
-                      <a href="/"><span class="glyphicon glyphicon-th-large"></span> My Root</a>
+            <style>
+                div#feed-reader-section ul{
+                }
+                div#feed-reader-section ul li {
+                    padding: 10px;
+                    border-bottom: 1px solid #e7e7e7;
+                }
+                div#feed-reader-section ul li:hover {
+                    background-color: #efefef;
+                }
+            </style>
+            <div id="feed-reader-section" class="pull-left col-lg-3 col-md-4 col-sm-2 hidden-sm hidden-xs">
+                <h3><span class="glyphicon glyphicon-flash"></span> Feeds</h3>
+                <ul class="nav nav-stacked">
+                    <li>
+                        Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
                     </li>
-                    <li <?php echo preg_match("#^/archives*#i", $this->request->GetURI())? 'class="active"':''?>>
-                        <a href="/archives"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
+                    <li>
+                        Try to use these on a limited basis and avoid creating entirely different versions of the same site. Instead, use them to complement each device's presentation. Responsive utilities are currently only available for block and table toggling. Use with inline and table elements is currently not supported.
                     </li>
-                    <li <?php echo preg_match("#^/shared*#i", $this->request->GetURI())? 'class="active"':''?>>
-                        <a href="/shared"><span class="glyphicon glyphicon-share-alt"></span> Shared</a></li>
-                    <li <?php echo preg_match("#^/trashes*#i", $this->request->GetURI())? 'class="active"':''?>>
-                        <a href="/trashes"><span class="glyphicon glyphicon-trash"></span> Trashes</a>
+                    <li>
+                        Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.
+                    </li>
+                    <li>
+                        Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet.
+                    </li>
+                    <li>
+                        Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh
                     </li>
                 </ul>
             </div>
-            <div class="footer container"></div>
+            <?php endif; ?>
         </div> <!-- /container -->
         <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
   </body>
