@@ -69,12 +69,15 @@ class indexController extends \zinux\kernel\controller\baseController
             # if not the below method will raise an exception
             $parent_folder->fetch($this->request->params["pid"], \core\db\models\user::GetInstance()->user_id);
         }
+        $note_version = "html";
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
             # the valid 'new' opts are
-            case "FOLDER":
             case "NOTE":
+                if(isset($this->request->params["version"]))
+                    $note_version = $this->request->params["version"];
+            case "FOLDER":
             case "LINK":
                 # set the proper view
                 $this->view->setView("new{$this->request->GetIndexedParam(0)}");
@@ -105,9 +108,36 @@ class indexController extends \zinux\kernel\controller\baseController
         # otherwise do the ops
         # fetch the items name
         $item = strtolower($this->request->GetIndexedParam(0));
-        if($item == "folder")
-            # if it was a folder, define a fake body for it to pass the blow security checkpoint
-            $this->request->params["{$item}_body"] = "NULL";
+        switch($item)
+        {
+            case "folder":
+                # if it was a folder, define a fake body for it to pass the blow security checkpoint
+                $this->request->params["{$item}_body"] = "NULL";
+                break;
+            case "note":
+                switch ($note_version)
+                {
+                    case "html":
+                        break;
+                    case "ace":
+                        $matches = array();
+                        $preg_target = "##(.*)##";
+                        $preg_pattern = "/^[\s|\n]*$preg_target/im";
+                        $preg_delimiter = "/";
+                        if(preg_match($preg_pattern, preg_quote($this->request->params['note_body'], $preg_delimiter), $matches))
+                        {
+                            $this->request->params["note_title"] = \zinux\kernel\utilities\string::inverse_preg_quote($matches[1]);
+                            $this->request->params["note_body"] = 
+                                    preg_replace("/^([\s|\n]*##{$this->request->params["note_title"]}##)/im", "", $this->request->params["note_body"]);
+                        }
+                        else
+                            $this->request->params["note_title"] = "Untitled Note ......";
+                        break;
+                    default:
+                        throw new \zinux\kernel\exceptions\invalideArgumentException("Invalid text version!");
+                }
+                break;
+        }
         # checkpoint for item body and title existance
         \zinux\kernel\security\security::IsSecure($this->request->params, array("{$item}_title", "{$item}_body"));
         # generate a proper handler for item creatation
@@ -189,12 +219,15 @@ class indexController extends \zinux\kernel\controller\baseController
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
+        $note_version = "html";
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
-            # the valid 'edit' opts are
-            case "FOLDER":
+            # the valid 'new' opts are
             case "NOTE":
+                if(isset($this->request->params["version"]))
+                    $note_version = $this->request->params["version"];
+            case "FOLDER":
             case "LINK":
                 # set the proper view
                 $this->view->setView("new{$this->request->GetIndexedParam(0)}");
@@ -222,9 +255,36 @@ class indexController extends \zinux\kernel\controller\baseController
             $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
             return;
         }
-        if($item == "folder")
-            # if it was a folder, define a fake body for it to pass the blow security checkpoint
-            $this->request->params["{$item}_body"] = "NULL";
+         switch($item)
+        {
+            case "folder":
+                # if it was a folder, define a fake body for it to pass the blow security checkpoint
+                $this->request->params["{$item}_body"] = "NULL";
+                break;
+            case "note":
+                switch ($note_version)
+                {
+                    case "html":
+                        break;
+                    case "ace":
+                        $matches = array();
+                        $preg_target = "##(.*)##";
+                        $preg_pattern = "/$preg_target/im";
+                        $preg_delimiter = "/";
+                        if(preg_match($preg_pattern, preg_quote($this->request->params['note_body'], $preg_delimiter), $matches))
+                        {
+                            $this->request->params["note_title"] = \zinux\kernel\utilities\string::inverse_preg_quote($matches[1]);
+                            $this->request->params["note_body"] = 
+                                    preg_replace("/^([\s|\n]*##{$this->request->params["note_title"]}##)/im", "", $this->request->params["note_body"]);
+                        }
+                        else
+                            $this->request->params["note_title"] = "Untitled Note ......";
+                        break;
+                    default:
+                        throw new \zinux\kernel\exceptions\invalideArgumentException("Invalid text version!");
+                }
+                break;
+        }
         # checkpoint for item body and title existance
         \zinux\kernel\security\security::IsSecure($this->request->params, array("{$item}_title", "{$item}_body"));
         # try adding the item to db
@@ -513,5 +573,3 @@ class indexController extends \zinux\kernel\controller\baseController
         exit;        
     }
 }
-
-
