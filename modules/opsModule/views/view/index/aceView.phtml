@@ -1,0 +1,88 @@
+<?php
+    $title = "Your note's title here ...";
+    $body = "Your note's body here ...";
+    if($this->edit)
+    {
+        $title = $this->values['note_title'];
+        $body = $this->values['note_body'];
+    }
+    $value= "##$title##\r\n$body";
+?>
+<script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+        $(document).ready(function()
+        {
+            window.editor = ace.edit("editor");
+            window.editor.setTheme("ace/theme/twilight");
+            window.editor.getSession().setMode("ace/mode/markdown");
+            window.editor.getSession().setTabSize(4);
+            window.editor.commands.addCommand({
+                name: 'save',
+                bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+                exec: save
+            });
+            window.editor.commands.addCommand({
+                name: 'alert',
+                bindKey: {win: 'Ctrl-A',  mac: 'Command-A'},
+                exec: function(editor)
+                {
+                    alert(editor.getValue());
+                }
+            });
+            window.editor.focus();
+            window.editor.navigateFileEnd();
+            $("div#editor").show();
+        });
+        function save(editor) 
+        {
+            $("form[name='note'] input[name='note_title']").val($("#editor-title").val());
+            $("form[name='note'] textarea[name='note_body']").html(editor.getValue());
+            $("form[name='note'] input[name='version']").val("ace");
+            $("form[name='note']").submit();
+        }        
+</script>
+<!-- ace aditor placeholder -->
+<div id="editor" style="display: none;"><?php echo htmlspecialchars($value) ?></div>
+<div style="height: 100%;width: 30%;top:0;right: 0;position: fixed;padding: 1%;overflow: auto;">
+    <legend>Settings</legend>
+    <ul class="nav nav-pills" >
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="width: 100%; overflow: hidden">
+                <span class="glyphicon glyphicon-list-alt"></span>
+                <span class="badge"> 2 
+                </span> Text Editor [<span id="rte-type">Ace</span>] <b class="caret"></b></a>
+                <ul class="dropdown-menu pull-left">
+                    <li class='active'><a href="#">Ace</a></li>
+                    <li><a href="<?php echo $this->request->getURI(); ?>&ui=classic">Classic</a></li>
+                </ul>
+        </li>
+    </ul>
+    <?php $themes = glob("./access/rte/ace/src-min-noconflict/theme-*"); ?>
+    <ul class="nav nav-pills" >
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="width: 100%; overflow: hidden">
+                <span class="glyphicon glyphicon-list-alt"></span>
+                <span class="badge">
+                    <?php echo count($themes) ?>
+                </span> Themes [<span id="theme-name">Twilight</span>] <b class="caret"></b></a>
+            <ul class="dropdown-menu pull-left">
+    <?php
+        foreach ($themes as $value) 
+        {
+            $orig_value = preg_replace(array("#^(theme-)#i", "#_#i"), array("", " "), basename($value, ".js"));
+            $value = strtoupper($orig_value[0]).  substr($orig_value, 1);
+    ?>
+                <li>
+                    <a href="#" onclick="window.editor.setTheme('ace/theme/<?php echo str_replace(" ", "_", $orig_value)?>');$('span#theme-name').html('<?php echo $value?>');" >
+                        <?php  echo $value ?>
+                    </a>
+                </li>
+    <?php
+        }
+    ?>
+            </ul>
+        </li>
+    </ul>
+    <legend>Tips</legend>
+</div>
+<script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
