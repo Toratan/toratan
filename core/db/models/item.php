@@ -11,6 +11,11 @@ abstract class item extends baseModel
             array('is_archive', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
     );
     /**
+     *
+     * @var array Before save callbacks
+     */
+    static $before_save = array('before_save_trim_properties');
+    /**
      * In certain operations that we want to do NOOP on some
      * prespective of item we pass this
      */
@@ -448,5 +453,13 @@ abstract class item extends baseModel
 __RETURN:
         array_push($route, $this->fetch(0));
         return array_reverse($route);
+    }
+    /**
+     * Trims properties just before they get saved
+     */
+    public function before_save_trim_properties()
+    {
+        $this->{"{$this->item_name}_title"} = trim($this->{"{$this->item_name}_title"});
+        $this->{"{$this->item_name}_body"} = trim($this->{"{$this->item_name}_body"});
     }
 }
