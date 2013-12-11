@@ -1,65 +1,39 @@
 <?php $this->edit = isset($this->edit)?$this->edit:0; ?>
+<?php if(count($this->errors)): ?>
 <ol style="color:red;">
 <?php foreach ($this->errors as $error) : ?>
     <li><?php echo $error ?></li>
 <?php endforeach; ?>
 </ol>
-<script>
-        $(document).ready(function()
-        {
-            $("div#editor").show();
-            $("form[name='note']").hide();
-            var editor = ace.edit("editor");
-            editor.setTheme("ace/theme/monokai");
-            editor.setTheme("ace/theme/twilight");
-            editor.getSession().setMode("ace/mode/markdown");
-            editor.getSession().setTabSize(4);
-            editor.commands.addCommand({
-                name: 'save',
-                bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
-                exec: save
-            });
-            editor.commands.addCommand({
-                name: 'alert',
-                bindKey: {win: 'Ctrl-A',  mac: 'Command-A'},
-                exec: function(editor)
-                {
-                    alert(editor.getValue());
-                }
-            });
-            editor.focus();
-            editor.navigateFileEnd();
-        });
-        function save(editor) 
-        {
-            $("form[name='note'] input[name='note_title']").val($("#editor-title").val());
-            $("form[name='note'] textarea[name='note_body']").html(editor.getValue());
-            $("form[name='note'] input[name='version']").val("ace");
-            $("form[name='note']").submit();
-        }        
-</script>
+<?php endif; ?>
 <style type="text/css" media="screen">
-    #editor { position: fixed; top:0; right: 0; bottom: 0; left: 0; }
-    .ace_editor
-    {
-        width: 50%;
-        position: relative; 
-        margin-top: 10px;
-    }
+    #editor { position: fixed; top:0; right: 0; bottom: 0; left: 0; width: 70%;}
 </style>
 <?php
-$title = "Your note's title here ...";
-$body = "Your note's body here ...";
-if($this->edit)
-{
-    $title = $this->values['note_title'];
-    $body = $this->values['note_body'];
-}
+    $profile = \core\db\models\profile::load(\core\db\models\user::getInstance()->user_id);
+    if(!@$profile->settings->rte)
+         $profile->settings->rte = new stdClass;
+    if(!isset($this->request->params["ui"]))
+        $this->request->params["ui"] = 
+            !@$profile->settings->rte->type?"classic":$profile->settings->rte->type;
+    $profile->settings->rte->type = $this->request->params["ui"];
+    $profile->save();
+    switch($this->request->params["ui"])
+    {
+        default:
+        case "classic":
+            $this->RenderPartial("ckeditor");
+            break;
+        case "ace":
+            $this->RenderPartial("ace");
+            break;
+    }
 ?>
-<div style="width: 100px">
-    <div id="editor" style="display: none" ><?php echo "##$title##\r\n$body" ?></div>
-</div>
-<script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    $(document).ready(function(){
+        $("form[name='note']").hide();
+    });
+</script>
 <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
 <form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note'>
     <input type="hidden" name="version" value="html" />
@@ -67,25 +41,3 @@ if($this->edit)
     <textarea rows="10" cols="80" name="note_body" ><?php echo isset($this->values['note_body'])?$this->values['note_body']:"" ?></textarea>
     <input type="submit" value="Create" />
 </form>
-<?php
-//zinux\kernel\utilities\debug::_var($this,1);
-//    \zinux\kernel\application\api::call("/html/rte?get=".urlencode());
-    return;
-?>
-    <script>
-            $(document).ready(function()
-            {
-                $("iframe#editor").show();
-                $("#editor-title").show();
-                $("form[name='note']").hide();
-            });
-    </script>
-    <div class="container">
-        <input type='text' class='form-control' id='editor-title' style='display: none;' value='<?php echo (isset($this->values['note_title'])?$this->values['note_title']:"Your note's title here") ?>' required="required"/>
-    </div>
-    <form action="<?php echo $this->request->getURI(); ?>" method="post">
-    <div class="container" style="min-height: 500px;">
-        <iframe id="editor" src="/html/rte?get=<?php echo urlencode("pid=".$this->pid.$this->hash) ?>" style="border: 0;width: 100%;margin-top: 10px;height: 500px"></iframe>
-    </div>
-    <input type="submit" value="submit" />
-    </form>
