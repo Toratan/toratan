@@ -5,8 +5,14 @@
             $editor = $( 'textarea#editor-platform' ).ckeditor();
         } );
 </script>
-<div id="editor">
-    <textarea class="ckeditor" id="editor-platform" rows="10" tabindex="1"></textarea>
+<div id="editor" style="margin:0">
+<form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note'>
+    <input type="hidden" name="version" value="html" />
+    <input type="text" name="note_title" maxlength="250" class="form-control" value="<?php echo isset($this->values['note_title'])?$this->values['note_title']:"" ?>" required="required"/><br />
+    <textarea class="ckeditor form-control" id="editor-platform" rows="10" tabindex="1" name="note_body" style="width: 100%">
+        <?php echo Michelf\MarkdownExtra::defaultTransform(isset($this->values['note_body'])?$this->values['note_body']:""); ?></textarea>
+    <input type="submit" value="Create" class="form-control btn btn-primary btn-sm"/>
+</form>
 </div>
 <!-- Sidebar placeholder -->
 <div style="height: 100%;width: 30%;top:0;right: 0;position: fixed;padding: 1%;overflow: auto;">
@@ -25,4 +31,3 @@
     </ul>
     <legend>Tips</legend>
 </div>
-<script type="text/javascript" src="/access/js/bootstrap.min.js"></script>

@@ -27,7 +27,7 @@ class alert extends htmlPrinter
         if(!is_string($data))
             throw new \zinux\kernel\exceptions\invalideArgumentException;
         $alert = 
-            "<div class='alert fade in $alert_type ' style='border: 1px solid;padding: 1%;margin:0.5%;' id='".($id="alert-".sha1($data))."'>
+            "<div class='alert fade in $alert_type ' style='z-index:10000000;border: 1px solid;padding: 1%;margin:0.5%;' id='".($id="alert-".sha1($data))."'>
                 <button type='button' class='close' data-dismiss='alert' aria-hidden='true' >&times;</button>
                 <p class='text-center inline' style='margin:0;padding:0'>$data</p>
             </div>
