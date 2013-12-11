@@ -227,6 +227,7 @@ class indexController extends \zinux\kernel\controller\baseController
             case "NOTE":
                 if(isset($this->request->params["version"]))
                     $note_version = $this->request->params["version"];
+                $this->view->edit = 1;
             case "FOLDER":
             case "LINK":
                 # set the proper view

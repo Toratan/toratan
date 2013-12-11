@@ -1,3 +1,4 @@
+<?php $this->edit = isset($this->edit)?$this->edit:0; ?>
 <ol style="color:red;">
 <?php foreach ($this->errors as $error) : ?>
     <li><?php echo $error ?></li>
@@ -46,9 +47,17 @@
         margin-top: 10px;
     }
 </style>
+<?php
+$title = "Your note's title here ...";
+$body = "Your note's body here ...";
+if($this->edit)
+{
+    $title = $this->values['note_title'];
+    $body = $this->values['note_body'];
+}
+?>
 <div style="width: 100px">
-    <div id="editor" style="display: none" ><?php echo "##".(isset($this->values['note_title'])?$this->values['note_title']:"Your note's title here.")."##\r\n" ?>
-<?php echo isset($this->values['note_body'])?$this->values['note_body']:"Your note's body here." ?></div>
+    <div id="editor" style="display: none" ><?php echo "##$title##\r\n$body" ?></div>
 </div>
 <script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
