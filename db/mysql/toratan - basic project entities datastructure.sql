@@ -38,7 +38,7 @@ CREATE TABLE `folders` (
   KEY `parent_id` (`parent_id`),
   CONSTRAINT `folders_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `folders_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `folders` (`folder_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,7 +94,7 @@ CREATE TABLE `links` (
   KEY `owner_id` (`owner_id`),
   CONSTRAINT `links_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `folders` (`folder_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `links_ibfk_2` FOREIGN KEY (`owner_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -182,7 +182,7 @@ DROP TABLE IF EXISTS `profiles`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `profiles` (
   `user_id` varchar(250) COLLATE utf8_persian_ci NOT NULL,
-  `options` text COLLATE utf8_persian_ci NOT NULL,
+  `settings` text COLLATE utf8_persian_ci NOT NULL,
   `first_name` varchar(100) COLLATE utf8_persian_ci NOT NULL,
   `nick_name` varchar(100) COLLATE utf8_persian_ci NOT NULL,
   `last_name` varchar(100) COLLATE utf8_persian_ci NOT NULL,
@@ -283,4 +283,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-12-10 18:12:27
+-- Dump completed on 2013-12-12 14:17:07
