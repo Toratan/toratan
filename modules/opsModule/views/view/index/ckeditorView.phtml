@@ -5,10 +5,10 @@
             $editor = $( 'textarea#editor-platform' ).ckeditor();
         } );
 </script>
-<script type="text/javascript" src="/access/js/no-script.js"></script>
-<no-script>
+
+<noscript>
     <?php \core\ui\html\alert::Cout("Your browser javascript is not enabled, the <b>html version</b> has been loaded!!", \core\ui\html\alert::ALERT_DANGER); ?>
-</no-script>
+</noscript>
 <div id="editor" class="pull-left" style="width: 70%;margin:0">
     <form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note'>
         <input type="hidden" name="version" value="html" />

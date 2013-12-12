@@ -58,9 +58,9 @@
         </style>
     </head>
     <body>
-        <no-script>
+        <noscript>
             <?php \core\ui\html\alert::Cout("Your browser javascript is not enabled, the browser will relocate to html version in 10 seconds!!", \core\ui\html\alert::ALERT_DANGER); ?>
-        </no-script>
+        </noscript>
         <div class="header">
             <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
                 <?php if(($user_logged = \core\db\models\user::IsSignedin())): ?>
@@ -95,7 +95,7 @@
             <div class="pull-left col-lg-2 col-md-2 col-sm-3 col-xs-12">
                 <h3>&nbsp;</h3>
                 <ul class="nav nav-pills nav-stacked">
-                    <li <?php echo preg_match("#^/(default(/)?(index(/?))?)?(directory/(\.folders|\.notes|\.links)?$)?$#i", $this->request->GetURI())? 'class="active"':''?>>
+                    <li <?php echo preg_match("#^/(default(/)?(index(/?))?)?(directory(/(.*))?(\.folders|\.notes|\.links)?)?$#i", $this->request->GetURI())? 'class="active"':''?>>
                       <a href="/"><span class="glyphicon glyphicon-th-large"></span> My Root</a>
                     </li>
                     <li <?php echo preg_match("#^/(default/(index/)?)?archives*#i", $this->request->GetURI())? 'class="active"':''?>>
@@ -160,6 +160,5 @@
             <?php endif; ?>
         </div> <!-- /container -->
         <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="/access/js/no-script.js"></script>
   </body>
 </html>
