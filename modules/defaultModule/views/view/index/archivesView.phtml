@@ -1,4 +1,8 @@
+<ol class="breadcrumb">
+    <li class="active">Archives</li>
+</ol>
 <?php
-    $this->RenderPartial("item_table", array("items" => $this->items, "pid" => $this->pid, "is_archive" => 1));
+    $this->is_archive = 1;
+    $this->RenderPartial("item_table");
     
     

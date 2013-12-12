@@ -1,4 +1,6 @@
+<ol class="breadcrumb">
+    <li class="active">Trashes</li>
+</ol>
 <?php
-    $this->RenderPartial("item_table", array("folders" => $this->folders, "links"=> $this->links, "notes" => $this->notes, "is_trash" => 1));
-    
-    
+    $this->is_trash = 1;
+    $this->RenderPartial("item_table");
