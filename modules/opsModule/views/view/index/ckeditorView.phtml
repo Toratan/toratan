@@ -10,12 +10,17 @@
     <?php \core\ui\html\alert::Cout("Your browser javascript is not enabled, the <b>html version</b> has been loaded!!", \core\ui\html\alert::ALERT_DANGER); ?>
 </noscript>
 <!-- Sidebar placeholder -->
-<div id="setting-bar" class="row container" style="margin-left:0;margin:1%;width: 100%;padding: 1%;padding-top: 0;display: none">
-    <table class="table-bordered" style="padding-:0;">
+<ul class="nav nav-pills pull-right inline">
+    <li>
+        <a href="#" onclick="$('div#editor').slideToggle();$('div#setting-bar').slideToggle();$(this).preventDefault();">Settings <span class="caret"></span></a>
+    </li>
+</ul>
+<div id="setting-bar" class="" style="width: 80%;padding: 0%;display: none/**/">
+    <table class="table-bordered" style="margin:1%;margin-left:1.7%">
         <tbody>
             <tr>
                 <td>
-                    <ul class="nav nav-pills" >
+                    <ul class="nav nav-pills">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <span class="glyphicon glyphicon-list-alt"></span>
@@ -35,11 +40,6 @@
 <div id="editor" class="" style="margin:0">
     <form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note'>
         <input type="hidden" name="version" value="html" />
-        <ul class="pull-right nav nav-pills inline">
-            <li>
-                <a href="#" onclick="$('div#setting-bar').slideToggle();">Settings <span class="caret"></span></a>
-            </li>
-        </ul>
         <input type="text" style="width: 80%;float: left" name="note_title" maxlength="250" class="form-control" value="<?php echo isset($this->values['note_title'])?$this->values['note_title']:"" ?>" required="required"/><br />
         <div class="clearfix" style="margin: 1%"></div>
         <textarea class="ckeditor form-control" id="editor-platform" rows="10" tabindex="1" name="note_body" style="width: 100%"><?php 
