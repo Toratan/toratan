@@ -7,8 +7,11 @@
         $body = $this->values['note_body'];
     }
     $value= "##$title##\r\n$body";
+    $this->layout->setlayout("ace");
 ?>
-<script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<style type="text/css" media="screen">
+    #editor { position: fixed; top:0; right: 0; bottom: 0; left: 0; width: 70%;}
+</style>
 <script>
         $(document).ready(function()
         {
@@ -85,12 +88,8 @@
     </ul>
     <legend>Tips</legend>
 </div>
-<script>
-    $(document).ready(function(){
-        $("form[name='note']").hide();
-    });
-</script>
-<form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note'>
+<script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note' style="display: none;">
     <input type="hidden" name="version" value="html" />
     <input type="text" name="note_title" maxlength="250" value="<?php echo isset($this->values['note_title'])?$this->values['note_title']:"" ?>" required="required"/><br />
     <textarea rows="10" cols="80" name="note_body" ><?php echo isset($this->values['note_body'])?$this->values['note_body']:"" ?></textarea>
