@@ -1,4 +1,8 @@
+<ol class="breadcrumb">
+    <li class="active">Shared</li>
+</ol>
 <?php
-    $this->RenderPartial("item_table", array("items" => $this->items, "pid" => $this->pid, "is_share" => 1));
+    $this->is_shared = 1;
+    $this->RenderPartial("item_table");
     
     

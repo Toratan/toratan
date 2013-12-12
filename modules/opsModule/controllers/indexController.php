@@ -192,7 +192,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 break;
             case "NOTE":
                 # relocate the browser
-                header("location: /ops/view/note/{$item_value->note_id}");
+                header("location: /view/note/{$item_value->note_id}");
                 break;
             default:
                 # if no ops matched, raise an exception
@@ -332,7 +332,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 break;
             case "NOTE":
                 # relocate the browser
-                header("location: /ops/view/note/{$item_value->note_id}");
+                header("location: /view/note/{$item_value->note_id}");
                 break;
             default:
                 # if no ops matched, raise an exception
