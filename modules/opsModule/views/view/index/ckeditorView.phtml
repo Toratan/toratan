@@ -9,29 +9,42 @@
 <noscript>
     <?php \core\ui\html\alert::Cout("Your browser javascript is not enabled, the <b>html version</b> has been loaded!!", \core\ui\html\alert::ALERT_DANGER); ?>
 </noscript>
-<div id="editor" class="pull-left" style="width: 70%;margin:0">
+<!-- Sidebar placeholder -->
+<div id="setting-bar" class="row container" style="margin-left:0;margin:1%;width: 100%;padding: 1%;padding-top: 0;display: none">
+    <table class="table-bordered" style="padding-:0;">
+        <tbody>
+            <tr>
+                <td>
+                    <ul class="nav nav-pills" >
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-list-alt"></span>
+                                <span class="badge"> 2</span> Text Editor [<span id="rte-type">Classic</span>] <b class="caret"></b></a>
+                                <ul class="dropdown-menu pull-left">
+                                    <li><a href="<?php echo $this->request->getURI(); ?>&ui=ace">Ace</a></li>
+                                    <li class='active'><a href="#">Classic</a></li>
+                                </ul>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="clearfix visible-xs"></div>
+<div id="editor" class="" style="margin:0">
     <form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note'>
         <input type="hidden" name="version" value="html" />
-        <input type="text" name="note_title" maxlength="250" class="form-control" value="<?php echo isset($this->values['note_title'])?$this->values['note_title']:"" ?>" required="required"/><br />
-        <textarea class="ckeditor form-control" id="editor-platform" rows="10" tabindex="1" name="note_body" style="width: 100%">
-            <?php echo Michelf\MarkdownExtra::defaultTransform(isset($this->values['note_body'])?$this->values['note_body']:""); ?></textarea>
+        <ul class="pull-right nav nav-pills inline">
+            <li>
+                <a href="#" onclick="$('div#setting-bar').slideToggle();">Settings <span class="caret"></span></a>
+            </li>
+        </ul>
+        <input type="text" style="width: 80%;float: left" name="note_title" maxlength="250" class="form-control" value="<?php echo isset($this->values['note_title'])?$this->values['note_title']:"" ?>" required="required"/><br />
+        <div class="clearfix" style="margin: 1%"></div>
+        <textarea class="ckeditor form-control" id="editor-platform" rows="10" tabindex="1" name="note_body" style="width: 100%"><?php 
+            echo Michelf\MarkdownExtra::defaultTransform(isset($this->values['note_body'])?$this->values['note_body']:""); 
+        ?></textarea>
         <input type="submit" value="Create" class="form-control btn btn-primary btn-sm"/>
     </form>
-</div>
-<!-- Sidebar placeholder -->
-<div class="pull-right" style="height: 100%;width: 30%;padding: 1%;padding-top: 0;overflow: auto;">
-    <legend>Settings</legend>
-    <ul class="nav nav-pills" >
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="width: 100%; overflow: hidden">
-                <span class="glyphicon glyphicon-list-alt"></span>
-                <span class="badge"> 2 
-                </span> Text Editor [<span id="rte-type">Classic</span>] <b class="caret"></b></a>
-                <ul class="dropdown-menu pull-left">
-                    <li><a href="<?php echo $this->request->getURI(); ?>&ui=ace">Ace</a></li>
-                    <li class='active'><a href="#">Classic</a></li>
-                </ul>
-        </li>
-    </ul>
-    <legend>Tips</legend>
 </div>
