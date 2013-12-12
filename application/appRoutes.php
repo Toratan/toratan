@@ -24,5 +24,15 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          *      {/signout} to {/auth/signout}
          */
         $this->addRoute("^/(signin|signup|signout|recovery)$2", "/auth/$1$2");
+        /**
+         * Routes 
+         *      {/new} to {/ops/new}
+         *      {/edit} to {/ops/edit} 
+         *      {/view} to {/ops/view}
+         *      {/delete} to {/ops/delete}
+         *      {/archive} to {/ops/archive}
+         *      {/share} to {/ops/share}
+         */
+        $this->addRoute("^/(new|edit|view|delete|archive|share)$2", "/ops/$1$2");
     }
 }
