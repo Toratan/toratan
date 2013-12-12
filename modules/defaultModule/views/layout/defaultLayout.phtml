@@ -21,13 +21,6 @@
           <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
           <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
         <![endif]-->
-        <script type="text/javascript">
-            // immediate course of actions
-            $(document).ready(function(){
-                // remove the no-script tags, if JS is enabled
-                $("no-script").remove();
-            });
-        </script>
         <style>
             /* Space out content a bit */
             body {
@@ -70,7 +63,7 @@
         </no-script>
         <div class="header">
             <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
-                <?php if($user_logged = \core\db\models\user::IsSignedin()): ?>
+                <?php if(($user_logged = \core\db\models\user::IsSignedin())): ?>
                 <li><a href="#"><span class="badge">0</span> Messages</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge">2</span> Notifications<b class="caret"></b></a>
@@ -167,5 +160,6 @@
             <?php endif; ?>
         </div> <!-- /container -->
         <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/access/js/no-script.js"></script>
   </body>
 </html>

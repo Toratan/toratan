@@ -173,14 +173,14 @@ class indexController extends \zinux\kernel\controller\baseController
             # return
             return;
         }
-        # redirect if any redirection provided
-        $this->Redirect();
         # otherwise relocate properly
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
             # the valid 'edit' opts are
             case "FOLDER":
             case "LINK":
+                # redirect if any redirection provided
+                $this->Redirect();
                 # invoke a message pipe line
                 $mp = new \core\utiles\messagePipe;
                 # indicate the success
@@ -189,9 +189,8 @@ class indexController extends \zinux\kernel\controller\baseController
                 $this->Redirect();
                 # relocate the browser
                 header("location: /directory/{$item_value->parent_id}.{$item}s");
+                break;
             case "NOTE":
-                # redirect if any redirection provided
-                $this->Redirect();
                 # relocate the browser
                 header("location: /ops/view/note/{$item_value->note_id}");
                 break;
@@ -332,8 +331,6 @@ class indexController extends \zinux\kernel\controller\baseController
                 header("location: /directory/{$item_value->parent_id}.{$item}s");
                 break;
             case "NOTE":
-                # redirect if any redirection provided
-                $this->Redirect();
                 # relocate the browser
                 header("location: /ops/view/note/{$item_value->note_id}");
                 break;
