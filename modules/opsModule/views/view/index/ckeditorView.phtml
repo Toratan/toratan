@@ -1,8 +1,26 @@
+<?php
+    $title = "Your note's title here ...";
+    $body = "Your note's body here ...";
+    if($this->edit)
+    {
+        $title = $this->values['note_title'];
+        $body = $this->values['note_body'];
+    }
+?>
 <script src="/access/rte/ckeditor/ckeditor.js"></script>
 <script src="/access/rte/ckeditor/adapters/jquery.js"></script>
 <script>
         $( document ).ready( function() {
             $editor = $( 'textarea#editor-platform' ).ckeditor();
+            $('ul.nav li a#setting-flip-flop').click(function($e){
+                if($('div#editor').css("display") === "none")
+                    $('ul.nav li a#setting-flip-flop span#setting-flip-flop-name').html("Settings");
+                else
+                    $('ul.nav li a#setting-flip-flop span#setting-flip-flop-name').html("Editor");
+                $('div#editor').slideToggle();
+                $('div#setting-bar').slideToggle();
+                $e.preventDefault();
+            });
         } );
 </script>
 
@@ -12,11 +30,12 @@
 <!-- Sidebar placeholder -->
 <ul class="nav nav-pills pull-right inline">
     <li>
-        <a href="#" onclick="$('div#editor').slideToggle();$('div#setting-bar').slideToggle();$(this).preventDefault();">Settings <span class="caret"></span></a>
+        <a href="#" id="setting-flip-flop"><span id="setting-flip-flop-name">Settings</span> <span class="caret"></span></a>
     </li>
 </ul>
+<div class="clearfix visible-xs"></div>
 <div id="setting-bar" class="" style="width: 80%;padding: 0%;display: none/**/">
-    <table class="table-bordered" style="margin:1%;margin-left:1.7%">
+    <table class="table-bordered table-responsive" style="margin:1%;margin-left:1.7%">
         <tbody>
             <tr>
                 <td>
@@ -40,11 +59,11 @@
 <div id="editor" class="" style="margin:0">
     <form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note'>
         <input type="hidden" name="version" value="html" />
-        <input type="text" style="width: 80%;float: left" name="note_title" maxlength="250" class="form-control" value="<?php echo isset($this->values['note_title'])?$this->values['note_title']:"" ?>" required="required"/><br />
+        <input type="text" style="width: 80%;float: left" name="note_title" maxlength="250" class="form-control" value="<?php echo $title ?>" required="required"/><br />
         <div class="clearfix" style="margin: 1%"></div>
         <textarea class="ckeditor form-control" id="editor-platform" rows="10" tabindex="1" name="note_body" style="width: 100%"><?php 
-            echo Michelf\MarkdownExtra::defaultTransform(isset($this->values['note_body'])?$this->values['note_body']:""); 
+            echo Michelf\MarkdownExtra::defaultTransform($body); 
         ?></textarea>
-        <input type="submit" value="Create" class="form-control btn btn-primary btn-sm"/>
+        <input type="submit" value="<?php echo $this->edit ? "Edit" : "Create" ?>" class="form-control btn btn-primary btn-sm"/>
     </form>
 </div>
