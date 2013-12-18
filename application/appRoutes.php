@@ -30,7 +30,8 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          *      {/archive} to {/ops/archive}
          *      {/share} to {/ops/share}
          *      {/messages} to {/ops/messages}
+         *      {/profile} to {/ops/profile}
          */
-        $this->addRoute("^/(new|edit|view|delete|archive|share|messages)$2", "/ops/$1$2");
+        $this->addRoute("^/(new|edit|view|delete|archive|share|messages|profile)$2", "/ops/$1$2");
     }
 }
