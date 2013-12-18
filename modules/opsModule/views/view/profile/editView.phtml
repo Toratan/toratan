@@ -1,0 +1,65 @@
+<?php
+    if(!isset($this->step))
+        $this->step = 1;
+    if(!isset($this->post_back))
+        $this->post_back = false;
+    $max_step = 3;
+?>
+<div class="pre" style="width: 70%;margin:auto;min-height: 200px;font-family: sans-serif;background-color: inherit;padding:10px;">
+    <div style="">
+        <h4 style="border-bottom: 5px solid #0088cc;padding-bottom: 3px;">
+            Create your profile
+        </h4>
+        
+        <style>
+            ul#steps{margin: 0;padding:0; margin-top: -10px;font-variant: small-caps;padding: 10px 0 3px 3px;background-color: #fafafa;border-bottom: 1px solid #e5e5e5}
+            ul#steps li.disabled a { text-decoration: none;color:#c6e2fe }
+            ul#steps li a:hover { text-decoration: none;background-color: transparent; cursor: default}
+        </style>
+        
+        <ul id="steps" class="nav nav-pills">
+            <?php
+                for($i=1; $i<=$max_step; $i++)
+                {
+                    $is_current = ($i == $this->step);
+                    echo "<li ".(!$is_current?"class='disabled'":"")."><a ".($is_current?"id='current'":'').">".($i < $this->step?"<span class='glyphicon glyphicon-ok'></span>":"")." Step $i</a></li>";
+                    if($i==$max_step)
+                        continue;
+                    echo "<li class='disabled'><a>&gt;</a></li>";
+                }
+            ?>
+            <p class="clearfix"></p>
+        </ul>
+        <style>
+            div#profile-content{margin-top:10px;padding: 10px;}
+            div#profile-content div#submit input{width: 66px}
+        </style>
+        <form action="/profile/edit?<?php echo  $this->hash ?>" method="POST" class="form">
+            <input type="hidden" value="<?php echo $this->step ?>" name="step" />
+            <div id="profile-content">
+<?php
+    $this->post_back = isset($this->post_back) && $this->post_back && isset($this->post) && is_array($this->post);
+    $this->user = \core\db\models\user::getInstance();
+    switch($this->step)
+    {
+        case 1:
+        case 2:
+        case $max_step:
+            require realpath(dirname(__FILE__)."/profile-steps/step{$this->step}.php");
+            break;
+        default :
+            throw new \zinux\kernel\exceptions\invalideOperationException("The step: '{$this->step}' is not defined...");
+    }
+?>
+                <div id="submit" class=" form-actions " style="clear:both;margin: auto -10px auto -10px;">
+                    <input type="submit" name="<?php echo $this->step==$max_step?'finish':'next'?>"  value="<?php echo $this->step==$max_step?'Finish':'Next'?>" class="pull-right btn  btn-primary" />
+                    <?php if($this->step>1): ?>
+                    <input type="submit" name="back"  value="Back" class="pull-right btn btn-info" style="margin-right:10px;" formnovalidate/>
+                    <?php endif; ?>
+                    <input type="submit" name="skip"  value="Skip" class="pull-left btn btn-warning" formnovalidate/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<?php //$this->body = ob_get_contents(); ob_end_clean(); ?>
