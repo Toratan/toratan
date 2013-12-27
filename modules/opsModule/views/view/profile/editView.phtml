@@ -51,6 +51,7 @@
             throw new \zinux\kernel\exceptions\invalideOperationException("The step: '{$this->step}' is not defined...");
     }
 ?>
+                <hr />
                 <div id="submit" class=" form-actions " style="clear:both;margin: auto -10px auto -10px;">
                     <input type="submit" name="<?php echo $this->step==$max_step?'finish':'next'?>"  value="<?php echo $this->step==$max_step?'Finish':'Next'?>" class="pull-right btn  btn-primary" />
                     <?php if($this->step>1): ?>
