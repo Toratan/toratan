@@ -103,7 +103,7 @@ class profile extends baseModel
     /**
      * Get a setting
      * @param string $address the setting's address with "/" separator
-     * @return mixed the setting's value
+     * @return mixed the setting's value or NULL if no setting found
      * @throws \zinux\kernel\exceptions\invalideArgumentException if $address is not string or is empty
      */
     public function getSetting($address)
@@ -139,4 +139,10 @@ class profile extends baseModel
         # return the setting value
         return $array;
     }
+    /**
+     * Check if a setting has been set before
+     * @param string $address the setting's address with "/" separator
+     * @return boolean returns TRUE if setting has been set; otherwise FALSE
+     */
+    public function settingHasSet($address) { return $this->getSetting($address) ? TRUE : FALSE; }
 }
