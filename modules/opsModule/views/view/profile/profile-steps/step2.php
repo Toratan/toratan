@@ -1,21 +1,21 @@
 <style>
     div#profile-content div#step2 div strong{margin-top: 7px;}
-    div#profile-content div#step2 div .bit-left {margin-left:-10px;}
+    textArea {max-width: 100%; min-height: 80px;}
 </style>
 <div id="step2">
-    <div class="">
+    <div class="" >
         <strong class="">Introduction</strong>
-        <input type="text" name="intro" class="form-control input input-medium" value="" autofocus/>
+        <textarea type="text" name="intro" class="form-control input input-medium" value=""  autofocus></textarea>
     </div>
     <div class="clearfix" ></div>
     <hr />
-    <div class=" " style="margin: 0">
-        <strong class=" ">Occupation</strong>
-        <input type="text" id="first" name="occu" class="form-control bit-left  input input-medium"  value=""/>
+    <div class="">
+        <strong class="">Occupation</strong>
+        <textarea type="text" name="occu" class="form-control input input-medium"  value=""></textarea>
     </div>
     <div class="">
         <strong class="">Education</strong>
-        <input type="text" name="edu" class="form-control bit-left  input input-medium" value=""/>
+        <textarea type="text" name="edu" class="form-control input input-medium" value=""></textarea>
     </div>
     <div class="clearfix"></div>
     <hr />
@@ -23,7 +23,7 @@
     <div id="block3" class="block">
         <div class="">
             <strong class="">Country</strong>
-            <select name="country" class="form-control bit-left input input-medium ">
+            <select name="country" class="form-control input input-medium ">
                 <option selected="selected" class="" disabled="disabled" style="color:#e6e6e6">Choose</option>
                 <?php
                 if(false)
@@ -42,7 +42,7 @@
         </div>
         <div class="">
             <strong class="">Town</strong>
-            <input type="text" name="city" class="form-control bit-left input input-medium " value="" />
+            <input type="text" name="city" class="form-control input input-medium " value="" />
         </div>
     </div>
 </div>

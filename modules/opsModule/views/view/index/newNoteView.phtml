@@ -7,14 +7,11 @@
 </ol>
 <?php endif; ?>
 <?php
-    $profile = \core\db\models\profile::load(\core\db\models\user::getInstance()->user_id);
-    if(!@$profile->settings->rte)
-         $profile->settings->rte = new stdClass;
+    $profile = \core\db\models\profile::getInstance(\core\db\models\user::getInstance()->user_id);
     if(!isset($this->request->params["ui"]))
         $this->request->params["ui"] = 
-            !@$profile->settings->rte->type?"classic":$profile->settings->rte->type;
-    $profile->settings->rte->type = $this->request->params["ui"];
-    $profile->save();
+            !$profile->getSetting("/rte/type")?"classic":$profile->getSetting("/rte/type");
+    $profile->setSetting("/rte/type", $this->request->params["ui"]);
     switch($this->request->params["ui"])
     {
         default:
