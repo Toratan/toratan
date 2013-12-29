@@ -1,2 +1,10 @@
+<!--
+ The \modules\opsModule\views\view\profile\indexView
+ @by Zinux Generator <b.g.dariush@gmail.com>
+ -->
+<p>
+    A view for '<b>\modules\opsModule\controllers\profileController::indexAction()</b>'<br />
+    Location: '<b>/var/www/toratan/modules/opsModule/views/view/profile/indexView.phtml</b>'
+</p>
 <?php
-    $this->Renderpartial("edit");
+    \zinux\kernel\utilities\debug::_var(\core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id));
