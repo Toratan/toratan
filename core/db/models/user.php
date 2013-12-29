@@ -149,10 +149,10 @@ class user extends baseModel
      */
     public static function Signout()
     {        
-        # open up a session cache related to this class
-        $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
-        # delete entire cached data
-        $sc->deleteAll();
+        # destroy all session data
+        \session_destroy();
+        # destroy current session array
+        unset($_SESSION);
     }
     /**
      * Fetches users info from its session

@@ -32,7 +32,7 @@
         </ul>
         <style>
             div#profile-content{margin-top:10px;padding: 10px;}
-            div#profile-content div#submit input{width: 66px}
+            div#profile-content div#submit input{min-width: 66px}
         </style>
         <form action="/profile/edit?<?php echo  $this->hash ?>" method="POST" class="form">
             <input type="hidden" value="<?php echo $this->step ?>" name="step" />
@@ -57,7 +57,8 @@
                     <?php if($this->step>1): ?>
                     <input type="submit" name="back"  value="Back" class="pull-right btn btn-info" style="margin-right:10px;" formnovalidate/>
                     <?php endif; ?>
-                    <input type="submit" name="skip"  value="Skip" class="pull-left btn btn-warning" formnovalidate/>
+                    <input type="submit" name="cancel"  value="Cancel" class="pull-left btn btn-danger" formnovalidate/>
+                    <input type="submit" name="skip"  value="Save & Skip " class="pull-left btn btn-warning" formnovalidate style="margin-left: 1%"/>
                 </div>
             </div>
         </form>
