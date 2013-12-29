@@ -5,17 +5,17 @@
 <div id="step2">
     <div class="" >
         <strong class="">Introduction</strong>
-        <textarea type="text" name="intro" class="form-control input input-medium" value=""  autofocus></textarea>
+        <textarea type="text" name="intro" class="form-control input input-medium" <?php echo strlen($this->profile->intro)?"":"autofocus" ?>><?php echo $this->profile->intro ?></textarea>
     </div>
     <div class="clearfix" ></div>
     <hr />
     <div class="">
         <strong class="">Occupation</strong>
-        <textarea type="text" name="occu" class="form-control input input-medium"  value=""></textarea>
+        <textarea type="text" name="occu" class="form-control input input-medium"  ><?php echo $this->profile->occu ?></textarea>
     </div>
     <div class="">
         <strong class="">Education</strong>
-        <textarea type="text" name="edu" class="form-control input input-medium" value=""></textarea>
+        <textarea type="text" name="edu" class="form-control input input-medium" ><?php echo $this->profile->edu ?></textarea>
     </div>
     <div class="clearfix"></div>
     <hr />
@@ -42,7 +42,7 @@
         </div>
         <div class="">
             <strong class="">Town</strong>
-            <input type="text" name="city" class="form-control input input-medium " value="" />
+            <input type="text" name="city" class="form-control input input-medium " value="<?php echo $this->profile->city ?>" />
         </div>
     </div>
 </div>
