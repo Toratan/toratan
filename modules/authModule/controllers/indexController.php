@@ -131,7 +131,9 @@ class indexController extends authController
             $this->view->email = $this->request->params["email"];
             return;
         }
-        
+        # flag the redirection to profile creation
+        $this->request->params["continue"] = "/profile/edit";
+        # do signin
         $this->signinAction();
     }
 
