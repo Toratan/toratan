@@ -11,9 +11,6 @@ class user extends baseModel
         array('email'),
         array('password') 
     );
-    static $validates_numericality_of = array(
-        array('is_deactive', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0)
-    );
     /**
      * User object alias in this class' cache registery
      */
