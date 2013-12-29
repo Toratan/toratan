@@ -140,6 +140,58 @@ class profile extends baseModel
         return $array;
     }
     /**
+     * Unset a setting
+     * @param string $address the setting's address with "/" separator
+     * @param boolean $auto_save should auto save the settings or not
+     * @return mixed the setting's value or NULL if no setting found
+     * @throws \zinux\kernel\exceptions\invalideArgumentException if $address is not string or is empty
+     */
+    public function unsetSetting($address, $auto_save = 1)
+    {  
+        # trim the address
+        $address = @trim($address);
+        # validate the $address input
+        if(!\is_string($address) || !\strlen($address))
+            throw new \zinux\kernel\exceptions\invalideArgumentException("setting's \$address is not valid....");
+        # open up a session cache socket 
+        $sc = new \zinux\kernel\caching\sessionCache(__CLASS__."::Settings");
+        # explode the address
+        $address_partials = array_filter(\explode("/", $address));
+        /**
+         * recursively deletes an address from a setting
+         * @return boolean TRUE if deletion was successful; otherwise FALSE
+         */
+        function recursive_deletion(&$address_partials, &$settings)
+        {
+            # fetch an address partial
+            $m = \array_shift($address_partials);
+            # if no more address partial remained
+            if(!\count($address_partials))
+            {
+                # time to unset the setting
+                unset($settings->$m);
+                # indicate that deletion was successful
+                return true;
+            }
+            # if the params does not already exists
+            if(!@$settings->$m) 
+                # indicate that deletion was successful
+                return true;
+            # dive into other parital addresses
+            return recursive_deletion($address_partials, $settings->$m);
+        }
+        # recursively delete the address
+        $result = recursive_deletion($address_partials, $this->settings);
+        # delete the setting from cache
+        $sc->delete($address);
+        # if auto-save demaned
+        if($auto_save)
+            # save the profile
+            $this->save();
+        # return the result fetched from {recursive_deletion()}
+        return $result;
+    }
+    /**
      * Check if a setting has been set before
      * @param string $address the setting's address with "/" separator
      * @return boolean returns TRUE if setting has been set; otherwise FALSE
