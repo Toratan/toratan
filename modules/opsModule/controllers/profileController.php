@@ -65,6 +65,8 @@ class profileController extends \zinux\kernel\controller\baseController
     public function editAction()
     {
         $this->layout->AddTitle("Profile editing....");
+        # we need a wide layout
+        $this->layout->SetLayout("wide");
         # load intial profile
         $this->view->profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
         # intial value assignments
