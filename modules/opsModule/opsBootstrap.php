@@ -17,8 +17,9 @@ class opsBootstrap
             return;
         # a list of exception {controller => action} which does not need signin sig.
         $signin_free_ops = array(
-           "index" => "view",
-           "index" => "explorer"
+            "index" => "view",
+            "index" => "explorer",
+            "profile" => "index"
         );
         # the normalized currently requested {conttroller => action} 
         $current_request = array(
