@@ -27,7 +27,8 @@ class profile extends baseModel
 
     public function after_save_unserialize_settings()
     {
-        $this->settings = unserialize($this->settings);
+        # suppress the miss-serializing errors
+        $this->settings = @unserialize($this->settings);
         $this->settings_unserialized = 1;
     }
 
@@ -43,12 +44,14 @@ class profile extends baseModel
      */
     public static function getInstance($user_id)
     {
+        # fetch the profile
         $profile = parent::find($user_id);
-        # suppress the miss-serializing errors
-        $profile->settings = @unserialize($profile->settings);
-        $profile->settings_unserialized = 1;
+        # un-pack the settings
+        $profile->after_save_unserialize_settings();
+        # validate settings instance
         if(!($profile->settings instanceof \stdClass))
             $profile->settings = new \stdClass();
+        # return the profile
         return $profile;
     }
     /**
@@ -98,7 +101,7 @@ class profile extends baseModel
         # open up a session cache socket 
         $sc = new \zinux\kernel\caching\sessionCache(__CLASS__."::Settings");
         # cache the setting
-        $sc->save($address, $value);
+        $sc->save($this->user_id.$address, $value);
     }
     /**
      * Get a setting
@@ -116,9 +119,9 @@ class profile extends baseModel
         # open up a session cache socket 
         $sc = new \zinux\kernel\caching\sessionCache(__CLASS__."::Settings");
         # if already cached?
-        if($sc->isCached($address))
+        if($sc->isCached($this->user_id.$address))
             # return the cache
-            return  $sc->fetch($address);
+            return  $sc->fetch($this->user_id.$address);
         # explode the address
         $address_partials = array_filter(\explode("/", $address));
         # initiate a linked list instance
@@ -135,7 +138,7 @@ class profile extends baseModel
             $array = $array->{$route};
         }
         # save the setting's value
-        $sc->save($address, $array);
+        $sc->save($this->user_id.$address, $array);
         # return the setting value
         return $array;
     }
@@ -183,7 +186,7 @@ class profile extends baseModel
         # recursively delete the address
         $result = recursive_deletion($address_partials, $this->settings);
         # delete the setting from cache
-        $sc->delete($address);
+        $sc->delete($this->user_id.$address);
         # if auto-save demaned
         if($auto_save)
             # save the profile

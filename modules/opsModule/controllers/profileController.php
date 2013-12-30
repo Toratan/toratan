@@ -44,17 +44,21 @@ class profileController extends \zinux\kernel\controller\baseController
                 throw new \zinux\kernel\exceptions\notFoundException("The profile not found.");
         # fetch a profile by the provided user instance
         $this->view->profile = \core\db\models\profile::getInstance($user->user_id);
-        # fetch profile status
-        $profile_status = $this->view->profile->getSetting("/profile/status") ;
-        # if profile not already created
-        if(!$profile_status)
+        # if the profile is belong to current user?
+        if(\core\db\models\user::GetInstance()->user_id == $this->view->profile->user_id)
         {
-            # invoke edit action
-            $this->editAction();
-            # set view to edit mode
-            $this->view->setView("edit");
-            # return from index action
-            return;
+            # if so, fetch profile status
+            $profile_status = $this->view->profile->getSetting("/profile/status") ;
+            # if profile not already created
+            if(!$profile_status)
+            {
+                # invoke edit action
+                $this->editAction();
+                # set view to edit mode
+                $this->view->setView("edit");
+                # return from index action
+                return;
+            }
         }
     }
 
@@ -73,10 +77,6 @@ class profileController extends \zinux\kernel\controller\baseController
         $current_step = $this->view->step = 1;
         # provide hash value for view
         $this->view->hash = \zinux\kernel\security\security::GetHashString(array(session_id()));
-        # if not a POST req.
-        if(!$this->request->IsPOST())
-            # just show the view
-            return;
         /** open up a session cache socket **/
         $sc = new \zinux\kernel\caching\sessionCache(__METHOD__);
         try
@@ -90,9 +90,13 @@ class profileController extends \zinux\kernel\controller\baseController
                 unset($this->request->POST['step']);
             }
             # otherwise
-            else
+            else $this->view->step=1;
                 # this is an error
-                throw new \zinux\kernel\exceptions\invalideOperationException("Miss-configured input!!!");
+                #throw new \zinux\kernel\exceptions\invalideOperationException("Miss-configured input!!!");
+            # if not a POST req.
+            if(!$this->request->IsPOST())
+                # just show the view
+                return;
             /**
              * fetch step action
              */
