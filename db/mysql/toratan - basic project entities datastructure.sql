@@ -223,6 +223,7 @@ CREATE TABLE `profiles` (
   `occu` varchar(400) COLLATE utf8_persian_ci NOT NULL,
   `edu` varchar(250) COLLATE utf8_persian_ci NOT NULL,
   `city` varchar(100) COLLATE utf8_persian_ci NOT NULL,
+  `country` varchar(100) COLLATE utf8_persian_ci NOT NULL,
   `public_email` tinytext COLLATE utf8_persian_ci NOT NULL,
   `phone` tinytext COLLATE utf8_persian_ci NOT NULL,
   `site` tinytext COLLATE utf8_persian_ci NOT NULL,
@@ -240,6 +241,32 @@ CREATE TABLE `profiles` (
 LOCK TABLES `profiles` WRITE;
 /*!40000 ALTER TABLE `profiles` DISABLE KEYS */;
 /*!40000 ALTER TABLE `profiles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `subscribe`
+--
+
+DROP TABLE IF EXISTS `subscribe`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `subscribe` (
+  `followed` varchar(250) CHARACTER SET utf8 COLLATE utf8_persian_ci NOT NULL,
+  `follower` varchar(250) CHARACTER SET utf8 COLLATE utf8_persian_ci NOT NULL,
+  UNIQUE KEY `pair_subscription` (`follower`,`followed`),
+  KEY `followed` (`followed`,`follower`),
+  CONSTRAINT `subscribe_ibfk_2` FOREIGN KEY (`follower`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `subscribe_ibfk_1` FOREIGN KEY (`followed`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `subscribe`
+--
+
+LOCK TABLES `subscribe` WRITE;
+/*!40000 ALTER TABLE `subscribe` DISABLE KEYS */;
+/*!40000 ALTER TABLE `subscribe` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -322,4 +349,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-12-29 13:45:46
+-- Dump completed on 2013-12-31  0:55:05
