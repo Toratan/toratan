@@ -570,4 +570,13 @@ class indexController extends \zinux\kernel\controller\baseController
         header("location: /directory/{$shared_item->parent_id}.{$item}s");
         exit;        
     }
+
+    /**
+    * The \modules\opsModule\controllers\indexController::subscribeAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function subscribeAction()
+    {
+        
+    }
 }

@@ -3,7 +3,16 @@
 <style type='text/css'>
     table tr td[rowspan]{width: 1%}
 </style>
-<legend class='text-muted'>Profile Details</legend>
+<legend class='text-muted'>Profile Details
+    <?php if(\core\db\models\user::IsSignedin() && \core\db\models\user::GetInstance()->user_id != $this->profile->user_id):  ?>
+    <span class='pull-right' style='font-size: medium'>
+        <a href='/subscribe/<?php 
+            echo "{$this->profile->user_id}?".(\zinux\kernel\security\security::GetHashString(array($this->profile->user_id, session_id()."subscribe"))); 
+        ?>'>Follow</a> | <a href='/messages/new/<?php 
+            echo "{$this->profile->user_id}?".(\zinux\kernel\security\security::GetHashString(array($this->profile->user_id, session_id()."message"))); 
+        ?>'>Send Message</a></span>
+    <?php endif; ?>
+</legend>
 <div class='visible-sm visible-xs' style='margin: 1%;'></div>
 <table class="table table-responsive">
     <tbody>
