@@ -1,10 +1,74 @@
-<!--
- The \modules\opsModule\views\view\profile\indexView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for '<b>\modules\opsModule\controllers\profileController::indexAction()</b>'<br />
-    Location: '<b>/var/www/toratan/modules/opsModule/views/view/profile/indexView.phtml</b>'
-</p>
-<?php
-    \zinux\kernel\utilities\debug::_var($this->profile);
+<?php if(!@$this->profile) throw new \zinux\kernel\exceptions\invalideArgumentException("Not profile instance provided...."); ?>
+<?php if(!$this->profile->getSetting("/profile/status")) return \core\ui\html\alert::Cout("No profile provided by user!", \core\ui\html\alert::ALERT_DANGER, 0); ?>
+<style type='text/css'>
+    table tr td[rowspan]{width: 1%}
+</style>
+<legend class='text-muted'>Profile Details</legend>
+<div class='visible-sm visible-xs' style='margin: 1%;'></div>
+<table class="table table-responsive">
+    <tbody>
+        <tr>
+            <td style='width: 30%'>Name</td>
+            <td>
+                <span class='' style=''><?php echo "{$this->profile->first_name} {$this->profile->last_name}"?></span>
+                (<abbr title='Also Known As'><?php echo $this->profile->nick_name ?></abbr>)
+            </td>
+            <td rowspan="3"><a href='/profile/edit/step/1' class='pull-right' >Edit</a></td>
+        </tr>
+        <tr>
+            <td>Birthday</td>
+            <td><?php echo \date("M d Y", \mktime(0,0,0, $this->profile->birth_month, $this->profile->birth_day, $this->profile->birth_year))?></td>
+        </tr>
+        <tr>
+            <td>Gender</td>
+            <td><?php echo $this->profile->is_male?"Male":"Female"?></td>
+        </tr>
+        <tr>
+            <td>Location</td>
+            <td><?php 
+                if(!\strlen($this->profile->city) && !\strlen($this->profile->country))
+                    echo "<span class='glyphicon glyphicon-question-sign'></span> Unknown";
+                else
+                    echo $this->profile->city.(strlen($this->profile->country )?(strlen($this->profile->city)?", ":"")."{$this->profile->country}":"");
+            ?></td>
+            <td rowspan="4"><a href='/profile/edit/step/2' class='pull-right' >Edit</a></td>
+        </tr>
+        <tr>
+            <td>Educations</td>
+            <td style='text-align: justify'><blockquote><?php echo $this->profile->edu?></blockquote></td>
+        </tr>
+        <tr>
+            <td>Introduction</td>
+            <td style='text-align: justify'><blockquote><?php echo $this->profile->intro?></blockquote></td>
+        </tr>
+        <tr>
+            <td>Occupations</td>
+            <td style='text-align: justify'><blockquote><?php echo $this->profile->occu;?></blockquote></td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>
+                <?php foreach(\explode(";", $this->profile->public_email) as $email) : ?>
+                <a href='mailto:<?php echo $email ?>' target="__blank"><?php echo $email ?></a><br />
+                <?php endforeach; ?>
+            <td rowspan="3"><a href='/profile/edit/step/3' class='pull-right' >Edit</a></td>
+            </td>
+        </tr>
+        <tr>
+            <td>Phone#</td>
+            <td>
+                <?php foreach(\explode(";", $this->profile->phone) as $phone) : ?>
+                <a><?php echo $phone ?></a><br />
+                <?php endforeach; ?>
+            </td>
+        </tr>
+        <tr>
+            <td>Sites</td>
+            <td>
+                <?php foreach(\explode(";", $this->profile->site) as $site) : ?>
+                <a href='<?php echo (\preg_match("#^http(s)?//.*#i", $site)?"":"http://").$site ?>' target="__blank"><?php echo \preg_replace("#^(http(s)?//)#i", "", $site); ?></a><br />
+                <?php endforeach; ?>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -1,9 +1,9 @@
 <?php
     if(!isset($this->step))
         $this->step = 1;
-    if(!isset($this->post_back))
-        $this->post_back = false;
     $max_step = 3;
+    if($this->step<1 || $this->step>$max_step)
+        $this->step = 1;    
 ?>
 <div class="pre" style="width: 70%;margin:auto;min-height: 200px;font-family: sans-serif;background-color: inherit;padding:10px;">
     <div style="">
@@ -34,20 +34,20 @@
             div#profile-content{margin-top:10px;padding: 10px;}
             div#profile-content div#submit input{min-width: 66px}
         </style>
-        <form action="/profile/edit?<?php echo  $this->hash ?>" method="POST" class="form">
-            <input type="hidden" value="<?php echo $this->step ?>" name="step" />
+        <form action="/profile/edit/step/<?php echo $this->step ?>?<?php echo  $this->hash ?>" method="POST" class="form">
             <div id="profile-content">
 <?php
     $this->post_back = isset($this->post_back) && $this->post_back && isset($this->post) && is_array($this->post);
     $this->user = \core\db\models\user::getInstance();
     switch($this->step)
     {
+        default :
+            $this->step = 1;
         case 1:
         case 2:
         case $max_step:
             require realpath(dirname(__FILE__)."/profile-steps/step{$this->step}.php");
             break;
-        default :
             throw new \zinux\kernel\exceptions\invalideOperationException("The step: '{$this->step}' is not defined...");
     }
 ?>
