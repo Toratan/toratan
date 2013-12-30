@@ -7,4 +7,4 @@
     Location: '<b>/var/www/toratan/modules/opsModule/views/view/profile/indexView.phtml</b>'
 </p>
 <?php
-    \zinux\kernel\utilities\debug::_var(\core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id));
+    \zinux\kernel\utilities\debug::_var($this->profile);

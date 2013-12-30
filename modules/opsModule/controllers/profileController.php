@@ -16,8 +16,34 @@ class profileController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
+        $this->layout->AddTitle("Profile viewing....");
+        # if user not signed in?
+        if(!\core\db\models\user::IsSignedin())
+        {
+            # and also misses the profile ID
+            if(!$this->request->CountIndexedParam())
+                # this would be an invalid operations
+                throw new \zinux\kernel\exceptions\invalideOperationException;
+            # otherwise user the first argument as profile ID
+            if(!($user = \core\db\models\user::find(array("conditions"=> array("user_id = ?", $this->request->GetIndexedParam(0))))))
+                # if not found, indicate it
+                throw new \zinux\kernel\exceptions\notFoundException("The profile not found.");
+            # pass the profile instance to view
+            $this->view->profile = \core\db\models\profile::getInstance($user->user_id);
+            # do not proceed the following code-lines
+            return;
+        }
+        # default user for profile viewing, is current user
+        $user = \core\db\models\user::GetInstance();
         # load intial profile
-        $this->view->profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
+        # if any profile ID is demaned
+        if($this->request->CountIndexedParam())
+            # if the profile id has found, we cool to proceed
+            if(!($user = \core\db\models\user::find(array("conditions"=> array("user_id = ?", $this->request->GetIndexedParam(0))))))
+                # otherwise indicate profile not found
+                throw new \zinux\kernel\exceptions\notFoundException("The profile not found.");
+        # fetch a profile by the provided user instance
+        $this->view->profile = \core\db\models\profile::getInstance($user->user_id);
         # fetch profile status
         $profile_status = $this->view->profile->getSetting("/profile/status") ;
         # if profile not already created
@@ -38,6 +64,7 @@ class profileController extends \zinux\kernel\controller\baseController
     */
     public function editAction()
     {
+        $this->layout->AddTitle("Profile editing....");
         # load intial profile
         $this->view->profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
         # intial value assignments
