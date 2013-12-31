@@ -577,6 +577,44 @@ class indexController extends \zinux\kernel\controller\baseController
     */
     public function subscribeAction()
     {
-        
+        # validate the inputs
+        @\zinux\kernel\security\security::ArrayHashCheck($this->request->params, 
+            array(\core\db\models\user::GetInstance()->user_id, $this->request->GetIndexedParam(0), session_id()."subscribe"));
+        try
+        {
+            # subscribe the current user to target  user
+            \core\db\models\subscribe::subscribe($this->request->GetIndexedParam(0), \core\db\models\user::GetInstance()->user_id);
+        }
+        # if already connected?
+        # ignore the fact!!!
+        catch(\core\db\exceptions\alreadyExistsException $are){ unset($are);}
+        # open up a message pipe socket
+        $pipe = new \core\utiles\messagePipe;
+        # indicate the unsubscription
+        $pipe->write("You have successfully <b>subscribed</b>.");
+        # relocate the browser
+        header("location: /profile/{$this->request->GetIndexedParam(0)}");
+        exit;
+    }
+
+    /**
+    * The \modules\opsModule\controllers\indexController::unscribeAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function unsubscribeAction()
+    {
+        # validate the inputs
+        \zinux\kernel\utilities\debug::_var($this->request->params);
+        @\zinux\kernel\security\security::ArrayHashCheck($this->request->params, 
+            array(\core\db\models\user::GetInstance()->user_id, $this->request->GetIndexedParam(0), session_id()."unsubscribe"));
+        # unsubscribe the current user from target user
+        \core\db\models\subscribe::unsubscribe($this->request->GetIndexedParam(0), \core\db\models\user::GetInstance()->user_id);
+        # open up a message pipe socket
+        $pipe = new \core\utiles\messagePipe;
+        # indicate the unsubscription
+        $pipe->write("You have successfully <b>unsubscribed</b>.");
+        # relocate the browser
+        header("location: /profile/{$this->request->GetIndexedParam(0)}");
+        exit;
     }
 }

@@ -1,18 +1,19 @@
 <?php if(!@$this->profile) throw new \zinux\kernel\exceptions\invalideArgumentException("Not profile instance provided...."); ?>
-<?php if(!$this->profile->getSetting("/profile/status")) return \core\ui\html\alert::Cout("No profile provided by user!", \core\ui\html\alert::ALERT_DANGER, 0); ?>
-<style type='text/css'>
-    table tr td[rowspan]{width: 1%}
-</style>
 <legend class='text-muted'>Profile Details
     <?php if(\core\db\models\user::IsSignedin() && \core\db\models\user::GetInstance()->user_id != $this->profile->user_id):  ?>
+    <?php $sub_text = (\core\db\models\subscribe::has_subscribed($this->profile->user_id, \core\db\models\user::GetInstance()->user_id)?"un":"")."subscribe";?>
     <span class='pull-right' style='font-size: medium'>
-        <a href='/subscribe/<?php 
-            echo "{$this->profile->user_id}?".(\zinux\kernel\security\security::GetHashString(array($this->profile->user_id, session_id()."subscribe"))); 
-        ?>'>Follow</a> | <a href='/messages/new/<?php 
+        <a href='/<?php echo $sub_text ?>/<?php 
+            echo "{$this->profile->user_id}?".(\zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, $this->profile->user_id, session_id().$sub_text))); 
+        ?>'><?php echo ($sub_text=="unsubscribe"?"Unf":"F") ?>ollow</a> | <a href='/messages/new/<?php 
             echo "{$this->profile->user_id}?".(\zinux\kernel\security\security::GetHashString(array($this->profile->user_id, session_id()."message"))); 
         ?>'>Send Message</a></span>
     <?php endif; ?>
 </legend>
+<?php if(!$this->profile->getSetting("/profile/status")) return \core\ui\html\alert::Cout("No profile provided by user!", \core\ui\html\alert::ALERT_DANGER, 0); ?>
+<style type='text/css'>
+    table tr td[rowspan]{width: 1%}
+</style>
 <div class='visible-sm visible-xs' style='margin: 1%;'></div>
 <table class="table table-responsive">
     <tbody>
