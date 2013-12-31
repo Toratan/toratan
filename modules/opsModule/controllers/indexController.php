@@ -604,7 +604,6 @@ class indexController extends \zinux\kernel\controller\baseController
     public function unsubscribeAction()
     {
         # validate the inputs
-        \zinux\kernel\utilities\debug::_var($this->request->params);
         @\zinux\kernel\security\security::ArrayHashCheck($this->request->params, 
             array(\core\db\models\user::GetInstance()->user_id, $this->request->GetIndexedParam(0), session_id()."unsubscribe"));
         # unsubscribe the current user from target user
