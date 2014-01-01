@@ -2,6 +2,8 @@
     session_start();
 
     defined('RUNNING_ENV') || define('RUNNING_ENV', 'DEVELOPMENT');
+    
+    defined('PUBLIC_HTML') || define('PUBLIC_HTML', dirname(__FILE__));
 	
     defined("__SERVER_NAME__") || define("__SERVER_NAME__", $_SERVER['HTTP_HOST']);
     switch(RUNNING_ENV)
