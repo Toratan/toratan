@@ -160,31 +160,8 @@ class profile extends baseModel
         $sc = new \zinux\kernel\caching\sessionCache(__CLASS__."::Settings");
         # explode the address
         $address_partials = array_filter(\explode("/", $address));
-        /**
-         * recursively deletes an address from a setting
-         * @return boolean TRUE if deletion was successful; otherwise FALSE
-         */
-        function recursive_deletion(&$address_partials, &$settings)
-        {
-            # fetch an address partial
-            $m = \array_shift($address_partials);
-            # if no more address partial remained
-            if(!\count($address_partials))
-            {
-                # time to unset the setting
-                unset($settings->$m);
-                # indicate that deletion was successful
-                return true;
-            }
-            # if the params does not already exists
-            if(!@$settings->$m) 
-                # indicate that deletion was successful
-                return true;
-            # dive into other parital addresses
-            return recursive_deletion($address_partials, $settings->$m);
-        }
         # recursively delete the address
-        $result = recursive_deletion($address_partials, $this->settings);
+        $result = $this->recursive_deletion($address_partials, $this->settings);
         # delete the setting from cache
         $sc->delete($this->user_id.$address);
         # if auto-save demaned
@@ -200,4 +177,28 @@ class profile extends baseModel
      * @return boolean returns TRUE if setting has been set; otherwise FALSE
      */
     public function settingHasSet($address) { return $this->getSetting($address) ? TRUE : FALSE; }
+    
+    /**
+     * recursively deletes an address from a setting
+     * @return boolean TRUE if deletion was successful; otherwise FALSE
+     */
+    protected function recursive_deletion(&$address_partials, &$settings)
+    {
+        # fetch an address partial
+        $m = \array_shift($address_partials);
+        # if no more address partial remained
+        if(!\count($address_partials))
+        {
+            # time to unset the setting
+            unset($settings->$m);
+            # indicate that deletion was successful
+            return true;
+        }
+        # if the params does not already exists
+        if(!@$settings->$m) 
+            # indicate that deletion was successful
+            return true;
+        # dive into other parital addresses
+        return $this->recursive_deletion($address_partials, $settings->$m);
+    }
 }
