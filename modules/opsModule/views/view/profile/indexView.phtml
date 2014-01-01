@@ -15,13 +15,40 @@
 </legend>
 <div class='visible-sm visible-xs' style='margin: 1%;'></div>
 <style>
-    @media screen and (min-width: 300px) { .thumbnail{display:block;width: 50%}}
-    @media screen and (min-width: 400px) { .table{width: 77%} .thumbnail{width: 19%}}
-    @media screen and (min-width: 1200px) { .table{width: 80%} .thumbnail{width: 17%}}
+    @media screen and (min-width: 300px) { .ithumbnail{display:block;width: 50%}}
+    @media screen and (min-width: 400px) { .table{width: 77%} .ithumbnail{width: 19%}}
+    @media screen and (min-width: 1200px) { .table{width: 80%} .ithumbnail{width: 17%}}
 </style>
-<div class='pull-left thumbnail'>
-    <img class='img-thumbnail' alt='<?php echo $this->profile->first_name." ".$this->profile->last_name ?>' title='<?php echo $this->profile->first_name." ".$this->profile->last_name ?>' onerror="this.src='/access/img/anonymous-<?php echo $this->profile->is_male?"male":"female"; ?>.jpg';" src='<?php \core\ui\html\avatar::fetch_uri(\core\ui\html\avatar::GRAVATAR, \core\db\models\user::Fetch($this->profile->user_id)->email."a", \core\ui\html\avatar::LARGE_SIZE)?>'/>
+<script>
+    $(document).ready(function(){
+            $(".ithumbnail .dropdown").hide();
+        $(".img-thumbnail").hover(function(){
+            $(".ithumbnail .dropdown").slideToggle();
+        });
+    });
+</script>
+
+<link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
+<div class="mosaic-block bottom-bar">
+	<img src="<?php \core\ui\html\avatar::fetch_uri(\core\ui\html\avatar::GRAVATAR, \core\db\models\user::Fetch($this->profile->user_id)->email, \core\ui\html\avatar::LARGE_SIZE) ?>" />
+	<a href="##" target="_blank" class="mosaic-overlay" style="display: inline; left: 0px; bottom: -50px;">
+		<div class="details">
+			<h1>Change your avatar</h1>
+		</div>
+	</a>
 </div>
+<!--div class='pull-left ithumbnail'>
+    <img class='img-thumbnail' alt='<?php echo $this->profile->first_name." ".$this->profile->last_name ?>' title='<?php echo $this->profile->first_name." ".$this->profile->last_name ?>' onerror="this.src='/access/img/anonymous-<?php echo $this->profile->is_male?"male":"female"; ?>.jpg';" src='<?php \core\ui\html\avatar::fetch_uri(\core\ui\html\avatar::GRAVATAR, \core\db\models\user::Fetch($this->profile->user_id)->email, \core\ui\html\avatar::SMALL_SIZE)?>'/>
+    <div class='dropdown' style='margin-top: -10%;position: fixed;z-index: 100000;'>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> Account <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="#">Account Settings</a></li>
+            <li class="divider"></li>
+            <li><a href="/signout">Signout</a></li>
+        </ul>
+    </div>
+</div-->
 <table class="table table-responsive pull-right" >
     <tbody>
         <tr>
