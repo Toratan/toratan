@@ -207,8 +207,11 @@ class profileController extends \zinux\kernel\controller\baseController
     */
     public function avatarAction()
     {
+        # we only process POST request here
         if(!$this->request->IsPOST()) return;
+        # validate the inputs
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, \session_id()));
+        
         \zinux\kernel\utilities\debug::_var($this->request->params,1);
     }
 }

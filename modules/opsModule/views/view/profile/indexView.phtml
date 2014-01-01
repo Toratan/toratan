@@ -27,24 +27,21 @@
 <script>
     $(document).ready(function(){
         $(".mosaic-overlay .details h1").show();
-        $(".mosaic-overlay thumbnail").error(function(){
-            this.src='/access/img/anonymous-<?php echo $this->profile->is_male?"":"fe" ?>male.jpg';
-        });
     });
 </script>
 <?php endif ; ?>
 <div class="mosaic-block bottom-bar">
 <?php if($is_profile_owner) : ?>
-    <a href="/profile/avatar/change"  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -50px;">
+    <a href="/profile/avatar"  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -50px;">
         <div class="details text-center ">
             <h1 class="collapse">Change your avatar <span class="glyphicon glyphicon-picture"></span></h1>
             <h2>JavaScript disabled</h2>
         </div>
     </a>
 <?php endif ; ?>
-    <img id="thumbnail" width="200" height="200" class='img-responsive img-thumbnail' src="<?php \core\ui\html\avatar::fetch_uri(\core\ui\html\avatar::GRAVATAR, "".\core\db\models\user::Fetch($this->profile->user_id)->email, \core\ui\html\avatar::LARGE_SIZE) ?>" />
+    <img id="thumbnail" width="200" height="200" class='img-responsive img-thumbnail' src="<?php \core\ui\html\avatar::fetch_uri(\core\ui\html\avatar::GRAVATAR, "".\core\db\models\user::Fetch($this->profile->user_id)->email, \core\ui\html\avatar::LARGE_SIZE) ?>" onerror="this.src='/access/img/anonymous-<?php echo $this->profile->is_male?"":"fe" ?>male.jpg';"/>
 </div>
-<?php if(false && !$this->profile->getSetting("/profile/status")) : ?>
+<?php if(!$this->profile->getSetting("/profile/status")) : ?>
 <div class='clearfix visible-xs'></div>
 <div class='table'>
     <?php \core\ui\html\alert::Cout("No profile provided by user!", \core\ui\html\alert::ALERT_DANGER, 0); ?>
@@ -56,9 +53,9 @@
             <td style='width: 30%'>Name</td>
             <td>
                 <span class='' style=''><?php echo "{$this->profile->first_name} {$this->profile->last_name}"?></span>
-                <?php if(!empty($this->profile->nick_name)): ?>(<abbr title='Also Known As'><?php echo $this->profile->nick_name ?></abbr>)<?php endif; ?>
+                (<abbr title='Also Known As'><?php echo $this->profile->nick_name ?></abbr>)
             </td>
-            <?php if($is_profile_owner): ?><td rowspan="3"><a href='/profile/edit/step/1' class='pull-right' >Edit</a></td><?php endif; ?>
+            <td rowspan="3"><a href='/profile/edit/step/1' class='pull-right' >Edit</a></td>
         </tr>
         <tr>
             <td>Birthday</td>
@@ -76,42 +73,29 @@
                 else
                     echo $this->profile->city.(strlen($this->profile->country )?(strlen($this->profile->city)?", ":"")."{$this->profile->country}":"");
             ?></td>
-            <?php $rowspan = 1; foreach(array("edu", "intro", "occu") as $value) if(!\strlen($value)) $rowspan++; ?>
-            <?php if($is_profile_owner): ?><td rowspan="<?php echo $rowspan; ?>"><a href='/profile/edit/step/2' class='pull-right' >Edit</a></td><?php endif; ?>
+            <td rowspan="4"><a href='/profile/edit/step/2' class='pull-right' >Edit</a></td>
         </tr>
-        <?php if(\strlen($this->profile->edu)) : ?>
         <tr>
             <td>Educations</td>
-            <td style='text-align: justify'><blockquote><?php echo $this->profile->edu ?></blockquote></td>
+            <td style='text-align: justify'><blockquote><?php echo $this->profile->edu?></blockquote></td>
         </tr>
-        <?php endif; if(\strlen($this->profile->intro)) : ?>
         <tr>
             <td>Introduction</td>
-            <td style='text-align: justify'><blockquote><?php echo $this->profile->intro ?></blockquote></td>
+            <td style='text-align: justify'><blockquote><?php echo $this->profile->intro?></blockquote></td>
         </tr>
-        <?php endif; if(\strlen($this->profile->occu)) : ?>
         <tr>
             <td>Occupations</td>
-            <td style='text-align: justify'><blockquote><?php echo $this->profile->occu ?></blockquote></td>
+            <td style='text-align: justify'><blockquote><?php echo $this->profile->occu;?></blockquote></td>
         </tr>
-        <?php endif; ?>
-        <?php 
-            $contact_edit_imported = 0;
-            $rowspan = 0; 
-            foreach(array("edu", "intro", "occu") as $value) if(!\strlen($value)) $rowspan++; 
-            $contact_edit = $is_profile_owner?'<td rowspan="'.$rowspan.'"><a href="/profile/edit/step/3" class="pull-right" >Edit</a></td>':""; 
-            ?>
-        <?php if(\strlen($this->profile->public_email)) : ?>
         <tr>
             <td>Email</td>
             <td>
                 <?php foreach(\explode(";", $this->profile->public_email) as $email) : ?>
                 <a href='mailto:<?php echo $email ?>' target="__blank"><?php echo $email ?></a><br />
                 <?php endforeach; ?>
+            <td rowspan="3"><a href='/profile/edit/step/3' class='pull-right' >Edit</a></td>
             </td>
-            <?php echo !$contact_edit_imported?$contact_edit:"";$contact_edit_imported =1?>
         </tr>
-        <?php endif; if(\strlen($this->profile->phone)) : ?>
         <tr>
             <td>Phone#</td>
             <td>
@@ -119,9 +103,7 @@
                 <a><?php echo $phone ?></a><br />
                 <?php endforeach; ?>
             </td>
-            <?php echo !$contact_edit_imported?$contact_edit:"";$contact_edit_imported =1?>
         </tr>
-        <?php endif; if(\strlen($this->profile->site)) : ?>
         <tr>
             <td>Sites</td>
             <td>
@@ -129,12 +111,6 @@
                 <a href='<?php echo (\preg_match("#^http(s)?//.*#i", $site)?"":"http://").$site ?>' target="__blank"><?php echo \preg_replace("#^(http(s)?//)#i", "", $site); ?></a><br />
                 <?php endforeach; ?>
             </td>
-            <?php echo !$contact_edit_imported?$contact_edit:"";$contact_edit_imported =1?>
         </tr>
-        <?php endif; if(!$contact_edit_imported && $is_profile_owner): ?>
-        <tr class='text-center'>
-            <td colspan="3">No Contact Information, you can always add some contact information <a href="/profile/edit/step/3">here</a>.</td>
-        </tr>
-        <?php endif; ?>
     </tbody>
 </table>
