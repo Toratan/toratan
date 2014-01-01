@@ -1,0 +1,83 @@
+<style>
+    div.radio{margin-top: 0}
+    .form-group[checked]{background-color: #eee}
+</style>
+<form action='/profile/avatar?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, \session_id())); ?>' method="POST"> 
+    <legend>Avatar Manager</legend>
+    <table class='table table-responsive'>
+        <tbody>
+            <tr>
+                <td>
+                    <div class='form-group'>
+                        <div class="radio pull-right inline">
+                            <label>
+                                <input type="radio" name="activated"  value="fb" tabindex="-1">
+                                Activate
+                            </label>
+                        </div>
+                        <label class='control-label pull-left'>Facebook Account or ID</label>
+                        <input type='text' class='form-control clearfix'  name='fb'/>
+                    </div>
+                </td>
+                <td>
+                    <div class='form-group'>
+                        <div class="radio pull-right inline">
+                            <label>
+                                <input type="radio" name="activated"  value="tw" tabindex="-1">
+                                Activate
+                            </label>
+                        </div>
+                        <label class='control-label pull-left'>Twitter Account or ID</label>
+                        <input type='text' class='form-control clearfix' name='tw'/>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class='form-group'>
+                        <div class="radio pull-right inline">
+                            <label>
+                                <input type="radio" name="activated"  value="ins" tabindex="-1">
+                                Activate
+                            </label>
+                        </div>
+                        <label class='control-label pull-left'>Instagram Account or ID</label>
+                        <input type='text' class='form-control clearfix' name='ins'/>
+                    </div>
+                </td>
+                <td>
+                    <div class='form-group'>
+                        <div class="radio pull-right inline">
+                            <label>
+                                <input type="radio" name="activated"  value="gr" tabindex="-1">
+                                Activate
+                            </label>
+                        </div>
+                        <label class='control-label pull-left'>Gravatar email</label>
+                        <input type='text' class='form-control clearfix' name='gr'/>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class='form-group'>
+                        <div class="radio pull-right inline">
+                            <label>
+                                <input type="radio" name="activated"  value="cust" tabindex="-1">
+                                Activate
+                            </label>
+                        </div>
+                        <label class='control-label pull-left'>Or custum upload</label>
+                        <div class='clearfix'></div>
+                        <input type='file' class='form-control clearfix' name='cust'/>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    <div class="modal-footer">
+        <a href="/profile" class="btn btn-default" data-dismiss="modal">Close</a>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+    </div>
+</form>
