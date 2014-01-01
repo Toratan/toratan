@@ -8,6 +8,7 @@ class avatar
     const TWITTER = 'twitter';
     const FACEBOOK = 'facebook';
     const GRAVATAR = 'gravatar';
+    const INSTAGRAM = 'instagram';
     const SMALL_SIZE = "small";
     const MEDIUM_SIZE = "medium";
     const LARGE_SIZE = "large";
