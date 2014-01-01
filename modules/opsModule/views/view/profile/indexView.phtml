@@ -1,21 +1,28 @@
 <?php if(!@$this->profile) throw new \zinux\kernel\exceptions\invalideArgumentException("Not profile instance provided...."); ?>
-<legend class='text-muted'>Profile Details
-    <?php if(\core\db\models\user::IsSignedin() && \core\db\models\user::GetInstance()->user_id != $this->profile->user_id):  ?>
-    <?php $sub_text = (\core\db\models\subscribe::has_subscribed($this->profile->user_id, \core\db\models\user::GetInstance()->user_id)?"un":"")."subscribe";?>
-    <span class='pull-right' style='font-size: medium'>
-        <a href='/<?php echo $sub_text ?>/<?php 
-            echo "{$this->profile->user_id}?".(\zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, $this->profile->user_id, session_id().$sub_text))); 
-        ?>'><?php echo ($sub_text=="unsubscribe"?"Unf":"F") ?>ollow</a> | <a href='/messages/new/<?php 
-            echo "{$this->profile->user_id}?".(\zinux\kernel\security\security::GetHashString(array($this->profile->user_id, session_id()."message"))); 
-        ?>'>Send Message</a></span>
-    <?php endif; ?>
-</legend>
 <?php if(!$this->profile->getSetting("/profile/status")) return \core\ui\html\alert::Cout("No profile provided by user!", \core\ui\html\alert::ALERT_DANGER, 0); ?>
 <style type='text/css'>
     table tr td[rowspan]{width: 1%}
 </style>
+<legend class='text-muted'>Profile Details
+    <?php if(\core\db\models\user::IsSignedin() && \core\db\models\user::GetInstance()->user_id != $this->profile->user_id):  ?>
+    <span class='pull-right' style='font-size: medium'>
+        <a href='/subscribe/<?php 
+            echo "{$this->profile->user_id}?".(\zinux\kernel\security\security::GetHashString(array($this->profile->user_id, session_id()."subscribe"))); 
+        ?>'>Follow</a> | <a href='/messages/new/<?php 
+            echo "{$this->profile->user_id}?".(\zinux\kernel\security\security::GetHashString(array($this->profile->user_id, session_id()."message"))); 
+        ?>'>Send Message</a></span>
+    <?php endif; ?>
+</legend>
 <div class='visible-sm visible-xs' style='margin: 1%;'></div>
-<table class="table table-responsive">
+<style>
+    @media screen and (min-width: 300px) { .thumbnail{display:block;width: 50%}}
+    @media screen and (min-width: 400px) { .table{width: 77%} .thumbnail{width: 19%}}
+    @media screen and (min-width: 1200px) { .table{width: 80%} .thumbnail{width: 17%}}
+</style>
+<div class='pull-left thumbnail'>
+    <img class='img-thumbnail' alt='<?php echo $this->profile->first_name." ".$this->profile->last_name ?>' title='<?php echo $this->profile->first_name." ".$this->profile->last_name ?>' onerror="this.src='/access/img/anonymous-<?php echo $this->profile->is_male?"male":"female"; ?>.jpg';" src='<?php \core\ui\html\avatar::fetch_uri(\core\ui\html\avatar::GRAVATAR, \core\db\models\user::Fetch($this->profile->user_id)->email."a", \core\ui\html\avatar::LARGE_SIZE)?>'/>
+</div>
+<table class="table table-responsive pull-right" >
     <tbody>
         <tr>
             <td style='width: 30%'>Name</td>
