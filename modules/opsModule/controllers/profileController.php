@@ -200,4 +200,15 @@ class profileController extends \zinux\kernel\controller\baseController
         # save the profiles
         $profile->save();
     }
+
+    /**
+    * The \modules\opsModule\controllers\profileController::avatarAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function avatarAction()
+    {
+        if(!$this->request->IsPOST()) return;
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, \session_id()));
+        \zinux\kernel\utilities\debug::_var($this->request->params,1);
+    }
 }
