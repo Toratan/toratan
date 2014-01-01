@@ -2,7 +2,8 @@
     div.radio{margin-top: 0}
     .form-group[checked]{background-color: #eee}
 </style>
-<form action='/profile/avatar?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, \session_id())); ?>' method="POST"> 
+<?php if(isset($this->errors)) \zinux\kernel\utilities\debug::_var($this->errors); ?>
+<form action='/profile/avatar?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, \session_id())); ?>' method="POST" enctype="multipart/form-data"> 
     <legend>Avatar Manager</legend>
     <table class='table table-responsive'>
         <tbody>
@@ -16,7 +17,8 @@
                             </label>
                         </div>
                         <label class='control-label pull-left'>Facebook Account or ID</label>
-                        <input type='text' class='form-control clearfix'  name='fb'/>
+                        <div class="clearfix"></div>
+                        <input type='text' class='form-control'  name='fb'/>
                     </div>
                 </td>
                 <td>
@@ -28,7 +30,8 @@
                             </label>
                         </div>
                         <label class='control-label pull-left'>Twitter Account or ID</label>
-                        <input type='text' class='form-control clearfix' name='tw'/>
+                        <div class="clearfix"></div>
+                        <input type='text' class='form-control' name='tw'/>
                     </div>
                 </td>
             </tr>
@@ -42,19 +45,21 @@
                             </label>
                         </div>
                         <label class='control-label pull-left'>Instagram Account or ID</label>
-                        <input type='text' class='form-control clearfix' name='ins'/>
+                        <div class="clearfix"></div>
+                        <input type='text' class='form-control' name='ins'/>
                     </div>
                 </td>
                 <td>
                     <div class='form-group'>
                         <div class="radio pull-right inline">
                             <label>
-                                <input type="radio" name="activated"  value="gr" tabindex="-1">
+                                <input type="radio" name="activated"  value="gr" tabindex="-1" checked>
                                 Activate
                             </label>
                         </div>
                         <label class='control-label pull-left'>Gravatar email</label>
-                        <input type='text' class='form-control clearfix' name='gr'/>
+                        <div class="clearfix"></div>
+                        <input type='text' class='form-control' name='gr'/>
                     </div>
                 </td>
             </tr>
@@ -69,7 +74,8 @@
                         </div>
                         <label class='control-label pull-left'>Or custum upload</label>
                         <div class='clearfix'></div>
-                        <input type='file' class='form-control clearfix' name='cust'/>
+                        <input type="hidden" name="MAX_FILE_SIZE" value="<?php /* 2MB */ ?>2097152" />
+                        <input type='file' class='form-control' style="" name='cust' />
                     </div>
                 </td>
             </tr>

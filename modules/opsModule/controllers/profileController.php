@@ -23,7 +23,7 @@ class profileController extends \zinux\kernel\controller\baseController
             # and also misses the profile ID
             if(!$this->request->CountIndexedParam())
                 # this would be an invalid operations
-                throw new \zinux\kernel\exceptions\invalideOperationException;
+                throw new \zinux\kernel\exceptions\invalideOperationException("Empty profile ID!");
             # otherwise user the first argument as profile ID
             if(!($user = \core\db\models\user::find(array("conditions"=> array("user_id = ?", $this->request->GetIndexedParam(0))))))
                 # if not found, indicate it
@@ -211,7 +211,93 @@ class profileController extends \zinux\kernel\controller\baseController
         if(!$this->request->IsPOST()) return;
         # validate the inputs
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, \session_id()));
-        
-        \zinux\kernel\utilities\debug::_var($this->request->params,1);
+        # invoke a new instance of profile
+        $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
+        # we do not support multiple uploads on avatars
+        if(is_array($_FILES["cust"]["name"]))
+            throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
+        # if we have an uploaded file
+        if(isset($_FILES["cust"]) && strlen($_FILES["cust"]['tmp_name']))
+            # flag the upload
+            $this->request->params["cust"] = "cust";
+        # check for any possible errors
+         if ($_FILES["cust"]["error"])
+             throw new \core\exceptions\uploadException($_FILES["cust"]["error"]);
+        # an error flag used during ops4
+        $this->errors = array();
+        # iterate on params
+        foreach ($this->request->params as $key => $value)
+        {
+            switch($key)
+            {
+                case "fb":
+                case "tw":
+                case "gr":
+                case "ins":
+                case "cust":
+                    if(!strlen($value))
+                    {
+                        $profile->unsetSetting ("/profile/avatar/$key");
+                        break;
+                    }
+                    if($key!="cust")
+                    {
+                        $profile->setSetting("/profile/avatar/$key/set", 1, 0);
+                        $profile->setSetting("/profile/avatar/$key/id", $value, 0);
+                        break;
+                    }
+                    # do your upload here
+                    foreach (array(PUBLIC_HTML."/access/img/upload", PUBLIC_HTML."/access/img/upload/thumbnail") as $value)
+                        if(!file_exists($value))
+                            if(!@mkdir ($value, 0777, 1))
+                                    throw new \zinux\kernel\exceptions\invalideOperationException("Unable to create directroy `$value`.");
+                    $this->upload_avatar($key);
+                    break;
+                case "activated":
+                    if(strlen($this->request->params[$value]))
+                        $profile->setSetting("/profile/avatar/activated", $value, 0);
+                    else
+                        $profile->unsetSetting ("/profile/avatar/activated", 0);
+                    break;
+                default:
+                    unset($this->request->params[$key]);
+                    break;
+            }
+        }
+        # if we have errors?
+        if(count($this->errors))
+        {
+            # notify the errors
+            $this->view->errors = $this->errors;
+            return;
+        }
+        # in here we are cool
+        \zinux\kernel\utilities\debug::_var($profile->settings,1);
+        # relocate the browser
+        header("location: /profile");
+        exit;
+    }
+    /**
+     * A safe avatar uploader
+     * @param array $_FILES the files inputs
+     * @throws \zinux\kernel\exceptions\invalideArgumentException if no data found in $_FILES
+     * @return boolean TRUE if upload was successful; otherwise FALSE
+     */
+    protected function upload_avatar($index_name)
+    {
+        if(!count($_FILES))
+            throw new \zinux\kernel\exceptions\invalideArgumentException("No file uploaded!");
+        $image_support_types = array('png' => 'image/png',
+            'jpe' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'bmp' => 'image/bmp');
+        if(!in_array($_FILES[$index_name]["type"], $image_support_types))
+        {
+            $this->errors[] = "File type not supported!";
+            return;
+        }
+        DIE("WORKING ON UPLOAD AND THUMBNAIL");
     }
 }
