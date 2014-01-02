@@ -347,6 +347,8 @@ class profileController extends \zinux\kernel\controller\baseController
         $alt_name = $_FILES[$index_name]["name"];
         # define a counter for naming
         $counter = 0;
+        # unlink any possible perviously profile picture
+        @\shell_exec("rm -f .".$profile->getSetting("/profile/avatar/custom/origin_image"));
         # while original image file already exists, increase the counters
         while(\file_exists($orig_path.sha1($alt_name.(++$counter)).".$ext")) ;
         # generate a new name for original image
@@ -355,6 +357,8 @@ class profileController extends \zinux\kernel\controller\baseController
         $orig_path .= "$alt_name.$ext";
         # define a counter for naming
         $counter = 0;
+        # unlink any possible perviously profile picture
+        @\shell_exec("rm -f .".$profile->getSetting("/profile/avatar/custom/thumb_image"));
         # while thumbnail image file already exists, increase the counters
         while(\file_exists($thum_path.sha1($alt_name.(++$counter)."-tmb").".$ext")) ;
         # generate the new name for thumbnail
@@ -364,15 +368,11 @@ class profileController extends \zinux\kernel\controller\baseController
             throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
         # setting the profile settings for avatar custom upload
         $profile->setSetting("/profile/avatar/custom/set",1, 0);
-        # unlink any possible perviously profile picture
-        @\shell_exec("rm .".$profile->getSetting("/profile/avatar/custom/origin_image"));
         # setting the profile settings for original image path
         $profile->setSetting("/profile/avatar/custom/origin_image", "/$orig_path", 0);
         # create a thumbnail for original image
         if(!@\core\ui\html\avatar::make_thumbnail($orig_path, $thum_path))
             throw new \zinux\kernel\exceptions\invalideOperationException("File uploaded but unable to create thumbnail!");
-        # unlink any possible perviously profile picture
-        @\shell_exec("rm ".$profile->getSetting("/profile/avatar/custom/thumb_image"));
         # setting the profile settings for thumbnail image path
         $profile->setSetting("/profile/avatar/custom/thumb_image", "/$thum_path", 0);
     }

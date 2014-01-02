@@ -30,7 +30,7 @@
                     <div class='form-group <?php echo @$this->errors[\core\ui\html\avatar::FACEBOOK]?"has-error":""?>'>
                         <div class="radio pull-right inline">
                             <label>
-                                <input type="radio" name="activated"  value="<?php echo \core\ui\html\avatar::FACEBOOK ?>" tabindex="-1"  <?php echo @$this->avatar->activated == core\ui\html\avatar::FACEBOOK ? "checked" : "" ?> >
+                                <input type="radio" name="activated"  value="<?php echo \core\ui\html\avatar::FACEBOOK ?>" tabindex="-1"  <?php echo @$this->avatar->activated == core\ui\html\avatar::FACEBOOK ? "checked" : "" ?> required>
                                 Activate
                             </label>
                         </div>
