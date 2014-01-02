@@ -98,10 +98,6 @@ class profile extends baseModel
         if($auto_save)
             # save the changes 
             $this->save();
-        # open up a session cache socket 
-        $sc = new \zinux\kernel\caching\sessionCache(__CLASS__."::Settings");
-        # cache the setting
-        $sc->save($this->user_id.$address, $value);
     }
     /**
      * Get a setting
@@ -116,12 +112,6 @@ class profile extends baseModel
         # validate the $address input
         if(!\is_string($address) || !\strlen($address))
             throw new \zinux\kernel\exceptions\invalideArgumentException("setting's \$address is not valid....");
-        # open up a session cache socket 
-        $sc = new \zinux\kernel\caching\sessionCache(__CLASS__."::Settings");
-        # if already cached?
-        if($sc->isCached($this->user_id.$address))
-            # return the cache
-            return  $sc->fetch($this->user_id.$address);
         # explode the address
         $address_partials = array_filter(\explode("/", $address));
         # initiate a linked list instance
@@ -137,8 +127,6 @@ class profile extends baseModel
             # move to next link
             $array = $array->{$route};
         }
-        # save the setting's value
-        $sc->save($this->user_id.$address, $array);
         # return the setting value
         return $array;
     }
@@ -156,14 +144,10 @@ class profile extends baseModel
         # validate the $address input
         if(!\is_string($address) || !\strlen($address))
             throw new \zinux\kernel\exceptions\invalideArgumentException("setting's \$address is not valid....");
-        # open up a session cache socket 
-        $sc = new \zinux\kernel\caching\sessionCache(__CLASS__."::Settings");
         # explode the address
         $address_partials = array_filter(\explode("/", $address));
         # recursively delete the address
         $result = $this->recursive_deletion($address_partials, $this->settings);
-        # delete the setting from cache
-        $sc->delete($this->user_id.$address);
         # if auto-save demaned
         if($auto_save)
             # save the profile
