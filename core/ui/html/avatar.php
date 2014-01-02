@@ -46,4 +46,40 @@ class avatar
         else
             return $img;
     }
+    public static function make_thumbnail($src, $dest, $desired_width, $auto_height = 1, $desired_height = NULL) {
+
+	/* read the source image */
+    switch(TRUE)
+    {
+        case preg_match('/[.](jp(e|eg|g)?)$/', $dest):
+             $source_image = imagecreatefromjpeg($src);
+            break;
+        case preg_match('/[.](gif)$/', $dest):
+            $source_image = imagecreatefromgif($src);
+            break;
+        case preg_match('/[.](png)$/', $dest):
+            $source_image =  imagecreatefrompng($src);
+            break;
+        default:
+            throw new \zinux\kernel\exceptions\invalideOperationException("Image type `".end(\array_filter(\explode(".", $dest)))."` not supported");
+    }
+	$width = imagesx($source_image);
+	$height = imagesy($source_image);
+	
+	/* find the "desired height" of this thumbnail, relative to the desired width  */
+        if($auto_height)
+            $desired_height = floor($height * ($desired_width / $width));
+	
+	/* create a new, "virtual" image */
+	$virtual_image = imagecreatetruecolor($desired_width, $desired_height);
+	
+	/* copy source image at a resized size */
+	imagecopyresampled($virtual_image, $source_image, 0, 0, 0, 0, $desired_width, $desired_height, $width, $height);
+	
+	/* create the physical thumbnail image to its destination */
+	imagejpeg($virtual_image, $dest);
+    
+        /* indicate the success */
+        return true;
+    }
 }
