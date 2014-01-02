@@ -1,6 +1,7 @@
 <style>
     div.radio{margin-top: 0}
     .form-group[checked]{background-color: #eee}
+    table.table tr td{width: 50%}
 </style>
 <?php if(isset($this->errors)) \zinux\kernel\utilities\debug::_var($this->errors); ?>
 <form action='/profile/avatar?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, \session_id())); ?>' method="POST" enctype="multipart/form-data"> 
@@ -12,26 +13,26 @@
                     <div class='form-group'>
                         <div class="radio pull-right inline">
                             <label>
-                                <input type="radio" name="activated"  value="fb" tabindex="-1">
+                                <input type="radio" name="activated"  value="<?php echo \core\ui\html\avatar::FACEBOOK ?>" tabindex="-1"  <?php echo @$this->avatar->activated == core\ui\html\avatar::FACEBOOK ? "checked" : "" ?>>
                                 Activate
                             </label>
                         </div>
                         <label class='control-label pull-left'>Facebook Account or ID</label>
                         <div class="clearfix"></div>
-                        <input type='text' class='form-control'  name='fb'/>
+                        <input type='text' class='form-control'  name='<?php echo \core\ui\html\avatar::FACEBOOK ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::FACEBOOK}->id ?>" />
                     </div>
                 </td>
                 <td>
                     <div class='form-group'>
                         <div class="radio pull-right inline">
                             <label>
-                                <input type="radio" name="activated"  value="tw" tabindex="-1">
+                                <input type="radio" name="activated"  value="<?php echo \core\ui\html\avatar::TWITTER ?>" tabindex="-1"  <?php echo @$this->avatar->activated == core\ui\html\avatar::TWITTER ? "checked" : "" ?>>
                                 Activate
                             </label>
                         </div>
                         <label class='control-label pull-left'>Twitter Account or ID</label>
                         <div class="clearfix"></div>
-                        <input type='text' class='form-control' name='tw'/>
+                        <input type='text' class='form-control' name='<?php echo \core\ui\html\avatar::TWITTER ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::TWITTER}->id ?>"/>
                     </div>
                 </td>
             </tr>
@@ -40,31 +41,31 @@
                     <div class='form-group'>
                         <div class="radio pull-right inline">
                             <label>
-                                <input type="radio" name="activated"  value="ins" tabindex="-1">
+                                <input type="radio" name="activated"  value="<?php echo \core\ui\html\avatar::INSTAGRAM ?>" tabindex="-1" <?php echo @$this->avatar->activated == core\ui\html\avatar::INSTAGRAM ? "checked" : "" ?>>
                                 Activate
                             </label>
                         </div>
                         <label class='control-label pull-left'>Instagram Account or ID</label>
                         <div class="clearfix"></div>
-                        <input type='text' class='form-control' name='ins'/>
+                        <input type='text' class='form-control' name='<?php echo \core\ui\html\avatar::INSTAGRAM ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::INSTAGRAM}->id ?>"/>
                     </div>
                 </td>
                 <td>
                     <div class='form-group'>
                         <div class="radio pull-right inline">
                             <label>
-                                <input type="radio" name="activated"  value="gr" tabindex="-1" checked>
+                                <input type="radio" name="activated"  value="<?php echo \core\ui\html\avatar::GRAVATAR ?>" tabindex="-1" <?php echo !@$this->avatar->activated || @$this->avatar->activated == core\ui\html\avatar::GRAVATAR ? "checked" : "" ?>>
                                 Activate
                             </label>
                         </div>
                         <label class='control-label pull-left'>Gravatar email</label>
                         <div class="clearfix"></div>
-                        <input type='text' class='form-control' name='gr'/>
+                        <input type='text' class='form-control' name='<?php echo \core\ui\html\avatar::GRAVATAR ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::GRAVATAR}->id ?>"/>
                     </div>
                 </td>
             </tr>
             <tr>
-                <td colspan="2">
+                <td>
                     <div class='form-group'>
                         <div class="radio pull-right inline">
                             <label>
@@ -78,6 +79,24 @@
                         <input type='file' class='form-control' style="" name="custom" />
                     </div>
                 </td>
+                <td>
+                    <?php if(@$this->avatar->custom): ?>
+                        <?php if(file_exists(".".$this->avatar->custom->thumb_image)) : ?>
+                        <div class="radio pull-right inline">
+                            <label>
+                                <input type="radio" name="activated"  value="custom" tabindex="-1">
+                                Activate
+                            </label>
+                        </div>
+                    <blockquote class='block pull-left'>You currenlty uploaded avatar!</blockquote>
+                    <img height="200" width="200" src='<?php echo $this->avatar->custom->thumb_image ?>' class='imageblock img-responsive img-thumbnail pull-right'/>
+                        <?php else: ?>
+                    <blockquote class='text-danger' style='margin-top:5%'>It seems your privious avatar has been deleted!</blockquote>
+                        <?php endif; ?>
+                    <?php else: ?>
+                    <blockquote class='text-muted' style='margin-top:5%'>No custom avatar has been registered.</blockquote>
+                    <?php endif; ?>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -87,3 +106,4 @@
         <button type="submit" class="btn btn-primary">Save changes</button>
     </div>
 </form>
+<?php \zinux\kernel\utilities\debug::_var($this->avatar) ?>

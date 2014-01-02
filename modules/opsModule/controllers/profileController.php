@@ -207,12 +207,14 @@ class profileController extends \zinux\kernel\controller\baseController
     */
     public function avatarAction()
     {
+        # invoke a new instance of profile
+        $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
+        # pass any info we have on the user's profile's avatar to view
+        $this->view->avatar = $profile->getSetting("/profile/avatar/");
         # we only process POST request here
         if(!$this->request->IsPOST()) return;
         # validate the inputs
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, \session_id()));
-        # invoke a new instance of profile
-        $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
         # we do not support multiple uploads on avatars
         if(is_array($_FILES["custom"]["name"]))
             throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
@@ -221,7 +223,7 @@ class profileController extends \zinux\kernel\controller\baseController
             # flag the upload
             $this->request->params["custom"] = "custom";
         # check for any possible errors
-         if ($_FILES["custom"]["error"])
+         if ($_FILES["custom"]["error"] && $_FILES["custom"]["error"] != UPLOAD_ERR_NO_FILE)
              throw new \core\exceptions\uploadException($_FILES["custom"]["error"]);
         # an error flag used during ops4
         $this->errors = array();
@@ -230,10 +232,10 @@ class profileController extends \zinux\kernel\controller\baseController
         {
             switch($key)
             {
-                case "fb":
-                case "tw":
-                case "gr":
-                case "ins":
+                case \core\ui\html\avatar::INSTAGRAM:
+                case \core\ui\html\avatar::FACEBOOK:
+                case \core\ui\html\avatar::GRAVATAR:
+                case \core\ui\html\avatar::TWITTER:
                 case "custom":
                     if(!strlen($value))
                     {
@@ -254,7 +256,9 @@ class profileController extends \zinux\kernel\controller\baseController
                     $this->upload_avatar($key, $profile);
                     break;
                 case "activated":
-                    if(strlen($this->request->params[$value]))
+                    if($value == "custom")
+                        $profile->setSetting("/profile/avatar/activated", $value);
+                    elseif(strlen($this->request->params[$value]))
                         $profile->setSetting("/profile/avatar/activated", $value, 0);
                     else
                         $this->errors[] = "Selected active field is empty";
@@ -271,8 +275,9 @@ class profileController extends \zinux\kernel\controller\baseController
             $this->view->errors = $this->errors;
             return;
         }
-        # in here we are cool
-        \zinux\kernel\utilities\debug::_var($profile->settings,1);
+        # save the profile
+        $profile->save();
+//        \zinux\kernel\utilities\debug::_var($profile,1);
         # relocate the browser
         header("location: /profile");
         exit;
@@ -293,6 +298,7 @@ class profileController extends \zinux\kernel\controller\baseController
             'jpeg' => 'image/jpeg',
             'jpg' => 'image/jpeg',
             'gif' => 'image/gif');
+        
         if(!in_array($_FILES[$index_name]["type"], $image_support_types))
         {
             $this->errors[] = "File type not supported!";
@@ -305,7 +311,7 @@ class profileController extends \zinux\kernel\controller\baseController
             throw new \zinux\kernel\exceptions\invalideArgumentException("No configuration found for `upload.avatar`!!");
         
         $ext = end(\array_filter(explode(".", $_FILES[$index_name]["name"])));
-        $alt_name = \zinux\kernel\security\hash::Generate($_FILES[$index_name]["name"]);
+        $alt_name = $_FILES[$index_name]["name"];
         
         $counter = 0;
         while(\file_exists($orig_path.sha1($alt_name.(++$counter)).".$ext")) ;
@@ -319,10 +325,14 @@ class profileController extends \zinux\kernel\controller\baseController
         if(!@\move_uploaded_file($_FILES[$index_name]["tmp_name"], $orig_path))
             throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
         $profile->setSetting("/profile/avatar/custom/set",1, 0);
+        # unlink any possible perviously profile picture
+        unlink($profile->getSetting("/profile/avatar/custom/oringal_image"));
         $profile->setSetting("/profile/avatar/custom/oringal_image", "/$orig_path", 0);
         
         if(!@\core\ui\html\avatar::make_thumbnail($orig_path, $thum_path, 200, 0, 200))
             throw new \zinux\kernel\exceptions\invalideOperationException("File uploaded but unable to create thumbnail!");
+        # unlink any possible perviously profile picture
+        unlink($profile->getSetting("/profile/avatar/custom/thumb_image"));
         $profile->setSetting("/profile/avatar/custom/thumb_image", "/$thum_path", 0);
     }
     

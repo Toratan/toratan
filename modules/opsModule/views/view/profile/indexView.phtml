@@ -30,6 +30,28 @@
     });
 </script>
 <?php endif ; ?>
+    <?php
+        $def_avatar = $avatar_uri = "/access/img/anonymous-".($this->profile->is_male?"":"fe")."male.jpg";
+        $avatar = $this->profile->getSetting("/profile/avatar/");
+        if($avatar)
+        {
+            if(@$avatar->{$avatar->activated})
+            {
+                switch($avatar->activated)
+                {
+                    case \core\ui\html\avatar::INSTAGRAM:
+                    case \core\ui\html\avatar::FACEBOOK:
+                    case \core\ui\html\avatar::GRAVATAR:
+                    case \core\ui\html\avatar::TWITTER:
+                        $avatar_uri = \core\ui\html\avatar::fetch_uri($avatar->activated, $avatar->{$avatar->activated}->id, \core\ui\html\avatar::LARGE_SIZE, 0);
+                        break;
+                    case "custom":
+                        $avatar_uri = $avatar->{$avatar->activated}->thumb_image;
+                        break;
+                }
+            }
+        }
+    ?>
 <div class="mosaic-block bottom-bar">
 <?php if($is_profile_owner) : ?>
     <a href="/profile/avatar"  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -50px;">
@@ -39,7 +61,7 @@
         </div>
     </a>
 <?php endif ; ?>
-    <img id="thumbnail" width="200" height="200" class='img-responsive img-thumbnail' src="<?php \core\ui\html\avatar::fetch_uri(\core\ui\html\avatar::GRAVATAR, "".\core\db\models\user::Fetch($this->profile->user_id)->email, \core\ui\html\avatar::LARGE_SIZE) ?>" onerror="this.src='/access/img/anonymous-<?php echo $this->profile->is_male?"":"fe" ?>male.jpg';"/>
+    <img id="thumbnail" width="200" height="200" class='img-responsive img-thumbnail' src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>';"/>
 </div>
 <?php if(!$this->profile->getSetting("/profile/status")) : ?>
 <div class='clearfix visible-xs'></div>
