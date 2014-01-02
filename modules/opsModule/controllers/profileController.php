@@ -234,32 +234,31 @@ class profileController extends \zinux\kernel\controller\baseController
         # iterate on params
         foreach ($this->request->params as $key => $value)
         {
+            # check for supported params
             switch($key)
             {
                 case \core\ui\html\avatar::INSTAGRAM:
                 case \core\ui\html\avatar::FACEBOOK:
                 case \core\ui\html\avatar::GRAVATAR:
                 case \core\ui\html\avatar::TWITTER:
-                case "custom":
-                    if(!strlen($value))
-                    {
-                        $profile->unsetSetting ("/profile/avatar/$key");
-                        break;
-                    }
-                    if($key!="custom")
-                    {
+                        # if we have no input in a input, it may means that user deleted that input
+                        if(!strlen($value)) { $profile->unsetSetting ("/profile/avatar/$key"); break; }
+                        # set the settings
                         $profile->setSetting("/profile/avatar/$key/set", 1, 0);
                         $profile->setSetting("/profile/avatar/$key/id", $value, 0);
                         break;
-                    }
-                    # do your upload here
+                case "custom":
+                    # if we are going for custom upload section
+                    # check for upload locations
                     foreach (array(PUBLIC_HTML."/access/img/upload", PUBLIC_HTML."/access/img/upload/thumbnail") as $value)
                         if(!file_exists($value))
                             if(!@mkdir ($value, 0777, 1))
                                     throw new \zinux\kernel\exceptions\invalideOperationException("Unable to create directroy `$value`.");
+                    # upload the avatar
                     $this->upload_avatar($key, $profile);
                     break;
                 case "activated":
+                    # configure the activated section
                     if($value == "custom")
                         $profile->setSetting("/profile/avatar/activated", $value);
                     elseif(strlen($this->request->params[$value]))
@@ -268,6 +267,7 @@ class profileController extends \zinux\kernel\controller\baseController
                         $this->errors[$value] = "Selected active field is empty";
                     break;
                 default:
+                    # unset any un-ettended params
                     unset($this->request->params[$key]);
                     break;
             }
@@ -294,48 +294,62 @@ class profileController extends \zinux\kernel\controller\baseController
      */
     protected function upload_avatar($index_name, \core\db\models\profile &$profile)
     {
+        # validate the $_FILES input
         if(!count($_FILES))
             throw new \zinux\kernel\exceptions\invalideArgumentException("No file uploaded!");
+        # define supported format
         $image_support_types = array('png' => 'image/png',
             'jpe' => 'image/jpeg',
             'jpeg' => 'image/jpeg',
             'jpg' => 'image/jpeg',
             'gif' => 'image/gif');
-        
+        # check format
         if(!in_array($_FILES[$index_name]["type"], $image_support_types))
         {
             $this->errors["custom"] = "File type not supported!";
             return;
         }
+        # fetch upload location for original image 
         $orig_path = \zinux\kernel\application\config::GetConfig("upload", "avatar", "original_image_path");
+        # fetch upload location for original image 
         $thum_path = \zinux\kernel\application\config::GetConfig("upload", "avatar", "thumbnail_image_path");
-        
+        # if we have a miss configured project
         if(!$orig_path || !$thum_path)
+            # indecate it
             throw new \zinux\kernel\exceptions\invalideArgumentException("No configuration found for `upload.avatar`!!");
-        
+        # fetch file's extention
         $ext = end(\array_filter(explode(".", $_FILES[$index_name]["name"])));
+        # fetch file's original name
         $alt_name = $_FILES[$index_name]["name"];
-        
+        # define a counter for naming
         $counter = 0;
+        # while original image file already exists, increase the counters
         while(\file_exists($orig_path.sha1($alt_name.(++$counter)).".$ext")) ;
+        # generate a new name for original image
         $alt_name = sha1($alt_name.$counter);
+        # generate the original image's paths
         $orig_path .= "$alt_name.$ext";
-        
+        # define a counter for naming
         $counter = 0;
+        # while thumbnail image file already exists, increase the counters
         while(\file_exists($thum_path.sha1($alt_name.(++$counter)."-tmb").".$ext")) ;
+        # generate the new name for thumbnail
         $thum_path .= sha1($alt_name.$counter."-tmb").".$ext";
-        
+        # move uplaoded file to its proper location and name
         if(!@\move_uploaded_file($_FILES[$index_name]["tmp_name"], $orig_path))
             throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
+        # setting the profile settings for avatar custom upload
         $profile->setSetting("/profile/avatar/custom/set",1, 0);
         # unlink any possible perviously profile picture
         @\shell_exec("rm .".$profile->getSetting("/profile/avatar/custom/oringal_image"));
+        # setting the profile settings for original image path
         $profile->setSetting("/profile/avatar/custom/oringal_image", "/$orig_path", 0);
-        
+        # create a thumbnail for original image
         if(!@\core\ui\html\avatar::make_thumbnail($orig_path, $thum_path, 200, 0, 200))
             throw new \zinux\kernel\exceptions\invalideOperationException("File uploaded but unable to create thumbnail!");
         # unlink any possible perviously profile picture
         @\shell_exec("rm ".$profile->getSetting("/profile/avatar/custom/thumb_image"));
+        # setting the profile settings for thumbnail image path
         $profile->setSetting("/profile/avatar/custom/thumb_image", "/$thum_path", 0);
     }
     
