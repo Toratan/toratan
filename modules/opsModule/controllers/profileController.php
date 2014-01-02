@@ -227,6 +227,10 @@ class profileController extends \zinux\kernel\controller\baseController
              throw new \core\exceptions\uploadException($_FILES["custom"]["error"]);
         # an error flag used during ops4
         $this->errors = array();
+        # if we have no active field
+        if(!isset($this->request->params["activated"]))
+            # indicate the error
+            return $this->view->errors[] = "No field activated!";
         # iterate on params
         foreach ($this->request->params as $key => $value)
         {
@@ -261,7 +265,7 @@ class profileController extends \zinux\kernel\controller\baseController
                     elseif(strlen($this->request->params[$value]))
                         $profile->setSetting("/profile/avatar/activated", $value, 0);
                     else
-                        $this->errors[] = "Selected active field is empty";
+                        $this->errors[$value] = "Selected active field is empty";
                     break;
                 default:
                     unset($this->request->params[$key]);
@@ -277,7 +281,6 @@ class profileController extends \zinux\kernel\controller\baseController
         }
         # save the profile
         $profile->save();
-//        \zinux\kernel\utilities\debug::_var($profile,1);
         # relocate the browser
         header("location: /profile");
         exit;
@@ -301,7 +304,7 @@ class profileController extends \zinux\kernel\controller\baseController
         
         if(!in_array($_FILES[$index_name]["type"], $image_support_types))
         {
-            $this->errors[] = "File type not supported!";
+            $this->errors["custom"] = "File type not supported!";
             return;
         }
         $orig_path = \zinux\kernel\application\config::GetConfig("upload", "avatar", "original_image_path");
@@ -326,13 +329,13 @@ class profileController extends \zinux\kernel\controller\baseController
             throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
         $profile->setSetting("/profile/avatar/custom/set",1, 0);
         # unlink any possible perviously profile picture
-        unlink($profile->getSetting("/profile/avatar/custom/oringal_image"));
+        @\shell_exec("rm .".$profile->getSetting("/profile/avatar/custom/oringal_image"));
         $profile->setSetting("/profile/avatar/custom/oringal_image", "/$orig_path", 0);
         
         if(!@\core\ui\html\avatar::make_thumbnail($orig_path, $thum_path, 200, 0, 200))
             throw new \zinux\kernel\exceptions\invalideOperationException("File uploaded but unable to create thumbnail!");
         # unlink any possible perviously profile picture
-        unlink($profile->getSetting("/profile/avatar/custom/thumb_image"));
+        @\shell_exec("rm ".$profile->getSetting("/profile/avatar/custom/thumb_image"));
         $profile->setSetting("/profile/avatar/custom/thumb_image", "/$thum_path", 0);
     }
     
