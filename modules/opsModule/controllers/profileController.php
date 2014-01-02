@@ -300,9 +300,12 @@ class profileController extends \zinux\kernel\controller\baseController
         # save the profile
         $profile->save();
         # relocate the browser
+        # if any image has been uploaded
         if(isset($this->request->params["custom"]))
+            # crop the image
             header("location: /profile/avatar/crop");
         else
+            # otherwise relocate to /profile
             header("location: /profile");
         exit;
     }
