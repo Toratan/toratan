@@ -46,14 +46,28 @@ class avatar
         else
             return $img;
     }
-    public static function make_thumbnail($src, $dest, $desired_width = 200, $auto_height = 0, $desired_height = 200) 
+    public static function make_thumbnail(
+        $src, 
+        $dest, 
+        $desired_width = 200, 
+        $auto_height = 0,
+        $desired_height = 200) 
     {
         list($crop_width, $crop_height) = \getimagesize($src);
-        $this->make_crop($src, $dest, 0, 0, $crop_width, $crop_height, $desired_width, $auto_height, $desired_height);
-    }
-    public static function make_crop($src, $dest, $crop_start_x = 0, $crop_start_y = 0, $crop_width = 200, $crop_height = 200, $desired_width = 200, $auto_height = 0, $desired_height = 200)
-    {
         
+        return self::make_crop($src, $dest, 0, 0, $crop_width, $crop_height, $desired_width, $auto_height, $desired_height);
+    }
+    public static function make_crop(
+        $src, 
+        $dest, 
+        $crop_start_x = 0, 
+        $crop_start_y = 0, 
+        $crop_width = 200, 
+        $crop_height = 200, 
+        $desired_width = 200, 
+        $auto_height = 0,
+        $desired_height = 200)
+    {
 	/* read the source image */
         switch(TRUE)
         {
@@ -71,7 +85,6 @@ class avatar
         }
 	$width = imagesx($source_image);
 	$height = imagesy($source_image);
-	
 	/* find the "desired height" of this thumbnail, relative to the desired width  */
         if($auto_height)
             $desired_height = floor($height * ($desired_width / $width));
