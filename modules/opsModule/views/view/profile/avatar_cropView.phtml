@@ -24,15 +24,20 @@
         jQuery('#h').val(c.h);
     }
 </script>
-<input type="checkbox" onclick="alert('FOO');jQuery('#cropbox').setOptions({ allowResize: !!this.checked }).focus();"/> LOCK;
-<!-- This is the image we're attaching Jcrop to -->
-<img src="<?php echo $this->avatar->origin_image ?>" id="cropbox" height="600" width="800" class="img-responsive"/>
+<legend class="text-muted">Crop your custom avatar</legend>
+<center class="">
+    <!-- This is the image we're attaching Jcrop to -->
+    <img src="<?php echo $this->avatar->origin_image ?>" id="cropbox" height="600" width="800" class="img-responsive" style="border: 1px solid #000;" />
+</center>
 <!-- This is the form that our event handler fills -->
-<form action="/profile/avatar/crop" class="coords" method="POST">
+<form action="/profile/avatar/crop" class="form" method="POST">
     <input type="hidden" size="4" id="x" name="x" />
     <input type="hidden" size="4" id="y" name="y" />
     <input type="hidden" size="4" id="w" name="w" />
     <input type="hidden" size="4" id="h" name="h" />
-    <input type="submit" value="Submit" />
+    <div class="form-actions" style="border-top:1px solid #000;margin-top: 1%;padding-top:1%">
+        <input type="submit" value="Crop" class="btn btn-primary pull-right"  />
+        <a href="/profile/avatar" class="btn btn-default pull-left" >Cancel</a>
+    </div>
 </form>
 

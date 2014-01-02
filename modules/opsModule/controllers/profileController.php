@@ -300,7 +300,10 @@ class profileController extends \zinux\kernel\controller\baseController
         # save the profile
         $profile->save();
         # relocate the browser
-        header("location: /profile");
+        if(isset($this->request->params["custom"]))
+            header("location: /profile/avatar/crop");
+        else
+            header("location: /profile");
         exit;
     }
     /**
@@ -394,11 +397,26 @@ class profileController extends \zinux\kernel\controller\baseController
             # do not proceed
             return;
         }
+        # shift the avatar link to its custom property
         $this->view->avatar = $this->view->avatar->custom;
+        # we don't process GET request here
         if($this->request->IsGET()) return;
-        \zinux\kernel\utilities\debug::_var($_POST);
-        \zinux\kernel\security\security::IsSecure($_POST, array('x', 'y', 'w', 'h'));
-        \core\ui\html\avatar::make_crop(".".$this->view->avatar->origin_image, ".".$this->view->avatar->thumb_image, $_POST['x'],$_POST['y'], $_POST['w'], $_POST['h']);
+        # make sure that inputs are secure
+        \zinux\kernel\security\security::IsSecure($this->request->params, array('x', 'y', 'w', 'h'));
+        # validate the inputs
+        foreach (array('x','y','w','h') as $value)
+        {
+            if(!\is_numeric($_POST[$value])) 
+            {
+                $pipe = new \core\utiles\messagePipe;
+                $pipe->write("No <b>crop</b> processed!!!");
+                goto __RELOCATE;
+            }
+        }
+        # make a crop based on inputs
+        \core\ui\html\avatar::make_crop(".".$this->view->avatar->origin_image, ".".$this->view->avatar->thumb_image, $this->request->params['x'],$this->request->params['y'], $this->request->params['w'], $this->request->params['h']);
+__RELOCATE:
+        # relocate the browser
         header("location: /profile/avatar");
         exit;
     }
