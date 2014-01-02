@@ -211,6 +211,24 @@ class profileController extends \zinux\kernel\controller\baseController
         $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
         # pass any info we have on the user's profile's avatar to view
         $this->view->avatar = $profile->getSetting("/profile/avatar/");
+        # if we have a GET request
+        # check if we have a custom avatar delete request?
+        if($this->request->IsGET() && isset($this->request->params["delete"]))
+        {
+            # check if we have a custom upload in user's profile
+            if(isset($this->view->avatar->custom))
+            {
+                # unlink the original image from hard drive
+                \shell_exec("rm .".$this->view->avatar->custom->oringal_image);
+                # unlink the thumbnail image from hard drive
+                \shell_exec("rm .".$this->view->avatar->custom->thumb_image);
+                # unset the custom setting from database
+                $profile->unsetSetting("/profile/avatar/custom");
+            }
+            # relocate the browser
+            header("location: /profile/avatar");
+            exit;
+        }
         # we only process POST request here
         if(!$this->request->IsPOST()) return;
         # validate the inputs

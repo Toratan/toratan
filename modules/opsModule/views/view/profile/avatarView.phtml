@@ -35,7 +35,7 @@
                             </label>
                         </div>
                         <br class="gravatar-break"/>
-                        <label class='control-label pull-left gravatar'>Facebook Account or ID</label>
+                        <label class='control-label pull-left gravatar'><span class="glyphicon glyphicon-chevron-right"></span> Facebook Account or ID</label>
                         <div class="clearfix"></div>
                         <input type='text' class='form-control'  name='<?php echo \core\ui\html\avatar::FACEBOOK ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::FACEBOOK}->id ?>" />
                     </div>
@@ -49,7 +49,7 @@
                             </label>
                         </div>
                         <br class="gravatar-break">
-                        <label class='control-label pull-left gravatar'>Twitter Account or ID<?php echo \str_repeat("&nbsp;", 7); ?></label>
+                        <label class='control-label pull-left gravatar'><span class="glyphicon glyphicon-chevron-right"></span> Twitter Account or ID<?php echo \str_repeat("&nbsp;", 7); ?></label>
                         <div class="clearfix"></div>
                         <input type='text' class='form-control' name='<?php echo \core\ui\html\avatar::TWITTER ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::TWITTER}->id ?>"/>
                     </div>
@@ -65,7 +65,7 @@
                             </label>
                         </div>
                         <br class="gravatar-break"/>
-                        <label class='control-label pull-left gravatar'>Instagram Account or ID</label>
+                        <label class='control-label pull-left gravatar'><span class="glyphicon glyphicon-chevron-right"></span> Instagram Account or ID</label>
                         <div class="clearfix"></div>
                         <input type='text' class='form-control' name='<?php echo \core\ui\html\avatar::INSTAGRAM ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::INSTAGRAM}->id ?>"/>
                     </div>
@@ -79,7 +79,7 @@
                             </label>
                         </div>
                         <br class="gravatar-break"/>
-                        <label class='control-label pull-left gravatar' id="gravatar-orig">Gravatar email <?php echo \str_repeat("&nbsp;", 17); ?></label>
+                        <label class='control-label pull-left gravatar' id="gravatar-orig"><span class="glyphicon glyphicon-chevron-right"></span> Gravatar email <?php echo \str_repeat("&nbsp;", 17); ?></label>
                         <div class="clearfix"></div>
                         <input type='text' class='form-control' name='<?php echo \core\ui\html\avatar::GRAVATAR ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::GRAVATAR}->id ?>"/>
                     </div>
@@ -94,7 +94,7 @@
                                 Activate
                             </label>
                         </div>
-                        <label class='control-label pull-left'>Or custum upload</label>
+                        <label class='control-label pull-left'><span class="glyphicon glyphicon-chevron-right"></span> Or custum upload</label>
                         <div class='clearfix'></div>
                         <input type="hidden" name="MAX_FILE_SIZE" value="<?php /* 2MB */ ?>2097152" />
                         <input type='file' class='form-control' style="" name="custom" />
@@ -109,6 +109,7 @@
                                 Activate
                             </label>
                         </div>
+                    <a href="/profile/avatar/delete/1" class="pull-left" style="margin-right: 10px"><span class="glyphicon glyphicon-trash" ></span> Delete the custom avatar</a>
                     <link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
                     <style>
                         .mosaic-block{background: #000 url('/access/img/progress.gif') no-repeat center center;}
@@ -131,7 +132,30 @@
                     <blockquote class='text-danger' style='margin-top:5%'>It seems your privious avatar has been deleted!</blockquote>
                         <?php endif; ?>
                     <?php else: ?>
-                    <blockquote class='text-muted' style='margin-top:5%'>No custom avatar has been registered.</blockquote>
+                        <div class="radio pull-right" >
+                            <label>
+                                <input type="radio" name="activated"  value="custom" tabindex="-1" <?php echo @$this->avatar->activated == "custom" ? "checked" : "" ?>>
+                                Activate
+                            </label>
+                        </div>
+                    <link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
+                    <style>
+                        .mosaic-block{background: #000 url('/access/img/progress.gif') no-repeat center center;}
+                    </style>
+                    <div class="clearfix"></div>
+                        <style>
+                            @media screen and (min-width: 400px) { .mosaic-block{min-width: 200px;display: block;min-height: 200px;}}
+                        </style>
+                        <div class="mosaic-block bottom-bar pull-right">
+                            <a  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -50px;">
+                                <div class="details text-center ">
+                                    <h1>Default avatar<br /><span class="glyphicon glyphicon-picture"></span></h1>
+                                </div>
+                            </a>
+                            <?php $this->profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id); ?>
+                            <?php $def_avatar = "/access/img/anonymous-".($this->profile->is_male?"":"fe")."male.jpg"; ?>
+                            <img id="thumbnail" width="200" height="200" class='img-responsive img-thumbnail' src="<?php echo $def_avatar ?>" />
+                        </div>
                     <?php endif; ?>
                 </td>
             </tr>
