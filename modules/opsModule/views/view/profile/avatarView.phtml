@@ -109,7 +109,9 @@
                                 Activate
                             </label>
                         </div>
-                    <a href="/profile/avatar/delete/1" class="pull-left" style="margin-right: 10px"><span class="glyphicon glyphicon-trash" ></span> Delete the custom avatar</a>
+                    <div class="form-group">
+                        <a href="/profile/avatar/delete/1" style="margin-right: 10px" class="pull-left text-warning"><span class="glyphicon glyphicon-trash" ></span> Delete the custom avatar</a>
+                    </div>
                     <link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
                     <style>
                         .mosaic-block{background: #000 url('/access/img/progress.gif') no-repeat center center;}
@@ -118,10 +120,10 @@
                         <style>
                             @media screen and (min-width: 400px) { .mosaic-block{min-width: 200px;display: block;min-height: 200px;}}
                         </style>
-                        <div class="mosaic-block bottom-bar pull-right">
-                            <a  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -50px;">
+                        <div class="mosaic-block bottom-bar pull-right" style="z-index:10;margin-top: 0%">
+                            <a  href="/profile/avatar/crop" class="mosaic-overlay" style="display: inline; left: 0px; bottom: -50px;">
                                 <div class="details text-center ">
-                                    <h1>Current custom avatar<br /><span class="glyphicon glyphicon-picture"></span></h1>
+                                    <h1>Crop Avatar<br /><span class="glyphicon glyphicon-compressed"></span></h1>
                                 </div>
                             </a>
                             <?php $this->profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id); ?>

@@ -1,0 +1,38 @@
+<script src="/access/js/Jcrop/js/jquery.Jcrop.min.js"></script>
+<link rel="stylesheet" href="/access/js/Jcrop/css/jquery.Jcrop.css" type="text/css" />
+<script type="text/javascript">
+    <?php 
+    list($width, $height) = \getimagesize(".".$this->avatar->origin_image); 
+    echo 
+    "jQuery(document).ready(function(){
+        jQuery('#cropbox').Jcrop({
+            onChange: updateCropCoords,
+            onSelect: updateCropCoords,
+            boxWidth: 800, 
+            boxHeight: 600,
+            trueSize: [$width, $height],
+            minSize: [200, 200],
+            setSelect: [ 0, 0, 200, 200 ],
+            aspectRatio: 1/1
+        });
+    });"
+    ?>
+    function updateCropCoords(c) {
+        jQuery('#x').val(c.x);
+        jQuery('#y').val(c.y);
+        jQuery('#w').val(c.w);
+        jQuery('#h').val(c.h);
+    }
+</script>
+<input type="checkbox" onclick="alert('FOO');jQuery('#cropbox').setOptions({ allowResize: !!this.checked }).focus();"/> LOCK;
+<!-- This is the image we're attaching Jcrop to -->
+<img src="<?php echo $this->avatar->origin_image ?>" id="cropbox" height="600" width="800" class="img-responsive"/>
+<!-- This is the form that our event handler fills -->
+<form action="/profile/avatar/crop" class="coords" method="POST">
+    <input type="hidden" size="4" id="x" name="x" />
+    <input type="hidden" size="4" id="y" name="y" />
+    <input type="hidden" size="4" id="w" name="w" />
+    <input type="hidden" size="4" id="h" name="h" />
+    <input type="submit" value="Submit" />
+</form>
+

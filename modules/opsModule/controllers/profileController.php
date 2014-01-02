@@ -219,7 +219,7 @@ class profileController extends \zinux\kernel\controller\baseController
             if(isset($this->view->avatar->custom))
             {
                 # unlink the original image from hard drive
-                \shell_exec("rm .".$this->view->avatar->custom->oringal_image);
+                \shell_exec("rm .".$this->view->avatar->custom->origin_image);
                 # unlink the thumbnail image from hard drive
                 \shell_exec("rm .".$this->view->avatar->custom->thumb_image);
                 # unset the custom setting from database
@@ -359,11 +359,11 @@ class profileController extends \zinux\kernel\controller\baseController
         # setting the profile settings for avatar custom upload
         $profile->setSetting("/profile/avatar/custom/set",1, 0);
         # unlink any possible perviously profile picture
-        @\shell_exec("rm .".$profile->getSetting("/profile/avatar/custom/oringal_image"));
+        @\shell_exec("rm .".$profile->getSetting("/profile/avatar/custom/origin_image"));
         # setting the profile settings for original image path
-        $profile->setSetting("/profile/avatar/custom/oringal_image", "/$orig_path", 0);
+        $profile->setSetting("/profile/avatar/custom/origin_image", "/$orig_path", 0);
         # create a thumbnail for original image
-        if(!@\core\ui\html\avatar::make_thumbnail($orig_path, $thum_path, 200, 0, 200))
+        if(!@\core\ui\html\avatar::make_thumbnail($orig_path, $thum_path))
             throw new \zinux\kernel\exceptions\invalideOperationException("File uploaded but unable to create thumbnail!");
         # unlink any possible perviously profile picture
         @\shell_exec("rm ".$profile->getSetting("/profile/avatar/custom/thumb_image"));
@@ -371,4 +371,35 @@ class profileController extends \zinux\kernel\controller\baseController
         $profile->setSetting("/profile/avatar/custom/thumb_image", "/$thum_path", 0);
     }
     
+
+    /**
+    * The \modules\opsModule\controllers\profileController::avatar_cropAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function avatar_cropAction()
+    {
+        # invoke a new instance of profile
+        $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
+        # pass any info we have on the user's profile's avatar to view
+        $this->view->avatar = $profile->getSetting("/profile/avatar/");
+        # if user does not have any custom avatar
+        if(!isset($this->view->avatar->custom) || !\file_exists(".".$this->view->avatar->custom->origin_image))
+        {
+            # unset any possible mis-configured setting
+            $profile->unsetSetting("/profile/avatar/custom");
+            # flag the error used in {self::avatarAction()}
+            $this->view->errors["custom"] = "No avatar exists!";
+            # promt the {self::avatarAction()}'s view
+            $this->view->setView("avatar");
+            # do not proceed
+            return;
+        }
+        $this->view->avatar = $this->view->avatar->custom;
+        if($this->request->IsGET()) return;
+        \zinux\kernel\utilities\debug::_var($_POST);
+        \zinux\kernel\security\security::IsSecure($_POST, array('x', 'y', 'w', 'h'));
+        \core\ui\html\avatar::make_crop(".".$this->view->avatar->origin_image, ".".$this->view->avatar->thumb_image, $_POST['x'],$_POST['y'], $_POST['w'], $_POST['h']);
+        header("location: /profile/avatar");
+        exit;
+    }
 }

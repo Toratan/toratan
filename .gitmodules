@@ -14,3 +14,6 @@
 [submodule "public_html/access/rte/ace"]
 	path = public_html/access/rte/ace
 	url = git@github.com:ajaxorg/ace-builds.git
+[submodule "public_html/access/js/Jcrop"]
+	path = public_html/access/js/Jcrop
+	url = git@github.com:tapmodo/Jcrop.git
