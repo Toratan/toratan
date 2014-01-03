@@ -1,11 +1,17 @@
 <?php        
     session_start();
-
+    # if we access by shell 
+	# set HTTP_HOST to the script name
+    @$_SERVER['HTTP_HOST'] || $_SERVER['HTTP_HOST'] = \array_shift($argv);
+    # if there is any second argument passed by shell we consider it as REQUEST URI
+    @$_SERVER['REQUEST_URI'] || $_SERVER['REQUEST_URI'] = count($argv) ? \array_shift($argv) : "/";
+    
     defined('RUNNING_ENV') || define('RUNNING_ENV', 'DEVELOPMENT');
     
     defined('PUBLIC_HTML') || define('PUBLIC_HTML', dirname(__FILE__));
 	
     defined("__SERVER_NAME__") || define("__SERVER_NAME__", $_SERVER['HTTP_HOST']);
+    
     switch(RUNNING_ENV)
     {
         case "TEST":
@@ -19,15 +25,15 @@
             break;
     }
 
-    require_once '../zinux/baseZinux.php';
+    require_once PUBLIC_HTML.'/../zinux/baseZinux.php';
 try
 {
     # create an application with given module directory
-    $app = new \zinux\kernel\application\application('../modules');
+    $app = new \zinux\kernel\application\application(PUBLIC_HTML.'/../modules');
     # process the application instance
     $app 
             # setting cache directory
-            ->SetCacheDirectory("../cache")
+            ->SetCacheDirectory(PUBLIC_HTML."/../cache")
             
             # setting router's bootstrap which will route /note/:id:/edit => /note/edit/:id:
             ->SetRouterBootstrap(new \application\appRoutes)
@@ -43,6 +49,9 @@ try
             # register php markdown parser 
             # repo : https://github.com/michelf/php-markdown
             ->registerPlugin("PHP-MARKDOWN", "/core/ui/markdown/lib")
+            # register socket-raw
+            # repo : https://github.com/clue/socket-raw
+            ->registerPlugin("SOCKET-RAW", "/core/vendors/socket-raw")
             # init the application's optz.
             ->Startup()
             # run the application 
