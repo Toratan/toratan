@@ -4,30 +4,30 @@
     <?php 
     list($width, $height) = \getimagesize(".".$this->avatar->origin_image); 
     echo 
-    "jQuery(document).ready(function(){
-        jQuery('#cropbox').Jcrop({
+    "$(document).ready(function(){
+        $('#cropbox').Jcrop({
             onChange: updateCropCoords,
             onSelect: updateCropCoords,
             boxWidth: 800, 
-            boxHeight: 600,
+            boxHeight: 800,
             trueSize: [$width, $height],
             minSize: [200, 200],
-            setSelect: [ 0, 0, 200, 200 ],
+            setSelect: [ 
+                Math.round($width/2)-Math.round($width/4),
+                Math.round($height/2)-Math.round($height/4),
+                Math.round($width/2)+Math.round($width/4),
+                Math.round($height/2)+Math.round($height/4)
+            ],
             aspectRatio: 1/1
         });
     });"
     ?>
-    function updateCropCoords(c) {
-        jQuery('#x').val(c.x);
-        jQuery('#y').val(c.y);
-        jQuery('#w').val(c.w);
-        jQuery('#h').val(c.h);
-    }
+    function updateCropCoords(c) { $('#x').val(c.x); $('#y').val(c.y); $('#w').val(c.w); $('#h').val(c.h); }
 </script>
 <legend class="text-muted">Crop your custom avatar</legend>
 <center class="">
     <!-- This is the image we're attaching Jcrop to -->
-    <img src="<?php echo $this->avatar->origin_image ?>" id="cropbox" height="600" width="800" class="img-responsive" style="border: 1px solid #000;" />
+    <img src="<?php echo $this->avatar->origin_image ?>" id="cropbox" height="800" width="800" class="img-responsive" style="border: 1px solid #000;" />
 </center>
 <!-- This is the form that our event handler fills -->
 <form action="/profile/avatar/crop" class="form" method="POST">
