@@ -35,7 +35,7 @@
                             </label>
                         </div>
                         <br class="gravatar-break"/>
-                        <label class='control-label pull-left gravatar'><span class="glyphicon glyphicon-chevron-right"></span> Facebook Account or ID</label>
+                        <label class='control-label pull-left gravatar'><img src='/access/img/logo/facebook.ico' width="20" height="20"/><span class="glyphicon glyphicon-chevron-right"></span> Facebook Account or ID</label>
                         <div class="clearfix"></div>
                         <input type='text' class='form-control'  name='<?php echo \core\ui\html\avatar::FACEBOOK ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::FACEBOOK}->id ?>" />
                     </div>
@@ -49,7 +49,7 @@
                             </label>
                         </div>
                         <br class="gravatar-break">
-                        <label class='control-label pull-left gravatar'><span class="glyphicon glyphicon-chevron-right"></span> Twitter Account or ID<?php echo \str_repeat("&nbsp;", 7); ?></label>
+                        <label class='control-label pull-left gravatar'><img src='/access/img/logo/twitter.ico' width="20" height="20"/><span class="glyphicon glyphicon-chevron-right"></span> Twitter Account or ID<?php echo \str_repeat("&nbsp;", 7); ?></label>
                         <div class="clearfix"></div>
                         <input type='text' class='form-control' name='<?php echo \core\ui\html\avatar::TWITTER ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::TWITTER}->id ?>"/>
                     </div>
@@ -65,7 +65,7 @@
                             </label>
                         </div>
                         <br class="gravatar-break"/>
-                        <label class='control-label pull-left gravatar'><span class="glyphicon glyphicon-chevron-right"></span> Instagram Account or ID</label>
+                        <label class='control-label pull-left gravatar'><img src='/access/img/logo/instagram.ico' width="20" height="20"/><span class="glyphicon glyphicon-chevron-right"></span> Instagram Account or ID</label>
                         <div class="clearfix"></div>
                         <input type='text' class='form-control' name='<?php echo \core\ui\html\avatar::INSTAGRAM ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::INSTAGRAM}->id ?>"/>
                     </div>
@@ -79,7 +79,7 @@
                             </label>
                         </div>
                         <br class="gravatar-break"/>
-                        <label class='control-label pull-left gravatar' id="gravatar-orig"><span class="glyphicon glyphicon-chevron-right"></span> Gravatar email <?php echo \str_repeat("&nbsp;", 17); ?></label>
+                        <label class='control-label pull-left gravatar' id="gravatar-orig"><img src='/access/img/logo/gravatar.ico' width="20" height="20"/><span class="glyphicon glyphicon-chevron-right"></span> Gravatar email <?php echo \str_repeat("&nbsp;", 17); ?></label>
                         <div class="clearfix"></div>
                         <input type='text' class='form-control' name='<?php echo \core\ui\html\avatar::GRAVATAR ?>' value="<?php echo @$this->avatar->{\core\ui\html\avatar::GRAVATAR}->id ?>"/>
                     </div>
@@ -94,10 +94,11 @@
                                 Activate
                             </label>
                         </div>
-                        <label class='control-label pull-left'><span class="glyphicon glyphicon-chevron-right"></span> Or custum upload</label>
+                        <label class='control-label pull-left'><span class="glyphicon glyphicon-cloud-upload"></span><span class="glyphicon glyphicon-chevron-right"></span> Or custum upload</label>
                         <div class='clearfix'></div>
                         <input type="hidden" name="MAX_FILE_SIZE" value="<?php /* 2MB */ ?>2097152" />
                         <input type='file' class='form-control' style="" name="custom" />
+                        <small class='text-info' style='text-align: justify;'><span class="glyphicon glyphicon-exclamation-sign"></span> Your avatar's file's size should be <b>less than 2MB</b>, and also the size of avatar <b>larger than 200&times;200 pixels</b> is recommanded.</small>
                     </div>
                 </td>
                 <td>
