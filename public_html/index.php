@@ -25,15 +25,15 @@
             break;
     }
 
-    require_once '../zinux/baseZinux.php';
+    require_once PUBLIC_HTML.'/../zinux/baseZinux.php';
 try
 {
     # create an application with given module directory
-    $app = new \zinux\kernel\application\application('../modules');
+    $app = new \zinux\kernel\application\application(PUBLIC_HTML.'/../modules');
     # process the application instance
     $app 
             # setting cache directory
-            ->SetCacheDirectory("../cache")
+            ->SetCacheDirectory(PUBLIC_HTML."/../cache")
             
             # setting router's bootstrap which will route /note/:id:/edit => /note/edit/:id:
             ->SetRouterBootstrap(new \application\appRoutes)
