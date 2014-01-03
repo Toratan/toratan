@@ -68,7 +68,7 @@
                 </li>
                 <li class="dropdown">
                     <?php list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link(\core\db\models\user::GetInstance()->user_id); ?>
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src='<?php echo $avatar_uri ?>' height="20" width="20" class='imageblock img-circle' onerror="this.src='<?php echo $def_avatar ?>'"/> Account <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src='<?php echo $avatar_uri ?>' height="20" width="20" class='imageblock img-rounded' onerror="this.src='<?php echo $def_avatar ?>'"/> Account <b class="caret"></b></a>
                     <ul class="dropdown-menu pull-right">
                         <li><a href="/profile">Profile</a></li>
                         <li><a href="#">Account Settings</a></li>
