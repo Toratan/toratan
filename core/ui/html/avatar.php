@@ -101,4 +101,51 @@ class avatar
         /* indicate the success */
         return true;
     }
+    /**
+     * fetches avatar's link
+     * @param string|integer $user_id the target user ID
+     * @return array of @list($avatar_uri , $def_avatar)
+     * @throws \zinux\kernel\exceptions\notFoundException if no profile found @ user ID
+     */
+    public static function get_avatar_link($user_id)
+    {  
+        /**
+         * validate and fetch proper avatar URI here
+         */
+        # fetch the profile of user ID
+        $profile = \core\db\models\profile::getInstance($user_id);
+        # validate the profile
+        if(!$profile)
+            throw new \zinux\kernel\exceptions\notFoundException("The profile not found!");
+        # default avatar
+        $def_avatar = $avatar_uri = "/access/img/anonymous-".($profile->is_male?"":"fe")."male.jpg";
+        # fetch profile's avatar settings
+        $avatar = $profile->getSetting("/profile/avatar/");
+        # if we any setting on profile's avatar
+        if($avatar)
+        {
+            # if we have any active section
+            if(@$avatar->{$avatar->activated})
+            {
+                # for any supported active section
+                # fetch the proper profile's avatar URI
+                switch($avatar->activated)
+                {
+                    case \core\ui\html\avatar::INSTAGRAM:
+                    case \core\ui\html\avatar::FACEBOOK:
+                    case \core\ui\html\avatar::GRAVATAR:
+                    case \core\ui\html\avatar::TWITTER:
+                        $avatar_uri = self::fetch_uri($avatar->activated, $avatar->{$avatar->activated}->id, \core\ui\html\avatar::LARGE_SIZE, 0);
+                        break;
+                    case "custom":
+                        $avatar_uri = $avatar->{$avatar->activated}->thumb_image;
+                        break;
+                }
+                # otherwise just go with default avatar image
+            }
+            # otherwise just go with default avatar image
+        }
+        # otherwise just go with default avatar image
+        return array($avatar_uri, $def_avatar);
+    }
 }
