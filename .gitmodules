@@ -17,3 +17,6 @@
 [submodule "public_html/access/js/Jcrop"]
 	path = public_html/access/js/Jcrop
 	url = git@github.com:tapmodo/Jcrop.git
+[submodule "core/vendors/socket-raw"]
+	path = core/vendors/socket-raw
+	url = git@github.com:clue/socket-raw.git
