@@ -233,22 +233,33 @@ class profileController extends \zinux\kernel\controller\baseController
         if(!$this->request->IsPOST()) return;
         # validate the inputs
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, \session_id()));
-        # we do not support multiple uploads on avatars
-        if(is_array($_FILES["custom"]["name"]))
-            throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
-        # if we have an uploaded file
-        if(isset($_FILES["custom"]) && strlen($_FILES["custom"]['tmp_name']))
-            # flag the upload
-            $this->request->params["custom"] = "custom";
-        # check for any possible errors
-         if ($_FILES["custom"]["error"] && $_FILES["custom"]["error"] != UPLOAD_ERR_NO_FILE)
-             throw new \core\exceptions\uploadException($_FILES["custom"]["error"]);
         # an error flag used during ops4
-        $this->errors = array();
+        $this->view->errors = array();
+        # we do not support multiple uploads on avatars
+        if(isset($_FILES["custom"]))
+        {
+            if(is_array($_FILES["custom"]["name"]))
+                throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
+            # check for any possible errors
+            if (isset($_FILES["custom"]) && $_FILES["custom"]["error"] && $_FILES["custom"]["error"] != UPLOAD_ERR_NO_FILE)
+                 throw new \core\exceptions\uploadException($_FILES["custom"]["error"]);
+            # validate if image's file content is essentially an image content or not?
+            if(!\getimagesize($_FILES['custom']['tmp_name']))
+            {
+                # indicate the error
+                $this->view->errors['custom'] = "Inavlid avatar image file or the file was corrupted!";
+                # logically unlink the uploaded file
+                $_FILES["custom"]['tmp_name'] = '';
+            }
+            # if we have an uploaded file
+            if(strlen($_FILES["custom"]['tmp_name']))
+                # flag the upload
+                $this->request->params["custom"] = "custom";
+        }
         # if we have no active field
         if(!isset($this->request->params["activated"]))
             # indicate the error
-            return $this->view->errors[] = "No field activated!";
+            return $this->view->errors[] = "No field activated or Your image size was too big!";
         # iterate on params
         foreach ($this->request->params as $key => $value)
         {
@@ -282,7 +293,7 @@ class profileController extends \zinux\kernel\controller\baseController
                     elseif(strlen($this->request->params[$value]))
                         $profile->setSetting("/profile/avatar/activated", $value, 0);
                     else
-                        $this->errors[$value] = "Selected active field is empty";
+                        $this->view->errors[$value] = "Selected active field is empty";
                     break;
                 default:
                     # unset any un-ettended params
@@ -291,12 +302,7 @@ class profileController extends \zinux\kernel\controller\baseController
             }
         }
         # if we have errors?
-        if(count($this->errors))
-        {
-            # notify the errors
-            $this->view->errors = $this->errors;
-            return;
-        }
+        if(count($this->view->errors)) return;
         # save the profile
         $profile->save();
         # relocate the browser
@@ -330,7 +336,7 @@ class profileController extends \zinux\kernel\controller\baseController
         # check format
         if(!in_array($_FILES[$index_name]["type"], $image_support_types))
         {
-            $this->errors["custom"] = "File type not supported!";
+            $this->view->errors["custom"] = "File type not supported!";
             return;
         }
         # fetch upload location for original image 
