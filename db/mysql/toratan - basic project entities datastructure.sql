@@ -174,6 +174,31 @@ LOCK TABLES `notes` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `notifications`
+--
+
+DROP TABLE IF EXISTS `notifications`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `notifications` (
+  `triggered_user_id` varchar(250) CHARACTER SET utf8 COLLATE utf8_persian_ci NOT NULL,
+  `notification_type` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL,
+  KEY `triggered_user_id` (`triggered_user_id`),
+  CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`triggered_user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `notifications`
+--
+
+LOCK TABLES `notifications` WRITE;
+/*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `profiles`
 --
 
@@ -215,27 +240,28 @@ LOCK TABLES `profiles` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `subscribe`
+-- Table structure for table `subscribes`
 --
 
-DROP TABLE IF EXISTS `subscribe`;
+DROP TABLE IF EXISTS `subscribes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `subscribe` (
+CREATE TABLE `subscribes` (
   `followed` varchar(250) CHARACTER SET utf8 COLLATE utf8_persian_ci NOT NULL,
   `follower` varchar(250) CHARACTER SET utf8 COLLATE utf8_persian_ci NOT NULL,
+  `last_notification_read_at` datetime DEFAULT NULL,
   UNIQUE KEY `pair_subscription` (`follower`,`followed`),
   KEY `followed` (`followed`,`follower`),
-  CONSTRAINT `subscribe_ibfk_2` FOREIGN KEY (`follower`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `subscribe_ibfk_1` FOREIGN KEY (`followed`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `subscribes_ibfk_1` FOREIGN KEY (`followed`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `subscribes_ibfk_2` FOREIGN KEY (`follower`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `subscribe`
+-- Dumping data for table `subscribes`
 --
 
-LOCK TABLES `subscribe` WRITE;
+LOCK TABLES `subscribes` WRITE;
 /*!40000 ALTER TABLE `subscribe` DISABLE KEYS */;
 /*!40000 ALTER TABLE `subscribe` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -320,4 +346,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-01 21:20:16
+-- Dump completed on 2014-01-03 19:05:48
