@@ -20,6 +20,3 @@
 [submodule "core/vendors/socket-raw"]
 	path = core/vendors/socket-raw
 	url = git@github.com:clue/socket-raw.git
-[submodule "scripts"]
-	path = scripts
-	url = git@github.com:dariushha/toratan-scripts.git
