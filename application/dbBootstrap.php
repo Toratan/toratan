@@ -10,7 +10,7 @@ class dbBootstrap extends \zinux\kernel\application\applicationBootstrap
     /** 
      * setups db using activerecord 
      */
-    public static function PRE_toratan_db_setup()
+    public static function PRE_init_db()
     {
         # init activerecord configs
         \ActiveRecord\Config::initialize(function($cfg)
@@ -26,7 +26,7 @@ class dbBootstrap extends \zinux\kernel\application\applicationBootstrap
                     \application\dbBootstrap::TORATAN_SCRIPT => 
                             "{$dbcfg_scripts["type"]}://{$dbcfg_scripts["username"]}:{$dbcfg_scripts["password"]}@{$dbcfg_scripts["host"]}/{$dbcfg_scripts["name"]}?charset=utf8")
             );
-           # enable the connection string as to RUNNING_ENV
+           # enable the connection string as to \application\dbBootstrap::TORATAN
             $cfg->set_default_connection(\application\dbBootstrap::TORATAN);
         });
         # testing db connection

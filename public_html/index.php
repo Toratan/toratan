@@ -1,7 +1,7 @@
 <?php        
     session_start();
     # if we access by shell 
-	# set HTTP_HOST to the script name
+    # set HTTP_HOST to the script name
     @$_SERVER['HTTP_HOST'] || $_SERVER['HTTP_HOST'] = \array_shift($argv);
     # if there is any second argument passed by shell we consider it as REQUEST URI
     @$_SERVER['REQUEST_URI'] || $_SERVER['REQUEST_URI'] = count($argv) ? \array_shift($argv) : "/";
@@ -39,7 +39,7 @@ try
             ->SetRouterBootstrap(new \application\appRoutes)
             
             # set application's bootstrap 
-            ->SetBootstrap(new application\appBootstrap)
+            ->SetBootstrap(new application\dbBootstrap)
             
             # init activerecord as db handler
             ->SetDBInitializer(new \core\db\activeRecord\ARInitializer())
@@ -52,6 +52,8 @@ try
             # register socket-raw
             # repo : https://github.com/clue/socket-raw
             ->registerPlugin("SOCKET-RAW", "/core/vendors/socket-raw")
+            # register toratan-scripts's scripts
+            ->registerPlugin("TORATAN-SCRIPTS", "/scripts")
             # init the application's optz.
             ->Startup()
             # run the application 
