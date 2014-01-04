@@ -1,5 +1,10 @@
 <?php
 namespace core\utiles;
+if(!\defined("TORATAN_PATH"))
+    \trigger_error("Class `\\".__NAMESPACE__."\\".basename(__FILE__, ".php")."` only can access by origin toratan project!", E_USER_ERROR);
+
+defined("SCRIPT_RUNNER_PATH") || define("SCRIPT_RUNNER_PATH", TORATAN_PATH."/scripts/run");
+defined("SCRIPT_HANDLER_PATH") || define("SCRIPT_HANDLER_PATH", TORATAN_PATH."/scripts/public_html/index.php");
 
 /**
  * Runs an script 
@@ -17,19 +22,18 @@ class script
     {
         # if we are doing a background script 
         # validate script runner existence
-        if($run_at_background && !\file_exists(PROJECT_ROOT."scripts/run"))
+        if($run_at_background && !\file_exists(SCRIPT_RUNNER_PATH))
             throw new \zinux\kernel\exceptions\notFoundException("Script runner not found!");
-        
         # if we are NOT doing a background script 
         # validate script handler existence
-        if(!$run_at_background && !\file_exists(PROJECT_ROOT."scripts/public_html/index.php"))
+        if(!$run_at_background && !\file_exists(SCRIPT_HANDLER_PATH))
             throw new \zinux\kernel\exceptions\notFoundException("Scripts handler not found!");
         # run the script
         if($run_at_background)
-            \shell_exec(PROJECT_ROOT."scripts/run $script_uri");
+            \exec(SCRIPT_RUNNER_PATH." $script_uri");
         else
-            return \shell_exec("php ".PROJECT_ROOT."scripts/public_html/index.php $script_uri");
+            \exec("php ".SCRIPT_HANDLER_PATH." $script_uri", $output);
         # indicate the success
-        return TRUE;
+        return $run_at_background ? TRUE : \implode("\n", $output);
     }
 }
