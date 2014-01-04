@@ -30,9 +30,9 @@ class script
             throw new \zinux\kernel\exceptions\notFoundException("Scripts handler not found!");
         # run the script
         if($run_at_background)
-            \exec(SCRIPT_RUNNER_PATH." $script_uri");
+            \exec(SCRIPT_RUNNER_PATH." '$script_uri'");
         else
-            \exec("php ".SCRIPT_HANDLER_PATH." $script_uri", $output);
+            \exec("php ".SCRIPT_HANDLER_PATH." '$script_uri'", $output);
         # indicate the success
         return $run_at_background ? TRUE : \implode("\n", $output);
     }
