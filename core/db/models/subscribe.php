@@ -34,4 +34,13 @@ class subscribe extends \core\db\models\baseModel
     {
         return parent::find(array("conditions"=>array("followed = ? AND follower = ?", $followed, $follower)))?TRUE:FALSE;
     }
+    /**
+     * fetches all followed user IDs which given followes has been subscribed to.
+     * @param string|integer $follower the follower user ID
+     * @return array of \core\db\models\subscribe
+     */
+    public static function fetch_subscribed($follower)
+    {
+        return parent::all(array("conditions" => array("follower = ?", $follower), "select" => "followed"));
+    }
 }
