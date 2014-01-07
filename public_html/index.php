@@ -54,8 +54,6 @@ try
             # register socket-raw
             # repo : https://github.com/clue/socket-raw
             ->registerPlugin("SOCKET-RAW", "/core/vendors/socket-raw")
-            # register toratan-scripts's scripts
-            ->registerPlugin("TORATAN-SCRIPTS", "/scripts")
             # init the application's optz.
             ->Startup()
             # run the application 
