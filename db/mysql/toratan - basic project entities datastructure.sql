@@ -68,6 +68,19 @@ BEGIN
         UPDATE `notes` SET `is_public`=NEW.is_public, `updated_at`=NOW() WHERE parent_id = NEW.folder_id;
         -- update the publicity of the sub-links of current folder
         UPDATE `links` SET `is_public`=NEW.is_public, `updated_at`=NOW() WHERE parent_id = NEW.folder_id;
+		-- insert an notification
+		-- if the user publiced the folder
+		IF NEW.is_public = 1 THEN
+			INSERT INTO `toratan`.`notifications` 
+				(`trigger_user_id`, `notification_type`, `item_table`, `item_id`, `created_at`) 
+			VALUES 
+				(NEW.owner_id, '0', 'folder', NEW.folder_id, NOW());
+		END IF;
+		-- delete any notification
+		-- if the user privated the folder
+		IF NEW.is_public = 0 THEN
+			DELETE FROM `toratan`.`notifications` WHERE `trigger_user_id` = NEW.owner_id AND `item_id` = NEW.folder_id AND `item_table` = 'folder' AND `notification_type` = '0';
+		END IF;
     END IF;
 END */;;
 DELIMITER ;
@@ -208,6 +221,8 @@ DROP TABLE IF EXISTS `notifications`;
 CREATE TABLE `notifications` (
   `trigger_user_id` varchar(250) CHARACTER SET utf8 COLLATE utf8_persian_ci NOT NULL,
   `notification_type` tinyint(1) NOT NULL DEFAULT '0',
+  `item_table` varchar(50) NOT NULL,
+  `item_id` bigint(20) NOT NULL,
   `created_at` datetime NOT NULL,
   KEY `triggered_user_id` (`trigger_user_id`),
   CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`trigger_user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
