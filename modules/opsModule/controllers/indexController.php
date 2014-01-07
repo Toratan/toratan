@@ -605,7 +605,7 @@ class indexController extends \zinux\kernel\controller\baseController
     {
         # validate the inputs
         @\zinux\kernel\security\security::ArrayHashCheck($this->request->params, 
-            array(\core\db\models\user::GetInstance()->user_id, $this->request->GetIndexedParam(0), session_id()."unsubscribe"));
+            array(\core\db\models\user::GetInstance()->user_id, $this->request->GetIndexedParam(0), session_id()."subscribe"));
         # unsubscribe the current user from target user
         \core\db\models\subscribe::unsubscribe($this->request->GetIndexedParam(0), \core\db\models\user::GetInstance()->user_id);
         # open up a message pipe socket
