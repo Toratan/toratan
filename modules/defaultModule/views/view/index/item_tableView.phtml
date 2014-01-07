@@ -55,13 +55,14 @@
                             if(count($this->items)): $f = array_shift($this->items); ?>
                 
                 <td>
+                        <?php echo "<span class='glyphicon glyphicon-folder-close' title='Folder'></span> "; ?>
                         <?php
                             if($f->is_public)
-                                echo "<span class='glyphicon glyphicon-share-alt'></span>";
+                                echo "<span class='glyphicon glyphicon-share-alt' title='Shared'></span> ";
                             if($f->is_trash)
-                                echo "<span class='glyphicon glyphicon-trash'></span>";
+                                echo "<span class='glyphicon glyphicon-trash' title='Deleted'></span> ";
                             if($f->is_archive)
-                                echo "<span class='glyphicon glyphicon-floppy-disk'></span>";
+                                echo "<span class='glyphicon glyphicon-floppy-disk' title='Archived'></span> ";
                         ?>
                         <?php echo "<a href='/directory/{$f->folder_id}.folders'>{$f->folder_title}</a>"; ?>
                 </td>
@@ -83,13 +84,14 @@
                     <?php case "NOTES":
                             if(count($this->items)): $n = array_shift($this->items);?>
                 <td>
+                        <?php echo "<span class='glyphicon glyphicon-file' title='Note'></span> "; ?>
                         <?php
                             if($n->is_public)
-                                echo "<span class='glyphicon glyphicon-share-alt'></span>";
+                                echo "<span class='glyphicon glyphicon-share-alt' title='Shared'></span> ";
                             if($n->is_trash)
-                                echo "<span class='glyphicon glyphicon-trash'></span>";
+                                echo "<span class='glyphicon glyphicon-trash' title='Deleted'></span> ";
                             if($n->is_archive)
-                                echo "<span class='glyphicon glyphicon-floppy-disk'></span>";
+                                echo "<span class='glyphicon glyphicon-floppy-disk' title='Archived' title='Deleted'></span> ";
                         ?>
                         <?php echo "<a href='/view/note/{$n->note_id}' target='__blank'>{$n->note_title}</a>"; ?>
                 </td>
@@ -111,13 +113,14 @@
                 <?php case "LINKS":
                     if(count($this->items)): $l = array_shift($this->items);?>
                 <td>
+                        <?php echo "<span class='glyphicon glyphicon-bookmark' title='Bookmark'></span> "; ?>
                         <?php
                             if($l->is_public)
-                                echo "<span class='glyphicon glyphicon-share-alt'></span>";
+                                echo "<span class='glyphicon glyphicon-share-alt' title='Shared'></span>";
                             if($l->is_trash)
-                                echo "<span class='glyphicon glyphicon-trash'></span>";
+                                echo "<span class='glyphicon glyphicon-trash' title='Deleted'></span>";
                             if($l->is_archive)
-                                echo "<span class='glyphicon glyphicon-floppy-disk'></span>";
+                                echo "<span class='glyphicon glyphicon-floppy-disk' title='Archived'></span>";
                         ?>
                         <?php echo "<a href='{$l->link_body}' target='__blank'>{$l->link_title}</a>"; ?>
                 </td>
