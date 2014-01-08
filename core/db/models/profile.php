@@ -42,15 +42,20 @@ class profile extends baseModel
      * @param string|integer $user_id a user id
      * @return profile the fetched profile
      */
-    public static function getInstance($user_id)
+    public static function getInstance($user_id, $skip_settings = 0)
     {
         # fetch the profile
         $profile = parent::find($user_id);
-        # un-pack the settings
-        $profile->after_save_unserialize_settings();
-        # validate settings instance
-        if(!($profile->settings instanceof \stdClass))
-            $profile->settings = new \stdClass();
+        if(!$skip_settings)
+        {
+            # un-pack the settings
+            $profile->after_save_unserialize_settings();
+            # validate settings instance
+            if(!($profile->settings instanceof \stdClass))
+                $profile->settings = new \stdClass();
+        }
+        else
+            unset($profile->settings);
         # return the profile
         return $profile;
     }
