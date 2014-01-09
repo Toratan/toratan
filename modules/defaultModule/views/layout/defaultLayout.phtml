@@ -131,14 +131,28 @@
             <script type="text/javascript">
                 $(document).ready(function(){
                     var last_pull = 0; 
-                    $.post(
-                            "/notifications/pull", 
-                            { ajax: "", since: last_pull },
-                            function(data) {
-                                last_pull = new Date();
-                                $("div#feed-reader-section .feed-container").prepend(data);
+                    $.ajax({
+                        url: "/notifications/pull",
+                        type: "POST",
+                        data: { ajax: "", since: last_pull },
+                        dataType: "json",
+                        success: function(data) {
+                            last_pull = new Date();
+                            console.log(data);
+                            for(var $i = 0;$i<data.length;$i++)
+                            {
+                                var i = data[$i];
+                                switch(i.item_type)
+                                {
+                                    case "folder":
+                                        $("div#feed-reader-section .feed-container").prepend("Notification on <a href='/directory/"+i.item_id+".folders'>"+i.item_type+"</a><hr />");
+                                        break;
+                                    default:
+                                        alert(i.item_type);
+                                }
                             }
-                        );
+                        }
+                    });
                 });
             </script>
             <div id="feed-reader-section" class="pull-left col-lg-3 col-md-3 col-sm-2 hidden-sm hidden-xs">
