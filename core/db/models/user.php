@@ -4,7 +4,7 @@ namespace core\db\models;
 class user extends baseModel
 {
     static $has_one = array(
-        array("profile", "select" => "first_name, nick_name, last_name")
+        array("profile", "select" => "user_id, first_name, nick_name, last_name")
     );
     static $validates_presence_of = array(
         array('username'),
