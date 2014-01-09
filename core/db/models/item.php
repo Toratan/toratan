@@ -201,7 +201,7 @@ abstract class item extends baseModel
     {
         $cond = array("conditions" => array("{$this->item_name}_id = ?", $item_id));
         if($owner_id)
-            $cond = array("conditions" => array("{$this->item_name}_id = ? AND owner_id = ?", $item_id, $owner_id));
+            $cond = array("conditions" => array("{$this->item_name}_id = ? AND (owner_id = ? OR is_public = 1)", $item_id, $owner_id));
         # normalize the conditions with any passed options
         $options = $this->normalize_conditions_options_ops($cond, $options);
         $item = $this->find($item_id, $options);
