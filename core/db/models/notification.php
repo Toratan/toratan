@@ -30,7 +30,7 @@ class notification extends \core\db\models\baseModel
         {
             $having = ("created_at >= '$since_date'");
         }
-        $join = "INNER JOIN `subscribes` ON(`subscribes`.followed = `notifications`.trigger_user_id)";
+        $join = "INNER JOIN `subscribes` ON(`subscribes`.followed = `notifications`.user_id)";
         return $notif->all(array(
                 "conditions" => $cond,
                 "joins" => $join,
@@ -63,7 +63,7 @@ class notification extends \core\db\models\baseModel
         {
             $having = ("created_at >= '$since_date'");
         }
-        $join = "INNER JOIN `subscribes` ON(`subscribes`.followed = `notifications`.trigger_user_id)";
+        $join = "INNER JOIN `subscribes` ON(`subscribes`.followed = `notifications`.user_id)";
         return $notif->all(array(
                 "conditions" => $cond,
                 "joins" => $join,
