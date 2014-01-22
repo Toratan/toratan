@@ -340,9 +340,9 @@ class profileController extends \zinux\kernel\controller\baseController
             return;
         }
         # fetch upload location for original image 
-        $orig_path = \zinux\kernel\application\config::GetConfig("upload", "avatar", "original_image_path");
+        $orig_path = \zinux\kernel\application\config::GetConfig("upload.avatar.original_image_path");
         # fetch upload location for original image 
-        $thum_path = \zinux\kernel\application\config::GetConfig("upload", "avatar", "thumbnail_image_path");
+        $thum_path = \zinux\kernel\application\config::GetConfig("upload.avatar.thumbnail_image_path");
         # if we have a miss configured project
         if(!$orig_path || !$thum_path)
             # indecate it
