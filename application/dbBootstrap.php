@@ -16,9 +16,9 @@ class dbBootstrap extends \zinux\kernel\application\applicationBootstrap
         \ActiveRecord\Config::initialize(function($cfg)
         {
             # fetching db related configurations
-            $dbcfg = \zinux\kernel\application\config::GetConfig("toratan", "db");
+            $dbcfg = \zinux\kernel\application\config::GetConfig("toratan.db");
             # fetching db related to scripts configurations
-            $dbcfg_scripts = \zinux\kernel\application\config::GetConfig("toratan", "scripts", "db");
+            $dbcfg_scripts = \zinux\kernel\application\config::GetConfig("toratan.scripts.db");
             # setting connection string
             $cfg->set_connections(array(
                     \application\dbBootstrap::TORATAN =>  
