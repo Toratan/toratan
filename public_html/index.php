@@ -1,4 +1,18 @@
 <?php        
+    class loadTime{
+        private $time_start     =   0;
+        private $time_end       =   0;
+        private $time           =   0;
+        public function __construct(){
+            $this->time_start= microtime(true);
+        }
+        public function __destruct(){
+            $this->time_end = microtime(true);
+            $this->time = round($this->time_end - $this->time_start, 5);
+            echo "<center>Loaded in <b>$this->time</b> seconds.</center>";
+        }
+    }
+    $load = new \loadTime();
     session_start();
     # if we access by shell 
     # set HTTP_HOST to the script name
@@ -28,6 +42,8 @@
     }
 
     require_once PUBLIC_HTML.'/../zinux/baseZinux.php';
+    # suppress zinux autoloading system
+    \zinux\suppress_zinux_autoloader_caching();
 try
 {
     # create an application with given module directory
