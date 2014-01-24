@@ -1,18 +1,4 @@
 <?php        
-    class loadTime{
-        private $time_start     =   0;
-        private $time_end       =   0;
-        private $time           =   0;
-        public function __construct(){
-            $this->time_start= microtime(true);
-        }
-        public function __destruct(){
-            $this->time_end = microtime(true);
-            $this->time = round($this->time_end - $this->time_start, 5);
-            echo "<center>Loaded in <b>$this->time</b> seconds.</center>";
-        }
-    }
-    $load = new \loadTime();
     session_start();
     # if we access by shell 
     # set HTTP_HOST to the script name
@@ -42,8 +28,14 @@
     }
 
     require_once PUBLIC_HTML.'/../zinux/baseZinux.php';
+    $load = new \core\utiles\loadTime();
+    $load->start();
+    # make memCache to handle autoload caching
+    \zinux\set_zinux_autoloader_caching_handler(1);
     # suppress zinux autoloading system
     \zinux\suppress_zinux_autoloader_caching();
+    \zinux\set_zinux_autoloader_memCache_options(array("save_on_destruction" => 1));
+    
 try
 {
     # create an application with given module directory
@@ -86,8 +78,12 @@ catch(Exception $e)
     echo "<legend>Oops!</legend>";
     echo "<p>Error happened ...</p>";
     echo "<p><b>Message: </b></p><p>";
+    require_once PROJECT_ROOT.'zinux/kernel/utilities/debug.php';
     zinux\kernel\utilities\debug::_var($e->getMessage());
     echo "</p>";
     echo "<p><b>Stack Trace: </b></p><pre>".$e->getTraceAsString()."</pre>";
     zinux\kernel\utilities\debug::_var($e->getTrace());
 }
+$exeTime = new \core\db\models\execution;
+
+echo "<center>Loaded in <b>{$exeTime->record($load)}</b> seconds.<br />Average load time is <b>{$exeTime->get_average_load_time()}</b> seconds.</center>";

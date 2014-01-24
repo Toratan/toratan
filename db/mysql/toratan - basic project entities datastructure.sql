@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.34, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.35, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: toratan
 -- ------------------------------------------------------
--- Server version	5.5.34-0ubuntu0.12.04.1
+-- Server version	5.5.35-0ubuntu0.12.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,29 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `executions`
+--
+
+DROP TABLE IF EXISTS `executions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `executions` (
+  `time` float NOT NULL,
+  `created_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `executions`
+--
+
+LOCK TABLES `executions` WRITE;
+/*!40000 ALTER TABLE `executions` DISABLE KEYS */;
+INSERT INTO `executions` VALUES (0.06544,'2014-01-24 12:48:48'),(0.05207,'2014-01-24 12:48:49');
+/*!40000 ALTER TABLE `executions` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `folders`
@@ -38,7 +61,7 @@ CREATE TABLE `folders` (
   KEY `parent_id` (`parent_id`),
   CONSTRAINT `folders_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `folders_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `folders` (`folder_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -47,7 +70,7 @@ CREATE TABLE `folders` (
 
 LOCK TABLES `folders` WRITE;
 /*!40000 ALTER TABLE `folders` DISABLE KEYS */;
-INSERT INTO `folders` VALUES (0,0,'0','ROOT',NULL,0,0,0,'2013-11-20 20:19:40','2013-11-20 20:19:40');
+INSERT INTO `folders` VALUES (0,0,'0','ROOT',NULL,0,0,0,'2013-11-20 20:19:40','2013-11-20 20:19:40'),(2,0,'65e24b6874a4da6aea4413ca2fab916dd72083bd','dsad','\0',1,0,0,'2014-01-07 19:33:42','2014-01-08 23:17:21'),(3,0,'ad179f7f4255acfa37a62521f248839ec5fe3f57','lkkm','\0',1,0,0,'2014-01-08 23:58:15','2014-01-08 23:58:16');
 /*!40000 ALTER TABLE `folders` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -69,17 +92,14 @@ BEGIN
         -- update the publicity of the sub-links of current folder
         UPDATE `links` SET `is_public`=NEW.is_public, `updated_at`=NOW() WHERE parent_id = NEW.folder_id;
 		-- insert an notification
-		-- if the user publiced the folder
 		IF NEW.is_public = 1 THEN
 			INSERT INTO `toratan`.`notifications` 
 				(`trigger_user_id`, `notification_type`, `item_table`, `item_id`, `created_at`) 
 			VALUES 
 				(NEW.owner_id, '0', 'folder', NEW.folder_id, NOW());
 		END IF;
-		-- delete any notification
-		-- if the user privated the folder
 		IF NEW.is_public = 0 THEN
-			DELETE FROM `toratan`.`notifications` WHERE `trigger_user_id` = NEW.owner_id AND `item_id` = NEW.folder_id AND `item_table` = 'folder' AND `notification_type` = '0';
+			DELETE FROM `toratan`.`notifications` WHERE `trigger_user_id` = NEW.owner_id AND `item_id` = NEW.folder_id AND `notification_type` = '0';
 		END IF;
     END IF;
 END */;;
@@ -219,14 +239,16 @@ DROP TABLE IF EXISTS `notifications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notifications` (
-  `trigger_user_id` varchar(250) CHARACTER SET utf8 COLLATE utf8_persian_ci NOT NULL,
+  `notification_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(250) CHARACTER SET utf8 COLLATE utf8_persian_ci NOT NULL,
   `notification_type` tinyint(1) NOT NULL DEFAULT '0',
   `item_table` varchar(50) NOT NULL,
   `item_id` bigint(20) NOT NULL,
   `created_at` datetime NOT NULL,
-  KEY `triggered_user_id` (`trigger_user_id`),
-  CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`trigger_user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`notification_id`),
+  KEY `triggered_user_id` (`user_id`),
+  CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -235,6 +257,7 @@ CREATE TABLE `notifications` (
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
+INSERT INTO `notifications` VALUES (1,'65e24b6874a4da6aea4413ca2fab916dd72083bd',0,'folder',2,'2014-01-08 23:17:21'),(2,'ad179f7f4255acfa37a62521f248839ec5fe3f57',0,'folder',3,'2014-01-08 23:58:16');
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -276,6 +299,7 @@ CREATE TABLE `profiles` (
 
 LOCK TABLES `profiles` WRITE;
 /*!40000 ALTER TABLE `profiles` DISABLE KEYS */;
+INSERT INTO `profiles` VALUES ('65e24b6874a4da6aea4413ca2fab916dd72083bd','O:8:\"stdClass\":2:{s:13:\"notifications\";O:8:\"stdClass\":1:{s:4:\"pull\";O:8:\"stdClass\":1:{s:9:\"last_time\";s:20:\"Jan-24-2014 12:48:50\";}}s:7:\"profile\";O:8:\"stdClass\":2:{s:6:\"status\";i:1;s:6:\"avatar\";O:8:\"stdClass\":2:{s:9:\"activated\";s:6:\"custom\";s:6:\"custom\";O:8:\"stdClass\":3:{s:3:\"set\";i:1;s:12:\"origin_image\";s:63:\"/access/img/upload/21238d71524a70c4ef436e2645e438eaad2a95d1.jpg\";s:11:\"thumb_image\";s:73:\"/access/img/upload/thumbnail/7ccb178860d287bebee80ee396944d4c58351f6a.jpg\";}}}}','','','',0,0,0,1,'','','','','','','','','2014-01-07 19:33:34','2014-01-24 12:48:50'),('ad179f7f4255acfa37a62521f248839ec5fe3f57','','','','',0,0,0,-1,'','','','','','','','','2014-01-07 20:00:27','2014-01-07 20:00:27'),('d7e7bd6979eb244436f69e5c81aca930fb142ce3','','','','',0,0,0,-1,'','','','','','','','','2014-01-07 20:00:46','2014-01-07 20:00:46');
 /*!40000 ALTER TABLE `profiles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -303,7 +327,7 @@ CREATE TABLE `subscribes` (
 
 LOCK TABLES `subscribes` WRITE;
 /*!40000 ALTER TABLE `subscribes` DISABLE KEYS */;
-INSERT INTO `subscribes` VALUES ('2e60986f9cd7754efa74bc53d0845d67','8f1da8e31ad40d4e59a1baafe036c74f',NULL);
+INSERT INTO `subscribes` VALUES ('ad179f7f4255acfa37a62521f248839ec5fe3f57','65e24b6874a4da6aea4413ca2fab916dd72083bd',NULL),('d7e7bd6979eb244436f69e5c81aca930fb142ce3','65e24b6874a4da6aea4413ca2fab916dd72083bd','2014-01-07 20:17:00'),('65e24b6874a4da6aea4413ca2fab916dd72083bd','ad179f7f4255acfa37a62521f248839ec5fe3f57',NULL),('d7e7bd6979eb244436f69e5c81aca930fb142ce3','ad179f7f4255acfa37a62521f248839ec5fe3f57','2014-01-07 20:17:00');
 /*!40000 ALTER TABLE `subscribes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -334,7 +358,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('0','NULL','ROOT','NULL',NULL,'2013-11-20 20:19:41','2013-11-20 20:19:41');
+INSERT INTO `users` VALUES ('0','NULL','ROOT','NULL',NULL,'2013-11-20 20:19:41','2013-11-20 20:19:41'),('65e24b6874a4da6aea4413ca2fab916dd72083bd','b.g.dariush@gmail.com','dariush','48b98fe6d3bac3fafd60362b151136c7a8e6c72f',NULL,'2014-01-07 19:33:34','2014-01-07 19:33:34'),('ad179f7f4255acfa37a62521f248839ec5fe3f57','a@m.com','a','48b98fe6d3bac3fafd60362b151136c7a8e6c72f',NULL,'2014-01-07 20:00:27','2014-01-07 20:00:27'),('d7e7bd6979eb244436f69e5c81aca930fb142ce3','b@b.com','b','48b98fe6d3bac3fafd60362b151136c7a8e6c72f',NULL,'2014-01-07 20:00:46','2014-01-07 20:00:46');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -387,4 +411,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-07 19:03:41
+-- Dump completed on 2014-01-24 12:51:48
