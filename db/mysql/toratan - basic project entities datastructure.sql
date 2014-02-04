@@ -94,12 +94,12 @@ BEGIN
 		-- insert an notification
 		IF NEW.is_public = 1 THEN
 			INSERT INTO `toratan`.`notifications` 
-				(`trigger_user_id`, `notification_type`, `item_table`, `item_id`, `created_at`) 
+				(`user_id`, `notification_type`, `item_table`, `item_id`, `created_at`) 
 			VALUES 
 				(NEW.owner_id, '0', 'folder', NEW.folder_id, NOW());
 		END IF;
 		IF NEW.is_public = 0 THEN
-			DELETE FROM `toratan`.`notifications` WHERE `trigger_user_id` = NEW.owner_id AND `item_id` = NEW.folder_id AND `notification_type` = '0';
+			DELETE FROM `toratan`.`notifications` WHERE `user_id` = NEW.owner_id AND `item_id` = NEW.folder_id AND `notification_type` = '0';
 		END IF;
     END IF;
 END */;;
