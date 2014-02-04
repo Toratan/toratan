@@ -1,4 +1,10 @@
 <?php        
+    if(version_compare(\PHP_VERSION, "5.5.8", "<"))
+    {
+        echo ("<center>The <b>minimal</b> PHP version <b>required is 5.5.8</b>!<br />");
+        echo ("Your PHP version is: <b>".\PHP_VERSION);
+        die ("</b>.<br />Upgrade your server php.</center>");
+    }
     session_start();
     # if we access by shell 
     # set HTTP_HOST to the script name
