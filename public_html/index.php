@@ -10,31 +10,130 @@
     
     defined('PUBLIC_HTML') || define('PUBLIC_HTML', dirname(__FILE__));
     
+    defined("CACHE_PATH") || define("CACHE_PATH", PUBLIC_HTML."/../cache");
+    
     defined('TORATAN_PATH') || define('TORATAN_PATH', PUBLIC_HTML."/../");
 	
     defined("__SERVER_NAME__") || define("__SERVER_NAME__", $_SERVER['HTTP_HOST']);
+    
+    require_once PUBLIC_HTML.'/../zinux/baseZinux.php';
+    
+    # suppress E_STRICT error reporting
+    error_reporting(E_ALL & ~E_STRICT);
     
     switch(RUNNING_ENV)
     {
         case "TEST":
         case "DEVELOPMENT":
             ini_set('display_errors','On');
-            error_reporting(E_ALL);
             break;
         default:
             ini_set('display_errors','off');
-            error_reporting(E_ERROR);
+            # manage any possible errors in production mode
+            \set_error_handler(function($errno, $errstr, $errfile, $errline/*,  array $errcontext*/){
+                    /* ensure that we have only one log of every error at each time */
+                    static $online_cache = array();
+                    if(!isset($online_cache[$errstr])) $online_cache[$errstr] = 1;
+                    else return true;
+                    $error_type_txt = "";
+                    switch($errno)
+                    {
+                        case \E_STRICT:
+                            if(!\preg_match("#Declaration of (.*) should be compatible with (.*)#i", $errstr))
+                                /* IGNORE THE COMPATIBLE BULLSHITS */
+                                break;
+                            $error_type_txt = "Strict";
+                            /* else fall into logging stuff */
+                            goto __DEFAULT;
+                        case \E_COMPILE_ERROR:
+                            $error_type_txt = "Compile error";
+                            /* else fall into logging stuff */       
+                            goto __DEFAULT;                 
+                        case \E_COMPILE_WARNING:
+                            $error_type_txt = "Compile warning";
+                            /* else fall into logging stuff */             
+                            goto __DEFAULT;           
+                        case \E_CORE_ERROR:
+                            $error_type_txt = "Core error";
+                            /* else fall into logging stuff */           
+                            goto __DEFAULT;             
+                        case \E_CORE_WARNING:
+                            $error_type_txt = "Core warning";
+                            /* else fall into logging stuff */      
+                            goto __DEFAULT;                  
+                        case \E_DEPRECATED:
+                            $error_type_txt = "Deprecated";
+                            /* else fall into logging stuff */      
+                            goto __DEFAULT;                  
+                        case \E_ERROR:
+                            $error_type_txt = "Error";
+                            /* else fall into logging stuff */     
+                            goto __DEFAULT;                   
+                        case \E_NOTICE:
+                            $error_type_txt = "Notice";
+                            /* else fall into logging stuff */    
+                            goto __DEFAULT;                    
+                        case \E_PARSE:
+                            $error_type_txt = "Parse";
+                            /* else fall into logging stuff */   
+                            goto __DEFAULT;                     
+                        case \E_RECOVERABLE_ERROR:
+                            $error_type_txt = "Recoverable error";
+                            /* else fall into logging stuff */   
+                            goto __DEFAULT;                     
+                        case \E_USER_DEPRECATED:
+                            $error_type_txt = "User deprecated";
+                            /* else fall into logging stuff */   
+                            goto __DEFAULT;                     
+                        case \E_USER_ERROR:
+                            $error_type_txt = "User error";
+                            /* else fall into logging stuff */   
+                            goto __DEFAULT;                     
+                        case \E_USER_NOTICE:
+                            $error_type_txt = "User notice";
+                            /* else fall into logging stuff */   
+                            goto __DEFAULT;                     
+                        case \E_USER_WARNING:
+                            $error_type_txt = "User warning";
+                            /* else fall into logging stuff */   
+                            goto __DEFAULT;                     
+                        case \E_WARNING:
+                            $error_type_txt = "Warning";
+                            /* else fall into logging stuff */   
+                            goto __DEFAULT;                                       
+                        default:
+__DEFAULT:
+                            defined("ERROR_LOG_CACHE") || define("ERROR_LOG_CACHE", \CACHE_PATH."/error.log");
+                            # clear the stat cache of ERROR_LOG_CACHE
+                            \clearstatcache(0, \ERROR_LOG_CACHE);
+                            # if the log file size overflows from 2MB rename compress it 
+                            if(\file_exists(\ERROR_LOG_CACHE) && @\filesize(\ERROR_LOG_CACHE)> 2097152 /* 2MB */)
+                            {
+                                # Open the gz file (w9 is the highest compression)
+                                $fp = gzopen (\ERROR_LOG_CACHE.date("ymdhis").".gz", 'w9');
+                                # Compress the file
+                                gzwrite ($fp, file_get_contents(\ERROR_LOG_CACHE));
+                                # Close the gz file and we are done
+                                gzclose($fp);
+                                # trucate the current file
+                                \fclose(\fopen(\ERROR_LOG_CACHE, "w"));
+                            }
+                            # log the error
+                            \error_log("[ ".date("M-d-Y H:i:s:m")." ] $error_type_txt : $errstr in $errfile on line $errline!".PHP_EOL, 3, \ERROR_LOG_CACHE);
+                            /**
+                             * ADVANCED: mail the owner that an error suppressed!!!
+                             */
+                            # flag that error handled
+                            return true;
+                    }
+            });
             break;
     }
-
-    require_once PUBLIC_HTML.'/../zinux/baseZinux.php';
+    
     $load = new \core\utiles\loadTime();
     $load->start();
-    # make memCache to handle autoload caching
-    \zinux\set_zinux_autoloader_caching_handler(1);
     # suppress zinux autoloading system
     \zinux\suppress_zinux_autoloader_caching();
-    \zinux\set_zinux_autoloader_memCache_options(array("save_on_destruction" => 1));
     
 try
 {
@@ -43,7 +142,7 @@ try
     # process the application instance
     $app 
             # setting cache directory
-            ->SetCacheDirectory(PUBLIC_HTML."/../cache")
+            ->SetCacheDirectory(\CACHE_PATH)
             
             # setting router's bootstrap which will route /note/:id:/edit => /note/edit/:id:
             ->SetRouterBootstrap(new \application\appRoutes)

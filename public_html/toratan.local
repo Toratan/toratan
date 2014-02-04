@@ -3,8 +3,13 @@
 	ServerAdmin webmaster@localhost
 	ServerName toratan.local
 	DocumentRoot "/var/www/toratan/public_html"
+	<Directory "/var/www/toratan/public_html">
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
 </VirtualHost>
 
 # add this to /etc/hosts
 # 127.0.0.1 toratan.local
-
