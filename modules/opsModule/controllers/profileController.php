@@ -426,7 +426,20 @@ class profileController extends \zinux\kernel\controller\baseController
         \core\ui\html\avatar::make_crop(".".$this->view->avatar->origin_image, ".".$this->view->avatar->thumb_image, $this->request->params['x'],$this->request->params['y'], $this->request->params['w'], $this->request->params['h']);
 __RELOCATE:
         # relocate the browser
-        header("location: /profile/avatar");
+        header("location: /profile");
         exit;
+    }
+
+    /**
+    * The \modules\opsModule\controllers\profileController::avatar_viewAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function avatar_viewAction()
+    {
+        if($this->request->CountIndexedParam() != 1)
+            throw new \zinux\kernel\exceptions\invalideOperationException;
+        $this->view->profile = \core\db\models\profile::getInstance($this->request->GetIndexedParam(0));
+        if(!$this->view->profile)
+            throw new \zinux\kernel\exceptions\notFoundException("Profile not found!");
     }
 }
