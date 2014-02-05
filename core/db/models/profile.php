@@ -45,8 +45,9 @@ class profile extends baseModel
     public static function getInstance($user_id, $skip_settings = 0)
     {
         # fetch the profile
-        $profile = parent::find($user_id);
-        if(!$skip_settings)
+        $profile = parent::find(array("conditions" => array("user_id = ?", $user_id)));
+        # skip setting stuff?
+        if($profile && !$skip_settings)
         {
             # un-pack the settings
             $profile->after_save_unserialize_settings();
@@ -54,7 +55,7 @@ class profile extends baseModel
             if(!($profile->settings instanceof \stdClass))
                 $profile->settings = new \stdClass();
         }
-        else
+        elseif($profile)
             unset($profile->settings);
         # return the profile
         return $profile;

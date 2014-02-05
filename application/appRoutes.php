@@ -42,6 +42,6 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          * Note:
          *      This route need to be after {$this->addRoute("^/(profile)$2", "/ops/$1$2");}
          */
-        $this->addRoute("^(/ops/profile/avatar)/(crop)$3", "$1_$2$3");
+        $this->addRoute("^(/ops/profile/avatar)/(crop|view)$3", "$1_$2$3");
     }
 }
