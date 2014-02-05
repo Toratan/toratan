@@ -118,11 +118,9 @@
             <?php endif; ?>
                 <?php
                     $mp = new core\utiles\messagePipe;
-                    $msg = $mp->read();
-                    if($msg)
-                    {
-                        \core\ui\html\alert::Cout($msg);
-                    }
+                    while(($msg = $mp->read()))
+                        if($msg)
+                            \core\ui\html\alert::Cout($msg, \core\ui\html\alert::ALERT_INFO, 0);
                 ?>
                 <?php echo $this->content?>
                 <div class="footer"></div>
@@ -144,8 +142,9 @@
                                 var i = data[$i];
                                 switch(i.item_type)
                                 {
-                                    case "folder":
-                                        $("div#feed-reader-section .feed-container").prepend("Notification on <a href='/directory/"+i.item_id+".folders'>"+i.item_type+"</a><hr />");
+                                    case "folder":                                        
+                                        var txt = window.build_notification_txt(i);
+                                        $("div#feed-reader-section .feed-container").prepend(txt);
                                         break;
                                     default:
                                         alert(i.item_type);
@@ -154,6 +153,25 @@
                         }
                     });
                 });
+                /**
+                 * Changes the first letter to upper case and leave the others as is
+                 * @returns string
+                 */
+                String.toFirstLetterUpperCase = function(string) { return string[0].toUpperCase()+string.substr(1,string.length); };
+                window.build_notification_txt = function(i)
+                {
+                    console.log(i);
+                    var txt = "";
+                    switch(i.notification_type)
+                    {
+                        case 0:
+                            txt = "<a href='#"+i.user.user_id+".user'>"+String.toFirstLetterUpperCase(i.user.username)+"</a> Shared a "+i.item_type+" named <a href='/directory/"+i.item_id+"'>"+i.item.item_title+"</a>.";
+                            break;
+                        default:
+                            throw ("Undefined notification type ID# "+i.notification_type);
+                    }
+                    return txt+"<hr />";
+                };
             </script>
             <div id="feed-reader-section" class="pull-left col-lg-3 col-md-3 col-sm-2 hidden-sm hidden-xs">
                 <h3><span class="glyphicon glyphicon-flash"></span> Feeds</h3>
