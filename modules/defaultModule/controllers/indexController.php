@@ -20,6 +20,18 @@ class indexController extends \zinux\kernel\controller\baseController
             $this->request->params["directory"] = 0;
         $this->view->pid = $pid = $this->request->params["directory"];
         $uid = \core\db\models\user::GetInstance()->user_id;
+        if(isset($this->request->params["u"]) && $this->request->params["u"] != $uid)
+        {
+            $target_user = \core\db\models\user::Fetch($this->request->params["u"]);
+            if(!$target_user)
+                throw new \zinux\kernel\exceptions\notFoundException("No such user exists....");
+            $uid = $target_user->user_id;
+            $parent = new \core\db\models\folder();
+            $parent = $parent->fetch($pid, $uid);
+            if(!$parent->is_public)
+                throw new \zinux\kernel\exceptions\permissionDeniedException("You don't have permission to view this folder.");
+            
+        }
         $instance = NULL;
         switch(strtoupper($this->request->type))
         {
@@ -36,7 +48,8 @@ class indexController extends \zinux\kernel\controller\baseController
             default:
                 throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
         }
-        $this->view->items = ($instance->fetchItems($uid, $pid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
+        $this->view->is_owner = ($uid == \core\db\models\user::GetInstance()->user_id); 
+        $this->view->items = ($instance->fetchItems($uid, $pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
         $folder = new \core\db\models\folder;
         $this->view->route = $folder->fetchRouteToRoot($pid, $uid);
     }    
