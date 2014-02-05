@@ -118,7 +118,7 @@ class avatar
         if(!$profile)
             throw new \zinux\kernel\exceptions\notFoundException("The profile not found!");
         # default avatar
-        $def_avatar = $avatar_uri = "/access/img/anonymous-".($profile->is_male?"":"fe")."male.jpg";
+        $def_avatar = $avatar_uri = $orig_avatar = "/access/img/anonymous-".($profile->is_male?"":"fe")."male.jpg";
         # fetch profile's avatar settings
         $avatar = $profile->getSetting("/profile/avatar/");
         # if we any setting on profile's avatar
@@ -135,10 +135,11 @@ class avatar
                     case \core\ui\html\avatar::FACEBOOK:
                     case \core\ui\html\avatar::GRAVATAR:
                     case \core\ui\html\avatar::TWITTER:
-                        $avatar_uri = self::fetch_uri($avatar->activated, $avatar->{$avatar->activated}->id, \core\ui\html\avatar::LARGE_SIZE, 0);
+                        $orig_avatar = $avatar_uri = self::fetch_uri($avatar->activated, $avatar->{$avatar->activated}->id, \core\ui\html\avatar::LARGE_SIZE, 0);
                         break;
                     case "custom":
                         $avatar_uri = $avatar->{$avatar->activated}->thumb_image;
+                        $orig_avatar =  $avatar->{$avatar->activated}->origin_image;
                         break;
                 }
                 # otherwise just go with default avatar image
@@ -146,6 +147,6 @@ class avatar
             # otherwise just go with default avatar image
         }
         # otherwise just go with default avatar image
-        return array($avatar_uri, $def_avatar);
+        return array($avatar_uri, $def_avatar, $orig_avatar);
     }
 }
