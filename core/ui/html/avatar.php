@@ -125,7 +125,7 @@ class avatar
         if($avatar)
         {
             # if we have any active section
-            if(@$avatar->{$avatar->activated})
+            if(@isset($avatar->{$avatar->activated}))
             {
                 # for any supported active section
                 # fetch the proper profile's avatar URI
