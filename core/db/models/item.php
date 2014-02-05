@@ -531,7 +531,7 @@ __RETURN:
                 if($this->is_public)
                     \core\db\models\notification::put($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, \core\db\models\notification::NOTIF_FLAG_SHARE);
                 else
-                    \core\db\models\notification::deleteNotification($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name);
+                    \core\db\models\notification::visibleNotification($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, 0);
             }
             if($this->is_public)
             {
