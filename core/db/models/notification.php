@@ -171,13 +171,13 @@ class notification extends \core\db\models\baseModel
                 "readonly" => TRUE)
             );
     }
-    public static function deleteNotification($user_id, $item_id, $item_type)
+    public static function deleteNotification($user_id, $item_id, $item_table)
     {
-        \core\db\models\notification::delete_all(array("conditions" => array("user_id = ? AND item_id = ? AND item_table = ?", $user_id, $item_id, $item_type)));
+        \core\db\models\notification::delete_all(array("conditions" => array("user_id = ? AND item_id = ? AND item_table = ?", $user_id, $item_id, $item_table)));
     }
-    public static function visibleNotification($user_id, $item_id, $item_type, $is_visible = 1)
+    public static function visibleNotification($user_id, $item_id, $item_table, $is_visible = 1)
     {
-        $notifs = \core\db\models\notification::all(array("conditions" => array("user_id = ? AND item_id = ? AND item_table = ?", $user_id, $item_id, $item_type)));
+        $notifs = \core\db\models\notification::all(array("conditions" => array("user_id = ? AND item_id = ? AND item_table = ?", $user_id, $item_id, $item_table)));
         foreach ($notifs as $notif)
         {
             $notif->is_visible = $is_visible?1:0;
@@ -186,6 +186,15 @@ class notification extends \core\db\models\baseModel
     }
     public static function put($user_id, $item_id, $item_table, $notification_type)
     {
+        if(count(($notifs = self::all(array("conditions" => array("user_id = ? AND item_id = ? AND item_table = ?", $user_id, $item_id, $item_table))))))
+        {
+            foreach($notifs as $notif)
+            {
+                $notif->is_visible = 1;
+                $notif->save();
+            }
+            return;
+        }
         $notif = new \core\db\models\notification;
         $notif->user_id = $user_id;
         $notif->item_id = $item_id;
