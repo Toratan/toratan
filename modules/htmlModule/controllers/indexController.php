@@ -21,11 +21,11 @@ class indexController extends \zinux\kernel\controller\baseController
             $this->request->params["directory"] = 0;
         $this->view->pid = $pid = $this->request->params["directory"];
         $uid = \core\db\models\user::GetInstance()->user_id;
-        $this->view->folders = ($f->fetchItems($pid, $uid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
+        $this->view->folders = ($f->fetchItems($uid, $pid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
         $n = new \core\db\models\note;
-        $this->view->notes = ($n->fetchItems($pid, $uid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
+        $this->view->notes = ($n->fetchItems($uid, $pid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
         $l = new \core\db\models\link;
-        $this->view->links = ($l->fetchItems($pid, $uid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
+        $this->view->links = ($l->fetchItems($uid, $pid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
         $this->view->route = $f->fetchRouteToRoot($pid, $uid);
     }
 

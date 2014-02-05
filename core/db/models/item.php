@@ -11,10 +11,13 @@ abstract class item extends baseModel
             array('is_archive', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
     );
     /**
-     *
      * @var array Before save callbacks
      */
     static $before_save = array('before_save_trim_properties');
+    /**
+     * @var array update notification table if necessary
+     */
+    static $after_save = array('after_save_update_notifications');
     /**
      * In certain operations that we want to do NOOP on some
      * prespective of item we pass this
@@ -54,7 +57,7 @@ abstract class item extends baseModel
     /**
      *  genaral presence validation container
      */
-    static $validates_presence_of;
+    private $validates_presence_of;
     /**
      * Get/Set item's table name
      * @var string
@@ -65,6 +68,11 @@ abstract class item extends baseModel
      * @var string
      */
     private $item_name;
+    /**
+     * temporary container for internal uses
+     * @var array
+     */
+    private $temporary_container = array();
 
     public function __construct(array $attributes = array(), $guard_attributes = true, $instantiating_via_find = false, $new_record = true)
     {
@@ -96,7 +104,7 @@ abstract class item extends baseModel
         # we will set our table name's to its proper value
         parent::$table_name = $this->item_table_name;
         # set an id validation
-        self::$validates_presence_of["title"] = array("{$this->item_name}_title", 'message' => 'cannot be blank!');
+        $this->validates_presence_of["title"] = array("{$this->item_name}_title", 'message' => 'cannot be blank!');
         # after setting the table's name we go for parent contruction
         parent::__construct($attributes, $guard_attributes, $instantiating_via_find, $new_record);
         # unset the static table name
@@ -124,13 +132,21 @@ abstract class item extends baseModel
             $parent_id,
             $owner_id)
     {
-        # normalizing the inputs
+        # normali\core\db\exceptions\dbNotFoundExceptionzing the inputs
         $title = trim($title);
         $body = trim($body);
         # fetch the item's handler
         $item_class = get_called_class();
-        # revoke an instance of item
+        # invoke an instance of item for item object
         $item = new $item_class;
+        # invoke an instance of folder for parent
+        $parent_item = new \core\db\models\folder();
+        # find the parent item
+        $parent = $parent_item->fetch($parent_id);
+        # validate the parent existance?
+        if(!$parent) 
+            # apparently parent folder does not exists
+            throw new \core\db\exceptions\dbNotFoundException("The parent folder not found!!");
         # set the title
        $item->{"{$this->item_name}_title"} = $title;
         # set the body
@@ -139,10 +155,12 @@ abstract class item extends baseModel
        $item->owner_id = $owner_id;
         # set the parent id
        $item->parent_id = $parent_id;
-        # by default it is not public
-       $item->is_public = b'0';
-        # by default it is not trash
-       $item->is_trash = b'0';
+        # inherit parent is_public value
+       $item->is_public = $parent->is_public;
+        # inherit parent is_trash value
+       $item->is_trash = $parent->is_trash;
+        # inherit parent is_archive value
+       $item->is_archive = $parent->is_archive;
         #save it
        $item->save();
        # return the created item
@@ -207,12 +225,14 @@ abstract class item extends baseModel
         $item = $this->find($item_id, $options);
         if(!$item)
             throw new \core\db\exceptions\dbNotFoundException("$this->item_name with ID=`$item_id` not found or you don't have the access premission!");
+        # update temporary shareing status
+        $item->update_old_instance();
         return $item;
     }
     /**
      * Fetches all sub-items under a parent directory with an owner
      * @param string $owner_id items' owner id
-     * @param string $parent_id items' parent id
+     * @param string $parent_id items' parent id, pass '<b>NULL </b>' to select in all parrent pattern
      * @param boolean $is_public should it be public or not, pass '<b>item::WHATEVER</b>' to don't matter
      * @param boolean $is_trash should it be trashed or not, pass '<b>item::WHATEVER</b>' to don't matter
      * @param boolean $is_archive should it be archive or not, pass '<b>item::WHATEVER</b>' to don't matter
@@ -220,19 +240,23 @@ abstract class item extends baseModel
      * @return array of items
      */
     public function fetchItems(
-            $parent_id,
             $owner_id,
+            $parent_id = NULL,
             $is_public = self::WHATEVER,
             $is_trash = self::WHATEVER,
             $is_archive = self::WHATEVER,
             $options = array())
     {
         # general conditions
-        $item_cond = "owner_id = ? AND parent_id = ? ";
-        $cond = array($item_cond, $owner_id, $parent_id);
-
+        $item_cond = "owner_id = ? ";
+        $cond = array($item_cond, $owner_id);
+        if($parent_id)
+        {
+            $cond[0] .= "AND parent_id = ? ";
+            $cond[] = $parent_id;
+        }
         foreach(
-                array("is_public" => $is_public, "is_trash"=>$is_trash, "is_archive" => $is_archive) 
+                array("is_public" => $is_public, "is_trash"=>$is_trash, "is_archive" => $is_archive)
                 as $name => $value)
         {
             # if is public revoked
@@ -246,7 +270,17 @@ abstract class item extends baseModel
         # normalize the conditions with any passed options
         $options = $this->normalize_conditions_options_ops($cond, $options);
         # returns all items with given owner and parent id
-        return $this->find("all", $options);
+        $items = $this->find("all", $options);
+        # validate if null?
+        if(!$items) return $items;
+        # foreach fetched item
+        foreach($items as $item)
+        {
+            # update items old_instance properties
+            $item->update_old_instance();
+        }
+        # return fetched items
+        return $items;
     }
     /**
      * Edits an item
@@ -332,7 +366,7 @@ abstract class item extends baseModel
      */
     public function fetchTrashes($owner_id)
     {
-        return $this->find("all", array("conditions" => array("owner_id = ? AND is_trash = ?", $owner_id, 1)));
+        return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_SET);
     }
     /**
      * Arhives/De-archives an item
@@ -399,7 +433,7 @@ abstract class item extends baseModel
      */
     public function fetchArchives($owner_id)
     {
-        return $this->find("all", array("conditions" => array("owner_id = ? AND is_archive = ? AND is_trash <> 1", $owner_id, 1)));
+        return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_UNSET, self::FLAG_SET);
     }
     /**
      * moves an item
@@ -430,7 +464,7 @@ abstract class item extends baseModel
      */
     public function fetchShared($owner_id)
     {
-        return $this->find("all", array("conditions" => array("owner_id = ? AND is_public = ? AND is_trash <> 1", $owner_id, 1)));
+        return $this->fetchItems($owner_id, NULL, self::FLAG_SET, self::FLAG_UNSET);
     }
     /**
      * Fetches verbal route to toot from an item
@@ -455,11 +489,49 @@ __RETURN:
         return array_reverse($route);
     }
     /**
+     * Updates old instance of current user
+     */
+    private function update_old_instance()
+    {
+        static $cout = 0;
+        if(!$cout && ($cout = 1))
+            \trigger_error("This is a bad perfomance idea for cloning!!! <code>\unserialize(\serialize(\$this);</code>");
+        $item = \unserialize(\serialize($this));
+        $item->readonly();
+        $this->temporary_container["old_instance"]  = $item;
+    }
+    /**
      * Trims properties just before they get saved
      */
     public function before_save_trim_properties()
     {
         $this->{"{$this->item_name}_title"} = trim($this->{"{$this->item_name}_title"});
         $this->{"{$this->item_name}_body"} = trim($this->{"{$this->item_name}_body"});
+    }
+    /**
+     * smart checks points for notification outputs flow
+     */
+    public function after_save_update_notifications()
+    {
+        if(isset($this->temporary_container["old_instance"]))
+        {
+            $oi = $this->temporary_container["old_instance"];
+            $debug =  new \core\utiles\messagePipe;
+            # validate the 
+            if($oi->is_public != $this->is_public)
+            {
+                $debug->write("Note shared status changed");
+                $debug->write("Note was <b>".($oi->is_public?"public":"private")."</b> and now is <b>".($this->is_public?"public":"private")."</b>.");
+                if($this->is_public)
+                    $debug->write("Wrote something in notifiction table");
+                else
+                    $debug->write("Delete notifictions about this item from notification table");
+            }
+            if($this->is_trash)
+            {
+                if($this->is_public)
+                    $debug->write("Note's trashed gets deleted form notification table");
+            }
+        }
     }
 }

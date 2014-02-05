@@ -36,7 +36,7 @@ class indexController extends \zinux\kernel\controller\baseController
             default:
                 throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
         }
-        $this->view->items = ($instance->fetchItems($pid, $uid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
+        $this->view->items = ($instance->fetchItems($uid, $pid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
         $folder = new \core\db\models\folder;
         $this->view->route = $folder->fetchRouteToRoot($pid, $uid);
     }    
