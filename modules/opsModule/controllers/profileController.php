@@ -236,7 +236,7 @@ class profileController extends \zinux\kernel\controller\baseController
         # an error flag used during ops4
         $this->view->errors = array();
         # we do not support multiple uploads on avatars
-        if(isset($_FILES["custom"]))
+        if(isset($_FILES["custom"]) && @$_FILES['custom']['tmp_name'])
         {
             if(is_array($_FILES["custom"]["name"]))
                 throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
