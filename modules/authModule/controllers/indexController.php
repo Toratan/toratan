@@ -248,7 +248,6 @@ class indexController extends authController
                 //The identity_token uniquely identifies the social network account 
                 //that the user has used to connect with
                 $identity_token = $data->user->identity->identity_token;
-                \zinux\kernel\utilities\debug::_var($data,1);
                 if(!isset($data->user->identity->emails) || !\is_array($data->user->identity->emails) || !\count($data->user->identity->emails))
                     throw new \zinux\kernel\exceptions\invalideOperationException("No email address provided!!");
                 $primary_email_address = \array_shift($data->user->identity->emails);

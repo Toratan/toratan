@@ -6,6 +6,11 @@ namespace core\db\models;
  */
 class notification extends \core\db\models\baseModel
 {
+    /**
+     * Item shared notification
+     */
+    const NOTIF_FLAG_SHARE = 0;
+    
     static $belongs_to = array(
             array("user", "select" => "user_id, email, username")
     );
@@ -14,10 +19,6 @@ class notification extends \core\db\models\baseModel
      * @var type 
      */
     public $item;
-    /**
-     * Folder shared notification
-     */
-    const NOTIF_TYPE_SHARED_FOLDER = 0;
     /**
      * fetches notification from all subscribtions in JSON format
      * @param string $user_id follower user ID
@@ -38,7 +39,20 @@ class notification extends \core\db\models\baseModel
             {
                 $class = "\\".__NAMESPACE__."\\".$notifs[$index]->item_table;
                 $instance = new $class;
-                $item = $instance->fetch($notifs[$index]->item_id, NULL, array("select" => "{$notifs[$index]->item_table}_id, {$notifs[$index]->item_table}_title, {$notifs[$index]->item_table}_body"));
+                try
+                {
+                    $item = $instance->fetch($notifs[$index]->item_id, NULL, array("select" => "{$notifs[$index]->item_table}_id, {$notifs[$index]->item_table}_title, {$notifs[$index]->item_table}_body"));
+                }
+                # fail-safe for in-case of no item related to notification found
+                catch(\core\db\exceptions\dbNotFoundException $e)
+                {
+                    unset($e);
+                    # we just delete the notification them :)
+                    $Invalid_notif = \core\db\models\notification::find($notifs[$index]->notification_id);
+                    $Invalid_notif->delete();
+                    # proceed with others
+                    continue;
+                }
                 $user = \preg_replace("#}$#i", ", \"profile\":{$notifs[$index]->user->profile->to_json()}}", $notifs[$index]->user->to_json());
                 $json_output .= \preg_replace(array('#}$#i', '#("item_table"\s*:\s*)("[a-z]+")#i'), array(",\"user\":{$user}}", "\"item_type\":$2, \"item\":".\preg_replace("#{$notifs[$index]->item_table}#i", "item", $item->to_json())), $notifs[$index]->to_json());
             }
@@ -87,7 +101,7 @@ class notification extends \core\db\models\baseModel
     public static function fetch($user_id, $limit = 0, $offset = 0, $include_meta = 0, $notif_type = -1, $since_date = NULL)
     {
         $notif = new \core\db\models\notification;
-        $cond = array("`subscribes`.follower = ?", $user_id);
+        $cond = array("`subscribes`.follower = ? AND is_visible = 1 ", $user_id);
         if($notif_type != -1)
         {
             $cond[0] .= " AND notification_type = ?";
@@ -129,7 +143,7 @@ class notification extends \core\db\models\baseModel
     public static function fetch_from($user_id, $followed_user_id, $limit = 0, $offset = 0, $include_meta = 0, $notif_type = -1, $since_date = NULL)
     {
         $notif = new \core\db\models\notification;
-        $cond = array("`subscribes`.follower = ? AND `subscribes`.followed = ?", $user_id, $followed_user_id);
+        $cond = array("`subscribes`.follower = ? AND `subscribes`.followed = ? AND is_visible = 1", $user_id, $followed_user_id);
         if($notif_type != -1)
         {
             $cond[0] .= " AND notification_type = ?";
@@ -156,5 +170,34 @@ class notification extends \core\db\models\baseModel
                 "include" => $includes,
                 "readonly" => TRUE)
             );
+    }
+    public static function deleteNotification($user_id, $item_id, $item_type)
+    {
+        \core\db\models\notification::delete_all(array("conditions" => array("user_id = ? AND item_id = ? AND item_table = ?", $user_id, $item_id, $item_type)));
+    }
+    public static function visibleNotification($user_id, $item_id, $item_type, $is_visible = 1)
+    {
+        $notifs = \core\db\models\notification::all(array("conditions" => array("user_id = ? AND item_id = ? AND item_table = ?", $user_id, $item_id, $item_type)));
+        foreach ($notifs as $notif)
+        {
+            $notif->is_visible = $is_visible?1:0;
+            $notif->save();
+        }
+    }
+    public static function put($user_id, $item_id, $item_table, $notification_type)
+    {
+        $notif = new \core\db\models\notification;
+        $notif->user_id = $user_id;
+        $notif->item_id = $item_id;
+        $notif->item_table = $item_table;
+        switch($notification_type)
+        {
+            case self::NOTIF_FLAG_SHARE:
+                $notif->notification_type = $notification_type;
+                break;
+            default:
+                throw new \zinux\kernel\exceptions\invalideArgumentException("Invalid income notification type ID# $notification_type");
+        }
+        $notif->save();
     }
 }

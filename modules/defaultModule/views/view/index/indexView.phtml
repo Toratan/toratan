@@ -9,6 +9,7 @@
 <?php endforeach; ?>
 </ol>
 <?php endif; ?>
+<?php if(@$this->is_owner): ?>
 <ul class="nav nav-pills pull-right">
     <li class="dropdown pull-right">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-plus-sign"></span> Create <b class="caret"></b></a>
@@ -25,5 +26,6 @@
         </ul>
     </li>
 </ul>
+<?php endif ; ?>
 <?php
     $this->RenderPartial("item_table", array("items" => $this->items, "pid" => $this->pid));

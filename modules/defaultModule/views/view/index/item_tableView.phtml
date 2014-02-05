@@ -20,7 +20,7 @@
                     echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/shared.$key'>$value</a></li>";
                     break;
                 default :
-                    echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/directory/{$view->pid}.$key'>$value</a></li>";
+                    echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='".(isset($view->request->params['u'])?"/u/{$view->request->params['u']}":"")."/directory/{$view->pid}.$key'>$value</a></li>";
                     break;
             }
         }
@@ -37,7 +37,7 @@
                 <th>Name</th>
                 <!--th>Created at</th>
                 <th>Updated at</th-->
-                <th>Options</th>
+                <th>&nbsp;<!--Options--></th>
             </tr>
         </thead>
         <tbody>
@@ -64,12 +64,13 @@
                             if($f->is_archive)
                                 echo "<span class='glyphicon glyphicon-floppy-disk' title='Archived'></span> ";
                         ?>
-                        <?php echo "<a href='/directory/{$f->folder_id}.folders'>{$f->folder_title}</a>"; ?>
+                        <?php echo "<a href='".(isset($this->request->params['u'])?"/u/{$this->request->params['u']}":"")."/directory/{$f->folder_id}.folders'>{$f->folder_title}</a>"; ?>
                 </td>
                 <!--td><?php echo $f->created_at; ?></td>
                 <td><?php echo $f->updated_at ?></td-->
                 <td>
                         <div>
+                        <?php if(\core\db\models\user::GetInstance()->user_id == $f->owner_id): ?>
                             <?php if($this->is_trash): ?>
                             <a href="/delete/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>">Restore</a> |
                             <?php else: ?>
@@ -78,6 +79,7 @@
                             <?php endif; ?>
                             <a href="/edit/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array("folder", $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>">Edit</a> | 
                             <a href="/delete/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/trash/<?php echo $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" class='text-muted'>Delete</a>
+                        <?php endif; ?>
                         </div>
                 </td>
                             <?php endif; break; ?>
@@ -98,6 +100,7 @@
                 <!--td><?php echo $n->created_at; ?></td>
                 <td><?php echo $n->updated_at ?></td-->
                 <td>
+                        <?php if(\core\db\models\user::GetInstance()->user_id == $n->owner_id): ?>
                         <div>
                             <?php if($this->is_trash): ?> 
                             <a href="/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="color:#787878">Restore</a> | 
@@ -107,6 +110,7 @@
                             <?php endif; ?>
                             <a href="/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" class='text-muted'>Delete</a> | 
                             <a href="/edit/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="color:#111100">Edit</a>
+                        <?php endif; ?>
                         </div>
                 </td>
                     <?php endif; break;?>
@@ -128,6 +132,7 @@
                 <td><?php echo $l->updated_at ?></td-->
                 <td>
                     <div>
+                        <?php if(\core\db\models\user::GetInstance()->user_id == $l->owner_id): ?>
                         <?php if($this->is_trash): ?>
                         <a href="/delete/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="">Restore</a> |
                         <?php else: ?>
@@ -136,6 +141,7 @@
                             <?php endif; ?>
                             <a href="/edit/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="color:#111100">Edit</a> | 
                             <a href="/delete/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/trash/<?php echo  $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" class='text-muted'>Delete</a>
+                            <?php endif; ?>
                         </div>
                 </td>
                     <?php endif;  break;?>

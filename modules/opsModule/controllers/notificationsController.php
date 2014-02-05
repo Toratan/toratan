@@ -48,14 +48,6 @@ class notificationsController extends \zinux\kernel\controller\baseController
         \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id)->setSetting("/notifications/pull/last_time", date("M-d-Y H:i:s"));
         if(!@$this->request->params["html"])
             die($this->view->notifs);
-        echo $this->view->notifs;
-        \zinux\kernel\utilities\debug::_var(\core\db\models\notification::fetch_array(
-                \core\db\models\user::GetInstance()->user_id,
-                $this->request->params["l"],
-                $this->request->params["o"],
-                1,
-                $this->request->params["t"],
-                $this->request->params["since"]),1);
         \trigger_error("Security concerns, for providing solid general hashing style for pulling notifs!!");
     }
 }

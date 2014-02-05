@@ -93,7 +93,7 @@
         </div>
         <div class="clearfix"></div>
         <div class="container" style="width: 100%;">
-            <?php if ($user_logged) : ?>
+            <?php if ($user_logged && !preg_match("#^/(default(/)?(index(/?))?)?(u/[a-z0-9]+(/)?){1,1}(directory(/(.*))?(\.folders|\.notes|\.links)?)?$#i", $this->request->GetURI())) : ?>
             <div class="pull-left col-lg-2 col-md-2 col-sm-3 col-xs-12">
                 <h3>&nbsp;</h3>
                 <ul class="nav nav-pills nav-stacked">
@@ -111,6 +111,15 @@
                     <li class="visible-sm visible-xs">
                         <a href="#"><span class="glyphicon glyphicon-flash"></span> Your Feeds</a>
                     </li>
+                </ul>
+            </div>
+            <div class="visible-xs" style="clear:both"></div>
+            <div class="pull-left col-lg-7  col-md-7 col-sm-9 col-xs-12" >
+            <?php else: ?>
+                <div class="pull-left col-lg-2 col-md-2 col-sm-3 col-xs-12">
+                <h3>&nbsp;</h3>
+                <ul class="nav nav-pills nav-stacked">
+                    <li class="text-muted">Viewing a <b>remote directory</b></li>
                 </ul>
             </div>
             <div class="visible-xs" style="clear:both"></div>
@@ -143,8 +152,12 @@
                                 var i = data[$i];
                                 switch(i.item_type)
                                 {
+                                    case "note":
+                                    case "link":
                                     case "folder":                                        
                                         var txt = window.build_notification_txt(i);
+                                        if(!txt)
+                                            continue;
                                         $("div#feed-reader-section .feed-container").append(txt);
                                         break;
                                     default:
@@ -163,13 +176,36 @@
                 {
                     console.log(i);
                     var txt = "";
+                    var link = "";
+                    var detail = "";
+                    var icon = "";
+                    switch(i.item_type)
+                    {
+                        case "folder":
+                            link = "/u/"+i.user_id+"/directory/"+i.item_id;
+                            icon = "glyphicon glyphicon-folder-close";
+                            break;
+                        case "note":
+                            link = "/view/note/"+i.item_id;
+                            detail = "<div style='font-size:small;margin-top:1%;margin-left:4%;padding:0;padding:10px;border-left:5px solid #eeeeee' class='text-muted'>"+i.item.item_body.substr(0, 130)+" <small>[ <a href='"+link+"' target='__blank'>Read more</a> ]</small></div>";
+                            icon = "glyphicon glyphicon-file";
+                            break;
+                        case "link":
+                            link = i.item.item_body;
+                            icon = "glyphicon glyphicon-bookmark";
+                            break;
+                    }
                     switch(i.notification_type)
                     {
                         case 0:
-                            txt = "<a href='#"+i.user.user_id+".user'>"+String.toFirstLetterUpperCase(i.user.username)+"</a> Shared a "+i.item_type+" named <a href='/directory/"+i.item_id+"'>"+i.item.item_title+"</a>.";
+                            txt ="<span class='"+icon+"'></span> " +
+                                    "<a style='' href='"+link+"' target='__blank'>"+i.item.item_title+"</a>" + detail + 
+                                    "<div class='clearfix'></div>" +
+                                    "<div class='text-muted pull-right'>A <b>"+i.item_type+"</b> shared by <a href='/profile/"+i.user.user_id+"' target='__blank'>"+String.toFirstLetterUpperCase(i.user.username)+"</a></div>";
                             break;
                         default:
-                            throw ("Undefined notification type ID# "+i.notification_type);
+                            console.log ("Undefined notification type ID# "+i.notification_type);
+                            return false;
                     }
                     return txt+"<hr />";
                 };
