@@ -103,8 +103,6 @@ abstract class item extends baseModel
         # we have now fetched our item info
         # we will set our table name's to its proper value
         parent::$table_name = $this->item_table_name;
-        # set an id validation
-        $this->validates_presence_of["title"] = array("{$this->item_name}_title", 'message' => 'cannot be blank!');
         # after setting the table's name we go for parent contruction
         parent::__construct($attributes, $guard_attributes, $instantiating_via_find, $new_record);
         # unset the static table name
@@ -147,6 +145,9 @@ abstract class item extends baseModel
         if(!$parent) 
             # apparently parent folder does not exists
             throw new \core\db\exceptions\dbNotFoundException("The parent folder not found!!");
+        # validate  the owner id match with parent's owner id
+        if($parent->owner_id && $parent->owner_id != $owner_id)
+            throw new \zinux\kernel\exceptions\invalideOperationException("You don't have the write permission under directory# $parent_id");
         # set the title
        $item->{"{$this->item_name}_title"} = $title;
         # set the body
@@ -218,13 +219,13 @@ abstract class item extends baseModel
             $options = array())
     {
         $cond = array("conditions" => array("{$this->item_name}_id = ?", $item_id));
-        if($owner_id)
+        if($owner_id !== NULL)
             $cond = array("conditions" => array("{$this->item_name}_id = ? AND (owner_id = ? OR is_public = 1)", $item_id, $owner_id));
         # normalize the conditions with any passed options
         $options = $this->normalize_conditions_options_ops($cond, $options);
         $item = $this->find($item_id, $options);
         if(!$item)
-            throw new \core\db\exceptions\dbNotFoundException("$this->item_name with ID=`$item_id` not found or you don't have the access premission!");
+            throw new \core\db\exceptions\dbNotFoundException("$this->item_name with ID# `$item_id` not found or you don't have the access premission!");
         # update temporary shareing status
         $item->update_old_instance();
         return $item;
@@ -250,7 +251,7 @@ abstract class item extends baseModel
         # general conditions
         $item_cond = "owner_id = ? ";
         $cond = array($item_cond, $owner_id);
-        if($parent_id)
+        if($parent_id !== NULL)
         {
             $cond[0] .= "AND parent_id = ? ";
             $cond[] = $parent_id;
@@ -347,6 +348,8 @@ abstract class item extends baseModel
             case self::DELETE_PERIOD:
                 # detele permanent
                 $item->delete_all(array("conditions" => array("{$this->item_name}_id = ?", $item_id)));
+                # cleanup any notifications bounded to this item
+                \core\db\models\notification::deleteNotification($owner_id, $item_id, $this->item_name);
                 break;
             case self::DELETE_RESTORE:
                 # restore the item
@@ -493,12 +496,18 @@ __RETURN:
      */
     private function update_old_instance()
     {
-        static $cout = 0;
-        if(!$cout && ($cout = 1))
-            \trigger_error("This is a bad perfomance idea for cloning!!! <code>\unserialize(\serialize(\$this);</code>");
-        $item = \unserialize(\serialize($this));
+        $item =clone ($this);
         $item->readonly();
         $this->temporary_container["old_instance"]  = $item;
+    }
+    /**
+     * General validator
+     */
+    public function validate()
+    {
+        # validate the item's title existance
+        if(!isset($this->{"{$this->item_name}_title"}) || !\strlen($this->{"{$this->item_name}_title"}))
+            $this->errors->add("{$this->item_name}_title", "Cannot be blank");
     }
     /**
      * Trims properties just before they get saved
@@ -516,21 +525,20 @@ __RETURN:
         if(isset($this->temporary_container["old_instance"]))
         {
             $oi = $this->temporary_container["old_instance"];
-            $debug =  new \core\utiles\messagePipe;
             # validate the 
             if($oi->is_public != $this->is_public)
             {
-                $debug->write("Note shared status changed");
-                $debug->write("Note was <b>".($oi->is_public?"public":"private")."</b> and now is <b>".($this->is_public?"public":"private")."</b>.");
                 if($this->is_public)
-                    $debug->write("Wrote something in notifiction table");
+                    \core\db\models\notification::put($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, \core\db\models\notification::NOTIF_FLAG_SHARE);
                 else
-                    $debug->write("Delete notifictions about this item from notification table");
+                    \core\db\models\notification::deleteNotification($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name);
             }
-            if($this->is_trash)
+            if($this->is_public)
             {
-                if($this->is_public)
-                    $debug->write("Note's trashed gets deleted form notification table");
+                if($this->is_trash)
+                    \core\db\models\notification::visibleNotification($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, 0);
+                else
+                    \core\db\models\notification::visibleNotification($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, 1);
             }
         }
     }
