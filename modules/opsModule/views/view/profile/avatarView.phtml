@@ -20,7 +20,7 @@
             <tr>
                 <td colspan="2" style="border-top: 0;">
                     <div class="form-group pull-right">
-                        <a href="/profile" class="btn btn-default" style="width: 80px">Cancel</a>
+                        <a href="/profile" class="btn btn-default" style="width: 120px">Back to profile</a>
                         <button type="submit" class="btn btn-primary" style="width: 80px">Save</button>
                     </div>
                 </td>
@@ -129,7 +129,9 @@
                             </a>
                             <?php $this->profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id); ?>
                             <?php $def_avatar = "/access/img/anonymous-".($this->profile->is_male?"":"fe")."male.jpg"; ?>
-                            <img id="thumbnail" width="200" height="200" class='img-responsive img-thumbnail' src="<?php echo $this->avatar->custom->thumb_image ?>" onerror="this.src='<?php echo $def_avatar ?>';"/>
+                            <a href="/profile/avatar/view/<?php echo $this->profile->user_id?>" target="__blank">
+                                <img id="thumbnail" width="200" height="200" class='img-responsive img-thumbnail' src="<?php echo $this->avatar->custom->thumb_image ?>" onerror="this.src='<?php echo $def_avatar ?>';"/>
+                            </a>
                         </div>
                         <?php else: ?>
                     <blockquote class='text-danger' style='margin-top:5%'>It seems your privious avatar has been deleted!</blockquote>

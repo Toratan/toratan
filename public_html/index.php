@@ -191,4 +191,4 @@ catch(Exception $e)
 }
 $exeTime = new \core\db\models\execution;
 
-echo "<center>Loaded in <b>{$exeTime->record($load)}</b> seconds.<br />Average load time is <b>{$exeTime->get_average_load_time()}</b> seconds.</center>";
+echo "<hr /><center>Loaded in <b>{$exeTime->record($load)}</b> seconds.<br />Average load time is <b>{$exeTime->get_average_load_time()}</b> seconds.</center>";
