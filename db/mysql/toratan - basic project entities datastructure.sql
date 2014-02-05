@@ -91,16 +91,6 @@ BEGIN
         UPDATE `notes` SET `is_public`=NEW.is_public, `updated_at`=NOW() WHERE parent_id = NEW.folder_id;
         -- update the publicity of the sub-links of current folder
         UPDATE `links` SET `is_public`=NEW.is_public, `updated_at`=NOW() WHERE parent_id = NEW.folder_id;
-		-- insert an notification
-		IF NEW.is_public = 1 THEN
-			INSERT INTO `toratan`.`notifications` 
-				(`user_id`, `notification_type`, `item_table`, `item_id`, `created_at`) 
-			VALUES 
-				(NEW.owner_id, '0', 'folder', NEW.folder_id, NOW());
-		END IF;
-		IF NEW.is_public = 0 THEN
-			DELETE FROM `toratan`.`notifications` WHERE `user_id` = NEW.owner_id AND `item_id` = NEW.folder_id AND `notification_type` = '0';
-		END IF;
     END IF;
 END */;;
 DELIMITER ;
