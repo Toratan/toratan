@@ -22,7 +22,7 @@ class alert extends htmlPrinter
      * @return string if $immediate_echo == 0 returns the alert string
      * @throws \zinux\kernel\exceptions\invalideArgumentException if input is not string
      */
-    public static function Cout($data, $alert_type = alert::ALERT_INFO, $auto_dispose = 1, $immediate_echo = 1)
+    public static function Cout($data, $alert_type = alert::ALERT_INFO, $auto_dispose = 1, $immediate_echo = 1, $show_time = 7000)
     {
         if(!is_string($data))
             throw new \zinux\kernel\exceptions\invalideArgumentException;
@@ -40,7 +40,7 @@ class alert extends htmlPrinter
         if($auto_dispose)
             $alert .= "<script id='$id' type='text/javascript'>
                 $(document).ready(function(){
-                    setTimeout('\$(\"div#$id\").slideUp(\"slow\");\$(\"script#$id\").remove()', 7000);
+                    setTimeout('\$(\"div#$id\").slideUp(\"slow\");\$(\"script#$id\").remove()', $show_time);
                 });
             </script>";
         if($immediate_echo)
