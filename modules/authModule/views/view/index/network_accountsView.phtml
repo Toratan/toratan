@@ -1,0 +1,28 @@
+<script type="text/javascript">
+    var oneall_subdomain = 'toratan';
+    /* The library is loaded asynchronously */
+    var oa = document.createElement('script');
+    oa.type = 'text/javascript'; oa.async = true;
+    oa.src = '//' + oneall_subdomain + '.api.oneall.com/socialize/library.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(oa, s);
+
+</script>
+<center>
+    <div style="border-bottom:1px solid #aaaaaa;margin: 0%"></div>
+    <label class="pull-aleft" style="margin: 1% auto 1% auto">Signin with your social accounts ....</label>
+    <div class="clearfix"></div>
+    <div id="oa_social_login_container" style="display: block;width: 330px;height: 0%;">
+        <center class="text-muted">
+            <img src="/access/img/ajax-loader.gif"></img> Loading your connection options...
+        </center>
+    </div>
+</center>
+<script type="text/javascript"> 
+    var your_callback_script = '//<?php echo \__SERVER_NAME__ ?>/auth/remote_con';
+    var _oneall = _oneall || [];
+    _oneall.push(['social_login', 'set_callback_uri', your_callback_script]);
+    _oneall.push(['social_login', 'set_providers', ['facebook', 'google', 'twitter', 'wordpress', 'youtube', 'blogger', 'yahoo', 'openid', 'windowslive', 'stackexchange']]);
+    _oneall.push(['social_login', 'set_grid_sizes', [5,2]]);
+    _oneall.push(['social_login', 'do_render_ui', 'oa_social_login_container']);
+</script>
