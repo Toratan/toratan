@@ -8,5 +8,3 @@ class markdownInitiliazer extends \zinux\kernel\application\baseInitializer
         require_once 'lib/markdown.php';
     }    
 }
-
-?>
