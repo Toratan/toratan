@@ -34,6 +34,11 @@ class profile extends baseModel
 
     public function before_save_serialize_settings()
     {
+        if($this->is_dirty())
+        {
+            $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
+            $sc->save($this->user_id, $this);
+        }
         $this->settings = serialize($this->settings);
         $this->settings_unserialized = 0;
     }
@@ -44,6 +49,9 @@ class profile extends baseModel
      */
     public static function getInstance($user_id, $skip_settings = 0)
     {
+        $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
+        if($sc->isCached($user_id))
+            return $sc->fetch($user_id);
         # fetch the profile
         $profile = parent::find(array("conditions" => array("user_id = ?", $user_id)));
         # skip setting stuff?
@@ -57,6 +65,7 @@ class profile extends baseModel
         }
         elseif($profile)
             unset($profile->settings);
+        $sc->save($user_id, $profile);
         # return the profile
         return $profile;
     }
