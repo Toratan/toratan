@@ -61,8 +61,13 @@
         <input type="hidden" name="version" value="html" />
         <input type="text" style="width: 80%;float: left" name="note_title" maxlength="250" class="form-control" value="<?php echo $title ?>" required="required"/><br />
         <div class="clearfix" style="margin: 1%"></div>
-        <textarea class="ckeditor form-control" id="editor-platform" rows="10" tabindex="1" name="note_body" style="width: 100%"><?php 
-            echo Michelf\MarkdownExtra::defaultTransform($body); 
+        <textarea class="ckeditor form-control" id="editor-platform" rows="10" tabindex="1" name="note_body" style="width: 100%"><?php
+            # invoke the markdown initiliazer
+            $mdi = new \core\ui\markdown\markdownInitiliazer;
+            # execute the initliazer
+            $mdi->Execute();
+            # markdown the context
+            echo \Markdown($body);
         ?></textarea>
         <input type="submit" value="<?php echo $this->edit ? "Edit" : "Create" ?>" class="form-control btn btn-primary btn-sm"/>
     </form>

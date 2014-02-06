@@ -2,11 +2,10 @@
 namespace core\db\activeRecord;
 
 
-class ARInitializer extends \zinux\kernel\application\dbInitializer
+class ARInitializer extends \zinux\kernel\application\baseInitializer
 {
-    public function Execute($request) 
+    public function Execute() 
     {
-        unset($request);
         # invoking AR's autoloader
         require_once 'lib/ActiveRecord.php';
     }

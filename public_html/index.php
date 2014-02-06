@@ -1,10 +1,14 @@
 <?php        
+    # validate the server PHP version with development PHP version
     if(version_compare(\PHP_VERSION, "5.5.8", "<"))
     {
         echo ("<center>The <b>minimal</b> PHP version <b>required is 5.5.8</b>!<br />");
         echo ("Your PHP version is: <b>".\PHP_VERSION);
         die ("</b>.<br />Upgrade your server php.</center>");
     }
+    # we will work with UTC standard timezone 
+    date_default_timezone_set("UTC");
+    # opening a session socket
     session_start();
     # if we access by shell 
     # set HTTP_HOST to the script name
@@ -157,16 +161,22 @@ try
             ->SetBootstrap(new application\dbBootstrap)
             
             # init activerecord as db handler
-            ->SetDBInitializer(new \core\db\activeRecord\ARInitializer())
+            ->SetInitializer(new \core\db\activeRecord\ARInitializer())
             
             # load project basic config initializer
             ->SetConfigIniliazer(new \zinux\kernel\utilities\iniParser(PROJECT_ROOT."/config/default.cfg", RUNNING_ENV))
             # register php markdown parser 
             # repo : https://github.com/michelf/php-markdown
-            ->registerPlugin("PHP-MARKDOWN", "/core/ui/markdown/lib")
-            # register socket-raw
+            # @notice : from markdown version 1.0.2 this it not valid according 
+            # to the structure change in php-markdown, see the following codes 
+            # for workarounds.
+            #->registerPlugin("PHP-MARKDOWN", "/core/ui/markdown/lib")
+            # Actually we don't need to include markdown at every request
+            # i will invoke it when it is necessary at its time :)
+            #->SetInitializer(new \core\ui\markdown\markdownInitiliazer)
+            # register socket-raw [ for now i don't need this ]
             # repo : https://github.com/clue/socket-raw
-            ->registerPlugin("SOCKET-RAW", "/core/vendors/socket-raw")
+            #->registerPlugin("SOCKET-RAW", "/core/vendors/socket-raw")
             # init the application's optz.
             ->Startup()
             # run the application 

@@ -23,4 +23,11 @@
                         </div>
     <?php endif; ?>
 </div>
-<?php echo Michelf\MarkdownExtra::defaultTransform($this->instance->note_body); ?>
+<?php
+    # invoke the markdown initiliazer
+    $mdi = new \core\ui\markdown\markdownInitiliazer;
+    # execute the initliazer
+    $mdi->Execute();
+    # markdown down the context
+    echo \Markdown($this->instance->note_body); 
+?>
