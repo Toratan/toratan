@@ -17,28 +17,7 @@
         </div>
     </div>
     <div class='clearfix'></div>
-    <script type="text/javascript">
- 
-        /* Replace #your_subdomain# by the subdomain of a Site in your OneAll account */    
-        var oneall_subdomain = 'toratan';
-
-        /* The library is loaded asynchronously */
-        var oa = document.createElement('script');
-        oa.type = 'text/javascript'; oa.async = true;
-        oa.src = '//' + oneall_subdomain + '.api.oneall.com/socialize/library.js';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(oa, s);
-
-  </script>
-  <div id="oa_social_login_container" style="margin-top:3%;"><center class="text-muted"><img src="/access/img/ajax-loader.gif"></img> Loading your connection options...</center></div>
-  <script type="text/javascript"> 
-        /* Replace #your_callback_uri# with the url to your own callback script */
-        var your_callback_script = '//<?php echo \__SERVER_NAME__ ?>/auth/remote_con';
-        var _oneall = _oneall || [];
-        _oneall.push(['social_login', 'set_callback_uri', your_callback_script]);
-        _oneall.push(['social_login', 'set_providers', ['facebook', 'google', 'wordpress', 'youtube', 'twitter', 'blogger', 'yahoo', 'openid', 'linkedin', 'windowslive', 'stackexchange', 'disqus', 'foursquare', 'livejournal', 'mailru', 'odnoklassniki', 'paypal', 'skyrock', 'steam', 'twitch', 'vkontakte']]);
-        _oneall.push(['social_login', 'set_grid_sizes', [5,5]]);
-        _oneall.push(['social_login', 'do_render_ui', 'oa_social_login_container']);
-
-  </script>
+    <div class="form-group" style="padding:3%;">
+        <?php $this->RenderPartial("network_accounts"); ?>
+    </div>
 </form>
