@@ -1,4 +1,4 @@
-<?php        
+<?php
     # validate the server PHP version with development PHP version
     if(version_compare(\PHP_VERSION, "5.5.8", "<"))
     {
@@ -201,4 +201,4 @@ catch(Exception $e)
 }
 $exeTime = new \core\db\models\execution;
 
-echo "<hr /><center>Loaded in <b>{$exeTime->record($load)}</b> seconds.<br />Average load time is <b>{$exeTime->get_average_load_time()}</b> seconds.</center>";
+echo "<div style='clear:both'></div><hr /><center>Loaded in <b>{$exeTime->record($load)}</b> seconds.<br />Average load time is <b>{$exeTime->get_average_load_time()}</b> seconds.</center>";
