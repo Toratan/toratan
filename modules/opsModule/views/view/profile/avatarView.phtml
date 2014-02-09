@@ -103,7 +103,7 @@
                 </td>
                 <td>
                     <?php if(@$this->avatar->custom): ?>
-                        <?php if(file_exists(".".$this->avatar->custom->thumb_image)) : ?>
+                        <?php if(@file_exists(".".$this->avatar->custom->thumb_image)) : ?>
                         <div class="radio pull-right" >
                             <label>
                                 <input type="radio" name="activated"  value="custom" tabindex="-1" <?php echo @$this->avatar->activated == "custom" ? "checked" : "" ?>>
