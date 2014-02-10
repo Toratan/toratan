@@ -36,8 +36,8 @@
             <tr>
                 <th>Name</th>
                 <?php if ($type != "HTML" && $type != "FOLDERS"): ?>
-                <th>Created at</th>
-                <th>Updated at</th>
+                <th><script>document.write("Created at");</script></th>
+                <th><script>document.write("Updated at");</script></th>
                 <?php endif; ?>
                 <th>&nbsp;<!--Options--></th>
             </tr>
@@ -97,8 +97,8 @@
                         ?>
                         <?php echo "<a href='/view/note/{$n->note_id}' target='__blank'>{$n->note_title}</a>"; ?>
                 </td>
-                <td><script>document.write(new Date(<?php echo strtotime($n->created_at) * 1000; ?>).toLocaleString());</script></td>
-                <td><script>document.write(new Date(<?php echo strtotime($n->updated_at) * 1000; ?>).toLocaleString());</script></td>
+                <td><script>document.write(new Date(Date.parse('<?php echo $n->created_at; ?>')).toLocaleString());</script></td>
+                <td><script>document.write(new Date(Date.parse('<?php echo $n->updated_at; ?>')).toLocaleString());</script></td>
                 <td>
                         <?php if(\core\db\models\user::GetInstance()->user_id == $n->owner_id): ?>
                         <div>
@@ -128,8 +128,8 @@
                         ?>
                         <?php echo "<a href='{$l->link_body}' target='__blank'>{$l->link_title}</a>"; ?>
                 </td>
-                <td><script>document.write(new Date(<?php echo strtotime($l->created_at) * 1000; ?>).toLocaleString());</script></td>
-                <td><script>document.write(new Date(<?php echo strtotime($l->updated_at) * 1000; ?>).toLocaleString());</script></td>
+                <td><script>document.write(new Date(Date.parse('<?php echo $l->created_at; ?>')).toLocaleString());</script></td>
+                <td><script>document.write(new Date(Date.parse('<?php echo $l->updated_at; ?>')).toLocaleString());</script></td>
                 <td>
                     <div>
                         <?php if(\core\db\models\user::GetInstance()->user_id == $l->owner_id): ?>
