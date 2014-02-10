@@ -174,9 +174,6 @@ try
             # Actually we don't need to include markdown at every request
             # i will invoke it when it is necessary at its time :)
             #->SetInitializer(new \core\ui\markdown\markdownInitiliazer)
-            # register socket-raw [ for now i don't need this ]
-            # repo : https://github.com/clue/socket-raw
-            #->registerPlugin("SOCKET-RAW", "/core/vendors/socket-raw")
             # init the application's optz.
             ->Startup()
             # run the application 
