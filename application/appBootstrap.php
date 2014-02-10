@@ -9,7 +9,7 @@ class appBootstrap extends \zinux\kernel\application\applicationBootstrap
     {
         # if any of access file not found the .htaccess will redirect them here
         # we want to indicate not found here.
-        if(\strtolower($request->GetIndexedParam(0)) === "access")
+        if($request->CountIndexedParam() && \strtolower($request->GetIndexedParam(0)) === "access")
         {
             header('HTTP/1.1 404 FILE NOT FOUND');
             exit;
