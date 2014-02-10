@@ -53,7 +53,9 @@ class notification extends \core\db\models\baseModel
                     # proceed with others
                     continue;
                 }
-                $user = \preg_replace("#}$#i", ", \"profile\":{$notifs[$index]->user->profile->to_json()}}", $notifs[$index]->user->to_json());
+                list($avatar_uri) = \core\ui\html\avatar::get_avatar_link($notifs[$index]->user->user_id);
+                $profile = \preg_replace("#}$#i", ", \"avatar\":{\"thumbnail\":\"$avatar_uri\"}}", $notifs[$index]->user->profile->to_json());
+                $user = \preg_replace("#}$#i", ", \"profile\":{$profile}}", $notifs[$index]->user->to_json());
                 $json_output .= \preg_replace(array('#}$#i', '#("item_table"\s*:\s*)("[a-z]+")#i'), array(",\"user\":{$user}}", "\"item_type\":$2, \"item\":".\preg_replace("#{$notifs[$index]->item_table}#i", "item", $item->to_json())), $notifs[$index]->to_json());
             }
             else
