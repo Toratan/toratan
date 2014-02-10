@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    window.add_js ("/access/js/jquery.relative.js");
     var last_pull = 0; 
     $.ajax({
         url: "/notifications/pull",
@@ -24,8 +25,7 @@ $(document).ready(function(){
                     default:
                         alert(i.item_type);
                 }
-            }
-            $("time.timeago").timeago();
+            }  
         }
     });
 });
@@ -58,6 +58,8 @@ window.build_notification_txt = function(i)
             break;
     }
     avatar = i.user.profile.avatar.thumbnail;
+    localtime = (window.format_date(i.created_at));//));
+    console.log(localtime);
     switch(i.notification_type)
     {
         case 0:
@@ -66,11 +68,29 @@ window.build_notification_txt = function(i)
                     "<div style='margin-left:12%'><span class='"+icon+"'></span> " +
                     "<a style='' href='"+link+"' target='__blank'>"+i.item.item_title+"</a>" + detail + 
                     "<div class='clearfix'></div></div>"+
-                    "<time class='text-muted pull-right timeago'>"+(new Date(Date.parse (i.created_at)).toLocaleString())+"</time>";
+                    "<time class='text-muted pull-right timeago' datetime="+localtime+">"+localtime+"</time>";
             break;
         default:
             console.log ("Undefined notification type ID# "+i.notification_type);
             return false;
     }
     return txt+"<hr />";
+};
+window.add_js = function(jsfile){
+    var js = document.createElement("script");
+    js.type = "text/javascript";
+    js.src = jsfile;
+    document.body.appendChild(js);
+};
+window.format_date = function(date_string){
+    return date = (new Date(Date.parse(date_string))).toLocaleString();
+    split = date.split(" ");
+    time = split[1].split(":");
+    if(split[2] === "PM") 
+    {
+        time[0] = (parseInt (time[0]) + 12).toString();
+    }
+    split[1] = time.join(":");
+    split.splice(2);
+    return split.join(" ");
 };
