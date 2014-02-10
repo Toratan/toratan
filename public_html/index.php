@@ -157,7 +157,10 @@ try
             # setting router's bootstrap which will route /note/:id:/edit => /note/edit/:id:
             ->SetRouterBootstrap(new \application\appRoutes)
             
-            # set application's bootstrap 
+            # set application's general bootstrap 
+            ->SetBootstrap(new application\appBootstrap)
+            
+            # set application's db bootstrap 
             ->SetBootstrap(new application\dbBootstrap)
             
             # init activerecord as db handler
