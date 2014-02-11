@@ -112,8 +112,8 @@ class avatar
         /**
          * validate and fetch proper avatar URI here
          */
-        # fetch the profile of user ID
-        $profile = \core\db\models\profile::getInstance($user_id);
+        # fetch the profile of user ID, ignore the cache data for user, we want realtime data from user profile
+        $profile = \core\db\models\profile::getInstance($user_id, 0, 0);
         # validate the profile
         if(!$profile)
             throw new \zinux\kernel\exceptions\notFoundException("The profile not found!");

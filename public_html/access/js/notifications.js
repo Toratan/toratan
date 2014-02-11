@@ -1,15 +1,26 @@
 $(document).ready(function(){
-    window.add_js ("/access/js/jquery.relative.js");
-    var last_pull = 0; 
+    window.add_js ("/access/js/jquery.timeago.min.js");
+    window.pull_notification ();
+    setInterval ("window.pull_notification ();", 10000);
+});
+window.pull_notification = function(){
+    if(typeof window.last_pull  === "undefined")
+            window.last_pull = 0;
+    window.pull_internal_in_effect = 0;
+    url = "/notifications/pull/since/"+last_pull;
+    console.log(url);
     $.ajax({
-        url: "/notifications/pull",
+        url: url,
         type: "POST",
         data: { ajax: "", since: last_pull },
         dataType: "json",
         success: function(data) {
-            last_pull = new Date();
+            window.last_pull = (new Date()).getTime() / 1000;
+            window.pulls = window.pulls || [];
+            data = data.concat(window.pulls);
+            data.sort(window.custom_sort);
             console.log(data);
-            for(var $i = 0;$i<data.length;$i++)
+            for(var $i = data.length-1;$i>0;$i--)
             {
                 var i = data[$i];
                 switch(i.item_type)
@@ -23,12 +34,21 @@ $(document).ready(function(){
                         $("div#feed-reader-section .feed-container").append(txt);
                         break;
                     default:
-                        alert(i.item_type);
+                        //alert(i.item_type);
+                }
+                if(window.pull_internal_in_effect !== 1)
+                {
+                    window.pull_internal_in_effect = 1;
+                    $('time.timeago').timeago();
+                    setInterval ("$('time.timeago').timeago();", 15000);
                 }
             }  
         }
     });
-});
+};
+window.custom_sort = function(a, b) {
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+}
 /**
  * Changes the first letter to upper case and leave the others as is
  * @returns string
@@ -36,7 +56,6 @@ $(document).ready(function(){
 String.toFirstLetterUpperCase = function(string) { return string[0].toUpperCase()+string.substr(1,string.length); };
 window.build_notification_txt = function(i)
 {
-    console.log(i);
     var txt = "";
     var link = "";
     var detail = "";
@@ -58,8 +77,8 @@ window.build_notification_txt = function(i)
             break;
     }
     avatar = i.user.profile.avatar.thumbnail;
-    localtime = (window.format_date(i.created_at));//));
-    console.log(localtime);
+    // we use UTC time zone
+    localtime = i.created_at;
     switch(i.notification_type)
     {
         case 0:
@@ -68,7 +87,8 @@ window.build_notification_txt = function(i)
                     "<div style='margin-left:12%'><span class='"+icon+"'></span> " +
                     "<a style='' href='"+link+"' target='__blank'>"+i.item.item_title+"</a>" + detail + 
                     "<div class='clearfix'></div></div>"+
-                    "<time class='text-muted pull-right timeago' datetime="+localtime+">"+localtime+"</time>";
+                    "<time class='text-muted pull-left' datetime="+localtime+">"+(i.created_at)+"</time>"+
+                    "<time class='text-muted pull-right timeago' datetime="+localtime+">"+window.format_date (i.created_at)+"</time>";
             break;
         default:
             console.log ("Undefined notification type ID# "+i.notification_type);
@@ -83,14 +103,19 @@ window.add_js = function(jsfile){
     document.body.appendChild(js);
 };
 window.format_date = function(date_string){
-    return date = (new Date(Date.parse(date_string))).toLocaleString();
+    obj_date = new Date(Date.parse(date_string));
+    date = obj_date.toLocaleString ();
     split = date.split(" ");
     time = split[1].split(":");
     if(split[2] === "PM") 
-    {
         time[0] = (parseInt (time[0]) + 12).toString();
-    }
-    split[1] = time.join(":");
-    split.splice(2);
+    var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
+    month = monthNames[obj_date.getMonth ()];
+    split[0] = split[0].split("/");
+    split[0][1] = split[0][0];
+    split[0][0] = month;
+    split[0] = split[0].join("-");
+    split[1] = "@";
+    split[2] = time.join(":");
     return split.join(" ");
 };

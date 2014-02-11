@@ -110,9 +110,9 @@ class notification extends \core\db\models\baseModel
             $cond[] = $notif_type;
         }
         $having = array();
-        if($since_date)
+        if($since_date !== NULL)
         {
-            $having = ("created_at >= '$since_date'");
+            $having = ("created_at >= '".date(\ActiveRecord\DateTime::get_format(\ActiveRecord\Serialization::$DATETIME_FORMAT), $since_date)."'");
         }
         $includes = array();
         if($include_meta)
