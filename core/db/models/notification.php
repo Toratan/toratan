@@ -103,7 +103,7 @@ class notification extends \core\db\models\baseModel
     public static function fetch($user_id, $limit = 0, $offset = 0, $include_meta = 0, $notif_type = -1, $since_date = NULL)
     {
         $notif = new \core\db\models\notification;
-        $cond = array("`subscribes`.follower = ? AND is_visible = 1 ", $user_id);
+        $cond = array("`subscribes`.follower = ? AND is_visible = 1", $user_id);
         if($notif_type != -1)
         {
             $cond[0] .= " AND notification_type = ?";
@@ -154,7 +154,7 @@ class notification extends \core\db\models\baseModel
         $having = array();
         if($since_date)
         {
-            $having = ("created_at >= '$since_date'");
+            $having = ("created_at >= '".date(\ActiveRecord\DateTime::get_format(\ActiveRecord\Serialization::$DATETIME_FORMAT), $since_date)."'");
         }
         $includes = array();
         if($include_meta)
