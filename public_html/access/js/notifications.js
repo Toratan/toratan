@@ -87,7 +87,7 @@ $(document).ready(function(){
                 <div class=\'feed-container\'>'+window.pull_fetching_txt+'</div>\n\
             </div>').appendTo ("div.container");
     window.pull_notification ();
-    //setInterval ("window.pull_notification ();", 15000);
+    setInterval ("window.pull_notification ();", 15000);
 });
 window.pull_notification = function(){
     if(typeof window.last_pull  === "undefined")
