@@ -49,15 +49,14 @@ window.pull_notification = function(){
                         var txt = window.build_notification_txt(i);
                         if(!txt)
                             continue;
-                        window.insertit ($("div#feed-reader-section .feed-container"), $(txt), function($node)
+                        window.insert_sorted($("div#feed-reader-section .feed-container"), $(txt), function($node)
                         {
                             if(!($node).hasClass ("notif-block"))  return 0;
                             $id = ($node.attr('id')).toString();
                             $id = $id.substr(6);
                             return parseInt($id);
-                        });
-//                        $("div#feed-reader-section .feed-container").append (txt)
-                        $("div#feed-reader-section .feed-container #notif-"+i.item_id.toString ()).fadeIn(1000);
+                        }).fadeIn(1000);
+//                        $("div#feed-reader-section .feed-container").append (txt);
                         $('time.timeago').timeago();
                         break;
                     default:
@@ -74,49 +73,86 @@ window.pull_notification = function(){
         }
     });
 };
-
-window.insertit = function($parent, $new, $fetch_val) {
+/**
+ * add a new item into a parent node in a sorted manner using binary sort strategy
+ * @param jQuery $parent the parent node's jquery object
+ * @param jQuery $new the new node's jquery object
+ * @param function $fetch_val the function for making decision when sorting them
+ * @returns jQuery the inserted item
+ **/
+window.insert_sorted = function($parent, $new, $fetch_val) {
+    // if this is the first of its siblings
     if(($parent.children()).length === 0)
     {
-        $new.append($fetch_val($new));
+        // just append it
         $parent.append($new);
-        return;
-    }
-    this.$new_val = $fetch_val($new);
-    $new.append($new_val);
-    this.children = $parent.children ();
-    console.log(children);
-    this.$cur = $fetch_val($(children[0]));
-    if(this.$new_val > this.$cur)
-    {
-        ($new).insertBefore($(children[0]));
+        // return the appened item
         return $new;
     }
+    // fetch the new item's value
+    this.$new_val = $fetch_val($new);
+    // fetch the children
+    this.children = $parent.children ();
+    // fetch the value of the first child
+    this.$cur = $fetch_val($(children[0]));
+    // if the new is greater than first child's value
+    if(this.$new_val > this.$cur)
+    {
+        // just append the new one before the first child
+        ($new).insertBefore($(children[0]));
+        // return the appened item
+        return $new;
+    }
+    // fetch the value of the last child
     this.$cur = $fetch_val($(children[children.length - 1]));
+    // if the new is less than last child's value
     if($new_val < this.$cur)
     {
+        // just append the new one before the first child
         ($new).insertAfter($(children[children.length - 1]));
+        // return the appened item
         return  $new;
     }
-    console.log("@");
-    console.log(children.length);
+   /**
+    * init the binery search values
+    */
+    // the bs' top value
     this.itop = children.length;
+    // the bs' bottom value
     this.ibot = 0;
-    this.imid = (this.itop - this.ibot) / 2; 
+    // a fail-safe for making bs recursively decision-able
+    this.counter = 0;
+    // here the bs goes
     do
     {
-        console.log ([this.ibot, this.imid, this.itop]);
+        // validate the medium value of { bottom, top }
+        this.imid = Math.floor((this.itop + this.ibot) / 2);
+        // fetch the medium child's value
         this.$cur = $fetch_val($(children[this.imid]));
+        /**
+         * Validate the new child's position from the medium child
+         */
         if($new_val > this.$cur)
             this.itop = this.imid;
         else
             this.ibot = this.imid;
-        this.imid = Math.floor((this.itop - this.ibot) / 2);
-    }while(this.ibot < this.itop);
-    console.log ($(children[mid]));
-    return $new;
-    if (sortval === compare || sortval > compare) { $new.insertBefore($compare); }
-    else { $new.insertAfter($compare); }
+        // the recursive's fail-safe
+        if(this.counter++>children.length)
+            break;
+        // the condition for terminating the recursive
+    }while(Math.abs(this.ibot - this.itop) > 1);
+    /**
+     * now that bs' terminated
+     */
+    // if the new child's value is greater than the bs' last fetched child's value
+    if($new_val > this.$cur)
+        // insert the new child after it
+        ($new).insertAfter($(children[this.ibot]));
+    // if the new child's value is less or equal than the bs' last fetched child's value
+    else 
+        // insert the new child before it
+        ($new).insertBefore($(children[this.ibot]));
+    // return the inserted value
     return $new;
 };
 window.pull_fetch_more = function($this)
