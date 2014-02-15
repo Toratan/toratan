@@ -53,8 +53,10 @@ class notification extends \core\db\models\baseModel
                     # proceed with others
                     continue;
                 }
-                $user = \preg_replace("#}$#i", ", \"profile\":{$notifs[$index]->user->profile->to_json()}}", $notifs[$index]->user->to_json());
-                $json_output .= \preg_replace(array('#}$#i', '#("item_table"\s*:\s*)("[a-z]+")#i'), array(",\"user\":{$user}}", "\"item_type\":$2, \"item\":".\preg_replace("#{$notifs[$index]->item_table}#i", "item", $item->to_json())), $notifs[$index]->to_json());
+                list($avatar_uri) = \core\ui\html\avatar::get_avatar_link($notifs[$index]->user->user_id);
+                $profile = \preg_replace("#}$#i", ", \"avatar\":{\"thumbnail\":\"$avatar_uri\"}}", $notifs[$index]->user->profile->to_json());
+                $user = \preg_replace("#}$#i", ", \"profile\":{$profile}}", $notifs[$index]->user->to_json());
+                $json_output .= \preg_replace(array('#}$#i', '#("item_table"\s*:\s*)("[a-z]+")#i'), array(",\"user\":{$user}}", "\"item_type\":$2, \"item\":".\preg_replace("#\"{$notifs[$index]->item_table}(_\w+\"\s*:\s*)#i", "\"item$1", $item->to_json())), $notifs[$index]->to_json());
             }
             else
                 $json_output .= $notifs[$index]->to_json();
@@ -108,9 +110,9 @@ class notification extends \core\db\models\baseModel
             $cond[] = $notif_type;
         }
         $having = array();
-        if($since_date)
+        if($since_date !== NULL)
         {
-            $having = ("created_at >= '$since_date'");
+            $having = ("created_at >= '".date(\ActiveRecord\DateTime::get_format(\ActiveRecord\Serialization::$DATETIME_FORMAT), $since_date)."'");
         }
         $includes = array();
         if($include_meta)

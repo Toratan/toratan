@@ -47,11 +47,14 @@ class profile extends baseModel
      * @param string|integer $user_id a user id
      * @return profile the fetched profile
      */
-    public static function getInstance($user_id, $skip_settings = 0)
+    public static function getInstance($user_id, $skip_settings = 0, $use_cache = 1)
     {
-        $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
-        if($sc->isCached($user_id))
-            return $sc->fetch($user_id);
+        if($use_cache)
+        {
+            $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
+			if($sc->isCached($user_id))
+				return $sc->fetch($user_id);
+        }
         # fetch the profile
         $profile = parent::find(array("conditions" => array("user_id = ?", $user_id)));
         # skip setting stuff?
@@ -65,7 +68,10 @@ class profile extends baseModel
         }
         elseif($profile)
             unset($profile->settings);
-        $sc->save($user_id, $profile);
+		# if using cache
+        if($use_cache)
+			# save the result
+            $sc->save($user_id, $profile);
         # return the profile
         return $profile;
     }
@@ -76,7 +82,7 @@ class profile extends baseModel
      * @param boolean $auto_save should auto save the settings or not
      * @throws \zinux\kernel\exceptions\invalideArgumentException if $address is not string or is empty
      */
-    public function setSetting($address, $value, $auto_save = 1, $splitter = "/")
+    public function setSetting($address, $value, $auto_save = 1, $splitter = "/", $save_in_cache = 1)
     {
         # trim the address
         $address = @trim($address);
@@ -108,6 +114,13 @@ class profile extends baseModel
                 $array->{$route} = new \stdClass();
             # move to next link
             $array = $array->{$route};
+        }
+		# if must save in cache
+        if($save_in_cache)
+        {
+			# then do it
+            $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
+            $sc->save($this->user_id, $this);
         }
         # if should auto save
         if($auto_save)
@@ -152,7 +165,7 @@ class profile extends baseModel
      * @return mixed the setting's value or NULL if no setting found
      * @throws \zinux\kernel\exceptions\invalideArgumentException if $address is not string or is empty
      */
-    public function unsetSetting($address, $auto_save = 1, $splitter = "/")
+    public function unsetSetting($address, $auto_save = 1, $splitter = "/", $save_in_cache = 1)
     {  
         # trim the address
         $address = @trim($address);
@@ -163,6 +176,13 @@ class profile extends baseModel
         $address_partials = array_filter(\explode($splitter, $address));
         # recursively delete the address
         $result = $this->recursive_deletion($address_partials, $this->settings);
+		# if must save in cache?
+        if($save_in_cache)
+        {
+			# then do it
+            $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
+            $sc->save($this->user_id, $this);
+        }
         # if auto-save demaned
         if($auto_save)
             # save the profile
