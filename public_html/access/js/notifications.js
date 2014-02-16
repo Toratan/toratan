@@ -96,6 +96,7 @@ window.pull_notification = function(){
             window.pull_internal_in_effect = 0;
             window.pull_limit = 10;
             window.pull_offset = 0;
+            window.pull_read_more = 0;
     }
     url = "/notifications/pull/l/"+window.pull_limit+"/o/"+window.pull_offset+"/since/"+last_pull;
     console.log(url);
@@ -111,6 +112,11 @@ window.pull_notification = function(){
             window.last_pull_was_empty = (data.length === 0);
             window.pulls = window.pulls || [];
             window.pulls = data.concat(window.pulls);
+            if(window.pull_read_more === 1 && data.length === 0)
+            {
+                $("div#feed-reader-section .feed-container").parent ().append('<div id="read-more" class="block alert-inafo text-center text-muted"  style="cursor:cross" onclick=\'window.pull_fetch_more(this);\'><a><span class="glyphicon glyphicon-plus"></span> Fuck u</a></div>');
+                return;
+            }
             for(var $i = data.length-1;$i>=0;$i--)
             {
                 var i = data[$i];
@@ -135,7 +141,8 @@ window.pull_notification = function(){
                 }
             }
             $("div#feed-reader-section #read-more").remove ();
-            $("div#feed-reader-section .feed-container").parent ().append('<div id="read-more" class="block  alert-inafo text-center text-muted"  style="cursor:pointer" onclick=\'window.pull_fetch_more(this);\'><a><span class="glyphicon glyphicon-plus"></span> Read More</a></div>');
+            if(window.pull_read_more === 0 || data.length !== 0)
+                $("div#feed-reader-section .feed-container").parent ().append('<div id="read-more" class="block alert-inafo text-center text-muted"  style="cursor:pointer" onclick=\'window.pull_fetch_more(this);\'><a><span class="glyphicon glyphicon-plus"></span> Read More</a></div>');
         }
     });
 };
@@ -151,7 +158,9 @@ window.pull_fetch_more = function($this)
     last_pull=window.last_pull;
     window.last_pull=0;
     $($this).html(window.pull_fetching_txt);
+    window.pull_read_more = 1;
     window.pull_notification ();
+    window.pull_read_more = 0;
     window.last_pull=last_pull;
 };
 window.custom_sort = function(a, b) {
@@ -196,9 +205,10 @@ window.build_notification_txt = function(i)
                     "<a style='' href='"+link+"' target='__blank'>"+i.item.item_title+"</a>" + detail +
                     "<div class='clearfix'></div></div>"+
                     "<div class='text-muted timestamp'>"+
-                        "<time class='pull-left' datetime="+localtime+">"+window.format_date(i.created_at).replace("@", "")+"</time>"+
-//                        "<time class='pull-left' datetime="+localtime+">"+i.created_at+"</time>"+
                         "<time class='pull-right timeago' datetime='"+localtime+"' local-datetime='"+new Date(Date.parse(i.created_at)).toLocaleString()+"'>"+window.format_date (i.created_at)+"</time>"+
+                        "<time class='pull-left visible-lg' datetime="+localtime+">"+window.format_date(i.created_at).replace("@", "")+"</time>"+
+                        "<br class='visible-sm visible-md' />"+
+                        "<time class='visible-sm visible-md pull-right block' datetime="+localtime+">"+window.format_date(i.created_at).replace("@", "")+"</time>"+
                     "</div><div class='clearfix'></div></div>";
             $('div#notif-'+i.item_id.toString ()).remove ();
             break;
