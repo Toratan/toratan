@@ -24,6 +24,36 @@ class profile extends baseModel
      * @var array After save callbacks
      */
     static $after_save = array('after_save_unserialize_settings');
+    
+    protected static function save_in_cache($profile)
+    {
+        $sig = "{$profile->user_id}:".(isset($profile->settings)?"0":"1");
+        $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
+        /**
+         * if uncommenting fetch_from_cache() uncomment this too
+         */
+        $sc->save($sig, /*array(*/$profile/*, time())*/);
+    }
+    
+    protected static function fetch_from_cache($user_id, $skip_settings = 0)
+    {
+        $sig = "$user_id:$skip_settings";
+        $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
+        if($sc->isCached($sig))
+        {
+            $fetched = /*\array_shift*/($sc->fetch($sig/*, true*/));
+            $profile = /*\array_shift*/($fetched);
+            /*
+             * Following couple lines makes sure the our session cache is updated with db changes but not sure
+             * if is optimal.
+             * 
+            $res = parent::find_by_pk($user_id, array("select"=>"updated_at"));
+            if($res->updated_at->getTimestamp() < \array_shift($fetched))
+            */
+            return $profile;
+        }
+        return false;
+    }
 
     public function after_save_unserialize_settings()
     {
@@ -35,10 +65,7 @@ class profile extends baseModel
     public function before_save_serialize_settings()
     {
         if($this->is_dirty())
-        {
-            $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
-            $sc->save($this->user_id, $this);
-        }
+            self::save_in_cache($this);
         $this->settings = serialize($this->settings);
         $this->settings_unserialized = 0;
     }
@@ -51,9 +78,9 @@ class profile extends baseModel
     {
         if($use_cache)
         {
-            $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
-			if($sc->isCached($user_id))
-				return $sc->fetch($user_id);
+            $cached = self::fetch_from_cache($user_id, $skip_settings);
+            if($cached !== false)
+                return $cached;
         }
         # fetch the profile
         $profile = parent::find(array("conditions" => array("user_id = ?", $user_id)));
@@ -68,10 +95,10 @@ class profile extends baseModel
         }
         elseif($profile)
             unset($profile->settings);
-		# if using cache
+        # if using cache
         if($use_cache)
-			# save the result
-            $sc->save($user_id, $profile);
+            # save the result
+            self::save_in_cache($profile);
         # return the profile
         return $profile;
     }
@@ -115,12 +142,11 @@ class profile extends baseModel
             # move to next link
             $array = $array->{$route};
         }
-		# if must save in cache
+        # if must save in cache
         if($save_in_cache)
         {
-			# then do it
-            $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
-            $sc->save($this->user_id, $this);
+            # then do it
+            self::save_in_cache($this);
         }
         # if should auto save
         if($auto_save)
@@ -176,12 +202,11 @@ class profile extends baseModel
         $address_partials = array_filter(\explode($splitter, $address));
         # recursively delete the address
         $result = $this->recursive_deletion($address_partials, $this->settings);
-		# if must save in cache?
+        # if must save in cache?
         if($save_in_cache)
         {
-			# then do it
-            $sc = new \zinux\kernel\caching\sessionCache(__CLASS__);
-            $sc->save($this->user_id, $this);
+            # then do it
+            self::save_in_cache($this);
         }
         # if auto-save demaned
         if($auto_save)
