@@ -4,24 +4,27 @@
     $this->is_share = isset($this->is_share) && $this->is_share;
     $type = strtoupper($this->request->type);
     $type = $type=="HTML"?"FOLDERS":$type;
-    function PrintTypeNav($view, $type)
+    if(!\function_exists("PrintTypeNav"))
     {
-        foreach(array("folders" => "Folders", "notes" => "Notes", "links" => "Links") as $key => $value)
+        function PrintTypeNav($view, $type)
         {
-            switch(true)
+            foreach(array("folders" => "Folders", "notes" => "Notes", "links" => "Links") as $key => $value)
             {
-                case $view->is_trash:
-                    echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/trashes.$key'>$value</a></li>";
-                    break;
-                case $view->is_archive:
-                    echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/archives.$key'>$value</a></li>";
-                    break;
-                case $view->is_share:
-                    echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/shared.$key'>$value</a></li>";
-                    break;
-                default :
-                    echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='".(isset($view->request->params['u'])?"/u/{$view->request->params['u']}":"")."/directory/{$view->pid}.$key'>$value</a></li>";
-                    break;
+                switch(true)
+                {
+                    case $view->is_trash:
+                        echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/trashes.$key'>$value</a></li>";
+                        break;
+                    case $view->is_archive:
+                        echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/archives.$key'>$value</a></li>";
+                        break;
+                    case $view->is_share:
+                        echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/shared.$key'>$value</a></li>";
+                        break;
+                    default :
+                        echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='".(isset($view->request->params['u'])?"/u/{$view->request->params['u']}":"")."/directory/{$view->pid}.$key'>$value</a></li>";
+                        break;
+                }
             }
         }
     }
@@ -34,12 +37,12 @@
     <table class="table<?php echo count($this->items)?" table-hover":"" ?>">
         <thead>
             <tr>
-                <th>Name</th>
+                <th style="width: 60%">Name</th>
                 <?php if ($type != "HTML" && $type != "FOLDERS"): ?>
                 <th class="visible-lg"><script>document.write("Created at");</script></th>
                 <th class="visible-lg"><script>document.write("Updated at");</script></th>
                 <?php endif; ?>
-                <th>&nbsp;<!--Options--></th>
+                <th class="pull-right">&nbsp;<!--Options--></th>
             </tr>
         </thead>
         <tbody>
