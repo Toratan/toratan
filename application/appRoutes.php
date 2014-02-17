@@ -19,8 +19,10 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          * need to modify to original uri by explicitly addressing the {/:modules:/:controller:} in uri.
          * Roures
          *      {/archives} to {/default/index/archives}
+         *      {/shared} to {/default/index/shared}
+         *      {/trashes} to {/default/index/trashes}
          */
-        $this->addRoute("^/(archives|shared)$2", "/default/index/$1$2");
+        $this->addRoute("^/(archives|shared|trashes)$2", "/default/index/$1$2");
         /**
          * Routes 
          *      {/new} to {/ops/new}
@@ -39,9 +41,10 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
         /**
          * Routes
          *      {/ops/profile/avatar/crop} to {/ops/profile/avatar_crop}
+         *      {/ops/profile/avatar/view} to {/ops/profile/avatar_view}
          * Note:
          *      This route need to be after {$this->addRoute("^/(profile)$2", "/ops/$1$2");}
          */
-        $this->addRoute("^(/ops/profile/avatar)/(crop|view)$3", "$1_$2$3");
+        $this->addRoute("^/(ops/profile/avatar)/(crop|view)$3", "$1_$2$3");
     }
 }
