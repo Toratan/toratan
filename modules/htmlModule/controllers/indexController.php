@@ -1,82 +1,43 @@
 <?php
 namespace modules\htmlModule\controllers;
-use core\db\models\item;
 /**
  * The modules\htmlModule\controllers\indexController
  * @by Zinux Generator <b.g.dariush@gmail.com>
  */
-class indexController extends \zinux\kernel\controller\baseController
+class indexController extends \modules\defaultModule\controllers\indexController
 {
-    public function rteAction(){$this->layout->SuppressLayout();}
-    /**
-    * The modules\htmlModule\controllers\indexController::IndexAction()
-    * @by Zinux Generator <b.g.dariush@gmail.com>
-    */
+    public function __construct()
+    {
+        \ob_start();
+    }
+    public function Initiate()
+    {
+        parent::Initiate();
+        $view = new \zinux\kernel\mvc\view(
+            $this->request->view->name,
+            new \zinux\kernel\mvc\action(
+                $this->request->action->name,
+                new \zinux\kernel\mvc\controller(
+                    $this->request->controller->name,
+                    new \zinux\kernel\mvc\module("default")
+                    )));
+        $this->view->metadata = &$view;
+        $this->layout = new \zinux\kernel\layout\baseLayout($this->view);
+        $this->layout->meta = new \zinux\kernel\mvc\layout("default", $view->relative_module);
+        $this->layout->request->module = new \zinux\kernel\mvc\module("default");
+        $this->layout->SetLayout("default");
+    }
     public function IndexAction()
     {
-        if(!\core\db\models\user::IsSignedin()) return;
-        $this->layout->AddTitle("Home");
-        $f = new \core\db\models\folder();
-        if(!isset($this->request->params["directory"]))
-            $this->request->params["directory"] = 0;
-        $this->view->pid = $pid = $this->request->params["directory"];
-        $uid = \core\db\models\user::GetInstance()->user_id;
-        $this->view->folders = ($f->fetchItems($uid, $pid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
-        $n = new \core\db\models\note;
-        $this->view->notes = ($n->fetchItems($uid, $pid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
-        $l = new \core\db\models\link;
-        $this->view->links = ($l->fetchItems($uid, $pid, item::WHATEVER, item::FLAG_UNSET, item::FLAG_UNSET));
-        $this->view->route = $f->fetchRouteToRoot($pid, $uid);
+        parent::IndexAction();
     }
-
-    /**
-    * The \modules\htmlModule\controllers\indexController::trashesAction()
-    * @by Zinux Generator <b.g.dariush@gmail.com>
-    */
-    public function trashesAction()
+    public function Dispose()
     {
-        if(!\core\db\models\user::IsSignedin()) return;
-        $this->layout->AddTitle("Trashes");
-        $f = new \core\db\models\folder();
-        $uid = \core\db\models\user::GetInstance()->user_id;
-        $this->view->folders = ($f->fetchTrashes($uid));
-        $n = new \core\db\models\note;
-        $this->view->notes = ($n->fetchTrashes($uid));
-        $l = new \core\db\models\link;
-        $this->view->links = ($l->fetchTrashes($uid));
-    }
-
-    /**
-    * The \modules\htmlModule\controllers\indexController::archivesAction()
-    * @by Zinux Generator <b.g.dariush@gmail.com>
-    */
-    public function archivesAction()
-    {
-        if(!\core\db\models\user::IsSignedin()) return;
-        $this->layout->AddTitle("Archives");
-        $f = new \core\db\models\folder();
-        $uid = \core\db\models\user::GetInstance()->user_id;
-        $this->view->folders = ($f->fetchArchives($uid));
-        $n = new \core\db\models\note;
-        $this->view->notes = ($n->fetchArchives($uid));
-        $l = new \core\db\models\link;
-        $this->view->links = ($l->fetchArchives($uid));
-    }
-
-    /**
-    * The \modules\htmlModule\controllers\indexController::sharedAction()
-    * @by Zinux Generator <b.g.dariush@gmail.com>
-    */
-    public function sharedAction()
-    {
-        if(!\core\db\models\user::IsSignedin()) return;
-        $this->layout->AddTitle("Shared");
-        $f = new \core\db\models\folder();
-        $uid = \core\db\models\user::GetInstance()->user_id;
-        $this->view->folders = ($f->fetchShared($uid));
-        $n = new \core\db\models\note;
-        $this->view->notes = ($n->fetchShared($uid));
-        $l = new \core\db\models\link;
-        $this->view->links = ($l->fetchShared($uid));
+        $this->view->suppressView();
+        $content = \ob_get_clean();
+        \trigger_error("Find a good url relocater and noscript remover regex!");
+        $content = \preg_replace("#<noscript>(.*)<\/noscript>#im", "", $content);
+        echo $content;
+        parent::Dispose();
     }
 }
