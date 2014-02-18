@@ -15,6 +15,10 @@ class user extends baseModel
      * User object alias in this class' cache registery
      */
     const USER_OBJECT = "USER_OBJECT";
+    /**
+     * The root user's ID#
+     */
+    const ROOT_USER_ID = "0";
     
     /**
      * Signs up a new user
