@@ -38,6 +38,6 @@ class folder extends item
             $is_trash = self::NOCHANGE,
             $is_archive = self::NOCHANGE)
     {
-        parent::edit($item_id, $owner_id, $folder_name, NULL, $is_public, $is_trash, $is_archive);
+        return parent::edit($item_id, $owner_id, $folder_name, NULL, $is_public, $is_trash, $is_archive);
     }
 }
