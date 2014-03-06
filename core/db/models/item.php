@@ -43,7 +43,7 @@ abstract class item extends baseModel
      * It can pass as 3rd argument to delete() method
      * And it means the we demand that item get deleted for ever
      */
-    const DELETE_PERIOD = self::FLAG_UNSET;
+    const DELETE_PERIOD = self::NOOP;
     /**
      * It can pass as 3rd argument to delete() method
      * And it means the we demand that item get put in trash
@@ -53,11 +53,7 @@ abstract class item extends baseModel
      * It can pass as 3rd argument to delete() method
      * And it means the we demand that item get restored
      */
-    const DELETE_RESTORE = self::NOOP;
-    /**
-     *  genaral presence validation container
-     */
-    private $validates_presence_of;
+    const DELETE_RESTORE = self::FLAG_UNSET;
     /**
      * Get/Set item's table name
      * @var string
