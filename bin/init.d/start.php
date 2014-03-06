@@ -2,13 +2,9 @@
 # make script to run for ever
 ignore_user_abort(true);
 set_time_limit(0);
-# include zinux framework
-require_once "../zinux/baseZinux.php";
-# validate the arguments
-if($argc < 3) {
-    \file_put_contents("{$argv[0]}.error", "No log or error file specified!\nAborting");
-    exit;
-}
+ob_start();
+require_once '../public_html/index.php';
+\ob_end_flush();
 /**
  * log erros to error file
  * @param string $error
