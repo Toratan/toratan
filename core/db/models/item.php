@@ -491,6 +491,10 @@ __RETURN:
         return array_reverse($route);
     }
     /**
+     * Disables auto notification ops.
+     */
+    public function disableAutoNotification(){ unset($this->temporary_container["old_instance"]); }
+    /**
      * Updates old instance of current user
      */
     private function update_old_instance()
@@ -524,13 +528,16 @@ __RETURN:
         if(isset($this->temporary_container["old_instance"]))
         {
             $oi = $this->temporary_container["old_instance"];
-            # validate the 
+            # validate the publicity
             if($oi->is_public != $this->is_public)
             {
                 if($this->is_public)
                     \core\db\models\notification::put($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, \core\db\models\notification::NOTIF_FLAG_SHARE);
                 else
                     \core\db\models\notification::deleteNotification($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name);
+                if($this->item_name == "folder")
+                    # update the sub-items sharing status
+                    \core\db\models\sharing_queue::add_queue($this);
             }
             if($this->is_public)
             {
