@@ -1,0 +1,17 @@
+#!/bin/bash
+cd `dirname $0`;
+if ! [ -e "log" ]; then
+	mkdir "log"
+	chmod a+w+r+x -R log
+fi
+if ! [ -e "init.d" ]; then
+	echo "No init.d found at `pwd`" >&2;
+	exit;
+fi
+for exe in $(find "init.d" -type f -not -name "*~" -executable); do
+	filename="${exe##*/}";
+	echo -e "> $filename\033[32m\033[54G\c"
+	#$exe "`pwd`/log/$filename.log" "`pwd`/log/$filename.error"
+	nohup $exe "`pwd`/log/$filename.log" "`pwd`/log/$filename.error" >"`pwd`/log/$filename.log" 2>>"`pwd`/log/$filename.error"&
+	echo -e "[ done ]\033[m";
+done;
