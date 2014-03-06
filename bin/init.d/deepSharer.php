@@ -1,5 +1,7 @@
 #!/usr/bin/php
 <?php
+# un-comment this when you are testing
+# defined('RUNNING_ENV') || define('RUNNING_ENV', 'TEST');
 require_once "start.php";
 $sq = new \core\db\models\sharing_queue;
 while(true)
@@ -28,7 +30,6 @@ function expand_sharing_status(\core\db\models\folder $folder)
         echo $folder->folder_id, PHP_EOL;
         $folder->save();
         $sub_folders = $folder->fetchItems($folder->owner_id, $folder->folder_id);
-        \zinux\kernel\utilities\debug::_var(array("OWNER_ID" => $folder->owner_id, "PARENT_ID" =>$folder->folder_id, "SUB_COUNT" => count($sub_folders)));
         if(count($sub_folders))
             $stack = \array_merge($stack, $sub_folders);
     }

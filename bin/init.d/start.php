@@ -4,7 +4,7 @@ ignore_user_abort(true);
 set_time_limit(0);
 ob_start();
 require_once '../public_html/index.php';
-\ob_end_flush();
+\ob_end_clean();
 /**
  * log erros to error file
  * @param string $error
