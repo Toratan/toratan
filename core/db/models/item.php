@@ -248,7 +248,7 @@ abstract class item extends baseModel
             $options = array())
     {
         # general conditions
-        $item_cond = "owner_id = ? ";
+        $item_cond = "(owner_id = ? OR is_public = 1) ";
         $cond = array($item_cond, $owner_id);
         if($parent_id !== NULL)
         {
