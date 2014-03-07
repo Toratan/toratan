@@ -15,9 +15,7 @@ while(true)
 }
 
 function expand_sharing_status(\core\db\models\folder $folder)
-{
-    echo PHP_EOL, \str_repeat("-", 50), PHP_EOL;
-    
+{    
     $init_sharing_status = $folder->is_public;
     
     $stack = array($folder);
@@ -27,7 +25,6 @@ function expand_sharing_status(\core\db\models\folder $folder)
         $folder = \array_pop($stack);
         $folder->disableAutoNotification();
         $folder->is_public = $init_sharing_status;
-        echo $folder->folder_id, PHP_EOL;
         $folder->save();
         $sub_folders = $folder->fetchItems($folder->owner_id, $folder->folder_id);
         if(count($sub_folders))
