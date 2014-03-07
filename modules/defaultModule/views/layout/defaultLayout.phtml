@@ -117,27 +117,28 @@
             <div class="pull-left col-lg-7  col-md-7 col-sm-9 col-xs-12" >
             <?php elseif($user_logged): ?>
                 <div class="pull-left col-lg-2 col-md-2 col-sm-3 col-xs-12">
-                <h3>&nbsp;</h3>
-                <ul class="nav nav-pills nav-stacked">
-                    <li class="text-muted">Viewing a <b>remote directory</b></li>
-                </ul>
-            </div>
-            <div class="visible-xs" style="clear:both"></div>
-            <div class="pull-left col-lg-7  col-md-7 col-sm-9 col-xs-12" >
-            <?php endif; ?>
-                <?php
-                    $mp = new core\utiles\messagePipe;
-                    $show_time = 7000;
-                    while(($msg = $mp->read()))
-                        if($msg)
-                            \core\ui\html\alert::Cout($msg, \core\ui\html\alert::ALERT_INFO, 1, 1, ($show_time+=2000));
-                ?>
-                <?php echo $this->content?>
-                <div class="footer"></div>
+                    <h3>&nbsp;</h3>
+                    <ul class="nav nav-pills nav-stacked">
+                        <li class="text-muted">Viewing a <b>remote directory</b></li>
+                    </ul>
+                </div>
+                <div class="visible-xs" style="clear:both"></div>
+                <div class="pull-left col-lg-7  col-md-7 col-sm-9 col-xs-12" >
+                <?php endif; ?>
+                    <?php
+                        $mp = new core\utiles\messagePipe;
+                        $show_time = 7000;
+                        while(($msg = $mp->read()))
+                            if($msg)
+                                \core\ui\html\alert::Cout($msg, \core\ui\html\alert::ALERT_INFO, 1, 1, ($show_time+=2000));
+                    ?>
+                    <?php echo $this->content?>
+                    <div class="footer"></div>
             <?php if($user_logged): ?>
-            </div>
-            <script type="text/javascript" src="/access/js/notifications.js"></script>
+                </div>
+                <script type="text/javascript" src="/access/js/notifications.js"></script>
             <?php endif; ?>
+            </div>
         </div> <!-- /container -->
         <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
   </body>
