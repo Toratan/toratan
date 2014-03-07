@@ -4,7 +4,9 @@
         $this->is_archive = isset($this->is_archive) && $this->is_archive;
         $this->is_share = isset($this->is_share) && $this->is_share;
         $type = strtoupper($this->request->type);
-        $type = $type=="HTML"?"FOLDERS":$type;
+        $type = $type=="HTML"?"FOLDERS":$type; 
+        # normalizing the current uri
+        $this->request->setURI((isset($this->request->params['u'])?"/u/{$this->request->params['u']}":"")."/directory/{$this->pid}.$type");
         if(!\function_exists("PrintTypeNav"))
         {
             function PrintTypeNav($view, $type)
