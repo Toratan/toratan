@@ -7,6 +7,12 @@ use core\db\models\item;
  */
 class indexController extends \zinux\kernel\controller\baseController
 {
+    public function Initiate()
+    {
+        parent::Initiate();
+        if(isset($this->request->params["ajax"]))
+            $this->layout->SuppressLayout();
+    }
     /**
     * The modules\defaultModule\controllers\indexController::IndexAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>

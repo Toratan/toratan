@@ -200,5 +200,5 @@ catch(Exception $e)
     zinux\kernel\utilities\debug::_var($e->getTrace());
 }
 $exeTime = new \core\db\models\execution;
-
-echo "<div style='clear:both'></div><hr /><center>Loaded in <b>{$exeTime->record($load)}</b> seconds.<br />Average load time is <b>{$exeTime->get_average_load_time()}</b> seconds.</center>";
+$load_time = $exeTime->record($load);
+//echo "<div style='clear:both'></div><hr /><center>Loaded in <b>{$load_time}</b> seconds.<br />Average load time is <b>{$exeTime->get_average_load_time()}</b> seconds.</center>";

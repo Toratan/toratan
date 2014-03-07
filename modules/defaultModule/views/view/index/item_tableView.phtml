@@ -1,159 +1,244 @@
-<?php
-    $this->is_trash = isset($this->is_trash) && $this->is_trash;
-    $this->is_archive = isset($this->is_archive) && $this->is_archive;
-    $this->is_share = isset($this->is_share) && $this->is_share;
-    $type = strtoupper($this->request->type);
-    $type = $type=="HTML"?"FOLDERS":$type;
-    if(!\function_exists("PrintTypeNav"))
-    {
-        function PrintTypeNav($view, $type)
+<div class="item_tableView">
+    <?php
+        $this->is_trash = isset($this->is_trash) && $this->is_trash;
+        $this->is_archive = isset($this->is_archive) && $this->is_archive;
+        $this->is_share = isset($this->is_share) && $this->is_share;
+        $type = strtoupper($this->request->type);
+        $type = $type=="HTML"?"FOLDERS":$type;
+        if(!\function_exists("PrintTypeNav"))
         {
-            foreach(array("folders" => "Folders", "notes" => "Notes", "links" => "Links") as $key => $value)
+            function PrintTypeNav($view, $type)
             {
-                switch(true)
+                foreach(array("folders" => "Folders", "notes" => "Notes", "links" => "Links") as $key => $value)
                 {
-                    case $view->is_trash:
-                        echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/trashes.$key'>$value</a></li>";
-                        break;
-                    case $view->is_archive:
-                        echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/archives.$key'>$value</a></li>";
-                        break;
-                    case $view->is_share:
-                        echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='/shared.$key'>$value</a></li>";
-                        break;
-                    default :
-                        echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a href='".(isset($view->request->params['u'])?"/u/{$view->request->params['u']}":"")."/directory/{$view->pid}.$key'>$value</a></li>";
-                        break;
+                    switch(true)
+                    {
+                        case $view->is_trash:
+                            echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a class='table-nav-link' link-type='folder' href='/trashes.$key'>$value</a></li>";
+                            break;
+                        case $view->is_archive:
+                            echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a class='table-nav-link' link-type='folder' href='/archives.$key'>$value</a></li>";
+                            break;
+                        case $view->is_share:
+                            echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a class='table-nav-link' link-type='folder' href='/shared.$key'>$value</a></li>";
+                            break;
+                        default :
+                            echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a class='table-nav-link' link-type='folder' href='".(isset($view->request->params['u'])?"/u/{$view->request->params['u']}":"")."/directory/{$view->pid}.$key'>$value</a></li>";
+                            break;
+                    }
                 }
             }
         }
-    }
-?>
-<div class="visible-xs clearfix"></div>
-<div style="padding: 0% 0 1% 0;" >
-    <ul class="nav nav-tabs" style="font-weight: 900;font-variant: small-caps"><?php echo PrintTypeNav($this, $type); ?></ul>
-</div>
-<div class="table-responsive">
-    <table class="table<?php echo count($this->items)?" table-hover":"" ?>">
-        <thead>
-            <tr>
-                <th style="width: 60%">Name</th>
-                <?php if ($type != "HTML" && $type != "FOLDERS"): ?>
-                <th class="visible-lg"><script>document.write("Created at");</script></th>
-                <th class="visible-lg"><script>document.write("Updated at");</script></th>
-                <?php endif; ?>
-                <th class="pull-right">&nbsp;<!--Options--></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if(!count($this->items)): ?>
-            <tr class="disabled">
-                <td colspan="4" class="text-center">No data found.....</td>
-            </tr>
-            <?php else: while(true): ?>
-            <tr>
-                    <?php switch($type)
-                    {
-                        case "HTML":
-                        case "FOLDERS":
-                            $this->folders = $this->items;
-                            if(count($this->items)): $f = array_shift($this->items); ?>
-                
-                <td>
-                        <?php echo "<span class='glyphicon glyphicon-folder-close' title='Folder'></span> "; ?>
-                        <?php
-                            if($f->is_public)
-                                echo "<span class='glyphicon glyphicon-share-alt' title='Shared'></span> ";
-                            if($f->is_trash)
-                                echo "<span class='glyphicon glyphicon-trash' title='Deleted'></span> ";
-                            if($f->is_archive)
-                                echo "<span class='glyphicon glyphicon-floppy-disk' title='Archived'></span> ";
-                        ?>
-                        <?php echo "<a href='".(isset($this->request->params['u'])?"/u/{$this->request->params['u']}":"")."/directory/{$f->folder_id}.folders'>{$f->folder_title}</a>"; ?>
-                </td>
-                <td>
+    ?>
+    <div class="visible-xs clearfix"></div>
+    <div style="padding: 0% 0 1% 0;" >
+        <ul class="nav nav-tabs" style="font-weight: 900;font-variant: small-caps"><?php echo PrintTypeNav($this, $type); ?></ul>
+    </div>
+    <div class="table-responsive">
+        <table class="table<?php echo count($this->items)?" table-hover":"" ?>">
+            <thead>
+                <tr>
+                    <th style="width: 30%">Name</th>
+                    <?php if ($type != "HTML" && $type != "FOLDERS"): ?>
+                    <th class="visible-lg" id="table-header-created"></th>
+                    <th class="visible-lg" id="table-header-updated"></th>
+                    <script type="text/javascript">
+                        $(document).ready(function(){
+                            $("table thead tr th#table-header-created").html("Created at");
+                            $("table thead tr th#table-header-updated").html("Updated at");
+                        });
+                    </script>
+                    <?php endif; ?>
+                    <th class="pull-right">&nbsp;<!--Options--></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if(!count($this->items)): ?>
+                <tr class="disabled">
+                    <td colspan="4" class="text-center">No data found.....</td>
+                </tr>
+                <?php else: while(true): ?>
+                <tr>
+                        <?php switch($type)
+                        {
+                            case "HTML":
+                            case "FOLDERS":
+                                $this->folders = $this->items;
+                                if(count($this->items)): $f = array_shift($this->items); ?>
+
+                    <td>
+                            <?php echo "<span class='glyphicon glyphicon-folder-close' title='Folder'></span> "; ?>
+                            <?php
+                                if($f->is_public)
+                                    echo "<span class='glyphicon glyphicon-share-alt' title='Shared'></span> ";
+                                if($f->is_trash)
+                                    echo "<span class='glyphicon glyphicon-trash' title='Deleted'></span> ";
+                                if($f->is_archive)
+                                    echo "<span class='glyphicon glyphicon-floppy-disk' title='Archived'></span> ";
+                            ?>
+                            <?php echo "<a class='table-nav-link' link-type='folder' href='".(isset($this->request->params['u'])?"/u/{$this->request->params['u']}":"")."/directory/{$f->folder_id}.folders'>{$f->folder_title}</a>"; ?>
+                    </td>
+                    <td>
+                            <div>
+                            <?php if(\core\db\models\user::GetInstance()->user_id == $f->owner_id): ?>
+                                <?php if($this->is_trash): ?>
+                                <a class='table-nav-link' href="/delete/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>">Restore</a> |
+                                <?php else: ?>
+                                <a class='table-nav-link' href="/share/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/share/<?php echo  $f->is_public?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $f->is_public?"Un-s":"S"?>hare</a> | 
+                                <a class='table-nav-link' href="/archive/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $this->is_archive?"De-a":"A"?>rchive</a> | 
+                                <?php endif; ?>
+                                <a class='table-nav-link' href="/edit/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array("folder", $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>">Edit</a> | 
+                                <a href="/delete/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/trash/<?php echo $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" class='text-muted table-nav-link'>Delete</a>
+                            <?php endif; ?>
+                            </div>
+                    </td>
+                                <?php endif; break; ?>
+                        <?php case "NOTES":
+                                if(count($this->items)): $n = array_shift($this->items);?>
+                    <td>
+                            <?php echo "<span class='glyphicon glyphicon-file' title='Note'></span> "; ?>
+                            <?php
+                                if($n->is_public)
+                                    echo "<span class='glyphicon glyphicon-share-alt' title='Shared'></span> ";
+                                if($n->is_trash)
+                                    echo "<span class='glyphicon glyphicon-trash' title='Deleted'></span> ";
+                                if($n->is_archive)
+                                    echo "<span class='glyphicon glyphicon-floppy-disk' title='Archived' title='Deleted'></span> ";
+                            ?>
+                            <?php echo "<a class='table-nav-link' link-type='note' href='/view/note/{$n->note_id}' target='__blank'>{$n->note_title}</a>"; ?>
+                    </td>
+                    <td class="visible-lg" id="note-<?php echo $n->note_id?>-created"></td>
+                    <td class="visible-lg" id="note-<?php echo $n->note_id?>-updated"></td>
+                    <script type="text/javascript">
+                        $(document).ready(function(){
+                            created = new Date(Date.parse('<?php echo $n->created_at; ?>')).toLocaleString();
+                            updated = new Date(Date.parse('<?php echo $n->updated_at; ?>')).toLocaleString();
+                            $("table tbody tr td#note-<?php echo $n->note_id?>-created").html(created);
+                            $("table tbody tr td#note-<?php echo $n->note_id?>-updated").html(updated);
+                        });
+                    </script>
+                    <td>
+                            <?php if(\core\db\models\user::GetInstance()->user_id == $n->owner_id): ?>
+                            <div>
+                                <?php if($this->is_trash): ?> 
+                                <a class='table-nav-link' href="/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="color:#787878">Restore</a> | 
+                                <?php else: ?>
+                                <a class='table-nav-link' href="/archive/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $this->is_archive?"De-a":"A"?>rchive</a> |  
+                                <a class='table-nav-link' href="/share/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/share/<?php echo  $n->is_public?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $n->is_public?"Un-s":"S"?>hare</a> | 
+                                <?php endif; ?>
+                                <a href="/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" class='text-muted table-nav-link'>Delete</a> | 
+                                <a class='table-nav-link' href="/edit/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="color:#111100">Edit</a>
+                            <?php endif; ?>
+                            </div>
+                    </td>
+                        <?php endif; break;?>
+                    <?php case "LINKS":
+                        if(count($this->items)): $l = array_shift($this->items);?>
+                    <td>
+                            <?php echo "<span class='glyphicon glyphicon-bookmark' title='Bookmark'></span> "; ?>
+                            <?php
+                                if($l->is_public)
+                                    echo "<span class='glyphicon glyphicon-share-alt' title='Shared'></span>";
+                                if($l->is_trash)
+                                    echo "<span class='glyphicon glyphicon-trash' title='Deleted'></span>";
+                                if($l->is_archive)
+                                    echo "<span class='glyphicon glyphicon-floppy-disk' title='Archived'></span>";
+                            ?>
+                            <?php echo "<a class='table-nav-link' link-type='link' href='{$l->link_body}' target='__blank'>{$l->link_title}</a>"; ?>
+                    </td>
+                    <td class="visible-lg"><script>document.write(new Date(Date.parse('<?php echo $l->created_at; ?>')).toLocaleString());</script></td>
+                    <td class="visible-lg"><script>document.write(new Date(Date.parse('<?php echo $l->updated_at; ?>')).toLocaleString());</script></td>
+                    <td>
                         <div>
-                        <?php if(\core\db\models\user::GetInstance()->user_id == $f->owner_id): ?>
+                            <?php if(\core\db\models\user::GetInstance()->user_id == $l->owner_id): ?>
                             <?php if($this->is_trash): ?>
-                            <a href="/delete/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>">Restore</a> |
+                            <a class='table-nav-link' href="/delete/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="">Restore</a> |
                             <?php else: ?>
-                            <a href="/share/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/share/<?php echo  $f->is_public?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $f->is_public?"Un-s":"S"?>hare</a> | 
-                            <a href="/archive/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $this->is_archive?"De-a":"A"?>rchive</a> | 
-                            <?php endif; ?>
-                            <a href="/edit/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array("folder", $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>">Edit</a> | 
-                            <a href="/delete/<?php echo $f->WhoAmI()?>/<?php echo $f->{"{$f->WhoAmI()}_id"} ?>/trash/<?php echo $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($f->WhoAmI(), $f->{"{$f->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" class='text-muted'>Delete</a>
-                        <?php endif; ?>
-                        </div>
-                </td>
-                            <?php endif; break; ?>
-                    <?php case "NOTES":
-                            if(count($this->items)): $n = array_shift($this->items);?>
-                <td>
-                        <?php echo "<span class='glyphicon glyphicon-file' title='Note'></span> "; ?>
-                        <?php
-                            if($n->is_public)
-                                echo "<span class='glyphicon glyphicon-share-alt' title='Shared'></span> ";
-                            if($n->is_trash)
-                                echo "<span class='glyphicon glyphicon-trash' title='Deleted'></span> ";
-                            if($n->is_archive)
-                                echo "<span class='glyphicon glyphicon-floppy-disk' title='Archived' title='Deleted'></span> ";
-                        ?>
-                        <?php echo "<a href='/view/note/{$n->note_id}' target='__blank'>{$n->note_title}</a>"; ?>
-                </td>
-                <td class="visible-lg"><script>document.write(new Date(Date.parse('<?php echo $n->created_at; ?>')).toLocaleString());</script></td>
-                <td class="visible-lg"><script>document.write(new Date(Date.parse('<?php echo $n->updated_at; ?>')).toLocaleString());</script></td>
-                <td>
-                        <?php if(\core\db\models\user::GetInstance()->user_id == $n->owner_id): ?>
-                        <div>
-                            <?php if($this->is_trash): ?> 
-                            <a href="/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="color:#787878">Restore</a> | 
-                            <?php else: ?>
-                            <a href="/archive/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $this->is_archive?"De-a":"A"?>rchive</a> |  
-                            <a href="/share/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/share/<?php echo  $n->is_public?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $n->is_public?"Un-s":"S"?>hare</a> | 
-                            <?php endif; ?>
-                            <a href="/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" class='text-muted'>Delete</a> | 
-                            <a href="/edit/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="color:#111100">Edit</a>
-                        <?php endif; ?>
-                        </div>
-                </td>
-                    <?php endif; break;?>
-                <?php case "LINKS":
-                    if(count($this->items)): $l = array_shift($this->items);?>
-                <td>
-                        <?php echo "<span class='glyphicon glyphicon-bookmark' title='Bookmark'></span> "; ?>
-                        <?php
-                            if($l->is_public)
-                                echo "<span class='glyphicon glyphicon-share-alt' title='Shared'></span>";
-                            if($l->is_trash)
-                                echo "<span class='glyphicon glyphicon-trash' title='Deleted'></span>";
-                            if($l->is_archive)
-                                echo "<span class='glyphicon glyphicon-floppy-disk' title='Archived'></span>";
-                        ?>
-                        <?php echo "<a href='{$l->link_body}' target='__blank'>{$l->link_title}</a>"; ?>
-                </td>
-                <td class="visible-lg"><script>document.write(new Date(Date.parse('<?php echo $l->created_at; ?>')).toLocaleString());</script></td>
-                <td class="visible-lg"><script>document.write(new Date(Date.parse('<?php echo $l->updated_at; ?>')).toLocaleString());</script></td>
-                <td>
-                    <div>
-                        <?php if(\core\db\models\user::GetInstance()->user_id == $l->owner_id): ?>
-                        <?php if($this->is_trash): ?>
-                        <a href="/delete/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="">Restore</a> |
-                        <?php else: ?>
-                        <a href="/archive/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $this->is_archive?"De-a":"A"?>rchive</a> | 
-                        <a href="/share/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/share/<?php echo  $l->is_public?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $l->is_public?"Un-s":"S"?>hare</a> |
-                            <?php endif; ?>
-                            <a href="/edit/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="color:#111100">Edit</a> | 
-                            <a href="/delete/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/trash/<?php echo  $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" class='text-muted'>Delete</a>
-                            <?php endif; ?>
-                        </div>
-                </td>
-                    <?php endif;  break;?>
-                <?php default : throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer...."); ?>
-                <?php } ?>
-            </tr>
-        <?php if(!count($this->items)) break; ?>
-        <?php endwhile; ?>
-        <?php endif; ?>
-        </tbody>
-    </table>
+                            <a class='table-nav-link' href="/archive/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $this->is_archive?"De-a":"A"?>rchive</a> | 
+                            <a class='table-nav-link' href="/share/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/share/<?php echo  $l->is_public?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style=""><?php echo $l->is_public?"Un-s":"S"?>hare</a> |
+                                <?php endif; ?>
+                                <a class='table-nav-link' href="/edit/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" style="color:#111100">Edit</a> | 
+                                <a href="/delete/<?php echo $l->WhoAmI()?>/<?php echo $l->{"{$l->WhoAmI()}_id"} ?>/trash/<?php echo  $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($l->WhoAmI(), $l->{"{$l->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo urlencode($this->request->GetURI());?>" class='text-muted table-nav-link'>Delete</a>
+                                <?php endif; ?>
+                            </div>
+                    </td>
+                        <?php endif;  break;?>
+                    <?php default : throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer...."); ?>
+                    <?php } ?>
+                </tr>
+            <?php if(!count($this->items)) break; ?>
+            <?php endwhile; ?>
+            <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
+<script src="/access/js/history.js/scripts/bundled/html4+html5/jquery.history.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("div.item_tableView a.table-nav-link").click(function($e){
+            if($($e.currentTarget).attr("link-type") === "folder")
+            {
+                $e.preventDefault();
+                (function(window){
+                    // Bind to StateChange Event
+                    History.Adapter.bind(window,'statechange',function(){ // Note: We are using statechange instead of popstate
+                        var state = History.getState(); // Note: We are using History.getState() instead of event.state
+                        $.get(addParameter(state.url, "ajax", "1", true), function( data ) {
+                            if($("div.item_tableView").length > 1)
+                                $("div.item_tableView").first().html(data);
+                            else
+                                $("div.item_tableView").html("");
+                            console.log("done");
+                        });
+                    });
+                })(window);
+                // Change our States
+                History.pushState({state: $($e.currentTarget).attr("href")}, $($e.currentTarget).html(), $($e.currentTarget).attr("href")); // logs {state:1}, "State 1", "?state=1"
+            }
+            
+        });
+    });
+    function addParameter(url, parameterName, parameterValue, atStart/*Add param before others*/){
+        replaceDuplicates = true;
+        if(url.indexOf('#') > 0){
+            var cl = url.indexOf('#');
+            urlhash = url.substring(url.indexOf('#'),url.length);
+        } else {
+            urlhash = '';
+            cl = url.length;
+        }
+        sourceUrl = url.substring(0,cl);
+
+        var urlParts = sourceUrl.split("?");
+        var newQueryString = "";
+
+        if (urlParts.length > 1)
+        {
+            var parameters = urlParts[1].split("&");
+            for (var i=0; (i < parameters.length); i++)
+            {
+                var parameterParts = parameters[i].split("=");
+                if (!(replaceDuplicates && parameterParts[0] == parameterName))
+                {
+                    if (newQueryString == "")
+                        newQueryString = "?";
+                    else
+                        newQueryString += "&";
+                    newQueryString += parameterParts[0] + "=" + (parameterParts[1]?parameterParts[1]:'');
+                }
+            }
+        }
+        if (newQueryString == "")
+            newQueryString = "?";
+
+        if(atStart){
+            newQueryString = '?'+ parameterName + "=" + parameterValue + (newQueryString.length>1?'&'+newQueryString.substring(1):'');
+        } else {
+            if (newQueryString !== "" && newQueryString != '?')
+                newQueryString += "&";
+            newQueryString += parameterName + "=" + (parameterValue?parameterValue:'');
+        }
+        return urlParts[0] + newQueryString + urlhash;
+    };
+</script>
