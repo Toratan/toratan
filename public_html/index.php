@@ -26,8 +26,6 @@
 	
     defined("__SERVER_NAME__") || define("__SERVER_NAME__", $_SERVER['HTTP_HOST']);
     
-    require_once PUBLIC_HTML.'/../zinux/baseZinux.php';
-    
     # suppress E_STRICT error reporting
     error_reporting(E_ALL & ~E_STRICT);
     
@@ -139,6 +137,8 @@ __DEFAULT:
             });
             break;
     }
+    
+    require_once PUBLIC_HTML.'/../zinux/zinux.php';
     
     $load = new \core\utiles\loadTime();
     $load->start();
