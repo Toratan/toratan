@@ -15,6 +15,9 @@
 <script>
         $(document).ready(function()
         {
+            $(window).bind('beforeunload', function(e){
+                return "Preventing data loss!";
+            });
             window.editor = ace.edit("editor");
             window.editor.setTheme("ace/theme/twilight");
             window.editor.getSession().setMode("ace/mode/markdown");
@@ -38,6 +41,7 @@
         });
         function save(editor) 
         {
+            $(window).unbind('beforeunload');
             $("form[name='note'] input[name='note_title']").val($("#editor-title").val());
             $("form[name='note'] textarea[name='note_body']").html(editor.getValue());
             $("form[name='note'] input[name='version']").val("ace");
@@ -47,6 +51,10 @@
 <!-- ace aditor placeholder -->
 <div id="editor" style="display: none;"><?php echo htmlspecialchars($value) ?></div>
 <div style="height: 100%;width: 30%;top:0;right: 0;position: fixed;padding: 1%;overflow: auto;">
+    <div class="col-lg-2 pull-right" style="margin:0;padding:0;margin-top: 1%;width: 28%">
+        <small class="pull-right" style="margin: 0"><a class="btn btn-warning btn-small" href="/directory/<?php echo $this->pid ?>.notes">Cancel</a></small>
+        <a class="btn btn-primary btn-small apull-left" onclick="save(window.editor);">Done</a>
+    </div>
     <legend>Settings</legend>
     <ul class="nav nav-pills" >
         <li class="dropdown">
@@ -56,7 +64,7 @@
                 </span> Text Editor [<span id="rte-type">Ace</span>] <b class="caret"></b></a>
                 <ul class="dropdown-menu pull-left">
                     <li class='active'><a href="#">Ace</a></li>
-                    <li><a href="<?php echo $this->request->getURI(); ?>&ui=classic">Classic</a></li>
+                    <li><a href="<?php echo $this->request->getURI(); ?>&ui=classic" onclick="$(window).unbind('beforeunload');">Classic</a></li>
                 </ul>
         </li>
     </ul>
