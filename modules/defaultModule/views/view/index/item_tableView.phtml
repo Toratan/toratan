@@ -180,6 +180,8 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $("div.item_tableView a.table-nav-link").click(function($e){
+            console.log("THIS HAS BUGS!!");
+            return;
             if($($e.currentTarget).attr("link-type") === "folder")
             {
                 $e.preventDefault();
