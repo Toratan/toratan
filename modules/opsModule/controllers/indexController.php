@@ -253,6 +253,7 @@ class indexController extends \zinux\kernel\controller\baseController
             # resore back the values to views
             $this->view->values["{$item}_title"] = $item_value->{"{$item}_title"};
             $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
+            $this->view->pid = $item_value->parent_id;
             return;
         }
          switch($item)
