@@ -1,5 +1,6 @@
 <div class="item_tableView">
     <?php
+        $uri = $this->request->getURI();
         $this->is_trash = isset($this->is_trash) && $this->is_trash;
         $this->is_archive = isset($this->is_archive) && $this->is_archive;
         $this->is_share = isset($this->is_share) && $this->is_share;
@@ -244,3 +245,4 @@
         return urlParts[0] + newQueryString + urlhash;
     };
 </script>
+<?php $this->request->setURI($uri); ?>

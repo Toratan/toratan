@@ -100,12 +100,12 @@
                     <li <?php echo preg_match("#^/(default(/)?(index(/?))?)?(directory(/(.*))?(\.folders|\.notes|\.links)?)?$#i", $this->request->GetURI())? 'class="active"':''?>>
                       <a href="/"><span class="glyphicon glyphicon-th-large"></span> My Root</a>
                     </li>
-                    <li <?php echo preg_match("#^/(default/(index/)?)?archives*#i", $this->request->GetURI())? 'class="active"':''?>>
+                    <li <?php echo preg_match("#^/(default/(index/)?)?archives(.*)#i", $this->request->GetURI())? 'class="active"':''?>>
                         <a href="/archives"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
                     </li>
-                    <li <?php echo preg_match("#^/(default/(index/)?)?shared*#i", $this->request->GetURI())? 'class="active"':''?>>
+                    <li <?php echo preg_match("#^/(default/(index/)?)?shared(.*)#i", $this->request->GetURI())? 'class="active"':''?>>
                         <a href="/shared"><span class="glyphicon glyphicon-share-alt"></span> Shared</a></li>
-                    <li <?php echo preg_match("#^/(default/(index/)?)?trashes*#i", $this->request->GetURI())? 'class="active"':''?>>
+                    <li <?php echo preg_match("#^/(default/(index/)?)?trashes(.*)#i", $this->request->GetURI())? 'class="active"':''?>>
                         <a href="/trashes"><span class="glyphicon glyphicon-trash"></span> Trashes</a>
                     </li>
                     <li class="visible-sm visible-xs">
