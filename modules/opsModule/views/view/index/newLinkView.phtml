@@ -3,8 +3,22 @@
     <li><?php echo $error ?></li>
 <?php endforeach; ?>
 </ol>
+<style>
+    .double-input .form-control {
+        width: 50%;
+        border-right-width: 0px;
+    }
+    .double-input .form-control:focus {
+        border-right-width: 1px;
+    }
+</style>
 <form action="<?php echo $this->request->GetURI() ?>" method="POST">
-    <input type="text" name="link_title" maxlength="250" placeholder="Link's title" value="<?php echo isset($this->values['link_title'])?$this->values['link_title']:"" ?>"/>
-    <input type="text" name="link_body" maxlength="250" placeholder="Link's body" value="<?php echo isset($this->values['link_body'])?$this->values['link_body']:"" ?>"/>
-    <input type="submit" value="Create" />
+    <div class="input-group double-input">
+        <input type="text" class="form-control" name="link_title" maxlength="250" placeholder="Link's title" value="<?php echo isset($this->values['link_title'])?$this->values['link_title']:"" ?>"/>
+        <input type="text" class="form-control" name="link_body" maxlength="250" placeholder="Link's body" value="<?php echo isset($this->values['link_body'])?$this->values['link_body']:"" ?>"/>
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="submit">Create</button>
+        </span>
+    </div><!-- /input-group -->
+    <small><a href="/directory/<?php echo $this->pid ?>.folders">Go Back</a></small>
 </form>

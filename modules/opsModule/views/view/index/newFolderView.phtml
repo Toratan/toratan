@@ -3,7 +3,14 @@
     <li><?php echo $error ?></li>
 <?php endforeach; ?>
 </ol>
-<form action="<?php echo $this->request->GetURI() ?>" method="POST">
-    <input type="text" name="folder_title" maxlength="250" placeholder="Folder's title" value="<?php echo isset($this->values['folder_title'])?$this->values['folder_title']:"" ?>"/>
-    <input type="submit" value="Create" />
+<form action="<?php echo $this->request->GetURI() ?>" method="POST" class="form">
+    <div class="col-lg-6">
+      <div class="input-group">
+        <input type="text" class="form-control" name="folder_title" maxlength="250" placeholder="Folder's title" value="<?php echo isset($this->values['folder_title'])?$this->values['folder_title']:"" ?>">
+        <span class="input-group-btn">
+        <button type="submit" class="btn btn-default" >Create</button>
+        </span>
+      </div><!-- /input-group -->
+        <small><a href="/directory/<?php echo $this->pid ?>.folders">Go Back</a></small>
+    </div><!-- /.col-lg-6 -->
 </form>
