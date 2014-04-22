@@ -16,10 +16,49 @@ class directoryTree
     {
         $this->tree_type = $__tree_type;
     }
+    protected function plotOptions($active_type, $pid) {
+        ?>
+<style>
+    #directory-tree-opt .btn{ zoom: 1; filter: alpha(opacity=80); opacity: 0.8; }
+    #directory-tree-opt div.btn-group{ margin-right: 10px; }
+</style>
+<div style="margin:10px auto 20px auto" id="directory-tree-opt">
+    <!-- Split button -->
+    <div class="btn-group">
+        <button type="button" class="btn btn-default " style="height: 34px"><input type="checkbox" class="input"/></button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        
+      <ul class="dropdown-menu" role="menu">
+        <li><a href="#">All</a></li>
+        <li><a href="#">None</a></li>
+        <li class="divider"></li>
+        <li><a href="#">Public</a></li>
+        <li><a href="#">Private</a></li>
+        <li class="divider"></li>
+        <li><a href="#">Stared</a></li>
+        <li><a href="#">Separated link</a></li>
+      </ul>
+    </div>
+    <div class="btn-group">
+        <a href="" class="btn btn-default" style="width: 60px"><span class="glyphicon glyphicon-refresh"></span></a>
+    </div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-default">Left</button>
+        <button type="button" class="btn btn-default">Middle</button>
+        <button type="button" class="btn btn-default">Right</button>
+    </div>
+</div>
+        <!--end  menu-->
+        <div class="clearfix"></div>
+<?php
+    }
     protected function plotHeadTypes($active_type, $pid) {
 ?>
     <div class="visible-xs clearfix"></div>
-    <div style="padding: 0% 0 1% 0;" >
+    <div style="padding: 0% 0 1% 0;" id="directory-tree-headtypes">
         <ul class="nav nav-tabs" style="font-weight: 900;font-variant: small-caps"><?php
         foreach(array("folders" => "Folders", "notes" => "Notes", "links" => "Links") as $key => $value)
         {
@@ -44,6 +83,7 @@ class directoryTree
 <?php
     }
     public function plotFolders($collection, $parent_id, $is_owner) {
+        $this->plotOptions("options", $parent_id);
         $this->plotHeadTypes("folders", $parent_id);
         echo __METHOD__;
     }
