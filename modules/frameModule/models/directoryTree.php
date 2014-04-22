@@ -164,10 +164,6 @@ class directoryTree extends \stdClass
         if($item === NULL) {
             throw new \zinux\kernel\exceptions\invalideArgumentException("The item cannot be null...");
         }
-        $c = 1;
-//        $item->is_public = $c;
-//        $item->is_trash = $c;
-//        $item->is_archive = $c;
 ?>
                 <tr class="<?php echo $type ?>">
                     <td>
