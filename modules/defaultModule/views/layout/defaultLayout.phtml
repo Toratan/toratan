@@ -3,9 +3,6 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <noscript>
-            <meta http-equiv="Refresh" content="10; URL=/html">
-        </noscript>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Sign up page">
         <!-- twitter bootstrap -->
@@ -60,7 +57,7 @@
     </head>
     <body>
         <noscript>
-            <?php \core\ui\html\alert::Cout("Your browser javascript is not enabled, the browser will relocate to html version in 10 seconds!!", \core\ui\html\alert::ALERT_DANGER); ?>
+            <?php \core\ui\html\alert::Cout("!!Your browser's javascript IS NOT enabled!!", \core\ui\html\alert::ALERT_DANGER); ?>
         </noscript>
         <div class="header">
             <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
@@ -93,7 +90,7 @@
         </div>
         <div class="clearfix"></div>
         <?php if($user_logged) :  ?>
-            <script >
+            <script>
                 $(document).ready(function() {
                     if(window.location.hash.length > 0) {
                         $('#explorer-frame').attr('src', '/frame/e/'+window.location.hash.split('#!/')[1]);
