@@ -62,6 +62,7 @@
         <div class="header">
             <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
                 <?php if(($user_logged = \core\db\models\user::IsSignedin())): ?>
+                <li class='hidden-lg hidden-md'><a href='#'><span class='glyphicon glyphicon-flash'></span> Feeds</a></li>
                 <li><a href="#"><span class="badge">0</span> Messages</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge">2</span> Notifications<b class="caret"></b></a>
@@ -92,9 +93,7 @@
         <?php if($user_logged) :  ?>
             <script>
                 $(document).ready(function() {
-                    if(window.location.hash.length > 0) {
-                        $('#explorer-nav-frame').attr('src', '/frame/en/'+window.location.hash);
-                    }
+                    $('#explorer-nav-frame').attr('src', '/frame/en/'+window.location.hash);
                 });
             </script>
             <iframe id="explorer-nav-frame" style="border-style: none; border-color: inherit; border-width: 0px;height: 300px" src="/frame/en" class="frame-sides col-lg-2 col-md-2 col-sm-4 col-xm-4" onclick=""></iframe>
