@@ -4,11 +4,11 @@
     $i = 1;
     # loading routes
     foreach ($this->route as $folder) : $is_active = ($i++==count($this->route));?>
-        <li <?php echo $is_active?" class='active'":""?>><?php echo !$is_active?"<a link-type='folder' class='table-nav-link' href='/directory/{$folder->folder_id}.{$this->request->type}'>":"";echo $folder->folder_title;echo !$is_active?"</a>":""?></li>
+        <li <?php echo $is_active?" class='active'":""?>><?php echo !$is_active?"<a link-type='folder' class='table-nav-link' href='/frame/e/directory/{$folder->folder_id}.{$this->request->type}'>":"";echo $folder->folder_title;echo !$is_active?"</a>":""?></li>
 <?php endforeach; ?>
 </ol>
 <?php endif; ?>
 <?php
-    $dt = new modules\frameModule\models\directoryTree;
+    $dt = new modules\frameModule\models\directoryTree($this->request);
     $dt->{"plot{$this->request->type}"}($this->items, $this->pid, $this->is_owner);
 ?>
