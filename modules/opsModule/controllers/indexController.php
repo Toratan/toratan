@@ -617,4 +617,13 @@ class indexController extends \zinux\kernel\controller\baseController
         header("location: /profile/{$this->request->GetIndexedParam(0)}");
         exit;
     }
+
+    /**
+    * The \modules\opsModule\controllers\indexController::gotoAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function gotoAction()
+    {
+        trigger_error("NOT IMPLEMENTED", E_USER_ERROR);
+    }
 }
