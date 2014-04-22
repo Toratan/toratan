@@ -1,9 +1,24 @@
-<!--
- The \modules\frameModule\views\view\en\indexView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for '<b>\modules\frameModule\controllers\enController::indexAction()</b>'<br />
-    Location: '<b>/var/www/toratan/src////modules/frameModule/views/view/en/indexView.phtml</b>'
-</p>
-<a href="/frame/e/i/-1" target="explorer-frame">Rst Explorer</a>
+<div class="pull-left" id="exp-nav" style="margin: 0 10% 0 10%;width: 100%">
+    <h3>&nbsp;</h3>
+    <ul class="nav nav-pills nav-stacked">
+        <li <?php echo preg_match("#^/(sui(/)?(index(/?))?)?(directory(/(.*))?(\.folders|\.notes|\.links)?)?$#i", $this->request->GetURI())? 'class="active"':''?>>
+            <a href="/frame/e/root" target="explorer-frame"><span class="glyphicon glyphicon-th-large"></span> My Root</a>
+        </li>
+        <li <?php echo preg_match("#^/(sui/(index/)?)?archives(.*)#i", $this->request->GetURI())? 'class="active"':''?>>
+            <a href="/frame/e/archives" target="explorer-frame"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
+        </li>
+        <li <?php echo preg_match("#^/(sui/(index/)?)?shared(.*)#i", $this->request->GetURI())? 'class="active"':''?>>
+            <a href="/frame/e/shared" target="explorer-frame"><span class="glyphicon glyphicon-share-alt"></span> Shared</a></li>
+        <li <?php echo preg_match("#^/(sui/(index/)?)?trashes(.*)#i", $this->request->GetURI())? 'class="active"':''?>>
+            <a href="/frame/e/trashes" target="explorer-frame"><span class="glyphicon glyphicon-trash"></span> Trashes</a>
+        </li>
+        <li class="visible-sm visible-xs">
+            <a href="/frame/e/feeds" target="explorer-frame" ><span class="glyphicon glyphicon-flash"></span> Your Feeds</a>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript">
+    $("div#exp-nav ul.nav li a[target='explorer-frame']").click(function(){
+        alert($(this).html());
+    });
+</script>
