@@ -1,0 +1,3 @@
+<legend><?php echo $this->target ?></legend>
+<?php $i = @$this->request->GetIndexedParam(1) == 'i'?$this->request->GetIndexedParam(2)+1:1 ?>
+<a href="/frame/e/<?=$this->target?>/i/<?= $i ?>" onclick="window.top.location.hash = '!/<?php echo $this->target ?>'+'/i/<?=$i?>'">Goto {<?= $i ?>}</a>

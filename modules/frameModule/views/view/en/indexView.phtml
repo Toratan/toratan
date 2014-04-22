@@ -1,0 +1,25 @@
+<div class="pull-left" id="exp-nav" style="margin: 0 10% 0 10%;width: 90%">
+    <h3>&nbsp;</h3>
+    <ul class="nav nav-pills nav-stacked">
+        <li class="active">
+            <a user-data="" href="/frame/e/root" target="explorer-frame"><span class="glyphicon glyphicon-th-large"></span> Root</a>
+        </li>
+        <li>
+            <a user-data="!/archives" href='/frame/e/archives' target="explorer-frame"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
+        </li>
+        <li>
+            <a user-data="!/shared" href='/frame/e/shared' target="explorer-frame"><span class="glyphicon glyphicon-share-alt"></span> Shared</a></li>
+        <li>
+            <a user-data="!/trashes" href='/frame/e/trashes' target="explorer-frame"><span class="glyphicon glyphicon-trash"></span> Trashes</a>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("div#exp-nav ul.nav li a[target='explorer-frame']").click(function(e){
+            $("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");
+            $(this).parent().addClass("active");
+            window.top.location.hash = $(this).attr('user-data');
+        });
+    });
+</script>

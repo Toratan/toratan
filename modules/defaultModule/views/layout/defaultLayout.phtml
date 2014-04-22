@@ -1,11 +1,112 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
-        <meta charset='utf-8'>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <noscript>
+            <meta http-equiv="Refresh" content="10; URL=/html">
+        </noscript>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Sign up page">
+        <!-- twitter bootstrap -->
+        <link rel="stylesheet" href="/access/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/access/css/bootstrap-theme.min.css">
+        <!-- jQuery -->
+        <script type="text/javascript" src="/access/js/jquery-1.10.2.min.js"></script>
+        <link rel="shortcut icon" href="/favicon.ico">
         <?php $this->RenderTitle();?>
         <?php $this->RenderImports(); ?>
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+          <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+        <style>
+            /* Space out content a bit */
+            body {
+              padding-top: 0;
+              padding-bottom: 0;
+            }
+
+            /* Custom page header */
+            .header {
+              border-bottom: 1px solid #e5e5e5;
+            }
+
+            /* Custom page footer */
+            .footer {
+              padding-top: 1%;
+              color: #777;
+              border-top: 1px solid #e5e5e5;
+              clear: both;
+            }
+
+            /* Responsive: Portrait tablets and up */
+            @media screen and (min-width: 768px) {
+              /* Remove the padding we set earlier */
+              .header,
+              .tor,
+              .footer {
+                padding-left: 0;
+                padding-right: 0;
+              }
+              /* Space out the masthead */
+              .header {
+                margin-bottom: 1%;
+              }
+            }
+        </style>
     </head>
     <body>
-        <?php echo $this->content; ?>
+        <noscript>
+            <?php \core\ui\html\alert::Cout("Your browser javascript is not enabled, the browser will relocate to html version in 10 seconds!!", \core\ui\html\alert::ALERT_DANGER); ?>
+        </noscript>
+        <div class="header">
+            <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
+                <?php if(($user_logged = \core\db\models\user::IsSignedin())): ?>
+                <li><a href="#"><span class="badge">0</span> Messages</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge">2</span> Notifications<b class="caret"></b></a>
+                    <ul class="dropdown-menu pull-right">
+                        <li><a href="#">Some stuff</a></li>
+                        <li><a href="#">Some other stuff</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <?php list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link(\core\db\models\user::GetInstance()->user_id); ?>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src='<?php echo $avatar_uri ?>' height="20" width="20" class='imageblock img-rounded' onerror="this.src='<?php echo $def_avatar ?>'"/> Account <b class="caret"></b></a>
+                    <ul class="dropdown-menu pull-right">
+                        <li><a href="/profile">Profile</a></li>
+                        <li><a href="#">Account Settings</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/signout">Signout</a></li>
+                    </ul>
+                </li>
+                <?php else: ?>
+                    <li><a href="/signin">Signin</a></li>
+                    <li><a href="/signup">Signup</a></li>
+                <?php endif; ?>
+            </ul>
+            <a href="/" style="font-size: x-large;" class="navbar-brand text-muted" >Toratan</a>
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+        <?php if($user_logged) :  ?>
+            <script >
+                $(document).ready(function() {
+                    if(window.location.hash.length > 0) {
+                        $('#explorer-frame').attr('src', '/frame/e/'+window.location.hash.split('#!/')[1]);
+                        console.log($('#explorer-frame').attr('src'));
+                    }
+                });
+            </script>
+            <iframe id="explorer-nav-frame" style="border-style: none; border-color: inherit; border-width: 0px;height: 300px" src="/frame/en" class="frame-sides col-lg-2 col-md-2 col-sm-4 col-xm-4" onclick=""></iframe>
+            <iframe id="explorer-frame" style="border-style: none; border-color: inherit; border-width: 0px;height: 768px" src="/frame/e" class="frame-sides col-lg-7 col-md-7 col-sm-8 col-xm-8"></iframe>
+            <iframe id="feed-frame" style="border-style: none; border-color: inherit; border-width: 0px;float: right;height: 768px" src="/frame/f" class="frame-sides col-lg-3 col-md-3 hidden-sm hidden-xs"></iframe>
+        <?php else: ?>
+            <legend>Not logged in {Fames go here!!}</legend>
+        <?php endif; ?>
+        <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
     </body>
 </html>
