@@ -93,9 +93,17 @@
         </div>
         <div class="clearfix"></div>
         <?php if($user_logged) :  ?>
-            <iframe id="explorer-nav-frame" style="border-style: none; border-color: inherit; border-width: 0px;width: 20%;height: 1000px" src="/frame/en"></iframe>
-            <iframe id="explorer-frame" style="border-style: none; border-color: inherit; border-width: 0px;width: 59.5%;height: 1000px" src="/frame/e"></iframe>
-            <iframe id="feed-frame" style="border-style: none; border-color: inherit; border-width: 0px;width: 20%;float: right;height: 1000px" src="/frame/f"></iframe>
+            <script >
+                $(document).ready(function() {
+                    if(window.location.hash.length > 0) {
+                        $('#explorer-frame').attr('src', '/frame/e/'+window.location.hash.split('#!/')[1]);
+                        console.log($('#explorer-frame').attr('src'));
+                    }
+                });
+            </script>
+            <iframe id="explorer-nav-frame" style="border-style: none; border-color: inherit; border-width: 0px;height: 300px" src="/frame/en" class="frame-sides col-lg-2 col-md-2 col-sm-4 col-xm-4" onclick=""></iframe>
+            <iframe id="explorer-frame" style="border-style: none; border-color: inherit; border-width: 0px;height: 768px" src="/frame/e" class="frame-sides col-lg-7 col-md-7 col-sm-8 col-xm-8"></iframe>
+            <iframe id="feed-frame" style="border-style: none; border-color: inherit; border-width: 0px;float: right;height: 768px" src="/frame/f" class="frame-sides col-lg-3 col-md-3 hidden-sm hidden-xs"></iframe>
         <?php else: ?>
             <legend>Not logged in {Fames go here!!}</legend>
         <?php endif; ?>

@@ -1,10 +1,3 @@
-<!--
- The \modules\frameModule\views\view\e\indexView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for '<b>\modules\frameModule\controllers\eController::indexAction()</b>'<br />
-    Location: '<b>/var/www/toratan/src////modules/frameModule/views/view/e/indexView.phtml</b>'
-</p>
-<?php $i = @$this->request->params["i"]?$this->request->params["i"]+1:1 ?>
-<a href="/frame/e/i/<?= $i ?>">Goto {<?= $i ?>}</a>
+<legend><?php echo $this->target ?></legend>
+<?php $i = @$this->request->GetIndexedParam(1) == 'i'?$this->request->GetIndexedParam(2)+1:1 ?>
+<a href="/frame/e/<?=$this->target?>/i/<?= $i ?>" onclick="window.top.location.hash = '!/<?php echo $this->target ?>'+'/i/<?=$i?>'">Goto {<?= $i ?>}</a>
