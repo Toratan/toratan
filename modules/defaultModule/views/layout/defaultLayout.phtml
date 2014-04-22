@@ -93,8 +93,7 @@
             <script>
                 $(document).ready(function() {
                     if(window.location.hash.length > 0) {
-                        $('#explorer-frame').attr('src', '/frame/e/'+window.location.hash.split('#!/')[1]);
-                        console.log($('#explorer-frame').attr('src'));
+                        $('#explorer-nav-frame').attr('src', '/frame/en/'+window.location.hash);
                     }
                 });
             </script>

@@ -2,24 +2,29 @@
     <h3>&nbsp;</h3>
     <ul class="nav nav-pills nav-stacked">
         <li class="active">
-            <a user-data="" href="/frame/e/root" target="explorer-frame"><span class="glyphicon glyphicon-th-large"></span> Root</a>
+            <a id='root' user-data="" href="/frame/e/root" target="explorer-frame"><span class="glyphicon glyphicon-th-large"></span> Root</a>
         </li>
         <li>
-            <a user-data="!/archives" href='/frame/e/archives' target="explorer-frame"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
+            <a id='archives' user-data="!/archives" href='/frame/e/archives' target="explorer-frame"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
         </li>
         <li>
-            <a user-data="!/shared" href='/frame/e/shared' target="explorer-frame"><span class="glyphicon glyphicon-share-alt"></span> Shared</a></li>
+            <a id='shared' user-data="!/shared" href='/frame/e/shared' target="explorer-frame"><span class="glyphicon glyphicon-share-alt"></span> Shared</a>
+        </li>
         <li>
-            <a user-data="!/trashes" href='/frame/e/trashes' target="explorer-frame"><span class="glyphicon glyphicon-trash"></span> Trashes</a>
+            <a id='trashes' user-data="!/trashes" href='/frame/e/trashes' target="explorer-frame"><span class="glyphicon glyphicon-trash"></span> Trashes</a>
         </li>
     </ul>
 </div>
 <script type="text/javascript">
     $(document).ready(function() {
-        $("div#exp-nav ul.nav li a[target='explorer-frame']").click(function(e){
+        $("div#exp-nav ul.nav li a[target='explorer-frame']").click(function(){
             $("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");
             $(this).parent().addClass("active");
             window.top.location.hash = $(this).attr('user-data');
+            window.top.document.title = $(this).text().trim();
         });
+        if(window.location.hash.length > 0) {
+            $("div#exp-nav ul.nav li a#"+window.location.hash.split('#!/')[1]).click();
+        }
     });
 </script>
