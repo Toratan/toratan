@@ -28,6 +28,7 @@
         };
         try {
             var uri = 'root';
+            var postFix = '';
             if(window.location.hash.split('#!/')[1] !== undefined) {
                 uri = window.location.hash.split('#!/')[1];
                 if(uri.split("/").length)
@@ -45,16 +46,18 @@
                             window.location.hash = "!/"+window.location.hash.replace(/^(#!\/)(root(\/))?(.*)/gi, '$4');
                     }
                     uri = 'root';
+                    postFix = window.location.hash.split('#!')[1];
+                    break;
                 case "archives":
                 case "shared":
                 case "trashes":
                     break;
             }
             window.active_nav(uri);
-            window.top.document.getElementById('explorer-frame').src = $("div#exp-nav ul.nav li a#"+uri).attr('href')+window.location.hash.split('#!')[1];
+            window.top.document.getElementById('explorer-frame').src = $("div#exp-nav ul.nav li a#"+uri).attr('href') + postFix;
         } catch(e) {
             window.location.hash = '';
-            window.top.document.getElementById('explorer-frame').src = $("div#exp-nav ul.nav li a#"+uri).attr('href')+window.location.hash.split('#!')[1];
+            window.top.document.getElementById('explorer-frame').src = $("div#exp-nav ul.nav li a#"+uri).attr('href');
         }
     });
 </script>
