@@ -8,3 +8,7 @@
 <?php endforeach; ?>
 </ol>
 <?php endif; ?>
+<?php
+    $dt = new modules\frameModule\models\directoryTree;
+    $dt->{"plot{$this->request->type}"}($this->items, $this->pid, $this->is_owner);
+?>

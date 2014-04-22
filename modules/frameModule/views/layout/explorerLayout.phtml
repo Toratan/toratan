@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <?php $this->RenderTitle();?>
+        <?php $this->RenderImports(); ?>
+        <!-- twitter bootstrap -->
+        <link rel="stylesheet" href="/access/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/access/css/bootstrap-theme.min.css">
+        <!-- jQuery -->
+        <script type="text/javascript" src="/access/js/jquery-1.10.2.min.js"></script>
+    </head>
+    <body>
+        <script>
+            window.setTitle = function (title) {
+                window.top.document.title = title;
+            };
+        </script>
+        <?php echo $this->content; ?>
+        <script>
+            $("a").click(function(){
+                if($(this).attr("href").length && $(this).attr("href")[0] !== "#")
+                    window.top.location.hash = $(this).attr("href").replace(/^\/frame\/e\//ig,"!/");
+            });
+        </script>
+        <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
+    </body>
+</html>
