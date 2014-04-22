@@ -1,7 +1,7 @@
 <?php
-namespace modules\defaultModule;
+namespace modules\suiModule;
 /**
-* The defaultModule's Bootstrapper
+* The suiModule's Bootstrapper
 */
 class defaultBootstrap
 {
