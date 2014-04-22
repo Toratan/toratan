@@ -19,5 +19,6 @@ class eController extends \zinux\kernel\controller\baseController
             default:
                 //die("Undefined `{$target}`");
         }
+        \zinux\kernel\utilities\debug::_var($this->request->params);
     }
 }

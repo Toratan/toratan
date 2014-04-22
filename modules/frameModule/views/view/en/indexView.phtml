@@ -18,13 +18,40 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $("div#exp-nav ul.nav li a[target='explorer-frame']").click(function(){
-            $("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");
-            $(this).parent().addClass("active");
+            window.active_nav($(this).attr('id'));
             window.top.location.hash = $(this).attr('user-data');
             window.top.document.title = $(this).text().trim();
         });
+        window.active_nav = function(id) {
+            $("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");
+            $("div#exp-nav ul.nav li a[target='explorer-frame']#"+id).parent().addClass("active");
+        };
         if(window.location.hash.length > 0) {
-            $("div#exp-nav ul.nav li a#"+window.location.hash.split('#!/')[1]).click();
+            var uri = 'root';
+            if(window.location.hash.split('#!/')[1] !== undefined) {
+                uri = window.location.hash.split('#!/')[1];
+                if(uri.split("/").length)
+                    uri = uri.split("/")[0];
+            }
+            switch(uri) {
+                default:
+                case "directory":
+                case "root":
+                    switch(String(window.location.hash).toLowerCase()) {
+                        case "#!/root":
+                        case "#!/root/":
+                            window.location.hash = '';
+                        default:
+                            window.location.hash = "!/"+window.location.hash.replace(/^(#!\/)(root(\/))?(.*)/gi, '$4');
+                    }
+                    uri = 'root';
+                case "archives":
+                case "shared":
+                case "trashes":
+                    break;
+            }
+            window.active_nav(uri);
+            window.top.document.getElementById('explorer-frame').src = $("div#exp-nav ul.nav li a#"+uri).attr('href')+window.location.hash.split('#!')[1];
         }
     });
 </script>
