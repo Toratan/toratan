@@ -1,3 +1,10 @@
-<legend><?php echo $this->target ?></legend>
-<?php $i = @$this->request->GetIndexedParam(1) == 'i'?$this->request->GetIndexedParam(2)+1:1 ?>
-<a href="/frame/e/<?=$this->target?>/i/<?= $i ?>" onclick="window.top.location.hash = '!/<?php echo $this->target ?>'+'/i/<?=$i?>'">Goto {<?= $i ?>}</a>
+<?php if(count($this->route)): ?>
+<ol class="breadcrumb">
+<?php
+    $i = 1;
+    # loading routes
+    foreach ($this->route as $folder) : $is_active = ($i++==count($this->route));?>
+        <li <?php echo $is_active?" class='active'":""?>><?php echo !$is_active?"<a link-type='folder' class='table-nav-link' href='/directory/{$folder->folder_id}.{$this->request->type}'>":"";echo $folder->folder_title;echo !$is_active?"</a>":""?></li>
+<?php endforeach; ?>
+</ol>
+<?php endif; ?>
