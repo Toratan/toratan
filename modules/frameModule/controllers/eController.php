@@ -13,11 +13,11 @@ class eController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
-        $target = "root";
-        if($this->request->CountIndexedParam()) $target = $this->request->GetIndexedParam(0);
-        switch($target) {
+        $this->view->target = "root";
+        if($this->request->CountIndexedParam()) $this->view->target = $this->request->GetIndexedParam(0);
+        switch($this->view->target) {
             default:
-                die("Undefined `{$target}`");
+                //die("Undefined `{$target}`");
         }
     }
 }
