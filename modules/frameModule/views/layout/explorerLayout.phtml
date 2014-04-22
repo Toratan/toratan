@@ -16,7 +16,9 @@
                 window.top.document.title = title;
             };
         </script>
-        <?php echo $this->content; ?>
+        <div class="container-fluid">
+            <?php echo $this->content; ?>
+        </div>
         <script>
             $("a").click(function(){
                 if($(this).attr("href").length && $(this).attr("href")[0] !== "#")
