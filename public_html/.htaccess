@@ -2,3 +2,10 @@ RewriteEngine On
 RewriteCond public_html/.htaccess !\.(gif|jpe?g|png|ico|js)$ [NC]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.+)$ /index.php/public_html/.htaccess
+
+
+AddType application/vnd.ms-fontobject .eot
+AddType font/ttf .ttf
+AddType font/otf .otf
+AddType application/font-woff .woff
+AddType application/x-font-woff .woff
