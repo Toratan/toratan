@@ -62,7 +62,7 @@ class directoryTree extends \stdClass
             <ul class="dropdown-menu pull-right" role="menu">
               <li title="Create A Folder"><a href="#"><span class="inline glyphicon glyphicon-folder-close"></span> Folder</a></li>
               <li title="Create A Note"><a href="#"><span class="inline glyphicon glyphicon-file"></span> Note</a></li>
-              <li title="Create A Link"><a href="#"><span class="inline glyphicon glyphicon-bookmark"></span> Link</a></li>
+              <li title="Create A Link"><a href="#"><span class="inline glyphicon glyphicon-link"></span> Link</a></li>
             </ul>
           </div>
     </div>
@@ -85,16 +85,16 @@ class directoryTree extends \stdClass
             switch($this->tree_type)
             {
                 case self::TRASH:
-                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' link-type='folder' href='/frame/e/trashes.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/trashes.$key'>$value</a></li>";
                     break;
                 case self::ARCHIVE:
-                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' link-type='folder' href='/frame/e/archives.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/archives.$key'>$value</a></li>";
                     break;
                 case self::SHARED:
-                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' link-type='folder' href='/frame/e/shared.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/shared.$key'>$value</a></li>";
                     break;
                 default:
-                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' link-type='folder' href='/frame/e/directory/$pid.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/directory/$pid.$key'>$value</a></li>";
                     break;
             }
         }
@@ -146,6 +146,18 @@ class directoryTree extends \stdClass
             $si .= "<span class='glyphicon glyphicon-trash' title='Deleted'></span> ";
         if($item->is_archive)
             $si .= "<span class='glyphicon glyphicon-floppy-disk' title='Archived'></span>";
+        if(!strlen($si)) {
+            switch($item->WhoAmI()) {
+                case "note":
+                    return "<span class='glyphicon glyphicon-file' title='Note'></span>";
+                case "link":
+                    return "<span class='glyphicon glyphicon-link' title='Link'></span>";
+                case "folder":
+                    return "<span class='glyphicon glyphicon-folder-close' title='Folder'></span>";
+                default:
+                    trigger_error("Undefined `{$item->WhoAmI()}` item ", E_USER_ERROR);
+            }
+        }
         return $si;
     }
     protected function plotTableRow(\core\db\models\item $item, $type, $parent_id, $is_owner) {
@@ -189,7 +201,8 @@ class directoryTree extends \stdClass
         endif;
     }
     protected  function plotItems($type, $collection, $parent_id, $is_owner) {
-        $this->plotOptions($type, $parent_id);
+        if($is_owner)
+            $this->plotOptions($type, $parent_id);
         if(!count($collection)) {
 ?>
         <hr />
