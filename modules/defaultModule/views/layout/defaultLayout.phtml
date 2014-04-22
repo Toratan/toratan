@@ -3,9 +3,6 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <noscript>
-            <meta http-equiv="Refresh" content="10; URL=/html">
-        </noscript>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Sign up page">
         <!-- twitter bootstrap -->
@@ -60,11 +57,12 @@
     </head>
     <body>
         <noscript>
-            <?php \core\ui\html\alert::Cout("Your browser javascript is not enabled, the browser will relocate to html version in 10 seconds!!", \core\ui\html\alert::ALERT_DANGER); ?>
+            <?php \core\ui\html\alert::Cout("!!Your browser's javascript IS NOT enabled!!", \core\ui\html\alert::ALERT_DANGER); ?>
         </noscript>
         <div class="header">
             <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
                 <?php if(($user_logged = \core\db\models\user::IsSignedin())): ?>
+                <li class='hidden-lg hidden-md'><a href='#'><span class='glyphicon glyphicon-flash'></span> Feeds</a></li>
                 <li><a href="#"><span class="badge">0</span> Messages</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge">2</span> Notifications<b class="caret"></b></a>
@@ -93,16 +91,13 @@
         </div>
         <div class="clearfix"></div>
         <?php if($user_logged) :  ?>
-            <script >
+            <script>
                 $(document).ready(function() {
-                    if(window.location.hash.length > 0) {
-                        $('#explorer-frame').attr('src', '/frame/e/'+window.location.hash.split('#!/')[1]);
-                        console.log($('#explorer-frame').attr('src'));
-                    }
+                    $('#explorer-nav-frame').attr('src', '/frame/en/'+window.location.hash);
                 });
             </script>
             <iframe id="explorer-nav-frame" style="border-style: none; border-color: inherit; border-width: 0px;height: 300px" src="/frame/en" class="frame-sides col-lg-2 col-md-2 col-sm-4 col-xm-4" onclick=""></iframe>
-            <iframe id="explorer-frame" style="border-style: none; border-color: inherit; border-width: 0px;height: 768px" src="/frame/e" class="frame-sides col-lg-7 col-md-7 col-sm-8 col-xm-8"></iframe>
+            <iframe id="explorer-frame" style="border-style: none; border-color: inherit; border-width: 0px;height: 768px" src="" class="frame-sides col-lg-7 col-md-7 col-sm-8 col-xm-8"></iframe>
             <iframe id="feed-frame" style="border-style: none; border-color: inherit; border-width: 0px;float: right;height: 768px" src="/frame/f" class="frame-sides col-lg-3 col-md-3 hidden-sm hidden-xs"></iframe>
         <?php else: ?>
             <legend>Not logged in {Fames go here!!}</legend>
