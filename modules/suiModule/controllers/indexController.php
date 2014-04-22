@@ -1,8 +1,8 @@
 <?php
-namespace modules\defaultModule\controllers;
+namespace modules\suiModule\controllers;
 use core\db\models\item;
 /**
- * The modules\defaultModule\controllers\indexController
+ * The modules\suiModule\controllers\indexController
  * @by Zinux Generator <b.g.dariush@gmail.com>
  */
 class indexController extends \zinux\kernel\controller\baseController
@@ -14,7 +14,7 @@ class indexController extends \zinux\kernel\controller\baseController
             $this->layout->SuppressLayout();
     }
     /**
-    * The modules\defaultModule\controllers\indexController::IndexAction()
+    * The modules\suiModule\controllers\indexController::IndexAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function IndexAction()
@@ -61,7 +61,7 @@ class indexController extends \zinux\kernel\controller\baseController
     }    
 
     /**
-    * The \modules\defaultModule\controllers\indexController::trashAction()
+    * The \modules\suiModule\controllers\indexController::trashAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function trashesAction()
@@ -93,7 +93,7 @@ class indexController extends \zinux\kernel\controller\baseController
     }
 
     /**
-    * The \modules\defaultModule\controllers\indexController::archiveAction()
+    * The \modules\suiModule\controllers\indexController::archiveAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function archivesAction()
@@ -125,7 +125,7 @@ class indexController extends \zinux\kernel\controller\baseController
     }
 
     /**
-    * The \modules\defaultModule\controllers\indexController::sharedAction()
+    * The \modules\suiModule\controllers\indexController::sharedAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function sharedAction()
