@@ -230,7 +230,8 @@ __GENERIC: ?>
 ?>
                 <tr class="<?php echo $type ?>">
                     <td>
-                        <?php if($is_owner) : ?><input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $item->{"{$item->WhoAmI()}_id"}, $this->getStatusString($item), \zinux\kernel\security\security::GetHashString(array($item->WhoAmI(),  $item->{"{$item->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>"/>
+                        <?php if($is_owner) : ?>
+                        <input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $item->{"{$item->WhoAmI()}_id"}, $this->getStatusString($item), \zinux\kernel\security\security::GetHashString(array($item->WhoAmI(),  $item->{"{$item->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>" onclick="window.update_menu_checkbox();"/>
                         <?php else: ?>&nbsp;                        
                         <?php endif; ?>
                     </td>
@@ -265,6 +266,7 @@ __GENERIC: ?>
             $(document).ready(function(){<?php echo $this->post_script; ?>});
 <?php endif; if($is_owner): ?>
             window.update_menu_checkbox = function() {
+                console.log("CHECK");
                 var all_checked = ($("input[type='checkbox'].item-checkbox:checked").length === $("input[type='checkbox'].item-checkbox").length);
                 if($("input[type='checkbox'].item-checkbox:checked").length === 0) {
                     $("input[type='checkbox'].check-all").prop("indeterminate", false);
@@ -323,14 +325,16 @@ __GENERIC: ?>
                 });
             });
             $( document ).ajaxStart(function() {
-                window.reset_ajax_placeholder();
+                $("#ajax-placeholder input, #ajax-placeholder select, #ajax-placeholder textarea").prop("readonly", true);
                 $("#ajax-loader-img").removeClass("hidden");
             });
-            $( document ).ajaxStop(function() {
+            $(document).ajaxStop(function() {
                 $("#ajax-loader-img").addClass("hidden");
             });
-            $(document).ajaxComplete(function( event, xhr, settings ) {
-                console.log(xhr.responseText);
+            $(document).ajaxError(function(){
+                $("#ajax-placeholder input, #ajax-placeholder select, #ajax-placeholder textarea").prop("readonly", false);
+            });
+            $(document).ajaxSuccess(function( event, xhr, settings ) {
                 if(xhr.responseText.length === 0) window.reset_ajax_placeholder();
                 else $("#ajax-placeholder").hide().html(xhr.responseText).css("margin-bottom", "10px").slideDown('slow');
             });

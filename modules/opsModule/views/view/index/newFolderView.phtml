@@ -12,7 +12,6 @@
             <h4 class="modal-title"><?php echo !isset($this->values['folder_title'])?"New":"Edit" ?> Folder</h4>
           </div>
           <div class="modal-body"-->
-              <?php zinux\kernel\utilities\debug::_var($this->request->getURI()); ?>
             <form action="<?php echo $this->request->GetURI() ?>" method="POST" class="form">
             <?php if(false && isset($this->request->params["continue"])) : ?>
                 <input type="hidden" name="continue" value="<?php echo $this->request->params["continue"]; ?>" />
@@ -33,15 +32,13 @@
     <!--/div><!-- /.modal -->
     <script>
         $(document).ready(function(){
-            $( "#new-folder-ui form" ).submit(function(e) {
-                console.log($(this).serialize()+$(this).attr("action").split("?")[1]);
+            $("#new-folder-ui form" ).submit(function(e) {
                 e.preventDefault();
-                console.log($(this).attr("action").split("?")[0]);
                 $.ajax({
                     type: $(this).attr("method"),
                     url: $(this).attr("action"),
-                    data: $(this).serialize()+"&suppress_redir=1&"+$(this).attr("action").split("?")[1]
-                });;
+                    data: $(this).serialize()+"&suppress_redirection=1&"+$(this).attr("action").split("?")[1]
+                });
             });
             $("input[name='folder_title']").focus();
         });

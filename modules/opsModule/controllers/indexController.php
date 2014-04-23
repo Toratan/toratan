@@ -15,11 +15,14 @@ class indexController extends \zinux\kernel\controller\baseController
             $this->layout->SuppressLayout ();
             unset($this->request->params["suppress_layout"]);
         }
-        if(array_key_exists("suppress_redir", $this->request->params))
+//        \zinux\kernel\utilities\debug::_var($this->request->params,1);
+        if(array_key_exists("suppress_redirection", $this->request->params))
         {
             $this->suppress_redirect = 1;
         }
-        sleep(1);
+//        sleep(3);
+//        header('HTTP/1.1 500');
+//        exit;
     }
     /**
      * Redirects header to pointed URL
@@ -55,6 +58,7 @@ class indexController extends \zinux\kernel\controller\baseController
         $continue = $this->request->params["continue"];
         $method = $_SERVER['REQUEST_METHOD'];
         $counter = 0;
+        $this->suppress_redirect = 1;
         switch($ops) {
             case "edit":
                 if(count($items) !== 1)
@@ -252,26 +256,35 @@ class indexController extends \zinux\kernel\controller\baseController
             # the valid 'edit' opts are
             case "FOLDER":
             case "LINK":
-                # invoke a message pipe line
-                $mp = new \core\utiles\messagePipe;
-                # indicate the success
-                $mp->write("One $item has been <b>created</b> successfully....");
-                # redirect if any redirection provided
-                $this->Redirect();
-                # relocate the browser
-                header("location: /directory/{$item_value->parent_id}.{$item}s");
+                if(!$this->suppress_redirect) {
+                    # invoke a message pipe line
+                    $mp = new \core\utiles\messagePipe;
+                    # indicate the success
+                    $mp->write("One $item has been <b>created</b> successfully....");
+                    # redirect if any redirection provided
+                    $this->Redirect();
+                    # relocate the browser
+                    header("location: /directory/{$item_value->parent_id}.{$item}s");
+                    exit;
+                }
                 break;
             case "NOTE":
-                # relocate the browser
-                header("location: /view/note/{$item_value->note_id}");
+                if(!$this->suppress_redirect) {
+                    # relocate the browser
+                    header("location: /view/note/{$item_value->note_id}");
+                    exit;
+                }
                 break;
             default:
                 # if no ops matched, raise an exception
                 throw new \zinux\kernel\exceptions\invalideOperationException;
         }
-        # relocate the browser
-        header("location: /directory/{$this->view->pid}.{$item}s");
-        # halt the PHP
+        if(!$this->suppress_redirect) {
+            # relocate the browser
+            header("location: /directory/{$this->view->pid}.{$item}s");
+            # halt the PHP
+            exit;
+        }
         exit;
     }
     /**
@@ -415,6 +428,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 # if no ops matched, raise an exception
                 throw new \zinux\kernel\exceptions\invalideOperationException;
         }
+        exit;
     }
     /**
     * @access via /ops/view/note/(ID)
@@ -588,6 +602,7 @@ class indexController extends \zinux\kernel\controller\baseController
             header("location: /directory/{$archived_item->parent_id}.{$item}s");
             exit;
         }
+        exit;
     }
     /**
     * @access via /ops/share/{folder|note|link}/(ID)/share/(0,1)?hash_sum
@@ -648,6 +663,7 @@ class indexController extends \zinux\kernel\controller\baseController
             header("location: /directory/{$shared_item->parent_id}.{$item}s");
             exit;
         }
+        exit;
     }
     /**
     * The \modules\opsModule\controllers\indexController::subscribeAction()
