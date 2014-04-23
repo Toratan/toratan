@@ -266,7 +266,6 @@ __GENERIC: ?>
             $(document).ready(function(){<?php echo $this->post_script; ?>});
 <?php endif; if($is_owner): ?>
             window.update_menu_checkbox = function() {
-                console.log("CHECK");
                 var all_checked = ($("input[type='checkbox'].item-checkbox:checked").length === $("input[type='checkbox'].item-checkbox").length);
                 if($("input[type='checkbox'].item-checkbox:checked").length === 0) {
                     $("input[type='checkbox'].check-all").prop("indeterminate", false);
@@ -309,6 +308,7 @@ __GENERIC: ?>
                     case "folder":
                     case "link":
                         e.preventDefault();
+                        window.reset_ajax_placeholder();
                         $.ajax({
                             url: $(this).attr('href').split("#!")[1]+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
                         });
@@ -325,18 +325,19 @@ __GENERIC: ?>
                 });
             });
             $( document ).ajaxStart(function() {
-                $("#ajax-placeholder input, #ajax-placeholder select, #ajax-placeholder textarea").prop("readonly", true);
+                $("#ajax-placeholder *").prop("readonly", true);
                 $("#ajax-loader-img").removeClass("hidden");
             });
             $(document).ajaxStop(function() {
                 $("#ajax-loader-img").addClass("hidden");
             });
             $(document).ajaxError(function(){
-                $("#ajax-placeholder input, #ajax-placeholder select, #ajax-placeholder textarea").prop("readonly", false);
+                $("#ajax-placeholder *").prop("readonly", false).first().focus();
             });
             $(document).ajaxSuccess(function( event, xhr, settings ) {
                 if(xhr.responseText.length === 0) window.reset_ajax_placeholder();
                 else $("#ajax-placeholder").hide().html(xhr.responseText).css("margin-bottom", "10px").slideDown('slow');
+                setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
             });
             window.reset_ajax_placeholder();
             window.update_menu_checkbox();

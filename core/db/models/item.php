@@ -510,7 +510,7 @@ __RETURN:
     {
         # validate the item's title existance
         if(!isset($this->{"{$this->item_name}_title"}) || !\strlen($this->{"{$this->item_name}_title"}))
-            $this->errors->add("{$this->item_name}_title", "Cannot be blank");
+            $this->errors->add("{$this->item_name}'s title", "cannot be blank.");
     }
     /**
      * Trims properties just before they get saved

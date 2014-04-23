@@ -1,5 +1,5 @@
 <div id="new-link-ui">
-    <ol style="color:red;">
+    <ol class='text-danger' style="list-style-image: url('/access/img/bullet.png');padding:0;margin-left:15px;">
     <?php foreach ($this->errors as $error) : ?>
         <li><?php echo $error ?></li>
     <?php endforeach; ?>
@@ -13,42 +13,29 @@
             border-right-width: 1px;
         }
     </style>
-    <div class="modal fade in" id="new-link-modal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><?php echo !isset($this->values['link_title'])?"New":"Edit" ?> Link</h4>
-          </div>
-          <div class="modal-body">
-            <form action="<?php echo $this->request->GetURI() ?>" method="POST">
-            <?php if(isset($this->request->params["continue"])) : ?>
-                <input type="hidden" name="continue" value="<?php echo $this->request->params["continue"]; ?>" />
-            <?php endif; ?>
-                <div class="input-group double-input">
-                    <input type="text" class="form-control" name="link_title" maxlength="250" placeholder="Link's title" value="<?php echo isset($this->values['link_title'])?$this->values['link_title']:"" ?>"/>
-                    <input type="text" class="form-control" name="link_body" maxlength="250" placeholder="Link's body" value="<?php echo isset($this->values['link_body'])?$this->values['link_body']:"" ?>"/>
-                    <span class="input-group-btn">
-                        <button class="btn btn-primary" type="submit">Create</button>
-                    </span>
-                </div><!-- /input-group -->
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+    <form action="<?php echo $this->request->GetURI() ?>" method="POST">
+    <?php if(isset($this->request->params["continue"])) : ?>
+        <input type="hidden" name="continue" value="<?php echo $this->request->params["continue"]; ?>" />
+    <?php endif; ?>
+        <div class="input-group double-input">
+            <input type="text" class="form-control" name="link_title" maxlength="250" placeholder="Link's title" value="<?php echo isset($this->values['link_title'])?$this->values['link_title']:"" ?>"/>
+            <input type="text" class="form-control" name="link_body" maxlength="250" placeholder="Link's body" value="<?php echo isset($this->values['link_body'])?$this->values['link_body']:"" ?>"/>
+            <span class="input-group-btn">
+                <button class="btn btn-primary" type="submit">Create</button>
+            </span>
+        </div><!-- /input-group -->
+    </form>
     <script>
         $(document).ready(function(){
-            $("#new-link-modal").on('hidden.bs.modal', function () {
-                $("div#ops-container").remove();
-            }).modal('show');
-            $( "#new-link-modal form" ).submit(function(e) {
+            setTimeout(function() { $('input[name="link_title"]').focus(); }, 500);
+            $("#new-link-ui form" ).submit(function(e) {
                 e.preventDefault();
+                $.ajax({
+                    type: $(this).attr("method"),
+                    url: $(this).attr("action"),
+                    data: $(this).serialize()+"&suppress_redirection=1&"+$(this).attr("action").split("?")[1]
+                });
             });
-            $("input[name='link_title']").focus();
         });
     </script>
 </div>

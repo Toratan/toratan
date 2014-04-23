@@ -20,7 +20,7 @@ class indexController extends \zinux\kernel\controller\baseController
         {
             $this->suppress_redirect = 1;
         }
-//        sleep(3);
+        sleep(3);
 //        header('HTTP/1.1 500');
 //        exit;
     }
