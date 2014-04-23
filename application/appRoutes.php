@@ -36,6 +36,7 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          *      {/notifications} to {/ops/notifications}
          *      {/subscribe} to {/ops/subscribe}
          *      {/unsubscribe} to {/ops/unsubscribe}
+         *      {/goto} to {/ops/goto}
          */
         $this->addRoute("^/(new|edit|view|delete|archive|share|messages|profile|notifications|subscribe|unsubscribe|goto)$2", "/ops/$1$2");
         /**

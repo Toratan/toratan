@@ -535,7 +535,8 @@ __RETURN:
                     \core\db\models\notification::put($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, \core\db\models\notification::NOTIF_FLAG_SHARE);
                 else
                     \core\db\models\notification::deleteNotification($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name);
-                if($this->item_name == "folder")
+                /* WE DON'T GO FOR RECURSIVE SHARING FOLDER SHARING */
+                if(false && $this->item_name == "folder")
                     # update the sub-items sharing status
                     \core\db\models\sharing_queue::add_queue($this);
             }

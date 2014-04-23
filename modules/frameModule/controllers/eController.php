@@ -18,7 +18,7 @@ class eController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
-        if(!\core\db\models\user::IsSignedin()) return;
+        if(!\core\db\models\user::IsSignedin()) { trigger_error("UNREGISTERED USERS SHOULD BE ABLE TO VIEW PUBLIC ITESM", E_USER_ERROR); return; }
 //        \zinux\kernel\utilities\debug::_var($this->request->params);
         $this->layout->AddTitle("Home");
         $f = new \core\db\models\folder();
