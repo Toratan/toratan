@@ -219,7 +219,7 @@ __GENERIC: ?>
                         <?php echo $this->getStatusIcons($item) ?>
                     </td>
                     <td>
-                        <a href='<?php echo $this->getNavigationLink($item); ?>' target='<?php echo $this->getNavigationTarget($item) ?>'><?php echo $item->{"{$item->WhoAmI()}_title"}; ?></a>
+                        <a href='<?php echo $this->getNavigationLink($item); ?>' target='<?php echo $this->getNavigationTarget($item) ?>' onclick='window.top.document.title = "/ <?php echo $item->{"{$item->WhoAmI()}_title"}; ?>";'><?php echo $item->{"{$item->WhoAmI()}_title"}; ?></a>
                     </td>
                     <td id="<?php echo $type, '-', $item->{"{$item->WhoAmI()}_id"}?>-updated"></td>
                 </tr>
