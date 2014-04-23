@@ -35,8 +35,17 @@ class directoryTree extends \stdClass
     #directory-tree-opt .btn{ zoom: 1; filter: alpha(opacity=80); opacity: 0.8; }
     #directory-tree-opt div.btn-group{ margin-right: 10px; }
     #directory-tree-opt .w60{ width: 60px; }
+    #directory-tree-opt .btn-separator:after {
+        content: ' ';
+        display: block;
+        float: left;
+        background: #ADADAD;
+        margin: 0 10px;
+        height: 34px;
+        width: 1px;
+    }
 </style>
-<form method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
+<form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
     <input type="hidden" name="type" value="<?php echo $active_type ?>" />
     <input type="hidden" name="continue" value="<?php echo $this->request->GetURI() ?>" />
 <div id="directory-tree-opt" class="btn-toolbar">
@@ -63,13 +72,16 @@ class directoryTree extends \stdClass
               <span class="glyphicon glyphicon-plus"></span> <span class="caret"></span>
             </button>
             <ul class="dropdown-menu pull-right" role="menu">
-              <li title="Create A Folder"><a href="#"><span class="inline glyphicon glyphicon-folder-close"></span> Folder</a></li>
-              <li title="Create A Note"><a href="#"><span class="inline glyphicon glyphicon-file"></span> Note</a></li>
-              <li title="Create A Link"><a href="#"><span class="inline glyphicon glyphicon-link"></span> Link</a></li>
+              <li title="Create A Folder"><a href="#!/new/folder/?pid=<?php echo $pid, \zinux\kernel\security\security::GetHashString(array("folder", $pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>" data-tag="folder" class="new-item"><span class="inline glyphicon glyphicon-folder-close"></span> Folder</a></li>
+              <li title="Create A Note"><a href="#!/new/note/?pid=<?php echo $pid, \zinux\kernel\security\security::GetHashString(array("note", $pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>" data-tag="note" class="new-item"><span class="inline glyphicon glyphicon-file"></span> Note</a></li>
+              <li title="Create A Link"><a href="#!/new/link/?pid=<?php echo $pid, \zinux\kernel\security\security::GetHashString(array("link", $pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>" data-tag="link" class="new-item"><span class="inline glyphicon glyphicon-link"></span> Link</a></li>
             </ul>
           </div>
         <?php endif; ?>
     </div>
+    <div class="checked-opt checked-opt-unique btn-group hidden">
+        <button type="submit" class="btn btn-default" title="Edit" name="ops" value="edit"><span class="glyphicon glyphicon-edit"></span></button>
+    </div> <!--end .checked-opt -->
     <div class="checked-opt btn-group hidden">
 <?php switch($this->tree_type):
     case self::REGULAR: ?>
@@ -91,8 +103,8 @@ __GENERIC: ?>
     <div class="btn-group checked-opt hidden">
         <button type="submit" class="btn btn-danger w60" title="Restore" name="ops" value="remove"><span class="glyphicon glyphicon-remove"></span></button>
     </div>
-    <div class="btn-group pull-right" style="padding-top: 15px;" >
-        <a id="trash-detail-popover" data-container="body" data-toggle="popover" data-placement="left" data-content="<div style='text-align: justify;'>All items which have been labaled as trashed <b>will not</b> appear anywhere else; Though if they are marked as <u><i>archived</i></u> or <u><i>shared</i></u>. In order to make them available please <b>select and restore</b> them.</div>" data-original-title="" title="">
+    <div class="btn-group pull-right" style="padding-top: 3px;" >
+        <a id="trash-detail-popover" data-container="body" data-toggle="popover" data-placement="left" data-content="<div style='text-align: justify;margin-bottom:-3px'>All items which have been labaled as trashed <b>will not</b> appear anywhere else; Though if they are marked as <u><i>archived</i></u> or <u><i>shared</i></u>. In order to make them available please <b>select and restore</b> them.</div>" data-original-title="" title="">
           <span class="glyphicon glyphicon-exclamation-sign"></span>
         </a>
         <script>$(document).ready(function() {$('#trash-detail-popover').popover({ trigger: 'hover', html: true }); });</script>
@@ -101,8 +113,15 @@ __GENERIC: ?>
 <?php break;
     default: throw new \zinux\kernel\exceptions\invalideOperationException("Undefined tree type# `{$this->tree_type}`!"); ?>
 <?php endswitch; ?>
+    </div> <!--end .checked-opt -->
+    <div class="pull-right">
+        <div class="btn-group hidden" id="ajax-loader-img" style="margin:0;padding:0">
+            <img class="image" src="/access/img/ajax-loader.gif" />
+        </div>
     </div>
 </div> <!--end  menu-->
+<div class="clearfix"></div>
+<div id="ajax-placeholder" style=""></div>
 <div class="clearfix"></div>
 <?php
     }
@@ -257,8 +276,13 @@ __GENERIC: ?>
                     $("input[type='checkbox'].check-all").prop("checked", all_checked);
                     $(".checked-opt").removeClass("hidden");
                     $(".unchecked-opt").addClass("hidden");
+                    if($("input[type='checkbox'].item-checkbox:checked").length === 1)
+                        $(".checked-opt.checked-opt-unique").removeClass("hidden");
+                    else
+                        $(".checked-opt.checked-opt-unique").addClass("hidden");
                 }
             };
+            window.reset_ajax_placeholder = function() { $("#ajax-placeholder").slideUp(function() { $(this).html("").hide().css("margin-bottom", "0px"); }); };
             $("input[type='checkbox'].item-checkbox").click(window.update_menu_checkbox);
             $(".check-all").click(function() {
                 $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
@@ -278,6 +302,39 @@ __GENERIC: ?>
                 $("input[type='checkbox'].private-item").prop("checked", true);
                 window.update_menu_checkbox();
             });
+            $("a.new-item").click(function(e){
+                switch($(this).attr("data-tag")) {
+                    case "folder":
+                    case "link":
+                        e.preventDefault();
+                        $.ajax({
+                            url: $(this).attr('href').split("#!")[1]+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
+                        });
+                        break;
+                    default:
+                }
+            });
+            $("button[value='edit']").click(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    type: $('form#opt-form').attr("method"),
+                    url: $('form#opt-form').attr("action").split("?")[0],
+                    data: "ops=edit&"+$('form#opt-form').serialize()+$('form#opt-form').attr("action").split("?")[1]
+                });
+            });
+            $( document ).ajaxStart(function() {
+                window.reset_ajax_placeholder();
+                $("#ajax-loader-img").removeClass("hidden");
+            });
+            $( document ).ajaxStop(function() {
+                $("#ajax-loader-img").addClass("hidden");
+            });
+            $(document).ajaxComplete(function( event, xhr, settings ) {
+                console.log(xhr.responseText);
+                if(xhr.responseText.length === 0) window.reset_ajax_placeholder();
+                else $("#ajax-placeholder").hide().html(xhr.responseText).css("margin-bottom", "10px").slideDown('slow');
+            });
+            window.reset_ajax_placeholder();
             window.update_menu_checkbox();
 <?php endif; ?>
         </script>
@@ -287,6 +344,7 @@ __GENERIC: ?>
         if($is_owner)
             $this->plotOptions($type, $parent_id, $is_owner);
         $this->plotHeadTypes($type, $parent_id);
+        $this->plotJS($type, $parent_id, $is_owner);
         if(!count($collection)) {
 ?>
         <hr />
@@ -301,7 +359,6 @@ __GENERIC: ?>
             $this->plotTableRow($folder, $type, $parent_id, $is_owner);
         }
         $this->plotTableFooter();
-        $this->plotJS($type, $parent_id, $is_owner);
     }
     public function plotFolders($collection, $parent_id, $is_owner) {
         $this->plotItems("folder", $collection, $parent_id, $is_owner);

@@ -6,6 +6,7 @@ namespace modules\opsModule\controllers;
  */
 class indexController extends \zinux\kernel\controller\baseController
 {
+    protected $suppress_redirect = 0;
     public function Initiate()
     {
         parent::Initiate();
@@ -14,6 +15,11 @@ class indexController extends \zinux\kernel\controller\baseController
             $this->layout->SuppressLayout ();
             unset($this->request->params["suppress_layout"]);
         }
+        if(array_key_exists("suppress_redir", $this->request->params))
+        {
+            $this->suppress_redirect = 1;
+        }
+        sleep(1);
     }
     /**
      * Redirects header to pointed URL
@@ -37,7 +43,9 @@ class indexController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
-        \zinux\kernel\security\security::IsSecure($this->request->params,
+        # make sure that we get our data from POST
+        if(!$this->request->IsPOST()) throw new \zinux\kernel\exceptions\invalideOperationException;
+        \zinux\kernel\security\security::IsSecure($this->request->params, 
                 array("type", "ops", "items", "continue"),
                 array('is_array' => $this->request->params["items"]));
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params["type"], $this->request->params["continue"]));
@@ -45,8 +53,12 @@ class indexController extends \zinux\kernel\controller\baseController
         $items = $this->request->params["items"];
         $type = $this->request->params["type"];
         $continue = $this->request->params["continue"];
+        $method = $_SERVER['REQUEST_METHOD'];
         $counter = 0;
         switch($ops) {
+            case "edit":
+                if(count($items) !== 1)
+                    throw new \zinux\kernel\exceptions\invalideOperationException("Cannot process multiple items!!");
             case "trash":
             case "remove":
             case "restore":
@@ -71,29 +83,37 @@ class indexController extends \zinux\kernel\controller\baseController
                     switch ($ops) {
                         case "trash":
                             $this->request->params["trash"] = \core\db\models\item::DELETE_PUT_TARSH;
-                            goto __INIT_INVOKE;
+                            goto __INIT_DELETE_INVOKE;
                         case "remove":
                             $this->request->params["trash"] = \core\db\models\item::DELETE_PERIOD;
-                            goto __INIT_INVOKE;
+                            goto __INIT_DELETE_INVOKE;
                         case "restore":
                             $this->request->params["trash"] = \core\db\models\item::DELETE_RESTORE;
-                            goto __INIT_INVOKE;
-                        __INIT_INVOKE:
+                            goto __INIT_DELETE_INVOKE;
+                        __INIT_DELETE_INVOKE:
                             $action = "delete";
                             break;
+                        case "edit":
+                            # fool the `editAction` to think it is a `GET` request
+                            $_SERVER['REQUEST_METHOD'] = "GET";
+                            break;
                     }
+                    $this->request->params["continue"] = $continue;
                     $this->request->GenerateIndexedParams();
-                    $this->{"{$action}Action"}(1);
+                    $this->{"{$action}Action"}();
+                    $_SERVER['REQUEST_METHOD'] = $method;
                     $counter++;
                 }
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideOperationException("Invalid operation `{$this->request->params["ops"]}`");
+                throw new \zinux\kernel\exceptions\invalideOperationException("Invalid operation `{$this->request->params["ops"]}`!!");
         }
-        $mp = new \core\utiles\messagePipe;
-        $mp->write("<b>#$counter $type".($counter>1?"s'":"'s")."</b> status has been changed <b>successfully</b>!");
-        header("location: $continue");
-        exit;
+        if($action != "edit") {
+            $mp = new \core\utiles\messagePipe;
+            $mp->write("<b>#$counter $type".($counter>1?"s'":"'s")."</b> status has been changed <b>successfully</b>!");
+            header("location: $continue");
+            exit;
+        }
     }
     /**
     * Creates new items
@@ -232,8 +252,6 @@ class indexController extends \zinux\kernel\controller\baseController
             # the valid 'edit' opts are
             case "FOLDER":
             case "LINK":
-                # redirect if any redirection provided
-                $this->Redirect();
                 # invoke a message pipe line
                 $mp = new \core\utiles\messagePipe;
                 # indicate the success
@@ -261,7 +279,7 @@ class indexController extends \zinux\kernel\controller\baseController
     * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function editAction($suppress_redirect = 0)
+    public function editAction()
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
@@ -374,7 +392,7 @@ class indexController extends \zinux\kernel\controller\baseController
             # the valid 'edit' opts are
             case "FOLDER":
             case "LINK":
-                if(!$suppress_redirect) {
+                if(!$this->suppress_redirect) {
                     # invoke a message pipe line
                     $mp = new \core\utiles\messagePipe;
                     # indicate the success
@@ -387,7 +405,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 }
                 break;
             case "NOTE":
-                if(!$suppress_redirect) {
+                if(!$this->suppress_redirect) {
                     # relocate the browser
                     header("location: /view/note/{$item_value->note_id}");
                     exit;
@@ -454,7 +472,7 @@ class indexController extends \zinux\kernel\controller\baseController
     * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function deleteAction($suppress_redirect = 0)
+    public function deleteAction()
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
@@ -498,7 +516,7 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_ins = new $item_class;
         # delete the item
         $deleted_item = $item_ins->delete($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_trash);
-        if(!$suppress_redirect) {
+        if(!$this->suppress_redirect) {
             # invoke a message pipe line
             $mp = new \core\utiles\messagePipe;
             # indicate the success
@@ -515,7 +533,7 @@ class indexController extends \zinux\kernel\controller\baseController
     * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function archiveAction($suppress_redirect = 0)
+    public function archiveAction()
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
@@ -559,7 +577,7 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_ins = new $item_class;
         # archive the item
         $archived_item = $item_ins->archive($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_archive);
-        if(!$suppress_redirect) {
+        if(!$this->suppress_redirect) {
             # invoke a message pipe line
             $mp = new \core\utiles\messagePipe;
             # indicate the success
@@ -576,7 +594,7 @@ class indexController extends \zinux\kernel\controller\baseController
     * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function shareAction($suppress_redirect = 0)
+    public function shareAction()
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
@@ -619,7 +637,7 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_ins = new $item_class;
         # share the item
         $shared_item = $item_ins->share($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_share);
-        if(!$suppress_redirect) {
+        if(!$this->suppress_redirect) {
             # invoke a message pipe line
             $mp = new \core\utiles\messagePipe;
             # indicate the success
