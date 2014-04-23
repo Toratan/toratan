@@ -27,7 +27,7 @@ class directoryTree extends \stdClass
         $this->tree_type = $__tree_type;
         $this->post_script = "";
     }
-    protected function plotOptions($active_type, $pid, $is_owner) {
+    public function plotOptions($active_type, $pid, $is_owner) {
         if(!$is_owner) return;
         ?>
 <style>
@@ -35,15 +35,6 @@ class directoryTree extends \stdClass
     #directory-tree-opt .btn{ zoom: 1; filter: alpha(opacity=80); opacity: 0.8; }
     #directory-tree-opt div.btn-group{ margin-right: 10px; }
     #directory-tree-opt .w60{ width: 60px; }
-    #directory-tree-opt .btn-separator:after {
-        content: ' ';
-        display: block;
-        float: left;
-        background: #ADADAD;
-        margin: 0 10px;
-        height: 34px;
-        width: 1px;
-    }
 </style>
 <form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
     <input type="hidden" name="type" value="<?php echo $active_type ?>" />
@@ -121,11 +112,12 @@ __GENERIC: ?>
     </div>
 </div> <!--end  menu-->
 <div class="clearfix"></div>
-<div id="ajax-placeholder" style=""></div>
+<div id="ajax-placeholder" style="margin: 0"></div>
 <div class="clearfix"></div>
 <?php
     }
-    protected function plotHeadTypes($active_type, $pid) {
+    public function plotHeadTypes($active_type, $pid) {
+     $active_type = \ActiveRecord\Utils::pluralize($active_type);
 ?>
     <div class="visible-xs clearfix"></div>
     <div style="padding: 0% 0 1% 0;" id="directory-tree-headtypes">
@@ -135,16 +127,16 @@ __GENERIC: ?>
             switch($this->tree_type)
             {
                 case self::TRASH:
-                    echo "<li ".(strtoupper("{$active_type}s") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/trashes.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/trashes.$key'>$value</a></li>";
                     break;
                 case self::ARCHIVE:
-                    echo "<li ".(strtoupper("{$active_type}s") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/archives.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/archives.$key'>$value</a></li>";
                     break;
                 case self::SHARED:
-                    echo "<li ".(strtoupper("{$active_type}s") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/shared.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/shared.$key'>$value</a></li>";
                     break;
                 default:
-                    echo "<li ".(strtoupper("{$active_type}s") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/directory/$pid.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/directory/$pid.$key'>$value</a></li>";
                     break;
             }
         }
@@ -154,7 +146,7 @@ __GENERIC: ?>
     }
     protected function plotTableHeader() {
 ?>
-    <div class="table-responsive">
+    <div id="explorer-table" class="table-responsive" style="margin-top: 130px;">
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -255,7 +247,7 @@ __GENERIC: ?>
 <hr />
 <?php
     }
-    protected function plotJS($type, $parent_id, $is_owner) {
+    public function plotJS($type, $parent_id, $is_owner) {
 ?>
         <script type="text/javascript">
 <?php
@@ -283,7 +275,7 @@ __GENERIC: ?>
                         $(".checked-opt.checked-opt-unique").addClass("hidden");
                 }
             };
-            window.reset_ajax_placeholder = function() { $("#ajax-placeholder").slideUp(function() { $(this).html("").hide().css("margin-bottom", "0px"); }); };
+            window.reset_ajax_placeholder = function() { $("#ajax-placeholder").slideUp(function() { $(this).html("").hide().css("margin", "0px"); }); $("#explorer-table").animate({"margin-top": "130"});};
             $("input[type='checkbox'].item-checkbox").click(window.update_menu_checkbox);
             $(".check-all").click(function() {
                 $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
@@ -309,9 +301,12 @@ __GENERIC: ?>
                     case "link":
                         e.preventDefault();
                         window.reset_ajax_placeholder();
-                        $.ajax({
-                            url: $(this).attr('href').split("#!")[1]+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
-                        });
+                        // we need this delay to changes in `window.reset_ajax_placeholder()` have time to get applied
+                        setTimeout(function($this) {
+                            $.ajax({
+                                url: $($this).attr('href').split("#!")[1]+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
+                            });
+                        }, 400, this);
                         break;
                     default:
                 }
@@ -336,8 +331,15 @@ __GENERIC: ?>
             });
             $(document).ajaxSuccess(function( event, xhr, settings ) {
                 if(xhr.responseText.length === 0) window.reset_ajax_placeholder();
-                else $("#ajax-placeholder").hide().html(xhr.responseText).css("margin-bottom", "10px").slideDown('slow');
-                setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
+                else {
+                    $("#explorer-table").animate({"margin-top": "193"}, 'slow');
+                    $("#ajax-placeholder")
+                        .hide()
+                        .html(xhr.responseText + "<small><a href='#' onclick='window.reset_ajax_placeholder();return false;'>Close</a></small>")
+                        .css("margin", "-10px auto  10px auto")
+                        .slideDown('slow');
+                    setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
+                }
             });
             window.reset_ajax_placeholder();
             window.update_menu_checkbox();
@@ -346,10 +348,6 @@ __GENERIC: ?>
 <?php
     }
     protected  function plotItems($type, $collection, $parent_id, $is_owner) {
-        if($is_owner)
-            $this->plotOptions($type, $parent_id, $is_owner);
-        $this->plotHeadTypes($type, $parent_id);
-        $this->plotJS($type, $parent_id, $is_owner);
         if(!count($collection)) {
 ?>
         <hr />
