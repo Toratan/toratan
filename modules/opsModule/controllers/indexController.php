@@ -17,16 +17,14 @@ class indexController extends \zinux\kernel\controller\baseController
     }
     /**
      * Redirects header to pointed URL
-     * @param string $this->request->params["continue"] if $this->request->params["continue"] 
+     * @param string $this->request->params["continue"] if $this->request->params["continue"]
      * provided it will set the header location to the point, otherwise redirects to site's root
      */
     protected function Redirect()
     {
         $params = $this->request->params;
-        
         if(headers_sent())
             return false;
-        
         if(isset($params["continue"]))
         {
             header("location: {$params["continue"]}");
@@ -39,9 +37,43 @@ class indexController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
+        \zinux\kernel\security\security::IsSecure($this->request->params,
+                array("type", "ops", "items"),
+                array('is_array' => $this->request->params["items"]));
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params["type"]));
+        $ops = $this->request->params["ops"];
+        $items = $this->request->params["items"];
+        $type = $this->request->params["type"];
+        switch($ops) {
+            case "archive":
+            case "delete":
+            case "share":
+                foreach ($items as $item)
+                {
+                    $params = explode("&",  $type ."&". $item);
+                    $this->request->params = array();
+                    for($index = 0; $index < count($params); $index ++)
+                    {
+                        if(preg_match("&(.*)=(.*)&i", $params[$index])) {
+                            $sub_param = explode("=", $params[$index]);
+                            for($subindex = 0; $subindex < count($sub_param); $subindex += 2) {
+                                $this->request->params[$sub_param[$subindex]] = @$sub_param[$subindex + 1];
+                            }
+                        } else {
+                            $this->request->params[$params[$index]] = @!preg_match("&(.*)=(.*)&i", $params[$index + 1]) ? $params[++$index] : NULL;
+                        }
+                    }
+                    $this->request->GenerateIndexedParams();
+                    $this->{"{$ops}Action"}(1);
+                }
+                \zinux\kernel\utilities\debug::_var($this->request->params);
+                break;
+            default:
+                throw new \zinux\kernel\exceptions\invalideOperationException("Invalid operation `{$this->request->params["ops"]}`");
+        }
+        die("OK2");
         throw new \zinux\kernel\exceptions\invalideOperationException;
     }
-
     /**
     * Creates new items
      * @access via /ops/new/{folder|note|link}/pid/(PID)?hash_sum
@@ -127,7 +159,7 @@ class indexController extends \zinux\kernel\controller\baseController
                         if(preg_match($preg_pattern, preg_quote($this->request->params['note_body'], $preg_delimiter), $matches))
                         {
                             $this->request->params["note_title"] = \zinux\kernel\utilities\string::inverse_preg_quote($matches[1]);
-                            $this->request->params["note_body"] = 
+                            $this->request->params["note_body"] =
                                     preg_replace("/^([\s|\n]*##{$this->request->params["note_title"]}##)/im", "", $this->request->params["note_body"]);
                         }
                         else
@@ -203,13 +235,12 @@ class indexController extends \zinux\kernel\controller\baseController
         # halt the PHP
         exit;
     }
-
     /**
     * @access via /ops/edit/{folder|note|link}/(ID)?hash_sum
     * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function editAction()
+    public function editAction($suppress_redirect = 0)
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
@@ -275,7 +306,7 @@ class indexController extends \zinux\kernel\controller\baseController
                         if(preg_match($preg_pattern, preg_quote($this->request->params['note_body'], $preg_delimiter), $matches))
                         {
                             $this->request->params["note_title"] = \zinux\kernel\utilities\string::inverse_preg_quote($matches[1]);
-                            $this->request->params["note_body"] = 
+                            $this->request->params["note_body"] =
                                     preg_replace("/^([\s|\n]*##{$this->request->params["note_title"]}##)/im", "", $this->request->params["note_body"]);
                         }
                         else
@@ -322,26 +353,30 @@ class indexController extends \zinux\kernel\controller\baseController
             # the valid 'edit' opts are
             case "FOLDER":
             case "LINK":
-                # invoke a message pipe line
-                $mp = new \core\utiles\messagePipe;
-                # indicate the success
-                $mp->write("One $item has been <b>edited</b> successfully....");
-                # redirect if any redirection provided
-                $this->Redirect();
-                # relocate the browser
-                header("location: /directory/{$item_value->parent_id}.{$item}s");
+                if(!$suppress_redirect) {
+                    # invoke a message pipe line
+                    $mp = new \core\utiles\messagePipe;
+                    # indicate the success
+                    $mp->write("One $item has been <b>edited</b> successfully....");
+                    # redirect if any redirection provided
+                    $this->Redirect();
+                    # relocate the browser
+                    header("location: /directory/{$item_value->parent_id}.{$item}s");
+                    exit;
+                }
                 break;
             case "NOTE":
-                # relocate the browser
-                header("location: /view/note/{$item_value->note_id}");
+                if(!$suppress_redirect) {
+                    # relocate the browser
+                    header("location: /view/note/{$item_value->note_id}");
+                    exit;
+                }
                 break;
             default:
                 # if no ops matched, raise an exception
                 throw new \zinux\kernel\exceptions\invalideOperationException;
         }
-        exit;
     }
-
     /**
     * @access via /ops/view/note/(ID)
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -381,14 +416,13 @@ class indexController extends \zinux\kernel\controller\baseController
             $item_value = $item_ins->fetch($this->request->GetIndexedParam(1));
         }
         catch(\Exception $error_happened){ if(!preg_match("#Couldn't find (.*) with ID=#i", $error_happened->getMessage())) throw $error_happened; }
-        # if value not found or the current item is not public and the current user is the owner 
+        # if value not found or the current item is not public and the current user is the owner
         if(isset($error_happened) || !$item_value || (!$item_value->is_public && (!$uid || $item_value->owner_id != $uid)))
             # drop the balls
             throw new \zinux\kernel\exceptions\notFoundException("The `$item` you are looking for does not exists or you don't have the pemission to view it.");
         # pass the item's instance to view
         $this->view->instance = $item_value;
     }
-
     /**
     * The \modules\opsModule\controllers\indexController::deleteAction()
     * @access via /ops/delete/{folder|note|link}/(ID)/trash/(-1,0,1)?hash_sum
@@ -399,7 +433,7 @@ class indexController extends \zinux\kernel\controller\baseController
     * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function deleteAction()
+    public function deleteAction($suppress_redirect = 0)
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
@@ -443,27 +477,29 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_ins = new $item_class;
         # delete the item
         $deleted_item = $item_ins->delete($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_trash);
-        # invoke a message pipe line
-        $mp = new \core\utiles\messagePipe;
-        # indicate the success
-        $mp->write("One $item has been <b>".($is_trash?"deleted":"restored")."</b> successfully....");
-        # redirect if any redirection provided
-        $this->Redirect();
-        # otherwise relocate properly
-        header("location: /directory/{$deleted_item->parent_id}.{$item}s");
-        exit;
+        if(!$suppress_redirect) {
+            # invoke a message pipe line
+            $mp = new \core\utiles\messagePipe;
+            # indicate the success
+            $mp->write("One $item has been <b>".($is_trash?"deleted":"restored")."</b> successfully....");                                                                                                                                                                          
+            # redirect if any redirection provided
+            $this->Redirect();
+            # otherwise relocate properly
+            header("location: /directory/{$deleted_item->parent_id}.{$item}s");
+            exit;
+        }
     }
-
     /**
     * @access via /ops/archive/{folder|note|link}/(ID)/archive/(0,1)?hash_sum
     * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function archiveAction()
+    public function archiveAction($suppress_redirect = 0)
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
             throw new \zinux\kernel\exceptions\invalideOperationException;
+        \zinux\kernel\utilities\debug::_var(array($this->request->params, $this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1)));
         # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params,
@@ -502,23 +538,24 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_ins = new $item_class;
         # archive the item
         $archived_item = $item_ins->archive($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_archive);
-        # invoke a message pipe line
-        $mp = new \core\utiles\messagePipe;
-        # indicate the success
-        $mp->write("One $item has been <b>".($is_archive?"archived":"un-archived")."</b> successfully....");
-        # redirect if any redirection provided
-        $this->Redirect();
-        # otherwise relocate properly
-        header("location: /directory/{$archived_item->parent_id}.{$item}s");
-        exit;
+        if(!$suppress_redirect) {
+            # invoke a message pipe line
+            $mp = new \core\utiles\messagePipe;
+            # indicate the success
+            $mp->write("One $item has been <b>".($is_archive?"archived":"un-archived")."</b> successfully....");
+            # redirect if any redirection provided
+            $this->Redirect();
+            # otherwise relocate properly
+            header("location: /directory/{$archived_item->parent_id}.{$item}s");
+            exit;
+        }
     }
-
     /**
     * @access via /ops/share/{folder|note|link}/(ID)/share/(0,1)?hash_sum
     * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function shareAction()
+    public function shareAction($suppress_redirect = 0)
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
@@ -561,17 +598,18 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_ins = new $item_class;
         # share the item
         $shared_item = $item_ins->share($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_share);
-        # invoke a message pipe line
-        $mp = new \core\utiles\messagePipe;
-        # indicate the success
-        $mp->write("One $item has been <b>".($is_share?"shared":"un-shared")."</b> successfully....");
-        # redirect if any redirection provided
-        $this->Redirect();
-        # otherwise relocate properly
-        header("location: /directory/{$shared_item->parent_id}.{$item}s");
-        exit;        
+        if(!$suppress_redirect) {
+            # invoke a message pipe line
+            $mp = new \core\utiles\messagePipe;
+            # indicate the success
+            $mp->write("One $item has been <b>".($is_share?"shared":"un-shared")."</b> successfully....");
+            # redirect if any redirection provided
+            $this->Redirect();
+            # otherwise relocate properly
+            header("location: /directory/{$shared_item->parent_id}.{$item}s");
+            exit;
+        }
     }
-
     /**
     * The \modules\opsModule\controllers\indexController::subscribeAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -579,7 +617,7 @@ class indexController extends \zinux\kernel\controller\baseController
     public function subscribeAction()
     {
         # validate the inputs
-        @\zinux\kernel\security\security::ArrayHashCheck($this->request->params, 
+        @\zinux\kernel\security\security::ArrayHashCheck($this->request->params,
             array(\core\db\models\user::GetInstance()->user_id, $this->request->GetIndexedParam(0), session_id()."subscribe"));
         try
         {
@@ -597,7 +635,6 @@ class indexController extends \zinux\kernel\controller\baseController
         header("location: /profile/{$this->request->GetIndexedParam(0)}");
         exit;
     }
-
     /**
     * The \modules\opsModule\controllers\indexController::unscribeAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -605,7 +642,7 @@ class indexController extends \zinux\kernel\controller\baseController
     public function unsubscribeAction()
     {
         # validate the inputs
-        @\zinux\kernel\security\security::ArrayHashCheck($this->request->params, 
+        @\zinux\kernel\security\security::ArrayHashCheck($this->request->params,
             array(\core\db\models\user::GetInstance()->user_id, $this->request->GetIndexedParam(0), session_id()."subscribe"));
         # unsubscribe the current user from target user
         \core\db\models\subscribe::unsubscribe($this->request->GetIndexedParam(0), \core\db\models\user::GetInstance()->user_id);
@@ -617,7 +654,6 @@ class indexController extends \zinux\kernel\controller\baseController
         header("location: /profile/{$this->request->GetIndexedParam(0)}");
         exit;
     }
-
     /**
     * The \modules\opsModule\controllers\indexController::gotoAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>

@@ -31,11 +31,14 @@ class directoryTree extends \stdClass
         if(!$is_owner) return;
         ?>
 <style>
+    #directory-tree-opt {margin: -10px auto 10px auto}
     #directory-tree-opt .btn{ zoom: 1; filter: alpha(opacity=80); opacity: 0.8; }
     #directory-tree-opt div.btn-group{ margin-right: 10px; }
     #directory-tree-opt .w60{ width: 60px; }
 </style>
-<div style="margin:10px auto 20px auto" id="directory-tree-opt">
+<form method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type)) ?>">
+    <input type="hidden" name="type" value="<?php echo $active_type ?>" />
+<div id="directory-tree-opt">
     <!-- Split button -->
     <div class="btn-group">
         <button type="button" class="btn btn-default" style="height: 34px"><input type="checkbox" class="input check-all"/></button>
@@ -65,9 +68,9 @@ class directoryTree extends \stdClass
           </div>
     </div>
     <div class="checked-opt btn-group hidden">
-        <button type="button" class="btn btn-default w60" title="Archive"><span class="glyphicon glyphicon-floppy-disk"></span></button>
-        <button type="button" class="btn btn-default w60" title="Toggle Share"><span class="glyphicon glyphicon-share-alt"></span></button>
-        <button type="button" class="btn btn-default w60" title="Delete"><span class="glyphicon glyphicon-trash"></span></button>
+        <button type="submit" class="btn btn-default w60" title="Archive" name="ops" value="archive"><span class="glyphicon glyphicon-floppy-disk"></span></button>
+        <button type="submit" class="btn btn-default w60" title="Toggle Share" name="ops" value="share"><span class="glyphicon glyphicon-share-alt"></span></button>
+        <button type="submit" class="btn btn-default w60" title="Delete" name="ops" value="delete"><span class="glyphicon glyphicon-trash"></span></button>
     </div>
 </div> <!--end  menu-->
 <div class="clearfix"></div>
@@ -171,7 +174,7 @@ class directoryTree extends \stdClass
 ?>
                 <tr class="<?php echo $type ?>">
                     <td>
-                        <?php if($is_owner) : ?><input class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" />
+                        <?php if($is_owner) : ?><input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $item->{"{$item->WhoAmI()}_id"},\zinux\kernel\security\security::GetHashString(array($item->WhoAmI(),  $item->{"{$item->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>"/>
                         <?php else: ?>&nbsp;                        
                         <?php endif; ?>
                     </td>
@@ -190,7 +193,9 @@ class directoryTree extends \stdClass
 ?>
             </tbody>
         </table>
-        <hr />
+    </div>
+</form>
+<hr />
 <?php
     }
     protected function plotJS($type, $parent_id, $is_owner) {
@@ -236,6 +241,7 @@ class directoryTree extends \stdClass
                 $("input[type='checkbox'].private-item").prop("checked", true);
                 window.update_menu_checkbox();
             });
+            window.update_menu_checkbox();
 <?php endif; ?>
         </script>
 <?php
@@ -261,12 +267,12 @@ class directoryTree extends \stdClass
         $this->plotJS($type, $parent_id, $is_owner);
     }
     public function plotFolders($collection, $parent_id, $is_owner) {
-        $this->plotItems("folders", $collection, $parent_id, $is_owner);
+        $this->plotItems("folder", $collection, $parent_id, $is_owner);
     }
     public function plotNotes($collection, $parent_id, $is_owner) {
-        $this->plotItems("notes", $collection, $parent_id, $is_owner);
+        $this->plotItems("note", $collection, $parent_id, $is_owner);
     }
     public function plotLinks($collection, $parent_id, $is_owner) {
-        $this->plotItems("links", $collection, $parent_id, $is_owner);
+        $this->plotItems("link", $collection, $parent_id, $is_owner);
     }
 }
