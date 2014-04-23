@@ -47,8 +47,10 @@ class indexController extends \zinux\kernel\controller\baseController
         $continue = $this->request->params["continue"];
         $counter = 0;
         switch($ops) {
+            case "trash":
+            case "remove":
+            case "restore":
             case "archive":
-            case "delete":
             case "share":
                 foreach ($items as $item)
                 {
@@ -65,8 +67,23 @@ class indexController extends \zinux\kernel\controller\baseController
                             $this->request->params[$params[$index]] = @!preg_match("&(.*)=(.*)&i", $params[$index + 1]) ? $params[++$index] : NULL;
                         }
                     }
+                    $action = $ops;
+                    switch ($ops) {
+                        case "trash":
+                            $this->request->params["trash"] = \core\db\models\item::DELETE_PUT_TARSH;
+                            goto __INIT_INVOKE;
+                        case "remove":
+                            $this->request->params["trash"] = \core\db\models\item::DELETE_PERIOD;
+                            goto __INIT_INVOKE;
+                        case "restore":
+                            $this->request->params["trash"] = \core\db\models\item::DELETE_RESTORE;
+                            goto __INIT_INVOKE;
+                        __INIT_INVOKE:
+                            $action = "delete";
+                            break;
+                    }
                     $this->request->GenerateIndexedParams();
-                    $this->{"{$ops}Action"}(1);
+                    $this->{"{$action}Action"}(1);
                     $counter++;
                 }
                 break;
@@ -74,7 +91,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 throw new \zinux\kernel\exceptions\invalideOperationException("Invalid operation `{$this->request->params["ops"]}`");
         }
         $mp = new \core\utiles\messagePipe;
-        $mp->write("#$counter $type".($counter>1?"s'":"'s")." status has been changed successfully!");
+        $mp->write("<b>#$counter $type".($counter>1?"s'":"'s")."</b> status has been changed <b>successfully</b>!");
         header("location: $continue");
         exit;
     }

@@ -1,8 +1,7 @@
-<!--
- The \modules\frameModule\views\view\e\trashesView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for '<b>\modules\frameModule\controllers\eController::trashesAction()</b>'<br />
-    Location: '<b>/var/www/toratan/src/modules/frameModule/views/view/e/trashesView.phtml</b>'
-</p>
+<ol class="breadcrumb">
+    <li class="active">Trashes</li>
+</ol>
+<?php
+    $dt = new modules\frameModule\models\directoryTree($this->request, modules\frameModule\models\directoryTree::TRASH);
+    $dt->{"plot{$this->request->type}"}($this->items, $this->pid, $this->is_owner);
+?>

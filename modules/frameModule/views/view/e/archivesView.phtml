@@ -1,8 +1,7 @@
-<!--
- The \modules\frameModule\views\view\e\archivesView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for '<b>\modules\frameModule\controllers\eController::archivesAction()</b>'<br />
-    Location: '<b>/var/www/toratan/src/modules/frameModule/views/view/e/archivesView.phtml</b>'
-</p>
+<ol class="breadcrumb">
+    <li class="active">Archives</li>
+</ol>
+<?php
+    $dt = new modules\frameModule\models\directoryTree($this->request, modules\frameModule\models\directoryTree::ARCHIVE);
+    $dt->{"plot{$this->request->type}"}($this->items, $this->pid, $this->is_owner);
+?>

@@ -31,7 +31,7 @@ class directoryTree extends \stdClass
         if(!$is_owner) return;
         ?>
 <style>
-    #directory-tree-opt {margin: -10px auto 10px auto}
+    #directory-tree-opt {margin: -10px auto 10px auto;}
     #directory-tree-opt .btn{ zoom: 1; filter: alpha(opacity=80); opacity: 0.8; }
     #directory-tree-opt div.btn-group{ margin-right: 10px; }
     #directory-tree-opt .w60{ width: 60px; }
@@ -39,7 +39,7 @@ class directoryTree extends \stdClass
 <form method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
     <input type="hidden" name="type" value="<?php echo $active_type ?>" />
     <input type="hidden" name="continue" value="<?php echo $this->request->GetURI() ?>" />
-<div id="directory-tree-opt">
+<div id="directory-tree-opt" class="btn-toolbar">
     <!-- Split button -->
     <div class="btn-group">
         <button type="button" class="btn btn-default" style="height: 34px"><input type="checkbox" class="input check-all"/></button>
@@ -48,15 +48,16 @@ class directoryTree extends \stdClass
             <span class="sr-only">Toggle Dropdown</span>
         </button>
       <ul class="dropdown-menu" role="menu">
-        <li><a href="#" class="check-all">All</a></li>
-        <li><a href="#" class="check-none">None</a></li>
+          <li><a href="#" class="check-all" onclick="return false;">All</a></li>
+        <li><a href="#" class="check-none" onclick="return false;">None</a></li>
         <li class="divider"></li>
-        <li><a href="#" class="check-public">Public</a></li>
-        <li><a href="#" class="check-private">Private</a></li>
+        <li><a href="#" class="check-public" onclick="return false;">Public</a></li>
+        <li><a href="#" class="check-private" onclick="return false;">Private</a></li>
       </ul>
     </div>
     <div class="unchecked-opt btn-group">
         <a href="<?php echo $this->request->GetURI(); ?>" class="btn btn-default w60"><span class="glyphicon glyphicon-refresh"></span></a>
+        <?php if($this->tree_type == self::REGULAR) : ?>
         <div class="btn-group">
             <button type="button" class="btn btn-default dropdown-toggle w60" data-toggle="dropdown" title="Create New Item">
               <span class="glyphicon glyphicon-plus"></span> <span class="caret"></span>
@@ -67,11 +68,39 @@ class directoryTree extends \stdClass
               <li title="Create A Link"><a href="#"><span class="inline glyphicon glyphicon-link"></span> Link</a></li>
             </ul>
           </div>
+        <?php endif; ?>
     </div>
     <div class="checked-opt btn-group hidden">
-        <button type="submit" class="btn btn-default w60" title="Archive" name="ops" value="archive"><span class="glyphicon glyphicon-floppy-disk"></span></button>
-        <button type="submit" class="btn btn-default w60" title="Toggle Share" name="ops" value="share"><span class="glyphicon glyphicon-share-alt"></span></button>
-        <button type="submit" class="btn btn-default w60" title="Delete" name="ops" value="delete"><span class="glyphicon glyphicon-trash"></span></button>
+<?php switch($this->tree_type):
+    case self::REGULAR: ?>
+            <button type="submit" class="btn btn-default w60" title="Archive" name="ops" value="archive"><span class="glyphicon glyphicon-save"></span></button>
+<?php goto __GENERIC; break;
+    case self::ARCHIVE: ?>
+            <button type="submit" class="btn btn-default w60" title="Un-archive" name="ops" value="archive"><span class="glyphicon glyphicon-open"></span></button>
+<?php goto __GENERIC; break;
+    case self::SHARED:
+__GENERIC: ?>
+            <button type="submit" class="btn btn-default w60" title="Toggle Share" name="ops" value="share"><span class="glyphicon glyphicon-share-alt"></span></button>
+            <button type="submit" class="btn btn-default w60" title="Delete" name="ops" value="trash"><span class="glyphicon glyphicon-trash"></span></button>
+<?php break;
+    case self::TRASH: ?>
+    </div>
+    <div class="btn-group checked-opt hidden">
+        <button type="submit" class="btn btn-success w60" title="Restore" name="ops" value="restore"><span class="glyphicon glyphicon-cloud-upload"></span></button>
+    </div>
+    <div class="btn-group checked-opt hidden">
+        <button type="submit" class="btn btn-danger w60" title="Restore" name="ops" value="remove"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+    <div class="btn-group pull-right" style="padding-top: 15px;" >
+        <a id="trash-detail-popover" data-container="body" data-toggle="popover" data-placement="left" data-content="<div style='text-align: justify;'>All items which have been labaled as trashed <b>will not</b> appear anywhere else; Though if they are marked as <u><i>archived</i></u> or <u><i>shared</i></u>. In order to make them available please <b>select and restore</b> them.</div>" data-original-title="" title="">
+          <span class="glyphicon glyphicon-exclamation-sign"></span>
+        </a>
+        <script>$(document).ready(function() {$('#trash-detail-popover').popover({ trigger: 'hover', html: true }); });</script>
+    </div>
+    <div>
+<?php break;
+    default: throw new \zinux\kernel\exceptions\invalideOperationException("Undefined tree type# `{$this->tree_type}`!"); ?>
+<?php endswitch; ?>
     </div>
 </div> <!--end  menu-->
 <div class="clearfix"></div>
@@ -145,9 +174,9 @@ class directoryTree extends \stdClass
         if($item->is_public)
             $si .= "<span class='glyphicon glyphicon-share-alt' title='Shared'></span>";
         if($item->is_trash)
-            $si .= "<span class='glyphicon glyphicon-trash' title='Deleted'></span> ";
+            $si .= "<span class='glyphicon glyphicon-trash' title='Deleted'></span>";
         if($item->is_archive)
-            $si .= "<span class='glyphicon glyphicon-floppy-disk' title='Archived'></span>";
+            $si .= " <span class='glyphicon glyphicon-save' title='Archived'></span>";
         if(!strlen($si)) {
             switch($item->WhoAmI()) {
                 case "note":
@@ -173,7 +202,7 @@ class directoryTree extends \stdClass
         $s .= ("&share=".($item->is_public?"0":"1"));
         $s .= ("&archive=".($item->is_archive?"0":"1"));
         $s .= ("&trash=".($item->is_trash?"0":"1"));
-        return "$s&";
+        return $s;
     }
     protected function plotTableRow(\core\db\models\item $item, $type, $parent_id, $is_owner) {
         if($item === NULL) {
@@ -257,6 +286,7 @@ class directoryTree extends \stdClass
     protected  function plotItems($type, $collection, $parent_id, $is_owner) {
         if($is_owner)
             $this->plotOptions($type, $parent_id, $is_owner);
+        $this->plotHeadTypes($type, $parent_id);
         if(!count($collection)) {
 ?>
         <hr />
@@ -265,7 +295,6 @@ class directoryTree extends \stdClass
 <?php
             return;
         }
-        $this->plotHeadTypes($type, $parent_id);
         $this->plotTableHeader();
         foreach($collection as $folder)
         {
