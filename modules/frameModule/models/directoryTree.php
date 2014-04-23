@@ -27,7 +27,8 @@ class directoryTree extends \stdClass
         $this->tree_type = $__tree_type;
         $this->post_script = "";
     }
-    protected function plotOptions($active_type, $pid) {
+    protected function plotOptions($active_type, $pid, $is_owner) {
+        if(!$is_owner) return;
         ?>
 <style>
     #directory-tree-opt .btn{ zoom: 1; filter: alpha(opacity=80); opacity: 0.8; }
@@ -37,23 +38,20 @@ class directoryTree extends \stdClass
 <div style="margin:10px auto 20px auto" id="directory-tree-opt">
     <!-- Split button -->
     <div class="btn-group">
-        <button type="button" class="btn btn-default" style="height: 34px"><input type="checkbox" class="input"/></button>
+        <button type="button" class="btn btn-default" style="height: 34px"><input type="checkbox" class="input check-all"/></button>
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px">
             <span class="caret"></span>
             <span class="sr-only">Toggle Dropdown</span>
         </button>
       <ul class="dropdown-menu" role="menu">
-        <li><a href="#">All</a></li>
-        <li><a href="#">None</a></li>
+        <li><a href="#" class="check-all">All</a></li>
+        <li><a href="#" class="check-none">None</a></li>
         <li class="divider"></li>
-        <li><a href="#">Public</a></li>
-        <li><a href="#">Private</a></li>
-        <li class="divider"></li>
-        <li><a href="#">Starred</a></li>
-        <li><a href="#">Unstarred</a></li>
+        <li><a href="#" class="check-public">Public</a></li>
+        <li><a href="#" class="check-private">Private</a></li>
       </ul>
     </div>
-    <div class="btn-group">
+    <div class="unchecked-opt btn-group">
         <a href="<?php echo $this->request->GetURI(); ?>" class="btn btn-default w60"><span class="glyphicon glyphicon-refresh"></span></a>
         <div class="btn-group">
             <button type="button" class="btn btn-default dropdown-toggle w60" data-toggle="dropdown" title="Create New Item">
@@ -66,7 +64,7 @@ class directoryTree extends \stdClass
             </ul>
           </div>
     </div>
-    <div class="btn-group hidden">
+    <div class="checked-opt btn-group hidden">
         <button type="button" class="btn btn-default w60" title="Archive"><span class="glyphicon glyphicon-floppy-disk"></span></button>
         <button type="button" class="btn btn-default w60" title="Toggle Share"><span class="glyphicon glyphicon-share-alt"></span></button>
         <button type="button" class="btn btn-default w60" title="Delete"><span class="glyphicon glyphicon-trash"></span></button>
@@ -160,6 +158,12 @@ class directoryTree extends \stdClass
         }
         return $si;
     }
+    protected function getCheckBoxClasses(\core\db\models\item $item) {
+        $cbc = "item-checkbox";
+        if($item->is_public) $cbc .= " public-item";
+        if(!$item->is_public) $cbc .= " private-item";
+        return $cbc;
+    }
     protected function plotTableRow(\core\db\models\item $item, $type, $parent_id, $is_owner) {
         if($item === NULL) {
             throw new \zinux\kernel\exceptions\invalideArgumentException("The item cannot be null...");
@@ -167,7 +171,9 @@ class directoryTree extends \stdClass
 ?>
                 <tr class="<?php echo $type ?>">
                     <td>
-                        <input class="input item-checkbox" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" />
+                        <?php if($is_owner) : ?><input class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" />
+                        <?php else: ?>&nbsp;                        
+                        <?php endif; ?>
                     </td>
                     <td>
                         <?php echo $this->getStatusIcons($item) ?>
@@ -186,19 +192,57 @@ class directoryTree extends \stdClass
         </table>
         <hr />
 <?php
+    }
+    protected function plotJS($type, $parent_id, $is_owner) {
+?>
+        <script type="text/javascript">
+<?php
         if(isset($this->post_script) &&strlen($this->post_script)) :
             if(!is_string($this->post_script))
                 throw new \zinux\kernel\exceptions\invalideArgumentException("Expecting the `post script` be a string!");
 ?>
-        <script type="text/javascript">
             $(document).ready(function(){<?php echo $this->post_script; ?>});
+<?php endif; if($is_owner): ?>
+            window.update_menu_checkbox = function() {
+                var all_checked = ($("input[type='checkbox'].item-checkbox:checked").length === $("input[type='checkbox'].item-checkbox").length);
+                if($("input[type='checkbox'].item-checkbox:checked").length === 0) {
+                    $("input[type='checkbox'].check-all").prop("indeterminate", false);
+                    $("input[type='checkbox'].check-all").prop("checked", false);
+                    $(".checked-opt").addClass("hidden");
+                    $(".unchecked-opt").removeClass("hidden");
+                } else {
+                    $("input[type='checkbox'].check-all").prop("indeterminate", !all_checked);
+                    $("input[type='checkbox'].check-all").prop("checked", all_checked);
+                    $(".checked-opt").removeClass("hidden");
+                    $(".unchecked-opt").addClass("hidden");
+                }
+            };
+            $("input[type='checkbox'].item-checkbox").click(window.update_menu_checkbox);
+            $(".check-all").click(function() {
+                $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
+                window.update_menu_checkbox();
+            });
+            $(".check-none").click(function() {
+                $("input[type='checkbox'].item-checkbox").prop("checked", false);
+                window.update_menu_checkbox();
+            });
+            $(".check-public").click(function() {
+                $("input[type='checkbox'].public-item").prop("checked", true);
+                $("input[type='checkbox'].private-item").prop("checked", false);
+                window.update_menu_checkbox();
+            });
+            $(".check-private").click(function() {
+                $("input[type='checkbox'].public-item").prop("checked", false);
+                $("input[type='checkbox'].private-item").prop("checked", true);
+                window.update_menu_checkbox();
+            });
+<?php endif; ?>
         </script>
 <?php
-        endif;
     }
     protected  function plotItems($type, $collection, $parent_id, $is_owner) {
         if($is_owner)
-            $this->plotOptions($type, $parent_id);
+            $this->plotOptions($type, $parent_id, $is_owner);
         if(!count($collection)) {
 ?>
         <hr />
@@ -214,6 +258,7 @@ class directoryTree extends \stdClass
             $this->plotTableRow($folder, $type, $parent_id, $is_owner);
         }
         $this->plotTableFooter();
+        $this->plotJS($type, $parent_id, $is_owner);
     }
     public function plotFolders($collection, $parent_id, $is_owner) {
         $this->plotItems("folders", $collection, $parent_id, $is_owner);
