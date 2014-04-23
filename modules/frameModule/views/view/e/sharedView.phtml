@@ -1,7 +1,17 @@
+<div id="explorer-temlpate" style='position: fixed;background-color: #FFF;width: 99.7%;z-index: 10000;top:0;left:0'>
 <ol class="breadcrumb">
     <li class="active">Shared</li>
 </ol>
 <?php
+    $type = $this->request->type;
+    $parent_id = $this->pid;
+    $is_owner = $this->is_owner;
     $dt = new modules\frameModule\models\directoryTree($this->request, modules\frameModule\models\directoryTree::SHARED);
-    $dt->{"plot{$this->request->type}"}($this->items, $this->pid, $this->is_owner);
+    $dt->plotOptions($type, $parent_id, $is_owner);
+    $dt->plotHeadTypes($type, $parent_id);
+    $dt->plotJS($type, $parent_id, $is_owner);
+?>
+</div>
+<?php
+    $dt->{"plot{$type}"}($this->items, $parent_id, $is_owner);
 ?>

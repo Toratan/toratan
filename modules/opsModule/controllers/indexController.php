@@ -15,14 +15,10 @@ class indexController extends \zinux\kernel\controller\baseController
             $this->layout->SuppressLayout ();
             unset($this->request->params["suppress_layout"]);
         }
-//        \zinux\kernel\utilities\debug::_var($this->request->params,1);
         if(array_key_exists("suppress_redirection", $this->request->params))
         {
             $this->suppress_redirect = 1;
         }
-        sleep(3);
-//        header('HTTP/1.1 500');
-//        exit;
     }
     /**
      * Redirects header to pointed URL
