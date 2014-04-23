@@ -36,8 +36,9 @@ class directoryTree extends \stdClass
     #directory-tree-opt div.btn-group{ margin-right: 10px; }
     #directory-tree-opt .w60{ width: 60px; }
 </style>
-<form method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type)) ?>">
+<form method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
     <input type="hidden" name="type" value="<?php echo $active_type ?>" />
+    <input type="hidden" name="continue" value="<?php echo $this->request->GetURI() ?>" />
 <div id="directory-tree-opt">
     <!-- Split button -->
     <div class="btn-group">
@@ -86,16 +87,16 @@ class directoryTree extends \stdClass
             switch($this->tree_type)
             {
                 case self::TRASH:
-                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/trashes.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}s") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/trashes.$key'>$value</a></li>";
                     break;
                 case self::ARCHIVE:
-                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/archives.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}s") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/archives.$key'>$value</a></li>";
                     break;
                 case self::SHARED:
-                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/shared.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}s") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/shared.$key'>$value</a></li>";
                     break;
                 default:
-                    echo "<li ".(strtoupper($active_type) == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/directory/$pid.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}s") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/directory/$pid.$key'>$value</a></li>";
                     break;
             }
         }
@@ -167,6 +168,13 @@ class directoryTree extends \stdClass
         if(!$item->is_public) $cbc .= " private-item";
         return $cbc;
     }
+    protected  function getStatusString(\core\db\models\item $item) {
+        $s = "";
+        $s .= ("&share=".($item->is_public?"0":"1"));
+        $s .= ("&archive=".($item->is_archive?"0":"1"));
+        $s .= ("&trash=".($item->is_trash?"0":"1"));
+        return "$s&";
+    }
     protected function plotTableRow(\core\db\models\item $item, $type, $parent_id, $is_owner) {
         if($item === NULL) {
             throw new \zinux\kernel\exceptions\invalideArgumentException("The item cannot be null...");
@@ -174,7 +182,7 @@ class directoryTree extends \stdClass
 ?>
                 <tr class="<?php echo $type ?>">
                     <td>
-                        <?php if($is_owner) : ?><input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $item->{"{$item->WhoAmI()}_id"},\zinux\kernel\security\security::GetHashString(array($item->WhoAmI(),  $item->{"{$item->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>"/>
+                        <?php if($is_owner) : ?><input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $item->{"{$item->WhoAmI()}_id"}, $this->getStatusString($item), \zinux\kernel\security\security::GetHashString(array($item->WhoAmI(),  $item->{"{$item->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>"/>
                         <?php else: ?>&nbsp;                        
                         <?php endif; ?>
                     </td>

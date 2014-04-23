@@ -38,12 +38,14 @@ class indexController extends \zinux\kernel\controller\baseController
     public function IndexAction()
     {
         \zinux\kernel\security\security::IsSecure($this->request->params,
-                array("type", "ops", "items"),
+                array("type", "ops", "items", "continue"),
                 array('is_array' => $this->request->params["items"]));
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params["type"]));
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params["type"], $this->request->params["continue"]));
         $ops = $this->request->params["ops"];
         $items = $this->request->params["items"];
         $type = $this->request->params["type"];
+        $continue = $this->request->params["continue"];
+        $counter = 0;
         switch($ops) {
             case "archive":
             case "delete":
@@ -65,14 +67,16 @@ class indexController extends \zinux\kernel\controller\baseController
                     }
                     $this->request->GenerateIndexedParams();
                     $this->{"{$ops}Action"}(1);
+                    $counter++;
                 }
-                \zinux\kernel\utilities\debug::_var($this->request->params);
                 break;
             default:
                 throw new \zinux\kernel\exceptions\invalideOperationException("Invalid operation `{$this->request->params["ops"]}`");
         }
-        die("OK2");
-        throw new \zinux\kernel\exceptions\invalideOperationException;
+        $mp = new \core\utiles\messagePipe;
+        $mp->write("#$counter $type".($counter>1?"s'":"'s")." status has been changed successfully!");
+        header("location: $continue");
+        exit;
     }
     /**
     * Creates new items
