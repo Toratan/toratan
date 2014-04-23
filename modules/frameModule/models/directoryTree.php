@@ -35,6 +35,7 @@ class directoryTree extends \stdClass
     #directory-tree-opt .btn{ zoom: 1; filter: alpha(opacity=80); opacity: 0.8; }
     #directory-tree-opt div.btn-group{ margin-right: 10px; }
     #directory-tree-opt .w60{ width: 60px; }
+    #explorer-table { margin-top: 130px; }
 </style>
 <form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
     <input type="hidden" name="type" value="<?php echo $active_type ?>" />
@@ -146,7 +147,7 @@ __GENERIC: ?>
     }
     protected function plotTableHeader() {
 ?>
-    <div id="explorer-table" class="table-responsive" style="margin-top: 130px;">
+    <div id="explorer-table" class="table-responsive">
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -350,9 +351,11 @@ __GENERIC: ?>
     protected  function plotItems($type, $collection, $parent_id, $is_owner) {
         if(!count($collection)) {
 ?>
-        <hr />
-        <blockquote class="text-center text-muted" style="border-right: 5px #EEEEEE solid">No item found....</blockquote>
-        <hr />
+        <div id="explorer-table">
+            <hr />
+            <blockquote class="text-center text-muted" style="border-right: 5px #EEEEEE solid">No item found....</blockquote>
+            <hr />
+        </div>
 <?php
             return;
         }

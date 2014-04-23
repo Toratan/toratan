@@ -1,4 +1,4 @@
-<div id="new-folder-ui" style="width: 50%">
+<div id="new-folder-ui" style="width: 100%;margin: 0;padding: 0">
     <ol class='text-danger' style="list-style-image: url('/access/img/bullet.png');padding:0;margin-left:15px;">
     <?php foreach ($this->errors as $error) : ?>
         <li><?php echo $error ?></li>
@@ -8,11 +8,11 @@
     <?php if(false && isset($this->request->params["continue"])) : ?>
         <input type="hidden" name="continue" value="<?php echo $this->request->params["continue"]; ?>" />
     <?php endif; ?>
-        <div class="input-group">
-          <input type="text" class="form-control" name="folder_title" maxlength="250" placeholder="Folder's title" value="<?php echo isset($this->values['folder_title'])?$this->values['folder_title']:"" ?>">
-          <span class="input-group-btn">
-          <button type="submit" class="btn btn-primary" >Create</button>
-          </span>
+        <div class="input-group col-lg-6 col-md-6 col-sm-12 col-xm-12" style="padding: 0;margin: 0">
+            <input type="text" class="form-control" name="folder_title" maxlength="250" placeholder="Folder's title" value="<?php echo isset($this->values['folder_title'])?$this->values['folder_title']:"" ?>">
+            <span class="input-group-btn">
+            <button type="submit" class="btn btn-primary" >Create</button>
+            </span>
         </div><!-- /input-group -->
     </form>
     <script>
@@ -28,3 +28,4 @@
         });
     </script>
 </div>
+<div class="clearfix"></div>
