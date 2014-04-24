@@ -182,7 +182,7 @@ __GENERIC: ?>
             <thead>
                 <tr>
                     <th style="width: 0.1%"></th>
-                    <th style="width: 0.1%;">Status&nbsp;</th>
+                    <th style="width: 8%;overflow: hidden">Status <span class="ui-icon fs-toggle"></span></th>
                     <th style="width: 70%;">Name <span class="ui-icon fs-toggle"></span></th>
                     <th id="table-header-updated">Updated at <span class="ui-icon fs-toggle"></span></th>
                 </tr>
@@ -213,24 +213,25 @@ __GENERIC: ?>
     }
     protected function getStatusIcons(\core\db\models\item $item) {
         $si = "";
+        switch($item->WhoAmI()) {
+            case "note":
+                $si = "<span class='glyphicon glyphicon-file' title='Note'></span> ";
+                break;
+            case "link":
+                $si = "<span class='glyphicon glyphicon-link' title='Link'></span> ";
+                break;
+            case "folder":
+                $si = "<span class='glyphicon glyphicon-folder-close' title='Folder'></span> ";
+                break;
+            default:
+                trigger_error("Undefined `{$item->WhoAmI()}` item ", E_USER_ERROR);
+        }
         if($item->is_public)
             $si .= "<span class='glyphicon glyphicon-share-alt' title='Shared'></span>";
         if($item->is_trash)
             $si .= "<span class='glyphicon glyphicon-trash' title='Deleted'></span>";
         if($item->is_archive)
             $si .= " <span class='glyphicon glyphicon-save' title='Archived'></span>";
-        if(!strlen($si)) {
-            switch($item->WhoAmI()) {
-                case "note":
-                    return "<span class='glyphicon glyphicon-file' title='Note'></span>";
-                case "link":
-                    return "<span class='glyphicon glyphicon-link' title='Link'></span>";
-                case "folder":
-                    return "<span class='glyphicon glyphicon-folder-close' title='Folder'></span>";
-                default:
-                    trigger_error("Undefined `{$item->WhoAmI()}` item ", E_USER_ERROR);
-            }
-        }
         return $si;
     }
     protected function getCheckBoxClasses(\core\db\models\item $item) {
@@ -238,6 +239,9 @@ __GENERIC: ?>
         if($item->is_public) $cbc .= " public-item";
         if(!$item->is_public) $cbc .= " private-item";
         return $cbc;
+    }
+    protected function getStatusBinary(\core\db\models\item $item) {
+        return preg_replace("#[a-z&=]+#", "", $this->getStatusString($item));
     }
     protected  function getStatusString(\core\db\models\item $item) {
         $s = "";
@@ -254,13 +258,13 @@ __GENERIC: ?>
         <tr class="<?php echo $type ?>">
             <td>
                 <?php if($is_owner) : ?><input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $item->{"{$item->WhoAmI()}_id"}, $this->getStatusString($item), \zinux\kernel\security\security::GetHashString(array($item->WhoAmI(),  $item->{"{$item->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>" onclick="window.update_menu_checkbox();"/><?php else: ?>&nbsp;<?php endif; ?></td>
-            <td>
+            <td class="status" status="<?php echo $this->getStatusBinary($item) ?>">
                 <?php echo $this->getStatusIcons($item) ?>
             </td>
             <td>
                 <a href='<?php echo $this->getNavigationLink($item); ?>' target='<?php echo $this->getNavigationTarget($item) ?>' onclick='window.top.document.title = "/ <?php echo $item->{"{$item->WhoAmI()}_title"}; ?>";'><?php echo $item->{"{$item->WhoAmI()}_title"}; ?></a>
             </td>
-            <td id="<?php echo $type, '-', $item->{"{$item->WhoAmI()}_id"}?>-updated"></td>
+            <td class="updated-at" id="<?php echo $type, '-', $item->{"{$item->WhoAmI()}_id"}?>-updated" origin-date="<?php echo $item->updated_at?>"></td>
         </tr>
 <?php
         $this->post_script .= "$(\"table tbody tr.$type td#$type-{$item->{"{$item->WhoAmI()}_id"}}-updated\").html(moment(moment('$item->updated_at').format('lll')).fromNow()).attr('title', moment('$item->updated_at').format('lll'));";
@@ -368,7 +372,7 @@ __GENERIC: ?>
         </script>
 <?php
     }
-    protected function plotJSTime() {
+    protected function plotTableJS() {
         if(isset($this->post_script) && strlen($this->post_script)) :
             if(!is_string($this->post_script))
                 throw new \zinux\kernel\exceptions\invalideArgumentException("Expecting the `post script` be a string!");
@@ -377,9 +381,20 @@ __GENERIC: ?>
             $(document).ready(function(){<?php echo $this->post_script; ?>
                 $('table.table').tablesorter({
                     sortList: [[2,0]],
+                    sortForce: [[1,1]],
+                    textExtraction: function(node) {
+                        var txt = $(node).text();
+                        if($(node).hasClass('updated-at')) {
+                            txt = new Date($(node).attr('origin-date')).getTime();
+                        }
+                        if($(node).hasClass('status')) {
+                            txt = $(node).attr('status') + $(node).next("td").text().trim();
+                            console.log(txt);
+                        }
+                        return txt;
+                    },
                     headers:{
-                        0: { sorter: false },
-                        1:{ sorter: false }
+                        0: { sorter: false }
                     }
                 });
             });
@@ -403,7 +418,7 @@ __GENERIC: ?>
             $this->plotTableRow($folder, $type, $parent_id, $is_owner);
         }
         $this->plotTableFooter();
-        $this->plotJSTime();
+        $this->plotTableJS();
     }
     public function plotFolders($collection, $parent_id, $is_owner) {
         $this->plotItems("folder", $collection, $parent_id, $is_owner);
