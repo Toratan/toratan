@@ -53,6 +53,9 @@
             default:
         }
     });
+    window.reset_ajax_placeholder();
+    window.update_menu_checkbox();
+<?php endif; ?>
     window.ajax_start = function() {
         $("#ajax-placeholder *").prop("readonly", true);
         $("#ajax-loader-img").removeClass("hidden");
@@ -89,7 +92,4 @@
     $(window).ajaxStop(window.ajax_stop);
     $(window).ajaxError(window.ajax_error);
     $(window).ajaxSuccess(window.ajax_success);
-    window.reset_ajax_placeholder();
-    window.update_menu_checkbox();
-<?php endif; ?>
 </script>
