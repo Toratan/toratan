@@ -78,27 +78,6 @@ __GENERIC: ?>
     </div>
 </div> <!--end  menu-->
 <div class="clearfix"></div>
-<?php 
-        $mp = new \core\utiles\messagePipe();
-        $check = $mp->hasFlow();
-        $msgs = "";
-        if($check) $msgs = "<ol class='text-info' style='list-style-image: url(\"/access/img/bullet.png\");padding:0;margin-left:15px;'>";
-        while(($msg = $mp->read())) $msgs .= "<li>$msg</li>";
-        if($check) $msg = "</ol>";
-        if($check) :
-?>
-<div id="ops-container-info">
-    <script>
-        $(document).ready(function(){
-            setTimeout(function() {
-                window.top.open_infoModal('<?php echo addslashes($msgs) ?>', -3200);
-            }, 150);
-        });
-    </script>
-</div>
-<?php
-        endif;
-?>
 <div id="ajax-placeholder" style="margin: 0;">
 </div>
 <div class="clearfix"></div>
