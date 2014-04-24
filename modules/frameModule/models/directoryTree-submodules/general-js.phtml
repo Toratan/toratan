@@ -1,95 +1,110 @@
 <script type="text/javascript">
-<?php if($is_owner): ?>
-    window.update_menu_checkbox = function() {
-        var all_checked = ($("input[type='checkbox'].item-checkbox:checked").length === $("input[type='checkbox'].item-checkbox").length);
-        if($("input[type='checkbox'].item-checkbox:checked").length === 0) {
-            $("input[type='checkbox'].check-all").prop("indeterminate", false);
-            $("input[type='checkbox'].check-all").prop("checked", false);
-            $(".checked-opt").addClass("hidden");
-            $(".unchecked-opt").removeClass("hidden");
-        } else {
-            $("input[type='checkbox'].check-all").prop("indeterminate", !all_checked);
-            $("input[type='checkbox'].check-all").prop("checked", all_checked);
-            $(".checked-opt").removeClass("hidden");
-            $(".unchecked-opt").addClass("hidden");
-            if($("input[type='checkbox'].item-checkbox:checked").length === 1)
-                $(".checked-opt.checked-opt-unique").removeClass("hidden");
-            else
-                $(".checked-opt.checked-opt-unique").addClass("hidden");
-        }
-    };
-    window.reset_ajax_placeholder = function() { $("#ajax-placeholder").slideUp(function() { $(this).html("").hide().css("margin", "0px"); }); $("#explorer-table").animate({"margin-top": "130"});};
-    $(".check-all").click(function() {
-        $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
+    $(document).ready(function(){
+    <?php if($is_owner): ?>
+        window.update_menu_checkbox = function() {
+            var all_checked = ($("input[type='checkbox'].item-checkbox:checked").length === $("input[type='checkbox'].item-checkbox").length);
+            if($("input[type='checkbox'].item-checkbox:checked").length === 0) {
+                $("input[type='checkbox'].check-all").prop("indeterminate", false);
+                $("input[type='checkbox'].check-all").prop("checked", false);
+                $(".checked-opt").addClass("hidden");
+                $(".unchecked-opt").removeClass("hidden");
+            } else {
+                $("input[type='checkbox'].check-all").prop("indeterminate", !all_checked);
+                $("input[type='checkbox'].check-all").prop("checked", all_checked);
+                $(".checked-opt").removeClass("hidden");
+                $(".unchecked-opt").addClass("hidden");
+                if($("input[type='checkbox'].item-checkbox:checked").length === 1)
+                    $(".checked-opt.checked-opt-unique").removeClass("hidden");
+                else
+                    $(".checked-opt.checked-opt-unique").addClass("hidden");
+            }
+        };
+        window.reset_ajax_placeholder = function() { $("#ajax-placeholder").slideUp(function() { $(this).html("").hide().css("margin", "0px"); }); $("#explorer-table").animate({"margin-top": "130"});};
+        $(".check-all").click(function() {
+            $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
+            window.update_menu_checkbox();
+        });
+        $(".check-none").click(function() {
+            $("input[type='checkbox'].item-checkbox").prop("checked", false);
+            window.update_menu_checkbox();
+        });
+        $(".check-public").click(function() {
+            $("input[type='checkbox'].public-item").prop("checked", true);
+            $("input[type='checkbox'].private-item").prop("checked", false);
+            window.update_menu_checkbox();
+        });
+        $(".check-private").click(function() {
+            $("input[type='checkbox'].public-item").prop("checked", false);
+            $("input[type='checkbox'].private-item").prop("checked", true);
+            window.update_menu_checkbox();
+        });
+        $("a.new-item").click(function(e){
+            switch($(this).attr("data-tag")) {
+                case "folder":
+                case "link":
+                    e.preventDefault();
+                    window.reset_ajax_placeholder();
+                    // we need this delay to changes in `window.reset_ajax_placeholder()` have time to get applied
+                    setTimeout(function($this) {
+                        $.ajax({
+                            url: $($this).attr('href').split("#!")[1]+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
+                        });
+                    }, 400, this);
+                    break;
+                default:
+            }
+        });
+        window.reset_ajax_placeholder();
         window.update_menu_checkbox();
-    });
-    $(".check-none").click(function() {
-        $("input[type='checkbox'].item-checkbox").prop("checked", false);
-        window.update_menu_checkbox();
-    });
-    $(".check-public").click(function() {
-        $("input[type='checkbox'].public-item").prop("checked", true);
-        $("input[type='checkbox'].private-item").prop("checked", false);
-        window.update_menu_checkbox();
-    });
-    $(".check-private").click(function() {
-        $("input[type='checkbox'].public-item").prop("checked", false);
-        $("input[type='checkbox'].private-item").prop("checked", true);
-        window.update_menu_checkbox();
-    });
-    $("a.new-item").click(function(e){
-        switch($(this).attr("data-tag")) {
-            case "folder":
-            case "link":
-                e.preventDefault();
-                window.reset_ajax_placeholder();
-                // we need this delay to changes in `window.reset_ajax_placeholder()` have time to get applied
-                setTimeout(function($this) {
-                    $.ajax({
-                        url: $($this).attr('href').split("#!")[1]+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
-                    });
-                }, 400, this);
-                break;
-            default:
-        }
-    });
-    window.reset_ajax_placeholder();
-    window.update_menu_checkbox();
+    <?php endif; ?>
+        window.ajax_start = function() {
+            $("#ajax-placeholder *").prop("readonly", true);
+            $("#ajax-loader-img").removeClass("hidden");
+        };
+        window.ajax_stop = function() {
+            $("#ajax-loader-img").addClass("hidden");
+        };
+        window.ajax_error = function(){
+            $("#ajax-placeholder *").prop("readonly", false).first().focus();
+        };
+        window.ajax_success = function( event, xhr, settings ) {
+            console.log("ok from setup with data ");
+            if(typeof(xhr.responseText) === "undefined" || xhr.responseText.length === 0) window.reset_ajax_placeholder();
+            else {
+                $("#explorer-table").animate({"margin-top": "193"}, 'slow');
+                $("#ajax-placeholder")
+                    .hide()
+                    .html(xhr.responseText + "<small><a href='#' onclick='window.reset_ajax_placeholder();return false;'>Close</a></small>")
+                    .css("margin", "-10px auto  10px auto")
+                    .slideDown('slow');
+                setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
+            }
+        };
+        window.apply_change = function(apply_type, data) {
+            switch(apply_type) {
+                case "name-editted":
+                    $("tr td.item-name-selected").children("a").html(data);
+                    break;
+                default:
+                    throw "Undefined `"+apply_type+"`!";
+            }
+        };
+        $(window).ajaxStart(window.ajax_start);
+        $(window).ajaxStop(window.ajax_stop);
+        $(window).ajaxError(window.ajax_error);
+        $(window).ajaxSuccess(window.ajax_success);
+<?php 
+        $mp = new \core\utiles\messagePipe();
+        $check = $mp->hasFlow();
+        $msgs = "";
+        if($check) $msgs = "<ol class='text-info' style='list-style-image: url(\"/access/img/bullet.png\");padding:0;margin-left:15px;'>";
+        while(($msg = $mp->read())) $msgs .= "<li>$msg</li>";
+        if($check) $msg = "</ol>";
+        if($check) :
+?>
+        setTimeout(function() {
+            window.top.open_infoModal('<?php echo addslashes($msgs) ?>', 2700);
+        }, 150);
 <?php endif; ?>
-    window.ajax_start = function() {
-        $("#ajax-placeholder *").prop("readonly", true);
-        $("#ajax-loader-img").removeClass("hidden");
-    };
-    window.ajax_stop = function() {
-        $("#ajax-loader-img").addClass("hidden");
-    };
-    window.ajax_error = function(){
-        $("#ajax-placeholder *").prop("readonly", false).first().focus();
-    };
-    window.ajax_success = function( event, xhr, settings ) {
-        console.log("ok from setup with data ");
-        if(typeof(xhr.responseText) === "undefined" || xhr.responseText.length === 0) window.reset_ajax_placeholder();
-        else {
-            $("#explorer-table").animate({"margin-top": "193"}, 'slow');
-            $("#ajax-placeholder")
-                .hide()
-                .html(xhr.responseText + "<small><a href='#' onclick='window.reset_ajax_placeholder();return false;'>Close</a></small>")
-                .css("margin", "-10px auto  10px auto")
-                .slideDown('slow');
-            setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
-        }
-    };
-    window.apply_change = function(apply_type, data) {
-        switch(apply_type) {
-            case "name-editted":
-                $("tr td.item-name-selected").children("a").html(data);
-                break;
-            default:
-                throw "Undefined `"+apply_type+"`!";
-        }
-    };
-    $(window).ajaxStart(window.ajax_start);
-    $(window).ajaxStop(window.ajax_stop);
-    $(window).ajaxError(window.ajax_error);
-    $(window).ajaxSuccess(window.ajax_success);
+    });
 </script>
