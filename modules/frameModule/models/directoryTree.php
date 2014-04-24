@@ -124,21 +124,24 @@ __GENERIC: ?>
     <div class="visible-xs clearfix"></div>
     <div style="padding: 0% 0 1% 0;" id="directory-tree-headtypes">
         <ul class="nav nav-tabs" style="font-weight: 900;font-variant: small-caps"><?php
-        foreach(array("folders" => "Folders", "notes" => "Notes", "links" => "Links") as $key => $value)
+        foreach(array(
+                "folders" => "<span class='glyphicon glyphicon-folder-".(strtoupper("{$active_type}") == "FOLDERS"?"open":"close")."'></span>", 
+                "notes" => "<span class='glyphicon glyphicon-file'></span>", 
+                "links" => "<span class='glyphicon glyphicon-link'></span>") as $key => $value)
         {
             switch($this->tree_type)
             {
                 case self::TRASH:
-                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/trashes.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/frame/e/trashes.$key'>$value</a></li>";
                     break;
                 case self::ARCHIVE:
-                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/archives.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/frame/e/archives.$key'>$value</a></li>";
                     break;
                 case self::SHARED:
-                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/shared.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/frame/e/shared.$key'>$value</a></li>";
                     break;
                 default:
-                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($value)?"class='active'":"")."><a class='table-nav-link' href='/frame/e/directory/$pid.$key'>$value</a></li>";
+                    echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/frame/e/directory/$pid.$key'>$value</a></li>";
                     break;
             }
         }
