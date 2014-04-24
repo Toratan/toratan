@@ -1,21 +1,33 @@
+<script src="/access/js/moment.min.js"></script>
+<script src="/access/js/jquery.tablesorter.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){<?php echo $this->post_script; ?>
-        $('table.table').tablesorter({
-            sortList: [[2,0]],
-            textExtraction: function(node) {
-                var txt = $(node).text();
-                if($(node).hasClass('updated-at')) {
-                    txt = new Date($(node).attr('origin-date')).getTime();
-                }
-                if($(node).hasClass('status')) {
-                    txt = $(node).attr('status') + $(node).next("td").text().trim();
-                }
-                return txt;
-            },
-            headers:{
-                0: { sorter: false }
+        window.sort_table = function() {
+            var defaultHeadIndex = 2;
+            var defaultHeadOrder = 0;
+            var $activeHead = 'table thead tr th.headerSortDown, table thead tr th.headerSortUp';
+            if($($activeHead).length !== 0) {
+                defaultHeadIndex = $($activeHead).index();
+                defaultHeadOrder = $($activeHead).hasClass('headerSortDown') ? 0 : 1;
             }
-        });
+            console.log();
+            $('table.table').tablesorter({
+                sortList: [[defaultHeadIndex, defaultHeadOrder]],
+                textExtraction: function(node) {
+                    var txt = $(node).text();
+                    if($(node).hasClass('updated-at')) {
+                        txt = new Date($(node).attr('origin-date')).getTime();
+                    }
+                    if($(node).hasClass('status')) {
+                        txt = $(node).attr('status') + $(node).next("td").text().trim();
+                    }
+                    return txt;
+                },
+                headers:{
+                    0: { sorter: false }
+                }
+            });
+        };
         $.propHooks.checked = {
             set: function(elem, value, name) {
               var ret = (elem[ name ] = value);
@@ -49,5 +61,6 @@
                 $(this).parent().parent().removeClass("item-checked");
             }
         });
+        window.sort_table();
     });
 </script>
