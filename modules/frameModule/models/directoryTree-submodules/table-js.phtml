@@ -10,7 +10,6 @@
                 defaultHeadIndex = $($activeHead).index();
                 defaultHeadOrder = $($activeHead).hasClass('headerSortDown') ? 0 : 1;
             }
-            console.log();
             $('table.table').tablesorter({
                 sortList: [[defaultHeadIndex, defaultHeadOrder]],
                 textExtraction: function(node) {
@@ -38,9 +37,33 @@
         $("button[name='ops']").click(function(e){
             if($(this).attr('value') === 'edit') return;
             e.preventDefault();
-            $('form#opt-form')
-                    .prepend($("<input>").attr("type", "hidden").attr("name", "ops").val($(this).attr('value')))
-                    .submit();
+            $('form#opt-form').prepend($("<input>").attr("type", "hidden").attr("name", "ops").val($(this).attr('value')));
+            var ops = $(this).attr('value');
+            $.ajax({
+                type: $('form#opt-form').attr('method'),
+                url: $('form#opt-form').attr('action'),
+                data: $('form#opt-form').serialize()+"&ajax=1",
+                success: function(data) {
+                    // unbind the success method to ignore the general result output
+                    $(window).unbind('ajaxSuccess');
+                    window.top.open_infoModal(data, 2000);
+                    switch(String(ops).toLowerCase()) {
+                        case "share":
+                            window.location = '<?php echo $this->request->getURI(); ?>';
+                            return;
+                        case "remove":
+                        case "restore":
+                        case "trash":
+                        case "archive":
+                            window.apply_change(window.APPLY_REMOVE);
+                            break;
+                        default:
+                            throw "Undefined operation `"+ops+"`!";
+                    }
+                    // set a timeout(50ms) for re-binding the ajax success method
+                    setTimeout(function() { $(window).ajaxSuccess(window.ajax_success); }, 50);
+                }
+            });
         });
         $("button[value='edit']").click(function(e) {
             e.preventDefault();

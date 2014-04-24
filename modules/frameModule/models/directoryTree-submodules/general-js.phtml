@@ -80,7 +80,9 @@
             }
         };
         window.APPLY_NAME_EDITTED = "name-editted";
+        window.APPLY_REMOVE = "remove";
         window.apply_change = function(apply_type, data, shouldUpdateTime) {
+            if(typeof(data) === "undefined") data = "";
             if(typeof(apply_type) === "undefined") apply_type = "nop";
             if(typeof(shouldUpdateTime) === "undefined") shouldUpdateTime = false;
             switch(String(apply_type).toLowerCase()) {
@@ -93,6 +95,19 @@
                         $("tr.item-checked td.item-checked-name a").html(data);
                     shouldUpdateTime = true;
                     break;
+                case window.APPLY_REMOVE:
+                    $("tr.item-checked").fadeOut(200, function() { 
+                        $(this).remove();
+                        if($("tr.item-row").length === 0) {
+                            $("#explorer-table").hide().html('<?php 
+                                ob_start();
+                                    require 'table-empty.phtml';
+                                $content = ob_get_clean();
+                                echo str_replace("\n", "", $content);
+                            ?>').fadeIn();
+                        }
+                    });
+                    return;
                 case "nop": break;
                 default:
                     throw "Undefined `"+apply_type+"`!";

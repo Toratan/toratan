@@ -59,9 +59,6 @@ class indexController extends \zinux\kernel\controller\baseController
         $this->suppress_redirect = 1;
         $counter = 0;
         switch($ops) {
-            case "edit":
-                if(count($items) !== 1)
-                    throw new \zinux\kernel\exceptions\invalideOperationException("Cannot process multiple items!!");
             case "trash":
             case "remove":
             case "restore":
@@ -103,13 +100,6 @@ class indexController extends \zinux\kernel\controller\baseController
                         __INIT_DELETE_INVOKE:
                             $action = "delete";
                             break;
-                        case "edit":
-                            # fool the `editAction` to think it is a `GET` request
-                            $_SERVER['REQUEST_METHOD'] = "GET";
-                            echo ">> ", $this->request->GetURI();
-                            # fool the `editAction` requested URI
-                            $this->request->SetURI("/ops/edit/$type/{$indexed_param[1]}?".\zinux\kernel\security\security::GetHashString(array($type, $indexed_param[1], session_id(), \core\db\models\user::GetInstance()->user_id)));
-                            break;
                     }
                     $this->request->params["continue"] = $continue;
                     $this->request->GenerateIndexedParams();
@@ -126,12 +116,10 @@ class indexController extends \zinux\kernel\controller\baseController
             echo $result;
             exit;
         }
-        if($action != "edit") {
-            $mp = new \core\utiles\messagePipe();
-            $mp->write($result);
-            header("location: $continue");
-            exit;
-        }
+        $mp = new \core\utiles\messagePipe();
+        $mp->write($result);
+        header("location: $continue");
+        exit;
     }
     /**
     * Creates new items
@@ -565,7 +553,6 @@ class indexController extends \zinux\kernel\controller\baseController
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
             throw new \zinux\kernel\exceptions\invalideOperationException;
-        \zinux\kernel\utilities\debug::_var(array($this->request->params, $this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1)));
         # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params,

@@ -21,7 +21,7 @@
         <li><a href="#" class="check-private" onclick="return false;">Private</a></li>
       </ul>
     </div>
-    <div class="unchecked-opt btn-group">
+    <div class="btn-group">
         <a href="<?php echo $this->request->GetURI(); ?>" class="btn btn-default w60"><span class="glyphicon glyphicon-refresh"></span></a>
         <?php if($this->tree_type == self::REGULAR) : ?>
         <div class="btn-group">
@@ -36,7 +36,7 @@
           </div>
         <?php endif; ?>
     </div>
-    <div class="checked-opt checked-opt-unique btn-group hidden">
+    <div class="checked-opt checked-opt-unique btn-group hidden" style="margin-left: -5px">
         <button type="submit" class="btn btn-default" title="Edit" name="ops" value="edit"><span class="glyphicon glyphicon-edit"></span></button>
     </div> <!--end .checked-opt -->
     <div class="checked-opt btn-group hidden">
