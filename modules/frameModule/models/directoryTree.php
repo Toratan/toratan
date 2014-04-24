@@ -37,10 +37,6 @@ class directoryTree extends \stdClass
     #directory-tree-opt .w60{ width: 60px; }
     #explorer-table { margin-top: 130px; }
 </style>
-<script src="/access/js/moment.min.js"></script>
-<form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
-    <input type="hidden" name="type" value="<?php echo $active_type ?>" />
-    <input type="hidden" name="continue" value="<?php echo $this->request->GetURI() ?>" />
 <div id="directory-tree-opt" class="btn-toolbar">
     <!-- Split button -->
     <div class="btn-group">
@@ -114,7 +110,29 @@ __GENERIC: ?>
     </div>
 </div> <!--end  menu-->
 <div class="clearfix"></div>
-<div id="ajax-placeholder" style="margin: 0"></div>
+<?php 
+        $mp = new \core\utiles\messagePipe("ops-index-interface");
+        $check = $mp->hasFlow();
+        $msgs = "";
+        if($check) $msgs = "<ol class='text-info' style='list-style-image: url(\"/access/img/bullet.png\");padding:0;margin-left:15px;'>";
+        while(($msg = $mp->read())) $msgs .= "<li>$msg</li>";
+        if($check) $msg = "</ol>";
+        if($check) :
+?>
+<div id="ops-container-info">
+    <script>
+        $(document).ready(function(){
+            setTimeout(function() {
+                window.top.open_infoModal('<?php echo addslashes($msgs) ?>', 3200);
+            }, 150);
+        });
+    </script>
+</div>
+<?php
+        endif;
+?>
+<div id="ajax-placeholder" style="margin: 0;">
+</div>
 <div class="clearfix"></div>
 <?php
     }
@@ -149,37 +167,143 @@ __GENERIC: ?>
     </div>
 <?php
     }
-    protected function plotTableHeader() {
+    public function plotJS($type, $parent_id, $is_owner) {
 ?>
-    <script src="/access/js/jquery.tablesorter.min.js"></script>
-    <style>
-        .ui-icon {
-            width: 16px;
-            height: 16px;
-            background-image: url('/access/img/ui-icons.png');
-            text-indent: -99999px;
-            overflow: hidden;
-            background-repeat: no-repeat;
-        }
-        table thead .fs-toggle {
-            background-position: -128px -14px;
-            display: inline-block;
-            zoom: 1;
-        }
-        .header { cursor: pointer; }
-        .header.headerSortUp .fs-toggle{
-            background-position: -64px -14px;
-            margin-bottom: -2px;
-        }
-        .header.headerSortDown .fs-toggle{
-            background-position: -0px -14px;
-            margin-bottom: -2px;
-        }
-        .header.headerSortDown,
-        .header.headerSortUp {
-            border-top: 3px solid #f3f3f3!important;
-        }        
-    </style>
+        <script type="text/javascript">
+<?php if($is_owner): ?>
+            window.update_menu_checkbox = function() {
+                var all_checked = ($("input[type='checkbox'].item-checkbox:checked").length === $("input[type='checkbox'].item-checkbox").length);
+                if($("input[type='checkbox'].item-checkbox:checked").length === 0) {
+                    $("input[type='checkbox'].check-all").prop("indeterminate", false);
+                    $("input[type='checkbox'].check-all").prop("checked", false);
+                    $(".checked-opt").addClass("hidden");
+                    $(".unchecked-opt").removeClass("hidden");
+                } else {
+                    $("input[type='checkbox'].check-all").prop("indeterminate", !all_checked);
+                    $("input[type='checkbox'].check-all").prop("checked", all_checked);
+                    $(".checked-opt").removeClass("hidden");
+                    $(".unchecked-opt").addClass("hidden");
+                    if($("input[type='checkbox'].item-checkbox:checked").length === 1)
+                        $(".checked-opt.checked-opt-unique").removeClass("hidden");
+                    else
+                        $(".checked-opt.checked-opt-unique").addClass("hidden");
+                }
+            };
+            window.reset_ajax_placeholder = function() { $("#ajax-placeholder").slideUp(function() { $(this).html("").hide().css("margin", "0px"); }); $("#explorer-table").animate({"margin-top": "130"});};
+            $("input[type='checkbox'].item-checkbox").click(window.update_menu_checkbox);
+            $(".check-all").click(function() {
+                $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
+                window.update_menu_checkbox();
+            });
+            $(".check-none").click(function() {
+                $("input[type='checkbox'].item-checkbox").prop("checked", false);
+                window.update_menu_checkbox();
+            });
+            $(".check-public").click(function() {
+                $("input[type='checkbox'].public-item").prop("checked", true);
+                $("input[type='checkbox'].private-item").prop("checked", false);
+                window.update_menu_checkbox();
+            });
+            $(".check-private").click(function() {
+                $("input[type='checkbox'].public-item").prop("checked", false);
+                $("input[type='checkbox'].private-item").prop("checked", true);
+                window.update_menu_checkbox();
+            });
+            $("a.new-item").click(function(e){
+                switch($(this).attr("data-tag")) {
+                    case "folder":
+                    case "link":
+                        e.preventDefault();
+                        window.reset_ajax_placeholder();
+                        // we need this delay to changes in `window.reset_ajax_placeholder()` have time to get applied
+                        setTimeout(function($this) {
+                            $.ajax({
+                                url: $($this).attr('href').split("#!")[1]+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
+                            });
+                        }, 400, this);
+                        break;
+                    default:
+                }
+            });
+            $("button[value='edit']").click(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    type: $('form#opt-form').attr("method"),
+                    url: $('form#opt-form').attr("action").split("?")[0],
+                    data: "ops="+$(this).attr('value')+"&"+$('form#opt-form').serialize()+$('form#opt-form').attr("action").split("?")[1]
+                });
+            });
+            $(document).ajaxStart(function() {
+                $("#ajax-placeholder *").prop("readonly", true);
+                $("#ajax-loader-img").removeClass("hidden");
+            });
+            $(document).ajaxStop(function() {
+                $("#ajax-loader-img").addClass("hidden");
+            });
+            $(document).ajaxError(function(){
+                $("#ajax-placeholder *").prop("readonly", false).first().focus();
+            });
+            $(document).ajaxSuccess(function( event, xhr, settings ) {
+                if(xhr.responseText.length === 0) window.reset_ajax_placeholder();
+                else {
+                    $("#explorer-table").animate({"margin-top": "193"}, 'slow');
+                    $("#ajax-placeholder")
+                        .hide()
+                        .html(xhr.responseText + "<small><a href='#' onclick='window.reset_ajax_placeholder();return false;'>Close</a></small>")
+                        .css("margin", "-10px auto  10px auto")
+                        .slideDown('slow');
+                    setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
+                }
+            });
+            window.reset_ajax_placeholder();
+            window.update_menu_checkbox();
+<?php endif; ?>
+        </script>
+<?php
+    }
+    protected function plotTableHeader($active_type) {
+?>
+<script src="/access/js/moment.min.js"></script>
+<script src="/access/js/jquery.tablesorter.min.js"></script>
+<style>
+    .ui-icon {
+        width: 16px;
+        height: 16px;
+        background-image: url('/access/img/ui-icons.png');
+        text-indent: -99999px;
+        overflow: hidden;
+        background-repeat: no-repeat;
+    }
+    table thead .fs-toggle {
+        background-position: -128px -14px;
+        display: inline-block;
+        zoom: 1;
+    }
+    .header { cursor: pointer; }
+    .header.headerSortUp .fs-toggle{
+        background-position: -64px -14px;
+        margin-bottom: -2px;
+    }
+    .header.headerSortDown .fs-toggle{
+        background-position: -0px -14px;
+        margin-bottom: -2px;
+    }
+    .header.headerSortDown,
+    .header.headerSortUp {
+        border-top: 3px solid #f3f3f3!important;
+    }        
+</style>
+<script>
+    $("button[name='ops']").click(function(e){
+        e.preventDefault();
+        $('form#opt-form')
+                .prepend($("<input>").attr("type", "hidden").attr("name", "ops").val($(this).attr('value')))
+                .submit();
+    });
+</script>
+<form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
+    <input type="hidden" name="type" value="<?php echo $active_type ?>" />
+    <input type="hidden" name="continue" value="<?php echo $this->request->GetURI() ?>" />
     <div id="explorer-table" class="table-responsive">
         <table class="table table-hover">
             <thead>
@@ -284,100 +408,6 @@ __GENERIC: ?>
 <hr />
 <?php
     }
-    public function plotJS($type, $parent_id, $is_owner) {
-?>
-        <script type="text/javascript">
-<?php if($is_owner): ?>
-            window.update_menu_checkbox = function() {
-                var all_checked = ($("input[type='checkbox'].item-checkbox:checked").length === $("input[type='checkbox'].item-checkbox").length);
-                if($("input[type='checkbox'].item-checkbox:checked").length === 0) {
-                    $("input[type='checkbox'].check-all").prop("indeterminate", false);
-                    $("input[type='checkbox'].check-all").prop("checked", false);
-                    $(".checked-opt").addClass("hidden");
-                    $(".unchecked-opt").removeClass("hidden");
-                } else {
-                    $("input[type='checkbox'].check-all").prop("indeterminate", !all_checked);
-                    $("input[type='checkbox'].check-all").prop("checked", all_checked);
-                    $(".checked-opt").removeClass("hidden");
-                    $(".unchecked-opt").addClass("hidden");
-                    if($("input[type='checkbox'].item-checkbox:checked").length === 1)
-                        $(".checked-opt.checked-opt-unique").removeClass("hidden");
-                    else
-                        $(".checked-opt.checked-opt-unique").addClass("hidden");
-                }
-            };
-            window.reset_ajax_placeholder = function() { $("#ajax-placeholder").slideUp(function() { $(this).html("").hide().css("margin", "0px"); }); $("#explorer-table").animate({"margin-top": "130"});};
-            $("input[type='checkbox'].item-checkbox").click(window.update_menu_checkbox);
-            $(".check-all").click(function() {
-                $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
-                window.update_menu_checkbox();
-            });
-            $(".check-none").click(function() {
-                $("input[type='checkbox'].item-checkbox").prop("checked", false);
-                window.update_menu_checkbox();
-            });
-            $(".check-public").click(function() {
-                $("input[type='checkbox'].public-item").prop("checked", true);
-                $("input[type='checkbox'].private-item").prop("checked", false);
-                window.update_menu_checkbox();
-            });
-            $(".check-private").click(function() {
-                $("input[type='checkbox'].public-item").prop("checked", false);
-                $("input[type='checkbox'].private-item").prop("checked", true);
-                window.update_menu_checkbox();
-            });
-            $("a.new-item").click(function(e){
-                switch($(this).attr("data-tag")) {
-                    case "folder":
-                    case "link":
-                        e.preventDefault();
-                        window.reset_ajax_placeholder();
-                        // we need this delay to changes in `window.reset_ajax_placeholder()` have time to get applied
-                        setTimeout(function($this) {
-                            $.ajax({
-                                url: $($this).attr('href').split("#!")[1]+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
-                            });
-                        }, 400, this);
-                        break;
-                    default:
-                }
-            });
-            $("button[value='edit']").click(function(e) {
-                e.preventDefault();
-                $.ajax({
-                    type: $('form#opt-form').attr("method"),
-                    url: $('form#opt-form').attr("action").split("?")[0],
-                    data: "ops=edit&"+$('form#opt-form').serialize()+$('form#opt-form').attr("action").split("?")[1]
-                });
-            });
-            $(document).ajaxStart(function() {
-                $("#ajax-placeholder *").prop("readonly", true);
-                $("#ajax-loader-img").removeClass("hidden");
-            });
-            $(document).ajaxStop(function() {
-                $("#ajax-loader-img").addClass("hidden");
-            });
-            $(document).ajaxError(function(){
-                $("#ajax-placeholder *").prop("readonly", false).first().focus();
-            });
-            $(document).ajaxSuccess(function( event, xhr, settings ) {
-                if(xhr.responseText.length === 0) window.reset_ajax_placeholder();
-                else {
-                    $("#explorer-table").animate({"margin-top": "193"}, 'slow');
-                    $("#ajax-placeholder")
-                        .hide()
-                        .html(xhr.responseText + "<small><a href='#' onclick='window.reset_ajax_placeholder();return false;'>Close</a></small>")
-                        .css("margin", "-10px auto  10px auto")
-                        .slideDown('slow');
-                    setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
-                }
-            });
-            window.reset_ajax_placeholder();
-            window.update_menu_checkbox();
-<?php endif; ?>
-        </script>
-<?php
-    }
     protected function plotTableJS() {
         if(isset($this->post_script) && strlen($this->post_script)) :
             if(!is_string($this->post_script))
@@ -405,7 +435,7 @@ __GENERIC: ?>
         </script>
 <?php endif; 
     }
-    protected  function plotItems($type, $collection, $parent_id, $is_owner) {
+    protected  function plotItems($active_type, $collection, $parent_id, $is_owner) {
         if(!count($collection)) {
 ?>
         <div id="explorer-table">
@@ -416,10 +446,10 @@ __GENERIC: ?>
 <?php
             return;
         }
-        $this->plotTableHeader();
+        $this->plotTableHeader($active_type);
         foreach($collection as $folder)
         {
-            $this->plotTableRow($folder, $type, $parent_id, $is_owner);
+            $this->plotTableRow($folder, $active_type, $parent_id, $is_owner);
         }
         $this->plotTableFooter();
         $this->plotTableJS();

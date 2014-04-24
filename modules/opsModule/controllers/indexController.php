@@ -7,6 +7,7 @@ namespace modules\opsModule\controllers;
 class indexController extends \zinux\kernel\controller\baseController
 {
     protected $suppress_redirect = 0;
+    protected $ops_index_interface = 0;
     public function Initiate()
     {
         parent::Initiate();
@@ -48,13 +49,15 @@ class indexController extends \zinux\kernel\controller\baseController
                 array("type", "ops", "items", "continue"),
                 array('is_array' => $this->request->params["items"]));
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params["type"], $this->request->params["continue"]));
-        $ops = $this->request->params["ops"];
-        $items = $this->request->params["items"];
-        $type = $this->request->params["type"];
         $continue = $this->request->params["continue"];
         $method = $_SERVER['REQUEST_METHOD'];
-        $counter = 0;
+        $items = $this->request->params["items"];
+        $type = $this->request->params["type"];
+        $ops = $this->request->params["ops"];
+        $ajax = isset($this->request->params["ajax"]);
+        $this->ops_index_interface = 1;
         $this->suppress_redirect = 1;
+        $counter = 0;
         switch($ops) {
             case "edit":
                 if(count($items) !== 1)
@@ -108,9 +111,14 @@ class indexController extends \zinux\kernel\controller\baseController
             default:
                 throw new \zinux\kernel\exceptions\invalideOperationException("Invalid operation `{$this->request->params["ops"]}`!!");
         }
+        $result = "<b>#$counter $type".($counter>1?"s'":"'s")."</b> status ha".($counter>1?"ve":"s")." been changed <b>successfully</b>!";
+        if($ajax) {
+            echo $result;
+            exit;
+        }
         if($action != "edit") {
-            $mp = new \core\utiles\messagePipe;
-            $mp->write("<b>#$counter $type".($counter>1?"s'":"'s")."</b> status has been changed <b>successfully</b>!");
+            $mp = new \core\utiles\messagePipe("ops-index-interface");
+            $mp->write($result);
             header("location: $continue");
             exit;
         }
@@ -281,7 +289,7 @@ class indexController extends \zinux\kernel\controller\baseController
             # halt the PHP
             exit;
         }
-        exit;
+        if(!$this->ops_index_interface) exit;
     }
     /**
     * @access via /ops/edit/{folder|note|link}/(ID)?hash_sum
@@ -424,7 +432,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 # if no ops matched, raise an exception
                 throw new \zinux\kernel\exceptions\invalideOperationException;
         }
-        exit;
+        if(!$this->ops_index_interface) exit;
     }
     /**
     * @access via /ops/view/note/(ID)
@@ -537,6 +545,7 @@ class indexController extends \zinux\kernel\controller\baseController
             header("location: /directory/{$deleted_item->parent_id}.{$item}s");
             exit;
         }
+        if(!$this->ops_index_interface) exit;
     }
     /**
     * @access via /ops/archive/{folder|note|link}/(ID)/archive/(0,1)?hash_sum
@@ -598,7 +607,7 @@ class indexController extends \zinux\kernel\controller\baseController
             header("location: /directory/{$archived_item->parent_id}.{$item}s");
             exit;
         }
-        exit;
+        if(!$this->ops_index_interface) exit;
     }
     /**
     * @access via /ops/share/{folder|note|link}/(ID)/share/(0,1)?hash_sum
@@ -659,7 +668,7 @@ class indexController extends \zinux\kernel\controller\baseController
             header("location: /directory/{$shared_item->parent_id}.{$item}s");
             exit;
         }
-        exit;
+        if(!$this->ops_index_interface) exit;
     }
     /**
     * The \modules\opsModule\controllers\indexController::subscribeAction()
