@@ -1,0 +1,51 @@
+<script type="text/javascript">
+    $(document).ready(function(){<?php echo $this->post_script; ?>
+        $('table.table').tablesorter({
+            sortList: [[2,0]],
+            textExtraction: function(node) {
+                var txt = $(node).text();
+                if($(node).hasClass('updated-at')) {
+                    txt = new Date($(node).attr('origin-date')).getTime();
+                }
+                if($(node).hasClass('status')) {
+                    txt = $(node).attr('status') + $(node).next("td").text().trim();
+                }
+                return txt;
+            },
+            headers:{
+                0: { sorter: false }
+            }
+        });
+        $.propHooks.checked = {
+            set: function(elem, value, name) {
+              var ret = (elem[ name ] = value);
+              $(elem).trigger("change");
+              return ret;
+            }
+        };
+        $("button[name='ops']").click(function(e){
+            if($(this).attr('value') === 'edit') return;
+            e.preventDefault();
+            $('form#opt-form')
+                    .prepend($("<input>").attr("type", "hidden").attr("name", "ops").val($(this).attr('value')))
+                    .submit();
+        });
+        $("button[value='edit']").click(function(e) {
+            e.preventDefault();
+            if($("input[type='checkbox'].item-checkbox:checked").first() === 0) return;
+            $.ajax({
+                type: "GET",
+                url: "/ops/edit?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&continue=<?php echo $this->request->GetURI(); ?>"
+            });
+        });
+        $("input[type='checkbox'].item-checkbox").change(function() {
+            if($(this).prop('checked')) {//f7fafc
+                $(this).parent().parent().css({"background-color": "#f7fbff"});
+                $(this).parent().siblings('.item-name').addClass("item-name-selected");
+            } else {
+                $(this).parent().parent().css("background-color", "transparent");
+                $(this).parent().siblings('.item-name').removeClass("item-name-selected");
+            }
+        });
+    });
+</script>
