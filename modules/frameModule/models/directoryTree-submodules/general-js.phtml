@@ -68,26 +68,29 @@
             $("#ajax-placeholder *").prop("readonly", false).first().focus();
         };
         window.ajax_success = function( event, xhr, settings ) {
-            console.log("ok from setup with data ");
             if(typeof(xhr.responseText) === "undefined" || xhr.responseText.length === 0) window.reset_ajax_placeholder();
             else {
                 $("#explorer-table").animate({"margin-top": "193"}, 'slow');
                 $("#ajax-placeholder")
                     .hide()
                     .html(xhr.responseText + "<small><a href='#' onclick='window.reset_ajax_placeholder();return false;'>Close</a></small>")
-                    .css("margin", "-10px auto  10px auto")
+                    .css("margin", "-0px auto  10px auto")
                     .slideDown('slow');
                 setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
             }
         };
+        window.CONST_NAME_EDITTED = "name-editted";
         window.apply_change = function(apply_type, data) {
-            switch(apply_type) {
+            if(typeof(apply_type) === "undefined") apply_type = "nop";
+            switch(String(apply_type).toLowerCase()) {
                 case "name-editted":
-                    $("tr td.item-name-selected").children("a").html(data);
+                    $("tr.item-checked td.item-checked-name a").html(data);
                     break;
+                case "nop": break;
                 default:
                     throw "Undefined `"+apply_type+"`!";
             }
+            $(".check-none").click();
         };
         $(window).ajaxStart(window.ajax_start);
         $(window).ajaxStop(window.ajax_stop);

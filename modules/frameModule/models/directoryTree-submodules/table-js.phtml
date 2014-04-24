@@ -35,16 +35,18 @@
             if($("input[type='checkbox'].item-checkbox:checked").first() === 0) return;
             $.ajax({
                 type: "GET",
-                url: "/ops/edit?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&continue=<?php echo $this->request->GetURI(); ?>"
+                url: "/ops/edit?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
             });
         });
         $("input[type='checkbox'].item-checkbox").change(function() {
-            if($(this).prop('checked')) {//f7fafc
-                $(this).parent().parent().css({"background-color": "#f7fbff"});
-                $(this).parent().siblings('.item-name').addClass("item-name-selected");
+            if($(this).prop('checked')) {
+                $(this).parent().parent().css({"background-color": "#f7fafc"});
+                $(this).parent().siblings('.item-name').addClass("item-checked-name");
+                $(this).parent().parent().addClass("item-checked");
             } else {
                 $(this).parent().parent().css("background-color", "transparent");
-                $(this).parent().siblings('.item-name').removeClass("item-name-selected");
+                $(this).parent().siblings('.item-name').removeClass("item-checked-name");
+                $(this).parent().parent().removeClass("item-checked");
             }
         });
     });
