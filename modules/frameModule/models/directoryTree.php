@@ -37,6 +37,7 @@ class directoryTree extends \stdClass
     #directory-tree-opt .w60{ width: 60px; }
     #explorer-table { margin-top: 130px; }
 </style>
+<script src="/access/js/moment.min.js"></script>
 <form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
     <input type="hidden" name="type" value="<?php echo $active_type ?>" />
     <input type="hidden" name="continue" value="<?php echo $this->request->GetURI() ?>" />
@@ -147,14 +148,43 @@ __GENERIC: ?>
     }
     protected function plotTableHeader() {
 ?>
+    <script src="/access/js/jquery.tablesorter.min.js"></script>
+    <style>
+        .ui-icon {
+            width: 16px;
+            height: 16px;
+            background-image: url('/access/img/ui-icons.png');
+            text-indent: -99999px;
+            overflow: hidden;
+            background-repeat: no-repeat;
+        }
+        table thead .fs-toggle {
+            background-position: -128px -14px;
+            display: inline-block;
+            zoom: 1;
+        }
+        .header { cursor: pointer; }
+        .header.headerSortUp .fs-toggle{
+            background-position: -64px -14px;
+            margin-bottom: -2px;
+        }
+        .header.headerSortDown .fs-toggle{
+            background-position: -0px -14px;
+            margin-bottom: -2px;
+        }
+        .header.headerSortDown,
+        .header.headerSortUp {
+            border-top: 3px solid #f3f3f3!important;
+        }        
+    </style>
     <div id="explorer-table" class="table-responsive">
         <table class="table table-hover">
             <thead>
                 <tr>
                     <th style="width: 0.1%"></th>
-                    <th style="width: 0.1%">Status&nbsp;</th>
-                    <th style="width: 70%;"><span style="padding: 0%"></span>Name</th>
-                    <th id="table-header-updated">Updated at</th>
+                    <th style="width: 0.1%;">Status&nbsp;</th>
+                    <th style="width: 70%;">Name <span class="ui-icon fs-toggle"></span></th>
+                    <th id="table-header-updated">Updated at <span class="ui-icon fs-toggle"></span></th>
                 </tr>
             </thead>
             <tbody>
@@ -221,23 +251,19 @@ __GENERIC: ?>
             throw new \zinux\kernel\exceptions\invalideArgumentException("The item cannot be null...");
         }
 ?>
-                <tr class="<?php echo $type ?>">
-                    <td>
-                        <?php if($is_owner) : ?>
-                        <input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $item->{"{$item->WhoAmI()}_id"}, $this->getStatusString($item), \zinux\kernel\security\security::GetHashString(array($item->WhoAmI(),  $item->{"{$item->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>" onclick="window.update_menu_checkbox();"/>
-                        <?php else: ?>&nbsp;                        
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?php echo $this->getStatusIcons($item) ?>
-                    </td>
-                    <td>
-                        <a href='<?php echo $this->getNavigationLink($item); ?>' target='<?php echo $this->getNavigationTarget($item) ?>' onclick='window.top.document.title = "/ <?php echo $item->{"{$item->WhoAmI()}_title"}; ?>";'><?php echo $item->{"{$item->WhoAmI()}_title"}; ?></a>
-                    </td>
-                    <td id="<?php echo $type, '-', $item->{"{$item->WhoAmI()}_id"}?>-updated"></td>
-                </tr>
+        <tr class="<?php echo $type ?>">
+            <td>
+                <?php if($is_owner) : ?><input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $item->{"{$item->WhoAmI()}_id"}, $this->getStatusString($item), \zinux\kernel\security\security::GetHashString(array($item->WhoAmI(),  $item->{"{$item->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>" onclick="window.update_menu_checkbox();"/><?php else: ?>&nbsp;<?php endif; ?></td>
+            <td>
+                <?php echo $this->getStatusIcons($item) ?>
+            </td>
+            <td>
+                <a href='<?php echo $this->getNavigationLink($item); ?>' target='<?php echo $this->getNavigationTarget($item) ?>' onclick='window.top.document.title = "/ <?php echo $item->{"{$item->WhoAmI()}_title"}; ?>";'><?php echo $item->{"{$item->WhoAmI()}_title"}; ?></a>
+            </td>
+            <td id="<?php echo $type, '-', $item->{"{$item->WhoAmI()}_id"}?>-updated"></td>
+        </tr>
 <?php
-        $this->post_script .= "$(\"table tbody tr.$type td#$type-{$item->{"{$item->WhoAmI()}_id"}}-updated\").html(new Date(Date.parse('$item->updated_at')).toLocaleString());";
+        $this->post_script .= "$(\"table tbody tr.$type td#$type-{$item->{"{$item->WhoAmI()}_id"}}-updated\").html(moment(moment('$item->updated_at').format('lll')).fromNow()).attr('title', moment('$item->updated_at').format('lll'));";
     }
     protected function plotTableFooter() {
 ?>
@@ -251,13 +277,7 @@ __GENERIC: ?>
     public function plotJS($type, $parent_id, $is_owner) {
 ?>
         <script type="text/javascript">
-<?php
-        if(isset($this->post_script) &&strlen($this->post_script)) :
-            if(!is_string($this->post_script))
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Expecting the `post script` be a string!");
-?>
-            $(document).ready(function(){<?php echo $this->post_script; ?>});
-<?php endif; if($is_owner): ?>
+<?php if($is_owner): ?>
             window.update_menu_checkbox = function() {
                 var all_checked = ($("input[type='checkbox'].item-checkbox:checked").length === $("input[type='checkbox'].item-checkbox").length);
                 if($("input[type='checkbox'].item-checkbox:checked").length === 0) {
@@ -320,7 +340,7 @@ __GENERIC: ?>
                     data: "ops=edit&"+$('form#opt-form').serialize()+$('form#opt-form').attr("action").split("?")[1]
                 });
             });
-            $( document ).ajaxStart(function() {
+            $(document).ajaxStart(function() {
                 $("#ajax-placeholder *").prop("readonly", true);
                 $("#ajax-loader-img").removeClass("hidden");
             });
@@ -348,6 +368,24 @@ __GENERIC: ?>
         </script>
 <?php
     }
+    protected function plotJSTime() {
+        if(isset($this->post_script) && strlen($this->post_script)) :
+            if(!is_string($this->post_script))
+                throw new \zinux\kernel\exceptions\invalideArgumentException("Expecting the `post script` be a string!");
+?>
+        <script type="text/javascript">
+            $(document).ready(function(){<?php echo $this->post_script; ?>
+                $('table.table').tablesorter({
+                    sortList: [[2,0]],
+                    headers:{
+                        0: { sorter: false },
+                        1:{ sorter: false }
+                    }
+                });
+            });
+        </script>
+<?php endif; 
+    }
     protected  function plotItems($type, $collection, $parent_id, $is_owner) {
         if(!count($collection)) {
 ?>
@@ -365,6 +403,7 @@ __GENERIC: ?>
             $this->plotTableRow($folder, $type, $parent_id, $is_owner);
         }
         $this->plotTableFooter();
+        $this->plotJSTime();
     }
     public function plotFolders($collection, $parent_id, $is_owner) {
         $this->plotItems("folder", $collection, $parent_id, $is_owner);
