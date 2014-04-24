@@ -1,0 +1,44 @@
+<script src="/access/js/moment.min.js"></script>
+<script src="/access/js/jquery.tablesorter.min.js"></script>
+<style>
+    .ui-icon {
+        width: 16px;
+        height: 16px;
+        background-image: url('/access/img/ui-icons.png');
+        text-indent: -99999px;
+        overflow: hidden;
+        background-repeat: no-repeat;
+    }
+    table thead .fs-toggle {
+        background-position: -128px -14px;
+        display: inline-block;
+        zoom: 1;
+    }
+    .header { cursor: pointer; }
+    .header.headerSortUp .fs-toggle{
+        background-position: -64px -14px;
+        margin-bottom: -2px;
+    }
+    .header.headerSortDown .fs-toggle{
+        background-position: -0px -14px;
+        margin-bottom: -2px;
+    }
+    .header.headerSortDown,
+    .header.headerSortUp {
+        border-top: 3px solid #f3f3f3!important;
+    }        
+</style>
+<form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
+    <input type="hidden" name="type" value="<?php echo $active_type ?>" />
+    <input type="hidden" name="continue" value="<?php echo $this->request->GetURI() ?>" />
+    <div id="explorer-table" class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 0.1%"></th>
+                    <th style="width: 67px;overflow: hidden" title="Status"><span class="glyphicon glyphicon-th-large"></span>&nbsp;<span class="ui-icon fs-toggle"></span></th>
+                    <th style="width: 70%;">Name <span class="ui-icon fs-toggle"></span></th>
+                    <th id="table-header-updated">Updated at <span class="ui-icon fs-toggle"></span></th>
+                </tr>
+            </thead>
+            <tbody>

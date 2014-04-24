@@ -1,0 +1,104 @@
+<style>
+    #directory-tree-opt {margin: -10px auto 10px auto;}
+    #directory-tree-opt .btn{ zoom: 1; filter: alpha(opacity=80); opacity: 0.8; }
+    #directory-tree-opt div.btn-group{ margin-right: 10px; }
+    #directory-tree-opt .w60{ width: 60px; }
+    #explorer-table { margin-top: 130px; }
+</style>
+<div id="directory-tree-opt" class="btn-toolbar">
+    <!-- Split button -->
+    <div class="btn-group">
+        <button type="button" class="btn btn-default" style="height: 34px"><input type="checkbox" class="input check-all"/></button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+        </button>
+      <ul class="dropdown-menu" role="menu">
+          <li><a href="#" class="check-all" onclick="return false;">All</a></li>
+        <li><a href="#" class="check-none" onclick="return false;">None</a></li>
+        <li class="divider"></li>
+        <li><a href="#" class="check-public" onclick="return false;">Public</a></li>
+        <li><a href="#" class="check-private" onclick="return false;">Private</a></li>
+      </ul>
+    </div>
+    <div class="unchecked-opt btn-group">
+        <a href="<?php echo $this->request->GetURI(); ?>" class="btn btn-default w60"><span class="glyphicon glyphicon-refresh"></span></a>
+        <?php if($this->tree_type == self::REGULAR) : ?>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle w60" data-toggle="dropdown" title="Create New Item">
+              <span class="glyphicon glyphicon-plus"></span> <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu pull-right" role="menu">
+              <li title="Create A Folder"><a href="#!/new/folder/?pid=<?php echo $pid, \zinux\kernel\security\security::GetHashString(array("folder", $pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>" data-tag="folder" class="new-item"><span class="inline glyphicon glyphicon-folder-close"></span> Folder</a></li>
+              <li title="Create A Note"><a href="#!/new/note/?pid=<?php echo $pid, \zinux\kernel\security\security::GetHashString(array("note", $pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>" data-tag="note" class="new-item"><span class="inline glyphicon glyphicon-file"></span> Note</a></li>
+              <li title="Create A Link"><a href="#!/new/link/?pid=<?php echo $pid, \zinux\kernel\security\security::GetHashString(array("link", $pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>" data-tag="link" class="new-item"><span class="inline glyphicon glyphicon-link"></span> Link</a></li>
+            </ul>
+          </div>
+        <?php endif; ?>
+    </div>
+    <div class="checked-opt checked-opt-unique btn-group hidden">
+        <button type="submit" class="btn btn-default" title="Edit" name="ops" value="edit"><span class="glyphicon glyphicon-edit"></span></button>
+    </div> <!--end .checked-opt -->
+    <div class="checked-opt btn-group hidden">
+<?php switch($this->tree_type):
+    case self::REGULAR: ?>
+            <button type="submit" class="btn btn-default w60" title="Archive" name="ops" value="archive"><span class="glyphicon glyphicon-save"></span></button>
+<?php goto __GENERIC; break;
+    case self::ARCHIVE: ?>
+            <button type="submit" class="btn btn-default w60" title="Un-archive" name="ops" value="archive"><span class="glyphicon glyphicon-open"></span></button>
+<?php goto __GENERIC; break;
+    case self::SHARED:
+__GENERIC: ?>
+            <button type="submit" class="btn btn-default w60" title="Toggle Share" name="ops" value="share"><span class="glyphicon glyphicon-share-alt"></span></button>
+            <button type="submit" class="btn btn-default w60" title="Delete" name="ops" value="trash"><span class="glyphicon glyphicon-trash"></span></button>
+<?php break;
+    case self::TRASH: ?>
+    </div>
+    <div class="btn-group checked-opt hidden">
+        <button type="submit" class="btn btn-success w60" title="Restore" name="ops" value="restore"><span class="glyphicon glyphicon-cloud-upload"></span></button>
+    </div>
+    <div class="btn-group checked-opt hidden">
+        <button type="submit" class="btn btn-danger w60" title="Restore" name="ops" value="remove"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+    <div class="btn-group pull-right" style="padding-top: 3px;" >
+        <a id="trash-detail-popover" data-container="body" data-toggle="popover" data-placement="left" data-content="<div style='text-align: justify;margin-bottom:-3px'>All items which have been labaled as trashed <b>will not</b> appear anywhere else; Though if they are marked as <u><i>archived</i></u> or <u><i>shared</i></u>. In order to make them available please <b>select and restore</b> them.</div>" data-original-title="" title="">
+          <span class="glyphicon glyphicon-exclamation-sign"></span>
+        </a>
+        <script>$(document).ready(function() {$('#trash-detail-popover').popover({ trigger: 'hover', html: true }); });</script>
+    </div>
+    <div>
+<?php break;
+    default: throw new \zinux\kernel\exceptions\invalideOperationException("Undefined tree type# `{$this->tree_type}`!"); ?>
+<?php endswitch; ?>
+    </div> <!--end .checked-opt -->
+    <div class="pull-right">
+        <div class="btn-group hidden" id="ajax-loader-img" style="margin:0;padding:0">
+            <img class="image" src="/access/img/ajax-loader.gif" />
+        </div>
+    </div>
+</div> <!--end  menu-->
+<div class="clearfix"></div>
+<?php 
+        $mp = new \core\utiles\messagePipe();
+        $check = $mp->hasFlow();
+        $msgs = "";
+        if($check) $msgs = "<ol class='text-info' style='list-style-image: url(\"/access/img/bullet.png\");padding:0;margin-left:15px;'>";
+        while(($msg = $mp->read())) $msgs .= "<li>$msg</li>";
+        if($check) $msg = "</ol>";
+        if($check) :
+?>
+<div id="ops-container-info">
+    <script>
+        $(document).ready(function(){
+            setTimeout(function() {
+                window.top.open_infoModal('<?php echo addslashes($msgs) ?>', -3200);
+            }, 150);
+        });
+    </script>
+</div>
+<?php
+        endif;
+?>
+<div id="ajax-placeholder" style="margin: 0;">
+</div>
+<div class="clearfix"></div>
