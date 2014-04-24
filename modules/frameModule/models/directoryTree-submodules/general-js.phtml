@@ -70,7 +70,7 @@
         window.ajax_success = function( event, xhr, settings ) {
             if(typeof(xhr.responseText) === "undefined" || xhr.responseText.length === 0) window.reset_ajax_placeholder();
             else {
-                $("#explorer-table").animate({"margin-top": "193"}, 'slow');
+                $("#explorer-table").animate({"margin-top": "194"}, 'slow');
                 $("#ajax-placeholder")
                     .hide()
                     .html(xhr.responseText + "<small><a href='#' onclick='window.reset_ajax_placeholder();return false;'>Close</a></small>")
@@ -79,18 +79,43 @@
                 setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
             }
         };
-        window.CONST_NAME_EDITTED = "name-editted";
-        window.apply_change = function(apply_type, data) {
+        window.APPLY_NAME_EDITTED = "name-editted";
+        window.apply_change = function(apply_type, data, shouldUpdateTime) {
             if(typeof(apply_type) === "undefined") apply_type = "nop";
+            if(typeof(shouldUpdateTime) === "undefined") shouldUpdateTime = false;
             switch(String(apply_type).toLowerCase()) {
-                case "name-editted":
-                    $("tr.item-checked td.item-checked-name a").html(data);
+                case window.APPLY_NAME_EDITTED:
+                    // if item has been created?
+                    if($("tr.item-checked td.item-checked-name a").length === 0)
+                        console.warn("NEW ITEM `APPLY_CHANGE()` NOT IMPLEMENTED");
+                    // or it was editted?
+                    else
+                        $("tr.item-checked td.item-checked-name a").html(data);
+                    shouldUpdateTime = true;
                     break;
                 case "nop": break;
                 default:
                     throw "Undefined `"+apply_type+"`!";
             }
+            if(shouldUpdateTime) {
+                // update the update row
+                var updateTime = new Date();
+                $("tr.item-checked td.updated-at")
+                        .html(moment(updateTime).fromNow())
+                        .attr('title', moment(updateTime).format('lll'))
+                        .attr('origin-date', updateTime);
+            }
+            // tag checked items to be trackable
+            $("tr.item-checked").addClass("item-anim-tag");
+            // clear any UI applied by checking items
             $(".check-none").click();
+            // animate the tagged items
+            $('tr.item-anim-tag').hide().fadeIn(2000, function(){
+                // remove the tracking tag of tagged items
+                $(this).removeClass("item-anim-tag");
+            });
+            // resort table
+            window.sort_table();
         };
         $(window).ajaxStart(window.ajax_start);
         $(window).ajaxStop(window.ajax_stop);
