@@ -111,7 +111,7 @@ __GENERIC: ?>
 </div> <!--end  menu-->
 <div class="clearfix"></div>
 <?php 
-        $mp = new \core\utiles\messagePipe("ops-index-interface");
+        $mp = new \core\utiles\messagePipe();
         $check = $mp->hasFlow();
         $msgs = "";
         if($check) $msgs = "<ol class='text-info' style='list-style-image: url(\"/access/img/bullet.png\");padding:0;margin-left:15px;'>";
@@ -123,7 +123,7 @@ __GENERIC: ?>
     <script>
         $(document).ready(function(){
             setTimeout(function() {
-                window.top.open_infoModal('<?php echo addslashes($msgs) ?>', 3200);
+                window.top.open_infoModal('<?php echo addslashes($msgs) ?>', -3200);
             }, 150);
         });
     </script>
@@ -190,7 +190,6 @@ __GENERIC: ?>
                 }
             };
             window.reset_ajax_placeholder = function() { $("#ajax-placeholder").slideUp(function() { $(this).html("").hide().css("margin", "0px"); }); $("#explorer-table").animate({"margin-top": "130"});};
-            $("input[type='checkbox'].item-checkbox").click(window.update_menu_checkbox);
             $(".check-all").click(function() {
                 $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
                 window.update_menu_checkbox();
@@ -225,26 +224,19 @@ __GENERIC: ?>
                     default:
                 }
             });
-            $("button[value='edit']").click(function(e) {
-                e.preventDefault();
-                $.ajax({
-                    type: $('form#opt-form').attr("method"),
-                    url: $('form#opt-form').attr("action").split("?")[0],
-                    data: "ops="+$(this).attr('value')+"&"+$('form#opt-form').serialize()+$('form#opt-form').attr("action").split("?")[1]
-                });
-            });
-            $(document).ajaxStart(function() {
+            window.ajax_start = function() {
                 $("#ajax-placeholder *").prop("readonly", true);
                 $("#ajax-loader-img").removeClass("hidden");
-            });
-            $(document).ajaxStop(function() {
+            };
+            window.ajax_stop = function() {
                 $("#ajax-loader-img").addClass("hidden");
-            });
-            $(document).ajaxError(function(){
+            };
+            window.ajax_error = function(){
                 $("#ajax-placeholder *").prop("readonly", false).first().focus();
-            });
-            $(document).ajaxSuccess(function( event, xhr, settings ) {
-                if(xhr.responseText.length === 0) window.reset_ajax_placeholder();
+            };
+            window.ajax_success = function( event, xhr, settings ) {
+                console.log("ok from setup with data ");
+                if(typeof(xhr.responseText) === "undefined" || xhr.responseText.length === 0) window.reset_ajax_placeholder();
                 else {
                     $("#explorer-table").animate({"margin-top": "193"}, 'slow');
                     $("#ajax-placeholder")
@@ -254,7 +246,20 @@ __GENERIC: ?>
                         .slideDown('slow');
                     setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
                 }
-            });
+            };
+            window.apply_change = function(apply_type, data) {
+                switch(apply_type) {
+                    case "name-editted":
+                        $("tr td.item-name-selected").children("a").html(data);
+                        break;
+                    default:
+                        throw "Undefined `"+apply_type+"`!";
+                }
+            };
+            $(window).ajaxStart(window.ajax_start);
+            $(window).ajaxStop(window.ajax_stop);
+            $(window).ajaxError(window.ajax_error);
+            $(window).ajaxSuccess(window.ajax_success);
             window.reset_ajax_placeholder();
             window.update_menu_checkbox();
 <?php endif; ?>
@@ -293,14 +298,6 @@ __GENERIC: ?>
         border-top: 3px solid #f3f3f3!important;
     }        
 </style>
-<script>
-    $("button[name='ops']").click(function(e){
-        e.preventDefault();
-        $('form#opt-form')
-                .prepend($("<input>").attr("type", "hidden").attr("name", "ops").val($(this).attr('value')))
-                .submit();
-    });
-</script>
 <form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
     <input type="hidden" name="type" value="<?php echo $active_type ?>" />
     <input type="hidden" name="continue" value="<?php echo $this->request->GetURI() ?>" />
@@ -385,13 +382,13 @@ __GENERIC: ?>
             throw new \zinux\kernel\exceptions\invalideArgumentException("The item cannot be null...");
         }
 ?>
-        <tr class="<?php echo $type ?>">
+        <tr class="<?php echo $type ?> item-row">
             <td>
                 <?php if($is_owner) : ?><input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $item->{"{$item->WhoAmI()}_id"}, $this->getStatusString($item), \zinux\kernel\security\security::GetHashString(array($item->WhoAmI(),  $item->{"{$item->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>" onclick="window.update_menu_checkbox();"/><?php else: ?>&nbsp;<?php endif; ?></td>
             <td class="status" status="<?php echo $this->getStatusBinary($item) ?>">
                 <?php echo $this->getStatusIcons($item) ?>
             </td>
-            <td>
+            <td class="item-name">
                 <a href='<?php echo $this->getNavigationLink($item); ?>' target='<?php echo $this->getNavigationTarget($item) ?>' onclick='window.top.document.title = "/ <?php echo $item->{"{$item->WhoAmI()}_title"}; ?>";'><?php echo $item->{"{$item->WhoAmI()}_title"}; ?></a>
             </td>
             <td class="updated-at" id="<?php echo $type, '-', $item->{"{$item->WhoAmI()}_id"}?>-updated" origin-date="<?php echo $item->updated_at?>"></td>
@@ -408,7 +405,7 @@ __GENERIC: ?>
 <hr />
 <?php
     }
-    protected function plotTableJS() {
+    protected function plotTableJS($active_type) {
         if(isset($this->post_script) && strlen($this->post_script)) :
             if(!is_string($this->post_script))
                 throw new \zinux\kernel\exceptions\invalideArgumentException("Expecting the `post script` be a string!");
@@ -429,6 +426,37 @@ __GENERIC: ?>
                     },
                     headers:{
                         0: { sorter: false }
+                    }
+                });
+                $.propHooks.checked = {
+                    set: function(elem, value, name) {
+                      var ret = (elem[ name ] = value);
+                      $(elem).trigger("change");
+                      return ret;
+                    }
+                };
+                $("button[name='ops']").click(function(e){
+                    if($(this).attr('value') === 'edit') return;
+                    e.preventDefault();
+                    $('form#opt-form')
+                            .prepend($("<input>").attr("type", "hidden").attr("name", "ops").val($(this).attr('value')))
+                            .submit();
+                });
+                $("button[value='edit']").click(function(e) {
+                    e.preventDefault();
+                    if($("input[type='checkbox'].item-checkbox:checked").first() === 0) return;
+                    $.ajax({
+                        type: "GET",
+                        url: "/ops/edit?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&continue=<?php echo $this->request->GetURI(); ?>"
+                    });
+                });
+                $("input[type='checkbox'].item-checkbox").change(function() {
+                    if($(this).prop('checked')) {//f7fafc
+                        $(this).parent().parent().css({"background-color": "#f7fbff"});
+                        $(this).parent().siblings('.item-name').addClass("item-name-selected");
+                    } else {
+                        $(this).parent().parent().css("background-color", "transparent");
+                        $(this).parent().siblings('.item-name').removeClass("item-name-selected");
                     }
                 });
             });
@@ -452,7 +480,7 @@ __GENERIC: ?>
             $this->plotTableRow($folder, $active_type, $parent_id, $is_owner);
         }
         $this->plotTableFooter();
-        $this->plotTableJS();
+        $this->plotTableJS($active_type);
     }
     public function plotFolders($collection, $parent_id, $is_owner) {
         $this->plotItems("folder", $collection, $parent_id, $is_owner);

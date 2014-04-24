@@ -53,7 +53,7 @@ class indexController extends \zinux\kernel\controller\baseController
         $method = $_SERVER['REQUEST_METHOD'];
         $items = $this->request->params["items"];
         $type = $this->request->params["type"];
-        $ops = $this->request->params["ops"];
+        $ops = strtolower($this->request->params["ops"]);
         $ajax = isset($this->request->params["ajax"]);
         $this->ops_index_interface = 1;
         $this->suppress_redirect = 1;
@@ -71,15 +71,22 @@ class indexController extends \zinux\kernel\controller\baseController
                 {
                     $params = explode("&",  $type ."&". $item);
                     $this->request->params = array();
+                    $indexed_param = array();
                     for($index = 0; $index < count($params); $index ++)
                     {
                         if(preg_match("&(.*)=(.*)&i", $params[$index])) {
                             $sub_param = explode("=", $params[$index]);
                             for($subindex = 0; $subindex < count($sub_param); $subindex += 2) {
                                 $this->request->params[$sub_param[$subindex]] = @$sub_param[$subindex + 1];
+                                $indexed_param[] = $sub_param[$subindex];
+                                if($subindex + 1 < count($sub_param))
+                                    $indexed_param[] = $sub_param[$subindex + 1];
                             }
                         } else {
                             $this->request->params[$params[$index]] = @!preg_match("&(.*)=(.*)&i", $params[$index + 1]) ? $params[++$index] : NULL;
+                            $indexed_param[] = $params[$index - 1];
+                            if($this->request->params[$params[$index - 1]])
+                                $indexed_param[] = $this->request->params[$params[$index - 1]];
                         }
                     }
                     $action = $ops;
@@ -99,6 +106,9 @@ class indexController extends \zinux\kernel\controller\baseController
                         case "edit":
                             # fool the `editAction` to think it is a `GET` request
                             $_SERVER['REQUEST_METHOD'] = "GET";
+                            echo ">> ", $this->request->GetURI();
+                            # fool the `editAction` requested URI
+                            $this->request->SetURI("/ops/edit/$type/{$indexed_param[1]}?".\zinux\kernel\security\security::GetHashString(array($type, $indexed_param[1], session_id(), \core\db\models\user::GetInstance()->user_id)));
                             break;
                     }
                     $this->request->params["continue"] = $continue;
@@ -111,13 +121,13 @@ class indexController extends \zinux\kernel\controller\baseController
             default:
                 throw new \zinux\kernel\exceptions\invalideOperationException("Invalid operation `{$this->request->params["ops"]}`!!");
         }
-        $result = "<b>#$counter $type".($counter>1?"s'":"'s")."</b> status ha".($counter>1?"ve":"s")." been changed <b>successfully</b>!";
+        $result = "<b>#$counter $type".($counter>1?"s'":"'s")."</b> ha".($counter>1?"ve":"s")." been <b>modified</b> successfully!";
         if($ajax) {
             echo $result;
             exit;
         }
         if($action != "edit") {
-            $mp = new \core\utiles\messagePipe("ops-index-interface");
+            $mp = new \core\utiles\messagePipe();
             $mp->write($result);
             header("location: $continue");
             exit;
@@ -261,10 +271,9 @@ class indexController extends \zinux\kernel\controller\baseController
             case "FOLDER":
             case "LINK":
                 if(!$this->suppress_redirect) {
-                    # invoke a message pipe line
-                    $mp = new \core\utiles\messagePipe;
-                    # indicate the success
-                    $mp->write("One $item has been <b>created</b> successfully....");
+                    /*
+                     * No success notifcation, because the user will see the fucking result by redirecting
+                     */
                     # redirect if any redirection provided
                     $this->Redirect();
                     # relocate the browser
@@ -410,10 +419,9 @@ class indexController extends \zinux\kernel\controller\baseController
             case "FOLDER":
             case "LINK":
                 if(!$this->suppress_redirect) {
-                    # invoke a message pipe line
-                    $mp = new \core\utiles\messagePipe;
-                    # indicate the success
-                    $mp->write("One $item has been <b>edited</b> successfully....");
+                    /*
+                     * No success notifcation, because the user will see the fucking result by redirecting
+                     */
                     # redirect if any redirection provided
                     $this->Redirect();
                     # relocate the browser

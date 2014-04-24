@@ -1,11 +1,14 @@
 <div id="new-folder-ui" style="width: 100%;margin: 0;padding: 0">
+<?php if(count($this->errors)): ?>
     <ol class='text-danger' style="list-style-image: url('/access/img/bullet.png');padding:0;margin-left:15px;">
     <?php foreach ($this->errors as $error) : ?>
         <li><?php echo $error ?></li>
     <?php endforeach; ?>
     </ol>
+<?php endif ; ?>
+    <?php echo $this->request->GetURI(), "<br />", $this->request->params["continue"] ?>
     <form action="<?php echo $this->request->GetURI() ?>" method="POST" class="form">
-    <?php if(false && isset($this->request->params["continue"])) : ?>
+    <?php if(isset($this->request->params["continue"])) : ?>
         <input type="hidden" name="continue" value="<?php echo $this->request->params["continue"]; ?>" />
     <?php endif; ?>
         <div class="input-group col-lg-6 col-md-6 col-sm-12 col-xm-12" style="padding: 0;margin: 0">
