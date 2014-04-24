@@ -1,8 +1,7 @@
 <?php
 namespace modules\frameModule\models;
 /**
-* The modules\frameModule\models\directoryTree
-* @by Zinux Generator <b.g.dariush@gmail.com>
+* The directory tree handler
 */
 class directoryTree extends \stdClass
 {
@@ -10,6 +9,10 @@ class directoryTree extends \stdClass
     const TRASH = 0x2;
     const ARCHIVE = 0x3;
     const SHARED = 0x4;
+    /**
+     * The type directory Tree
+     * @var integer
+     */
     protected $tree_type;
     /**
      * The request
@@ -21,16 +24,45 @@ class directoryTree extends \stdClass
      * @var string
      */
     protected $post_script;
+    /**
+     * Construct a new directory tree
+     * @param \zinux\kernel\routing\request $request The current request detail
+     * @param integer $__tree_type should be one of <i>\modules\frameModule\models\directoryTree::{<b>REGULAR</b>, <b>TRASH</b>, <b>ARCHIVE</b>, <b>SHARED</b>}</i>
+     */
     public function __construct (\zinux\kernel\routing\request $request, $__tree_type = self::REGULAR)
     {
         $this->request = $request;
         $this->tree_type = $__tree_type;
         $this->post_script = "";
     }
+    /**
+     * PLots options of directory tree
+     * @param string $active_type Which type this directory tree contains?
+     * @param string|integer $pid the parrent directory this directory tree
+     * @param boolean $is_owner is current user is owner of current tree?
+     */
     public function plotOptions($active_type, $pid, $is_owner) { if($is_owner) require 'directoryTree-submodules/headOptions.phtml'; }
+    /**
+     * PLots head types of directory tree
+     * @param string $active_type Which type this directory tree contains?
+     * @param string|integer $pid the parrent directory this directory tree
+     */
     public function plotHeadTypes($active_type, $pid) { $active_type = \ActiveRecord\Utils::pluralize($active_type); require 'directoryTree-submodules/headTypes.phtml'; }
+    /**
+     * Plots general JS for options of directory tree
+     * @param string $active_type Which type this directory tree contains?
+     * @param string|integer $pid the parrent directory this directory tree
+     * @param boolean $is_owner is current user is owner of current tree?
+     */
     public function plotJS($type, $parent_id, $is_owner) { require 'directoryTree-submodules/general-js.phtml'; }
+    /**
+     * PLots table's header html/js/css
+     * @param string $active_type Which type this directory tree contains?
+     */
     protected function plotTableHeader($active_type) { require 'directoryTree-submodules/tableHeader.phtml'; }
+    /**
+     * PLots table's footer html/css
+     */
     protected function plotTableFooter() { require 'directoryTree-submodules/tableFooter.phtml'; }
     /**
      * Get a proper navigation link
@@ -49,6 +81,11 @@ class directoryTree extends \stdClass
                 trigger_error("Undefined `{$item->WhoAmI()}` item ", E_USER_ERROR);
         }
     }
+    /**
+     * Get proper value of `taget` for &lt;a&gt;
+     * @param \core\db\models\item $item The target item 
+     * @return string The target value
+     */
     protected  function getNavigationTarget(\core\db\models\item $item) {
         switch($item->WhoAmI()) {
             case "note": return "_top";
@@ -58,6 +95,11 @@ class directoryTree extends \stdClass
                 trigger_error("Undefined `{$item->WhoAmI()}` item ", E_USER_ERROR);
         }
     }
+    /**
+     * Get proper status icon of an item
+     * @param \core\db\models\item $item The target item 
+     * @return the status icons string collection
+     */
     protected function getStatusIcons(\core\db\models\item $item) {
         $si = "";
         $counter = 0;
@@ -84,22 +126,45 @@ class directoryTree extends \stdClass
         }
         return $si;
     }
+    /**
+     * Get proper CSS class value for an item's checkbox
+     * @param \core\db\models\item $item The target item
+     * @return string The classes string collection
+     */
     protected function getCheckBoxClasses(\core\db\models\item $item) {
         $cbc = "item-checkbox";
         if($item->is_public) $cbc .= " public-item";
         if(!$item->is_public) $cbc .= " private-item";
         return $cbc;
     }
+    /**
+     * Get binary representaion of item's status properties
+     * @param \core\db\models\item $item The target item
+     * @return string The binary representaion of item's status properties
+     */
     protected function getStatusBinary(\core\db\models\item $item) {
-        return preg_replace("#[a-z&=]+#", "", $this->getStatusString($item));
+        return preg_replace(array("#[a-z&=]+#i", "#0#i", "#1#i", "#2#i"), array("", "2", "0", "1"), $this->getStatusString($item));
     }
+    /**
+     * get inverse verbose representaion of item's status properties
+     * @param \core\db\models\item $item The target item
+     * @return string The inverse verbose representaion of item's status properties
+     */
     protected  function getStatusString(\core\db\models\item $item) {
         $s = "";
         $s .= ("&share=".($item->is_public?"0":"1"));
         $s .= ("&archive=".($item->is_archive?"0":"1"));
         $s .= ("&trash=".($item->is_trash?"0":"1"));
-        return $s;
+        return $s; 
     }
+    /**
+     * Plots a row of table
+     * @param \core\db\models\item $item The target item to plot
+     * @param string $active_type Which type this directory tree contains?
+     * @param string|integer $pid the parrent directory this directory tree
+     * @param boolean $is_owner is current user is owner of current tree?
+     * @throws \zinux\kernel\exceptions\invalideArgumentException if item is NULL
+     */
     protected function plotTableRow(\core\db\models\item $item, $type, $parent_id, $is_owner) {
         if($item === NULL) {
             throw new \zinux\kernel\exceptions\invalideArgumentException("The item cannot be null...");
@@ -109,6 +174,11 @@ class directoryTree extends \stdClass
                 "moment(moment('$item->updated_at').format('lll')).fromNow())".
                 ".attr('title', moment('$item->updated_at').format('lll'));";
     }
+    /**
+     * Plots necessary JS for table operations
+     * @param string $active_type Which type this directory tree contains?
+     * @throws \zinux\kernel\exceptions\invalideArgumentException if <b>$this->post_script</b> is not a string
+     */
     protected function plotTableJS($active_type) {
         if(isset($this->post_script) && strlen($this->post_script)) {
             if(!is_string($this->post_script))
@@ -116,7 +186,14 @@ class directoryTree extends \stdClass
         } else { $this->post_script = ""; }
         require 'directoryTree-submodules/table-js.phtml';
     }
-    protected  function plotItems($active_type, $collection, $parent_id, $is_owner) {
+    /**
+     * Plot entire collection directory tree
+     * @param string $active_type Which type this directory tree contains?
+     * @param array $collection The collection to plot
+     * @param string|integer $pid the parrent directory this directory tree
+     * @param boolean $is_owner is current user is owner of current tree?
+     */
+    protected  function plotItems($active_type, array $collection, $parent_id, $is_owner) {
         if(!count($collection)) {
             require 'directoryTree-submodules/table-empty.phtml';
             return;
@@ -129,13 +206,31 @@ class directoryTree extends \stdClass
         $this->plotTableFooter();
         $this->plotTableJS($active_type);
     }
-    public function plotFolders($collection, $parent_id, $is_owner) {
+    /**
+     * Plots collection as { `Type`: `Folder` }
+     * @param array $collection The collection to plot
+     * @param string|integer $pid the parrent directory this directory tree
+     * @param boolean $is_owner is current user is owner of current tree?
+     */
+    public function plotFolders(array $collection, $parent_id, $is_owner) {
         $this->plotItems("folder", $collection, $parent_id, $is_owner);
     }
-    public function plotNotes($collection, $parent_id, $is_owner) {
+    /**
+     * Plots collection as { `Type`: `Note` }
+     * @param array $collection The collection to plot
+     * @param string|integer $pid the parrent directory this directory tree
+     * @param boolean $is_owner is current user is owner of current tree?
+     */
+    public function plotNotes(array $collection, $parent_id, $is_owner) {
         $this->plotItems("note", $collection, $parent_id, $is_owner);
     }
-    public function plotLinks($collection, $parent_id, $is_owner) {
+    /**
+     * Plots collection as { `Type`: `Link` }
+     * @param array $collection The collection to plot
+     * @param string|integer $pid the parrent directory this directory tree
+     * @param boolean $is_owner is current user is owner of current tree?
+     */
+    public function plotLinks(array $collection, $parent_id, $is_owner) {
         $this->plotItems("link", $collection, $parent_id, $is_owner);
     }
 }
