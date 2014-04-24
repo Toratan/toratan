@@ -182,7 +182,7 @@ __GENERIC: ?>
             <thead>
                 <tr>
                     <th style="width: 0.1%"></th>
-                    <th style="width: 8%;overflow: hidden">Status <span class="ui-icon fs-toggle"></span></th>
+                    <th style="width: 67px;overflow: hidden" title="Status"><span class="glyphicon glyphicon-th-large"></span>&nbsp;<span class="ui-icon fs-toggle"></span></th>
                     <th style="width: 70%;">Name <span class="ui-icon fs-toggle"></span></th>
                     <th id="table-header-updated">Updated at <span class="ui-icon fs-toggle"></span></th>
                 </tr>
@@ -213,25 +213,28 @@ __GENERIC: ?>
     }
     protected function getStatusIcons(\core\db\models\item $item) {
         $si = "";
-        switch($item->WhoAmI()) {
-            case "note":
-                $si = "<span class='glyphicon glyphicon-file' title='Note'></span> ";
-                break;
-            case "link":
-                $si = "<span class='glyphicon glyphicon-link' title='Link'></span> ";
-                break;
-            case "folder":
-                $si = "<span class='glyphicon glyphicon-folder-close' title='Folder'></span> ";
-                break;
-            default:
-                trigger_error("Undefined `{$item->WhoAmI()}` item ", E_USER_ERROR);
-        }
-        if($item->is_public)
+        $counter = 0;
+        if($item->is_public && ++$counter)
             $si .= "<span class='glyphicon glyphicon-share-alt' title='Shared'></span>";
-        if($item->is_trash)
+        if($item->is_trash && ++$counter)
             $si .= "<span class='glyphicon glyphicon-trash' title='Deleted'></span>";
-        if($item->is_archive)
+        if($item->is_archive && ++$counter)
             $si .= " <span class='glyphicon glyphicon-save' title='Archived'></span>";
+        if($counter < 3) {
+            switch($item->WhoAmI()) {
+                case "note":
+                    $si = "<span class='glyphicon glyphicon-file' title='Note'></span> $si"; 
+                    break;
+                case "link":
+                    $si = "<span class='glyphicon glyphicon-link' title='Link'></span> $si";
+                    break;
+                case "folder":
+                    $si = "<span class='glyphicon glyphicon-folder-close' title='Folder'></span> $si";
+                    break;
+                default:
+                    trigger_error("Undefined `{$item->WhoAmI()}` item ", E_USER_ERROR);
+            }
+        }
         return $si;
     }
     protected function getCheckBoxClasses(\core\db\models\item $item) {
@@ -381,7 +384,6 @@ __GENERIC: ?>
             $(document).ready(function(){<?php echo $this->post_script; ?>
                 $('table.table').tablesorter({
                     sortList: [[2,0]],
-                    sortForce: [[1,1]],
                     textExtraction: function(node) {
                         var txt = $(node).text();
                         if($(node).hasClass('updated-at')) {
@@ -389,7 +391,6 @@ __GENERIC: ?>
                         }
                         if($(node).hasClass('status')) {
                             txt = $(node).attr('status') + $(node).next("td").text().trim();
-                            console.log(txt);
                         }
                         return txt;
                     },
