@@ -2,9 +2,9 @@ X #0 Why `Updated at` not working in explorer??
 X #0 Firefox iframe targeting does not working!!
 X #0 Why `opt` outputs errors??
 X #0 AJAX calls are not sync and contains error + `/ops/` mapping URI are fragmented and NOT organized
-#0 Why after `apply_changes()` by table resorting not working??
-#0 Find an alternative for `moment()`
-#0 Make limited explorer query { Maybe no need } -> ONLY FOR NOTES AND LINKS [ NOT FOLDERS ]
+X #0 Why after `apply_changes()` by table resorting not working??
+X #0 Find an alternative for `moment()`
+X #0 Make limited explorer query { Maybe no need } -> ONLY FOR NOTES AND LINKS [ NOT FOLDERS ]
 #0 Make cool search in `explorer`
 #1 Create good UI for note-editors
 #2 Find good markup-parser for code-block purposes
