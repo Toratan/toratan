@@ -27,12 +27,12 @@
             if(typeof(init) === "undefined") init = false;
             if(init) {
                 $("#ajax-placeholder").html("").hide().css("margin", "0px");
-                $("#explorer-table").css({"margin-top": (parseFloat($("#explorer-template").css("height")) - 10)+"px"});
+                $("#explorer-table").css({"margin-top": $("#explorer-template").css("height")});
                 return;
             }
             $("#ajax-placeholder").slideUp("medium", function() { 
                 $(this).html("").hide().css("margin", "0px");
-                $("#explorer-table").animate({"margin-top": (parseFloat($("#explorer-template").css("height")) - 10)}, "fast");
+                $("#explorer-table").animate({"margin-top": $("#explorer-template").css("height")}, "fast");
             });
         };
         $(".check-all").click(function() {
@@ -90,7 +90,7 @@
                     .html(xhr.responseText + "<small><a href='#' onclick='window.reset_ajax_placeholder();return false;'>Close</a></small>")
                     .css("margin", "-0px auto  10px auto")
                     .slideDown('medium', function() {
-                        $("#explorer-table").animate({"margin-top": (parseFloat($("#explorer-template").css("height")) - 10)}, "fast");
+                        $("#explorer-table").animate({"margin-top": $("#explorer-template").css("height")}, "fast");
                     });
                 setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
             }

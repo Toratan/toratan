@@ -23,8 +23,11 @@
     }
     .header.headerSortDown,
     .header.headerSortUp {
-        border-top: 2px solid #DDDDDD!important;
+        border-top: 1px solid #000!important;
     }        
+    table#explorer-table thead tr th {
+        border-top: 0!important;
+    }
 </style>
 <form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI())) ?>">
     <input type="hidden" name="type" value="<?php echo $active_type ?>" />
@@ -33,10 +36,10 @@
         <table class="table table-hover table-responsive">
             <thead>
                 <tr>
-                    <th style="width: 0.1%"></th>
-                    <th style="width: 67px;overflow: hidden" title="Status"><span class="glyphicon glyphicon-th-large"></span>&nbsp;<span class="ui-icon fs-toggle"></span></th>
-                    <th style="width: 70%;">Name <span class="ui-icon fs-toggle"></span></th>
-                    <th id="table-header-updated">Updated at <span class="ui-icon fs-toggle"></span></th>
+                    <th style="width: 0.1%;"></th>
+                    <th style="width: 11%;overflow: hidden" title="Status"><span class="glyphicon glyphicon-th-large"></span>&nbsp;<span class="ui-icon fs-toggle"></span></th>
+                    <th style="width: 45%;">Name <span class="ui-icon fs-toggle"></span></th>
+                    <th id="table-header-updated" style="40%">Updated at <span class="ui-icon fs-toggle"></span></th>
                 </tr>
             </thead>
             <tbody>
