@@ -116,9 +116,10 @@
                 // update the update row
                 var updateTime = new Date();
                 $("tr.item-checked td.updated-at")
-                        .html(moment(updateTime).fromNow())
-                        .attr('title', moment(updateTime).format('lll'))
-                        .attr('origin-date', updateTime);
+                    .attr('title', updateTime)
+                    .attr('origin-date', updateTime.toISOString())
+                    .children('time').attr('datetime', updateTime.toISOString())
+                    .datetime();
             }
             // tag checked items to be trackable
             $("tr.item-checked").addClass("item-anim-tag");

@@ -20,11 +20,6 @@ class directoryTree extends \stdClass
      */
     protected $request;
     /**
-     * The post script text container
-     * @var string
-     */
-    protected $post_script;
-    /**
      * Construct a new directory tree
      * @param \zinux\kernel\routing\request $request The current request detail
      * @param integer $__tree_type should be one of <i>\modules\frameModule\models\directoryTree::{<b>REGULAR</b>, <b>TRASH</b>, <b>ARCHIVE</b>, <b>SHARED</b>}</i>
@@ -33,7 +28,6 @@ class directoryTree extends \stdClass
     {
         $this->request = $request;
         $this->tree_type = $__tree_type;
-        $this->post_script = "";
     }
     /**
      * PLots options of directory tree
@@ -170,20 +164,12 @@ class directoryTree extends \stdClass
             throw new \zinux\kernel\exceptions\invalideArgumentException("The item cannot be null...");
         }
         require 'directoryTree-submodules/table-row.phtml';
-        $this->post_script .= "$(\"table tbody tr.$type td#$type-{$item->{"{$item->WhoAmI()}_id"}}-updated\").html(".
-                "moment(moment('$item->updated_at').format('lll')).fromNow())".
-                ".attr('title', moment('$item->updated_at').format('lll'));";
     }
     /**
      * Plots necessary JS for table operations
      * @param string $active_type Which type this directory tree contains?
-     * @throws \zinux\kernel\exceptions\invalideArgumentException if <b>$this->post_script</b> is not a string
      */
     protected function plotTableJS($active_type) {
-        if(isset($this->post_script) && strlen($this->post_script)) {
-            if(!is_string($this->post_script))
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Expecting the `post script` be a string!");
-        } else { $this->post_script = ""; }
         require 'directoryTree-submodules/table-js.phtml';
     }
     /**
