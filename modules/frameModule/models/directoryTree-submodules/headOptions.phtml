@@ -6,6 +6,9 @@
     #explorer-table { margin-top: 130px; }
 </style>
 <div id="directory-tree-opt" class="btn-toolbar">
+    <div class="pull-right" style="width: 30%;">
+        <input type="text" class="input form-control" placeholder="Quick Access"/>
+    </div>
     <!-- Split button -->
     <div class="btn-group">
         <div type="button" class="btn btn-default" style="height: 34px;"><input type="checkbox" class="input check-all"/></div>
@@ -57,7 +60,7 @@ __GENERIC: ?>
     <div class="btn-group checked-opt hidden">
         <button type="submit" class="btn btn-danger w60" title="Restore" name="ops" value="remove"><span class="glyphicon glyphicon-remove"></span></button>
     </div>
-    <div class="btn-group pull-right" style="padding-top: 3px;" >
+    <div class="btn-group pull-right" style="padding-top: 7px;" >
         <a id="trash-detail-popover" data-container="body" data-toggle="popover" data-placement="left" data-content="<div style='text-align: justify;margin-bottom:-3px'>All items which have been labaled as trashed <b>will not</b> appear anywhere else; Though if they are marked as <u><i>archived</i></u> or <u><i>shared</i></u>. In order to make them available please <b>select and restore</b> them.</div>" data-original-title="" title="">
           <span class="glyphicon glyphicon-exclamation-sign"></span>
         </a>
@@ -69,7 +72,7 @@ __GENERIC: ?>
 <?php endswitch; ?>
     </div> <!--end .checked-opt -->
     <div class="pull-right">
-        <div class="btn-group hidden" id="ajax-loader-img" style="margin:0;padding:0">
+        <div class="btn-group hidden" id="ajax-loader-img" style="margin:0;margin-right: 10px;padding-top: 5px;">
             <img class="image" src="/access/img/ajax-loader.gif" />
         </div>
     </div>
