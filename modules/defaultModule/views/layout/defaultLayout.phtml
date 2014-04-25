@@ -167,16 +167,16 @@
             </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
-        <div class="container-fluid">
+        <div class="container-fluid" style="padding-top:0.5%">
         <?php if($user_logged) :  ?>
             <script>
                 $(document).ready(function() {
                     $('#explorer-nav-frame').attr('src', '/frame/en/'+window.location.hash);
                 });
             </script>
-            <iframe id="explorer-nav-frame" name="explorer-nav-frame" style="height: 300px" src="/frame/en" class="pull-left col-lg-2 col-md-2 col-sm-3 col-xm-3"></iframe>
-            <iframe id="explorer-frame" name="explorer-frame" style="height: 768px" src="" class="col-lg-7 col-md-7 col-sm-9 col-xm-9"></iframe>
-            <iframe id="feed-frame" name="feed-frame" style="height: 768px" src="/frame/f" class="pull-right col-lg-3 col-md-3 hidden-sm hidden-xs"></iframe>
+            <iframe id="explorer-nav-frame" name="explorer-nav-frame" frameborder="0" style="height: 300px" src="/frame/en" class="pull-left col-lg-2 col-md-2 col-sm-3 col-xm-3"></iframe>
+            <iframe id="explorer-frame" name="explorer-frame" frameborder="0" style="height: 768px" src="" class="col-lg-7 col-md-7 col-sm-9 col-xm-9"></iframe>
+            <iframe id="feed-frame" name="feed-frame" frameborder="0" style="height: 768px" src="/frame/f" class="pull-right col-lg-3 col-md-3 hidden-sm hidden-xs"></iframe>
         <?php else: ?>
             <legend>Not logged in {Fames go here!!}</legend>
         <?php endif; ?>
