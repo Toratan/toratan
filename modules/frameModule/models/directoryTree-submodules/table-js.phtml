@@ -2,11 +2,13 @@
 <script src="/access/js/jquery.tablesorter.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-        $("td.updated-at time").datetime();
         $('td.updated-at').each(function(){
-            $(this).attr('title', new Date($(this).attr('title')).toLocaleString());
-        });
-        window.setInterval(function() { $("time").datetime(); }, 5000 );
+            $(this)
+                .attr('title', new Date($(this).attr('title')).toLocaleString())
+                .children('time')
+                .attr('title', $(this).attr('title'));
+        }).children("time").datetime();
+        window.setInterval(function() { $(" td.updated-at time").datetime(); }, 5000 );
         window.sort_table = function() {
             var defaultHeadIndex = 2;
             var defaultHeadOrder = 0;
@@ -15,6 +17,14 @@
                 defaultHeadIndex = $($activeHead).index();
                 defaultHeadOrder = $($activeHead).hasClass('headerSortDown') ? 0 : 1;
             }
+            // remove any previous click handler 
+            // bound to table's headers if we don't
+            // this the next `tablesorter()` will invoke
+            // both of handler(i.e the previous handlers 
+            // and the following new one) and thing will
+            // get messy!!
+            $('table.table .header').unbind('click');
+            // make/re-make the table sortable
             $('table.table').tablesorter({
                 sortList: [[defaultHeadIndex, defaultHeadOrder]],
                 textExtraction: function(node) {
@@ -32,6 +42,7 @@
                 }
             });
         };
+        // to make `$("input[type='checkbox'].item-checkbox").change()` auto-invokable!!
         $.propHooks.checked = {
             set: function(elem, value, name) {
               var ret = (elem[ name ] = value);

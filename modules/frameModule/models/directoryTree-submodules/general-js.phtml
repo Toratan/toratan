@@ -118,7 +118,9 @@
                 $("tr.item-checked td.updated-at")
                     .attr('title', updateTime)
                     .attr('origin-date', updateTime.toISOString())
-                    .children('time').attr('datetime', updateTime.toISOString())
+                    .children('time')
+                        .attr('datetime', updateTime.toISOString())
+                        .attr('title', updateTime)
                     .datetime();
             }
             // tag checked items to be trackable
