@@ -19,7 +19,22 @@
                     $(".checked-opt.checked-opt-unique").addClass("hidden");
             }
         };
-        window.reset_ajax_placeholder = function() { $("#ajax-placeholder").slideUp(function() { $(this).html("").hide().css("margin", "0px"); }); $("#explorer-table").animate({"margin-top": "130"});};
+        /**
+         * Init page table and ajax placeholder
+         * @param boolean init if it is a page init?
+         */
+        window.reset_ajax_placeholder = function(init) {
+            if(typeof(init) === "undefined") init = false;
+            if(init) {
+                $("#ajax-placeholder").html("").hide().css("margin", "0px");
+                $("#explorer-table").css({"margin-top": (parseFloat($("#explorer-template").css("height")) - 10)+"px"});
+                return;
+            }
+            $("#ajax-placeholder").slideUp("medium", function() { 
+                $(this).html("").hide().css("margin", "0px");
+                $("#explorer-table").animate({"margin-top": (parseFloat($("#explorer-template").css("height")) - 10)}, "fast");
+            });
+        };
         $(".check-all").click(function() {
             $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
             window.update_menu_checkbox();
@@ -54,7 +69,7 @@
                 default:
             }
         });
-        window.reset_ajax_placeholder();
+        window.reset_ajax_placeholder(true);
         window.update_menu_checkbox();
     <?php endif; ?>
         window.ajax_start = function() {
@@ -70,12 +85,13 @@
         window.ajax_success = function( event, xhr, settings ) {
             if(typeof(xhr.responseText) === "undefined" || xhr.responseText.length === 0) window.reset_ajax_placeholder();
             else {
-                $("#explorer-table").animate({"margin-top": "194"}, 'slow');
                 $("#ajax-placeholder")
                     .hide()
                     .html(xhr.responseText + "<small><a href='#' onclick='window.reset_ajax_placeholder();return false;'>Close</a></small>")
                     .css("margin", "-0px auto  10px auto")
-                    .slideDown('slow');
+                    .slideDown('medium', function() {
+                        $("#explorer-table").animate({"margin-top": (parseFloat($("#explorer-template").css("height")) - 10)}, "fast");
+                    });
                 setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
             }
         };
