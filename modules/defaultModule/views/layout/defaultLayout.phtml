@@ -123,7 +123,15 @@
                  * @param integer close_timeout the timeout for closing modal
                  */
                 window.open_infoModal = function(info, close_timeout) {
-                    open_modal("div#info-modal", info, '<span class="glyphicon glyphicon-info-sign"></span> Notice', close_timeout);
+                    open_modal("div#info-modal", info, '<span class="glyphicon glyphicon-comment"></span> Notice', close_timeout);
+                };
+                /**
+                 * open an error modal  
+                 * @param string info the info to put into modal body
+                 * @param integer close_timeout the timeout for closing modal
+                 */
+                window.open_errorModal = function(info, close_timeout) {
+                    open_modal("div#info-modal", info, '<span class="glyphicon glyphicon-remove-sign"></span> Oops!', close_timeout);
                 };
                 /**
                  * open a YES/NO modal

@@ -195,6 +195,8 @@ catch(Exception $e)
     echo "<p><b>Message: </b></p><p>";
     require_once PROJECT_ROOT.'zinux/kernel/utilities/debug.php';
     zinux\kernel\utilities\debug::_var($e->getMessage());
+    header('HTTP/1.1 500');
+    exit;
     echo "</p>";
     echo "<p><b>Stack Trace: </b></p><pre>".$e->getTraceAsString()."</pre>";
     zinux\kernel\utilities\debug::_var($e->getTrace());

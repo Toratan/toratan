@@ -66,12 +66,24 @@ class indexController extends \zinux\kernel\controller\baseController
         $uid = \core\db\models\user::GetInstance()->user_id;
         $item_class = "\\core\\db\\models\\$type";
         $ins = new $item_class;
+        $shared = 0;
+        $unshared = 0;
+        $flag = \core\db\models\item::FLAG_UNSET;
         foreach ($infos as $info)
         {
             $item = \modules\opsModule\models\itemInfo::decode($info);
             $func = $ops;
-            $flag = @$item->$ops ? \core\db\models\item::FLAG_SET : \core\db\models\item::FLAG_UNSET;
             switch($ops) {
+                case "archive":
+                    if(!isset($item->a)) throw new \zinux\kernel\exceptions\invalideOperationException;
+                    $flag = $item->a;
+                    break;
+                case "share":
+                    if(!isset($item->s)) throw new \zinux\kernel\exceptions\invalideOperationException;
+                    $flag = $item->s;
+                    if($flag) $shared++;
+                    else $unshared++;
+                    break;
                 case "trash":
                     $flag = \core\db\models\item::DELETE_PUT_TARSH;
                     goto __OP_FUNC;
@@ -84,11 +96,14 @@ __OP_FUNC:
                     $func = "delete";
                     break;
             }
-            $ins->$func($item->$type, $uid, $flag);
+            $ins->$func($item->i, $uid, $flag);
             $counter++;
         }
         $op_name = "toggle-{$ops}d";
         switch($ops) {
+            case "archive":
+                $op_name = (!$flag ? "un-" : "")."archived";
+                break;
             case "trash":
                 $op_name = "moved to trash";
                 break;
@@ -99,7 +114,12 @@ __OP_FUNC:
                 $op_name = "restored from trash";
                 break;
         }
-        $result = "<b>#$counter $type".($counter>1?"s":"")."</b> ha".($counter>1?"ve":"s")." been <b>$op_name</b> successfully!";
+        $result = "<span class='glyphicon glyphicon-ok'></span> Total<b># $counter <u>$type".($counter>1?"s":"")."</u></b> ha".($counter>1?"ve":"s")." been <b>$op_name</b>.";
+        if($ops === "share") {
+            $result = 
+                    ($shared ? sprintf("<span class='glyphicon glyphicon-ok'></span> <b>#$shared $type%s</b> ha%s been <b>shared</b>.<br />", ($shared>1?"s":""), ($shared>1?"ve":"s")) : "").
+                    ($unshared ? sprintf("<span class='glyphicon glyphicon-ok'></span> <b>#$unshared $type%s</b> ha%s been <b>un-shared</b>.<br />", ($unshared>1?"s":""), ($unshared>1?"ve":"s")) : "");                    
+        }
         if($ajax) {
             echo $result;
             exit;

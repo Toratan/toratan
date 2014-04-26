@@ -78,7 +78,13 @@
                     }
                     // set a timeout(50ms) for re-binding the ajax success method
                     setTimeout(function() { $(window).ajaxSuccess(window.ajax_success); }, 50);
+                },
+                error: function( jqXHR, textStatus, errorThrown) {
+                    window.top.open_errorModal(jqXHR.responseText);
                 }
+            }).always(function(){
+                // remove the simulated form submit btn
+                $('form#opt-form input[name="ops"]').remove();
             });
         });
         $("button[value='edit']").click(function(e) {

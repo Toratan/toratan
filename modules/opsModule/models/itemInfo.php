@@ -16,12 +16,10 @@ class itemInfo extends \zinux\kernel\model\baseModel
         if(!$item) throw new \zinux\kernel\exceptions\invalideArgumentException("item cannot be null");
         $s = array_merge(
             array(
-                $item->WhoAmI() => $item->{"{$item->WhoAmI()}_id"},
-                "share" => $item->is_public?"0":"1",
-                "archive" => $item->is_archive?"0":"1",
-                "trash" => $item->is_trash?"0":"1",
-            ), 
-            \zinux\kernel\security\security::GetHashArray(array($item->WhoAmI(),  $item->{"{$item->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))
+                "i"  => $item->{"{$item->WhoAmI()}_id"},
+                "s" => $item->is_public?"0":"1",
+                "a" => $item->is_archive?"0":"1"
+            )
         );
         return json_encode($s);
     } 
