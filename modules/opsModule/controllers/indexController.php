@@ -68,6 +68,8 @@ class indexController extends \zinux\kernel\controller\baseController
             case "restore":
                 foreach ($items as $item)
                 {
+                    $this->request->params = \modules\opsModule\models\itemInfo::decode($item);
+                    goto __OP;
                     $params = explode("&",  $type ."&". $item);
                     $this->request->params = array();
                     $indexed_param = array();
@@ -88,6 +90,7 @@ class indexController extends \zinux\kernel\controller\baseController
                                 $indexed_param[] = $this->request->params[$params[$index - 1]];
                         }
                     }
+__OP:
                     $action = $ops;
                     switch ($ops) {
                         case "trash":

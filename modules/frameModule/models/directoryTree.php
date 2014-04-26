@@ -137,10 +137,10 @@ class directoryTree extends \stdClass
      * @return string The binary representaion of item's status properties
      */
     protected function getStatusBinary(\core\db\models\item $item) {
-        return preg_replace(array("#[a-z&=]+#i", "#0#i", "#1#i", "#2#i"), array("", "2", "0", "1"), $this->getStatusString($item));
+        return ($item->is_public?"1":"0").($item->is_archive?"1":"0").($item->is_trash?"1":"0");
     }
     /**
-     * get inverse verbose representaion of item's status properties
+     * Get inverse verbose representaion of item's status properties
      * @param \core\db\models\item $item The target item
      * @return string The inverse verbose representaion of item's status properties
      */
@@ -150,6 +150,14 @@ class directoryTree extends \stdClass
         $s .= ("&archive=".($item->is_archive?"0":"1"));
         $s .= ("&trash=".($item->is_trash?"0":"1"));
         return $s; 
+    }
+    /**
+     * Get checkbox POST value for an item
+     * @param \core\db\models\item $item The target value
+     * @return string the value
+     */
+    protected function getPostCheckVal(\core\db\models\item $item) {
+         return htmlentities(\modules\opsModule\models\itemInfo::encode($item)); 
     }
     /**
      * Plots a row of table
