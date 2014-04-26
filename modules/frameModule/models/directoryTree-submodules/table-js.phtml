@@ -53,8 +53,50 @@
         $("button[name='ops']").click(function(e){
             if($(this).attr('value') === 'edit') return;
             e.preventDefault();
-            $('form#opt-form').prepend($("<input>").attr("type", "hidden").attr("name", "ops").val($(this).attr('value')));
-            var ops = $(this).attr('value');
+            var ops = String($(this).attr('value')).toLowerCase();
+            var $this = this;
+            switch(ops) {
+                case "share":
+                    ops = "toggle-share";
+                case "remove":
+                    var msg = "<u>#"+($("tr.item-checked").length)+"</u> <?php echo $active_type ?>s";
+                    if($("tr.item-checked").length === 1) {
+                        msg = "<u style='cursor:pointer'>"+$(".item-checked-name a").html()+"</u>";
+                    }
+                    window.top
+                            .open_yesnoModal(
+                            "Are your sure to <b>"+ops+"</b> "+msg+"?", 
+                            function() {
+                                window.submit_ops($this);
+                            }
+                        );
+                    break;
+                default:
+                    window.submit_ops($this);
+            }
+        });
+        $("button[value='edit']").click(function(e) {
+            e.preventDefault();
+            if($("input[type='checkbox'].item-checkbox:checked").first() === 0) return;
+            $.ajax({
+                type: "GET",
+                url: "/ops/edit?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
+            });
+        });
+        $("input[type='checkbox'].item-checkbox").change(function() {
+            if($(this).prop('checked')) {
+                $(this).parent().parent().css({"background-color": "#f7fafc"});
+                $(this).parent().siblings('.item-name').addClass("item-checked-name");
+                $(this).parent().parent().addClass("item-checked");
+            } else {
+                $(this).parent().parent().css("background-color", "transparent");
+                $(this).parent().siblings('.item-name').removeClass("item-checked-name");
+                $(this).parent().parent().removeClass("item-checked");
+            }
+        });
+        window.submit_ops = function($this) {
+            $('form#opt-form').prepend($("<input>").attr("type", "hidden").attr("name", "ops").val($($this).attr('value')));
+            var ops = $($this).attr('value');
             $.ajax({
                 type: $('form#opt-form').attr('method'),
                 url: $('form#opt-form').attr('action'),
@@ -86,26 +128,7 @@
                 // remove the simulated form submit btn
                 $('form#opt-form input[name="ops"]').remove();
             });
-        });
-        $("button[value='edit']").click(function(e) {
-            e.preventDefault();
-            if($("input[type='checkbox'].item-checkbox:checked").first() === 0) return;
-            $.ajax({
-                type: "GET",
-                url: "/ops/edit?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
-            });
-        });
-        $("input[type='checkbox'].item-checkbox").change(function() {
-            if($(this).prop('checked')) {
-                $(this).parent().parent().css({"background-color": "#f7fafc"});
-                $(this).parent().siblings('.item-name').addClass("item-checked-name");
-                $(this).parent().parent().addClass("item-checked");
-            } else {
-                $(this).parent().parent().css("background-color", "transparent");
-                $(this).parent().siblings('.item-name').removeClass("item-checked-name");
-                $(this).parent().parent().removeClass("item-checked");
-            }
-        });
+        };
         window.sort_table();
     });
 </script>
