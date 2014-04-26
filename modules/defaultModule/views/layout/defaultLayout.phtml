@@ -59,7 +59,7 @@
         </div>
         <div class="clearfix"></div>
         <script>
-            $(document).ready(function() {
+            (function() {
                 window.default_modal_button = new (function() {
                     this.get = function() { return {
                                     html: "Close",
@@ -71,7 +71,7 @@
                                     callback: null
                                 }; 
                     };
-                })();
+                });
                 /**
                  * Opens a modal
                  * @param string modal_tag the target modal tag
@@ -170,7 +170,7 @@
                     }
                     open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-question-sign"></span> Confirm', close_timeout, [no, yes]);
                 };
-            });
+            })(jQuery);
         </script>
         <!-- general modal -->
         <div id="dialog-modal" class="modal fade" role="dialog" aria-labelledby="ops-container-info" aria-hidden="true" tabindex="-1">
@@ -187,11 +187,6 @@
         </div><!-- /.modal -->
         <div class="container-fluid" style="padding-top:0.5%">
         <?php if($user_logged) :  ?>
-            <script>
-                $(document).ready(function() {
-                    $('#explorer-nav-frame').attr('src', '/frame/en/'+window.location.hash);
-                });
-            </script>
             <iframe id="explorer-nav-frame" name="explorer-nav-frame" frameborder="0" style="height: 300px" src="/frame/en" class="pull-left col-lg-2 col-md-2 col-sm-3 col-xm-3"></iframe>
             <iframe id="explorer-frame" name="explorer-frame" frameborder="0" style="height: 768px" src="" class="col-lg-7 col-md-7 col-sm-9 col-xm-9"></iframe>
             <iframe id="feed-frame" name="feed-frame" frameborder="0" style="height: 768px" src="/frame/f" class="pull-right col-lg-3 col-md-3 hidden-sm hidden-xs"></iframe>
@@ -199,6 +194,14 @@
             <legend>Not logged in {Fames go here!!}</legend>
         <?php endif; ?>
         </div>
+        <script type="text/javascript">
+            (function(){
+                // re-size the frames
+                $('iframe').css('height', ($('body').height() - 80)+'px');
+                // re-locate the explorer
+                $('#explorer-nav-frame').attr('src', '/frame/en/'+window.location.hash);
+            })(jQuery);
+        </script>
         <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
     </body>
 </html>
