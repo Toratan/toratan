@@ -108,9 +108,15 @@
                         $(modal_tag+" .modal-footer").append(t).html();
                         if(typeof(b.callback) !== 'undefined') {
                             $(modal_tag+" .modal-footer button#"+btn_id).click(function() {
-                                $(modal_tag).modal('hide');
-                                // a delay to give the modal time to hide
-                                setTimeout(b.callback, 100);
+                                var callback = b.callback;
+                                // we have to do this to prevent a UI bug
+                                $(modal_tag).on('hidden.bs.modal', function () {
+                                    // unregister current handler
+                                    // we don't want to repeat this handler
+                                    // at next modal show/hidden!!
+                                    $(this).off('hidden.bs.modal');
+                                    callback();
+                                }).modal('hide');
                             });
                         }
                     }

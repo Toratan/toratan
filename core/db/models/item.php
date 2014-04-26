@@ -475,28 +475,28 @@ __RETURN:
      */
     protected function storeStatusBits() {
         # BSB: Binary Status State
-        $this->temporary_container["BSS"]  = $this->fetchStatusBits();
+        $this->temporary_container["BSS"]  = $this->getStatusBits();
     }
     /**
-     * fetch stored status bits
+     * fetch stored status bits; if no status bit assigned {0} will be returned
      * @return binary
      */
     protected function fetchStatusBits() {
         if(isset($this->temporary_container["BSS"]))
             return $this->temporary_container["BSS"];
-        return 0b000;
+        return 0b0000;
     }
     /**
      * Get binary status state of current item<br />
-     * The format is: 0b{public}{trash}
+     * The format is: 0b{public}{trash}{zero}{validateBit}
      * @return binary
      */
     protected function getStatusBits() {
-        $flag = 0b000;
+        $flag = 0b0001;
         if($this->is_public)
-            $flag |= 0b100;
-        if($this->is_trash);
-            $flag |= 0b010;
+            $flag = $flag | 0b1001;
+        if($this->is_trash)
+            $flag = $flag | 0b0101;
         return $flag;
     }
     /**
@@ -521,11 +521,11 @@ __RETURN:
         # if any status bit has been stored
         if(($obss = $this->fetchStatusBits())) {
             $cbss = $this->getStatusBits();
-            // nothing notifiable has been changed
+            # nothing notifiable has been changed
             if($obss === $cbss) return;
             # validate the publicity
             # if publicity has been changed
-            if($obss & 0b100 !== $cbss & 0b100) {
+            if(($obss & 0b1000) !== ($cbss & 0b1000)) {
                 if($this->is_public)
                     \core\db\models\notification::put($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, \core\db\models\notification::NOTIF_FLAG_SHARE);
                 else
@@ -535,8 +535,8 @@ __RETURN:
                     # update the sub-items sharing status
                     \core\db\models\sharing_queue::add_queue($this);
             }
-            // if trash state has been changed and this is a public item
-            if(($obss & 0b010 !== $cbss & 0b010) && $this->is_public) {
+            # if trash state has been changed and this is a public item
+            if((($obss & 0b0100) !== ($cbss & 0b0100)) && $this->is_public) {
                 if($this->is_trash)
                     \core\db\models\notification::visibleNotification($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, 0);
                 else
