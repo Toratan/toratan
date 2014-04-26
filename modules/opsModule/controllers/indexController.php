@@ -48,80 +48,57 @@ class indexController extends \zinux\kernel\controller\baseController
         \zinux\kernel\security\security::IsSecure($this->request->params, 
                 array("type", "ops", "items", "continue"),
                 array('is_array' => $this->request->params["items"]));
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params["type"], $this->request->params["continue"]));
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, 
+                array($this->request->params["type"], $this->request->params["continue"], session_id()));
+        if(!in_array($this->request->params["type"], array("folder", "note", "link")))
+                throw new \zinux\kernel\exceptions\invalideArgumentException("Undefined `{$this->request->params["type"]}`");
+        if(!in_array($this->request->params["ops"], array("share", "archive", "trash", "restore", "remove")))
+                throw new \zinux\kernel\exceptions\invalideArgumentException("Undefined ops `{$this->request->params["ops"]}`");
         $continue = $this->request->params["continue"];
         $method = $_SERVER['REQUEST_METHOD'];
-        $items = $this->request->params["items"];
+        $infos = $this->request->params["items"];
         $type = $this->request->params["type"];
         $ops = strtolower($this->request->params["ops"]);
         $ajax = isset($this->request->params["ajax"]);
         $this->ops_index_interface = 1;
         $this->suppress_redirect = 1;
         $counter = 0;
-        $op_name = $ops;
-        $e = new \core\utiles\loadTime;
-        $e->start();
-        switch($ops) {
-            case "archive":
-            case "share":
-                $op_name = "toggle-{$op_name}d";
-            case "trash":
-            case "remove":
-            case "restore":
-                foreach ($items as $item)
-                {
-                    $this->request->params = \modules\opsModule\models\itemInfo::decode($item);
-                    goto __OP;
-                    $params = explode("&",  $type ."&". $item);
-                    $this->request->params = array();
-                    $indexed_param = array();
-                    for($index = 0; $index < count($params); $index ++)
-                    {
-                        if(preg_match("&(.*)=(.*)&i", $params[$index])) {
-                            $sub_param = explode("=", $params[$index]);
-                            for($subindex = 0; $subindex < count($sub_param); $subindex += 2) {
-                                $this->request->params[$sub_param[$subindex]] = @$sub_param[$subindex + 1];
-                                $indexed_param[] = $sub_param[$subindex];
-                                if($subindex + 1 < count($sub_param))
-                                    $indexed_param[] = $sub_param[$subindex + 1];
-                            }
-                        } else {
-                            $this->request->params[$params[$index]] = @!preg_match("&(.*)=(.*)&i", $params[$index + 1]) ? $params[++$index] : NULL;
-                            $indexed_param[] = $params[$index - 1];
-                            if($this->request->params[$params[$index - 1]])
-                                $indexed_param[] = $this->request->params[$params[$index - 1]];
-                        }
-                    }
-__OP:
-                    $action = $ops;
-                    switch ($ops) {
-                        case "trash":
-                            $op_name = "moved to trash";
-                            $this->request->params["trash"] = \core\db\models\item::DELETE_PUT_TARSH;
-                            goto __INIT_DELETE_INVOKE;
-                        case "remove":
-                            $op_name = "permanently removed";
-                            $this->request->params["trash"] = \core\db\models\item::DELETE_PERIOD;
-                            goto __INIT_DELETE_INVOKE;
-                        case "restore":
-                            $op_name = "restored from trash";
-                            $this->request->params["trash"] = \core\db\models\item::DELETE_RESTORE;
-                            goto __INIT_DELETE_INVOKE;
-                        __INIT_DELETE_INVOKE:
-                            $action = "delete";
-                            break;
-                    }
-                    $this->request->params["continue"] = $continue;
-                    $this->request->GenerateIndexedParams();
-                    $this->{"{$action}Action"}();
-                    $_SERVER['REQUEST_METHOD'] = $method;
-                    $counter++;
-                }
-                break;
-            default:
-                throw new \zinux\kernel\exceptions\invalideOperationException("Invalid operation `{$this->request->params["ops"]}`!!");
+        $uid = \core\db\models\user::GetInstance()->user_id;
+        $item_class = "\\core\\db\\models\\$type";
+        $ins = new $item_class;
+        foreach ($infos as $info)
+        {
+            $item = \modules\opsModule\models\itemInfo::decode($info);
+            $func = $ops;
+            $flag = @$item->$ops ? \core\db\models\item::FLAG_SET : \core\db\models\item::FLAG_UNSET;
+            switch($ops) {
+                case "trash":
+                    $flag = \core\db\models\item::DELETE_PUT_TARSH;
+                    goto __OP_FUNC;
+                case "restore":
+                    $flag = \core\db\models\item::DELETE_RESTORE;
+                    goto __OP_FUNC;
+                case "remove":
+                    $flag = \core\db\models\item::DELETE_PERIOD;
+__OP_FUNC:
+                    $func = "delete";
+                    break;
+            }
+            $ins->$func($item->$type, $uid, $flag);
+            $counter++;
         }
-        echo $e->stop();
+        $op_name = "toggle-{$ops}d";
+        switch($ops) {
+            case "trash":
+                $op_name = "moved to trash";
+                break;
+            case "remove":
+                $op_name = "permanently removed";
+                break;
+            case "restore":
+                $op_name = "restored from trash";
+                break;
+        }
         $result = "<b>#$counter $type".($counter>1?"s":"")."</b> ha".($counter>1?"ve":"s")." been <b>$op_name</b> successfully!";
         if($ajax) {
             echo $result;

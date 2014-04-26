@@ -62,7 +62,7 @@
                 success: function(data) {
                     // unbind the success method to ignore the general result output
                     $(window).unbind('ajaxSuccess');
-                    window.top.open_infoModal(data, -2000);
+                    window.top.open_infoModal(data, 2700);
                     switch(String(ops).toLowerCase()) {
                         case "share":
                             window.location = '<?php echo $this->request->getURI(); ?>';
