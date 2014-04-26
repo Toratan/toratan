@@ -188,16 +188,16 @@ class directoryTree extends \stdClass
      * @param boolean $is_owner is current user is owner of current tree?
      */
     protected  function plotItems($active_type, array $collection, $parent_id, $is_owner) {
-        if(!count($collection)) {
-            require 'directoryTree-submodules/table-empty.phtml';
-            return;
-        }
         $this->plotTableHeader($active_type);
         foreach($collection as $folder)
         {
             $this->plotTableRow($folder, $active_type, $parent_id, $is_owner);
         }
         $this->plotTableFooter();
+        if(!count($collection)) {
+            require 'directoryTree-submodules/table-empty.phtml';
+            return;
+        }
         $this->plotTableJS($active_type);
     }
     /**

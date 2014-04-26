@@ -116,13 +116,12 @@
                     $("tr.item-checked").fadeOut(200, function() { 
                         $(this).remove();
                         if($("tr.item-row").length === 0) {
-                            $("#explorer-table").replaceWith($('<?php 
+                            $("#explorer-table").after($('<?php 
                                     ob_start();
                                     require 'table-empty.phtml';
                                 $content = ob_get_clean();
                                 echo str_replace("\n", "", $content);
                             ?>')).fadeIn();
-                            $("form#opt-form").siblings("hr").remove();
                         }
                         window.update_menu_checkbox();
                         window.reset_ajax_placeholder();
