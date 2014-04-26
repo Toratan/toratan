@@ -58,12 +58,14 @@ class indexController extends \zinux\kernel\controller\baseController
         $this->ops_index_interface = 1;
         $this->suppress_redirect = 1;
         $counter = 0;
+        $op_name = $ops;
         switch($ops) {
+            case "archive":
+            case "share":
+                $op_name = "toggle-{$op_name}d";
             case "trash":
             case "remove":
             case "restore":
-            case "archive":
-            case "share":
                 foreach ($items as $item)
                 {
                     $params = explode("&",  $type ."&". $item);
@@ -89,12 +91,15 @@ class indexController extends \zinux\kernel\controller\baseController
                     $action = $ops;
                     switch ($ops) {
                         case "trash":
+                            $op_name = "moved to trash";
                             $this->request->params["trash"] = \core\db\models\item::DELETE_PUT_TARSH;
                             goto __INIT_DELETE_INVOKE;
                         case "remove":
+                            $op_name = "permanently removed";
                             $this->request->params["trash"] = \core\db\models\item::DELETE_PERIOD;
                             goto __INIT_DELETE_INVOKE;
                         case "restore":
+                            $op_name = "restored from trash";
                             $this->request->params["trash"] = \core\db\models\item::DELETE_RESTORE;
                             goto __INIT_DELETE_INVOKE;
                         __INIT_DELETE_INVOKE:
@@ -111,7 +116,7 @@ class indexController extends \zinux\kernel\controller\baseController
             default:
                 throw new \zinux\kernel\exceptions\invalideOperationException("Invalid operation `{$this->request->params["ops"]}`!!");
         }
-        $result = "<b>#$counter $type".($counter>1?"s'":"'s")."</b> ha".($counter>1?"ve":"s")." been <b>modified</b> successfully!";
+        $result = "<b>#$counter $type".($counter>1?"s":"")."</b> ha".($counter>1?"ve":"s")." been <b>$op_name</b> successfully!";
         if($ajax) {
             echo $result;
             exit;
