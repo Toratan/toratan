@@ -59,6 +59,8 @@ class indexController extends \zinux\kernel\controller\baseController
         $this->suppress_redirect = 1;
         $counter = 0;
         $op_name = $ops;
+        $e = new \core\utiles\loadTime;
+        $e->start();
         switch($ops) {
             case "archive":
             case "share":
@@ -119,6 +121,7 @@ __OP:
             default:
                 throw new \zinux\kernel\exceptions\invalideOperationException("Invalid operation `{$this->request->params["ops"]}`!!");
         }
+        echo $e->stop();
         $result = "<b>#$counter $type".($counter>1?"s":"")."</b> ha".($counter>1?"ve":"s")." been <b>$op_name</b> successfully!";
         if($ajax) {
             echo $result;
@@ -659,7 +662,7 @@ __OP:
         # create an instance of item
         $item_ins = new $item_class;
         # share the item
-        $shared_item = $item_ins->share($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_share);
+        $item_ins->share($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_share);
         if(!$this->suppress_redirect) {
             # invoke a message pipe line
             $mp = new \core\utiles\messagePipe;
