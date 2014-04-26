@@ -70,8 +70,7 @@ abstract class item extends baseModel
      */
     private $temporary_container = array();
 
-    public function __construct(array $attributes = array(), $guard_attributes = true, $instantiating_via_find = false, $new_record = true)
-    {
+    public function __construct(array $attributes = array(), $guard_attributes = true, $instantiating_via_find = false, $new_record = true) {
         # fetch the cache sig.
         $cache_sig = get_called_class();
         # create a new cache
@@ -124,8 +123,7 @@ abstract class item extends baseModel
             $title,
             $body,
             $parent_id,
-            $owner_id)
-    {
+            $owner_id) {
         # normali\core\db\exceptions\dbNotFoundExceptionzing the inputs
         $title = trim($title);
         $body = trim($body);
@@ -172,8 +170,7 @@ abstract class item extends baseModel
      */
     protected function normalize_conditions_options_ops(
             $conditions = array(),
-            $options = array())
-    {
+            $options = array()) {
         # normalize the array
         if(!$conditions) $conditions = array();
         if(!$options) $options = array();
@@ -182,8 +179,7 @@ abstract class item extends baseModel
             $conditions = array("conditions" => $conditions);
         # if we have conditions in $options
         # then we have merging conflict problem
-        if(isset($options["conditions"]) && count($options["conditions"]))
-        {
+        if(isset($options["conditions"]) && count($options["conditions"])) {
             # if the option has invalid conditions format
             if(!is_string($options["conditions"][0]))
                 # flag the error
@@ -215,8 +211,7 @@ abstract class item extends baseModel
     public function fetch(
             $item_id,
             $owner_id = NULL,
-            $options = array())
-    {
+            $options = array()) {
         $cond = array("conditions" => array("{$this->item_name}_id = ?", $item_id));
         if($owner_id !== NULL)
             $cond = array("conditions" => array("{$this->item_name}_id = ? AND (owner_id = ? OR is_public = 1)", $item_id, $owner_id));
@@ -226,7 +221,7 @@ abstract class item extends baseModel
         if(!$item)
             throw new \core\db\exceptions\dbNotFoundException("$this->item_name with ID# `$item_id` not found or you don't have the access premission!");
         # update temporary shareing status
-        $item->update_old_instance();
+        $item->storeStatusBits();
         return $item;
     }
     /**
@@ -245,23 +240,19 @@ abstract class item extends baseModel
             $is_public = self::WHATEVER,
             $is_trash = self::WHATEVER,
             $is_archive = self::WHATEVER,
-            $options = array())
-    {
+            $options = array()) {
         # general conditions
         $item_cond = "(owner_id = ?) ";
         $cond = array($item_cond, $owner_id);
-        if($parent_id !== NULL)
-        {
+        if($parent_id !== NULL) {
             $cond[0] .= "AND parent_id = ? ";
             $cond[] = $parent_id;
         }
         foreach(
                 array("is_public" => $is_public, "is_trash"=>$is_trash, "is_archive" => $is_archive)
-                as $name => $value)
-        {
+                as $name => $value) {
             # if is public revoked
-            if($value>-1 && $value<2)
-            {
+            if($value>-1 && $value<2) {
                 # flag it
                 $cond[0] .= "AND $name =  ? ";
                 $cond[] = $value;
@@ -274,10 +265,9 @@ abstract class item extends baseModel
         # validate if null?
         if(!$items) return $items;
         # foreach fetched item
-        foreach($items as $item)
-        {
+        foreach($items as $item) {
             # update items old_instance properties
-            $item->update_old_instance();
+            $item->storeStatusBits();
         }
         # return fetched items
         return $items;
@@ -300,8 +290,7 @@ abstract class item extends baseModel
             $body,
             $is_public = self::NOCHANGE,
             $is_trash = self::NOCHANGE,
-            $is_archive = self::NOCHANGE)
-    {
+            $is_archive = self::NOCHANGE) {
         # fetch the item
         $item = $this->fetch($item_id, $owner_id);
         # set the title
@@ -332,13 +321,11 @@ abstract class item extends baseModel
     public function delete(
             $item_id,
             $owner_id,
-            $TRASH_OPS = self::DELETE_PUT_TARSH)
-    {
+            $TRASH_OPS = self::DELETE_PUT_TARSH) {
         # fetch the item
         $item = $this->fetch($item_id, $owner_id);
         # if we should flag it as trash
-        switch($TRASH_OPS)
-        {
+        switch($TRASH_OPS) {
             case self::DELETE_PUT_TARSH:
                 # so be it
                 $item->is_trash = 1;
@@ -366,8 +353,7 @@ abstract class item extends baseModel
      * @param string $owner_id
      * @return array the trash items
      */
-    public function fetchTrashes($owner_id)
-    {
+    public function fetchTrashes($owner_id) {
         return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_SET);
     }
     /**
@@ -381,13 +367,11 @@ abstract class item extends baseModel
     public function archive(
             $item_id,
             $owner_id,
-            $ARCHIVE_STATUS = self::FLAG_SET)
-    {
+            $ARCHIVE_STATUS = self::FLAG_SET) {
         # fetch the item
         $item = $this->fetch($item_id, $owner_id);
         # validate the archive status
-        switch($ARCHIVE_STATUS)
-        {
+        switch($ARCHIVE_STATUS) {
             case self::FLAG_SET:
             case self::FLAG_UNSET:
                 $item->is_archive = $ARCHIVE_STATUS;
@@ -410,13 +394,11 @@ abstract class item extends baseModel
     public function share(
             $item_id,
             $owner_id,
-            $SHARE_STATUS = self::FLAG_SET)
-    {
+            $SHARE_STATUS = self::FLAG_SET) {
         # fetch the item
         $item = $this->fetch($item_id, $owner_id);
         # validate the share status
-        switch($SHARE_STATUS)
-        {
+        switch($SHARE_STATUS) {
             case self::FLAG_SET:
             case self::FLAG_UNSET:
                 $item->is_public = $SHARE_STATUS;
@@ -433,8 +415,7 @@ abstract class item extends baseModel
      * @param string $owner_id
      * @return array the archive items
      */
-    public function fetchArchives($owner_id)
-    {
+    public function fetchArchives($owner_id) {
         return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_UNSET, self::FLAG_SET);
     }
     /**
@@ -445,14 +426,12 @@ abstract class item extends baseModel
      * @param string $new_parent_id the new parent id
      * @return item the moved item
      */
-    public function move($item_id, $owner_id, $parent_id, $new_parent_id)
-    {
+    public function move($item_id, $owner_id, $parent_id, $new_parent_id) {
         try
         {
             $item = $this->fetch($item_id, $owner_id, array("conditions" => array("parent_id = ?", $parent_id)));
         }
-        catch(\core\db\exceptions\dbNotFoundException $dbnf)
-        {
+        catch(\core\db\exceptions\dbNotFoundException $dbnf) {
             throw new \core\db\exceptions\dbNotFoundException("Couldn't locate the item....", NULL, $dbnf);
         }
         $item->parent_id = $new_parent_id;
@@ -464,8 +443,7 @@ abstract class item extends baseModel
      * @param string $owner_id
      * @return array the shared items
      */
-    public function fetchShared($owner_id)
-    {
+    public function fetchShared($owner_id) {
         return $this->fetchItems($owner_id, NULL, self::FLAG_SET, self::FLAG_UNSET);
     }
     /**
@@ -474,15 +452,13 @@ abstract class item extends baseModel
      * @param string $owner_id the item's owner's ID
      * @return array An array of item which shows the route to the item
      */
-    public function fetchRouteToRoot($item_id, $owner_id)
-    {
+    public function fetchRouteToRoot($item_id, $owner_id) {
         $route = array();
         if(!$item_id)
             goto __RETURN;
         $item = $this->fetch($item_id, $owner_id);
         array_push($route, $item);
-        while($item->{"parent_id"}!=0)
-        {
+        while($item->{"parent_id"}!=0) {
             $item = $this->fetch($item->parent_id, $owner_id);
             array_push($route, $item);
         }
@@ -493,21 +469,40 @@ __RETURN:
     /**
      * Disables auto notification ops.
      */
-    public function disableAutoNotification(){ unset($this->temporary_container["old_instance"]); }
+    public function disableAutoNotification(){ unset($this->temporary_container["BSS"]); }
     /**
      * Updates old instance of current user
      */
-    private function update_old_instance()
-    {
-        $item =clone ($this);
-        $item->readonly();
-        $this->temporary_container["old_instance"]  = $item;
+    protected function storeStatusBits() {
+        # BSB: Binary Status State
+        $this->temporary_container["BSS"]  = $this->fetchStatusBits();
+    }
+    /**
+     * fetch stored status bits
+     * @return binary
+     */
+    protected function fetchStatusBits() {
+        if(isset($this->temporary_container["BSS"]))
+            return $this->temporary_container["BSS"];
+        return 0b000;
+    }
+    /**
+     * Get binary status state of current item<br />
+     * The format is: 0b{public}{trash}
+     * @return binary
+     */
+    protected function getStatusBits() {
+        $flag = 0b000;
+        if($this->is_public)
+            $flag |= 0b100;
+        if($this->is_trash);
+            $flag |= 0b010;
+        return $flag;
     }
     /**
      * General validator
      */
-    public function validate()
-    {
+    public function validate() {
         # validate the item's title existance
         if(!isset($this->{"{$this->item_name}_title"}) || !\strlen($this->{"{$this->item_name}_title"}))
             $this->errors->add("{$this->item_name}'s title", "cannot be blank.");
@@ -515,22 +510,22 @@ __RETURN:
     /**
      * Trims properties just before they get saved
      */
-    public function before_save_trim_properties()
-    {
+    public function before_save_trim_properties() {
         $this->{"{$this->item_name}_title"} = trim($this->{"{$this->item_name}_title"});
         $this->{"{$this->item_name}_body"} = trim($this->{"{$this->item_name}_body"});
     }
     /**
      * smart checks points for notification outputs flow
      */
-    public function after_save_update_notifications()
-    {
-        if(isset($this->temporary_container["old_instance"]))
-        {
-            $oi = $this->temporary_container["old_instance"];
+    public function after_save_update_notifications() {
+        # if any status bit has been stored
+        if(($obss = $this->fetchStatusBits())) {
+            $cbss = $this->getStatusBits();
+            // nothing notifiable has been changed
+            if($obss === $cbss) return;
             # validate the publicity
-            if($oi->is_public != $this->is_public)
-            {
+            # if publicity has been changed
+            if($obss & 0b100 !== $cbss & 0b100) {
                 if($this->is_public)
                     \core\db\models\notification::put($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, \core\db\models\notification::NOTIF_FLAG_SHARE);
                 else
@@ -540,8 +535,8 @@ __RETURN:
                     # update the sub-items sharing status
                     \core\db\models\sharing_queue::add_queue($this);
             }
-            if($this->is_public)
-            {
+            // if trash state has been changed and this is a public item
+            if(($obss & 0b010 !== $cbss & 0b010) && $this->is_public) {
                 if($this->is_trash)
                     \core\db\models\notification::visibleNotification($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, 0);
                 else
