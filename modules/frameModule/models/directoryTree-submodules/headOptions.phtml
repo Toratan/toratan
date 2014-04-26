@@ -6,8 +6,9 @@
     #explorer-table { margin-top: 130px; }
 </style>
 <div id="directory-tree-opt" class="btn-toolbar">
-    <div class="pull-right" style="width: 30%;">
-        <input type="text" class="input form-control" placeholder="Quick Access"/>
+    <div class="pull-right" style="width: 25%;">
+        <span class="glyphicon glyphicon-remove pull-right" style="cursor: pointer;margin-top: 10px;margin-left: -80px;padding-right: 10px" title="Clear Filter" onclick="$('#qacess').val('').trigger('keyup');"></span>
+        <input type="search" style="padding-right: 30px;width: 100%" class="input form-control pull-right" placeholder="Filter by name" id="qacess"/>
     </div>
     <!-- Split button -->
     <div class="btn-group">
