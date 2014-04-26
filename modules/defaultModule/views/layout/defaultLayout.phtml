@@ -107,7 +107,11 @@
                         t += (">"+b.html + '</button>');
                         $(modal_tag+" .modal-footer").append(t).html();
                         if(typeof(b.callback) !== 'undefined') {
-                            $(modal_tag+" .modal-footer button#"+btn_id).click(b.callback);
+                            $(modal_tag+" .modal-footer button#"+btn_id).click(function() {
+                                $(modal_tag).modal('hide');
+                                // a delay to give the modal time to hide
+                                setTimeout(b.callback, 100);
+                            });
                         }
                     }
                     $(modal_tag).modal('show');
@@ -123,7 +127,7 @@
                  * @param integer close_timeout the timeout for closing modal
                  */
                 window.open_infoModal = function(info, close_timeout) {
-                    open_modal("div#info-modal", info, '<span class="glyphicon glyphicon-comment"></span> Notice', close_timeout);
+                    open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-comment"></span> Notice', close_timeout);
                 };
                 /**
                  * open an error modal  
@@ -131,7 +135,7 @@
                  * @param integer close_timeout the timeout for closing modal
                  */
                 window.open_errorModal = function(info, close_timeout) {
-                    open_modal("div#info-modal", info, '<span class="glyphicon glyphicon-remove-sign"></span> Oops!', close_timeout);
+                    open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-remove-sign"></span> Oops!', close_timeout);
                 };
                 /**
                  * open a YES/NO modal
@@ -148,7 +152,7 @@
                     yes.callback = yes_callback;
                     no.callback = no_callback;
                     yes.html = "Yes";
-                    no.html = "Nop";
+                    no.html = "No";
                     yes.attrib[0].value = "yes";
                     no.attrib[0].value = "no";
                     if(is_yes_primary) {
@@ -158,12 +162,12 @@
                         delete no.attrib[1];
                         yes.cssClass[0] = "btn-default";
                     }
-                    open_modal("div#info-modal", info, '<span class="glyphicon glyphicon-question-sign"></span> Confirm', close_timeout, [no, yes]);
+                    open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-question-sign"></span> Confirm', close_timeout, [no, yes]);
                 };
             });
         </script>
         <!-- general modal -->
-        <div id="info-modal" class="modal fade" role="dialog" aria-labelledby="ops-container-info" aria-hidden="true" tabindex="-1">
+        <div id="dialog-modal" class="modal fade" role="dialog" aria-labelledby="ops-container-info" aria-hidden="true" tabindex="-1">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
