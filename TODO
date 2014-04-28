@@ -9,6 +9,7 @@ X #0 Make limited explorer query { Maybe no need } -> ONLY FOR {ARCHIVES, SHARED
 X #0 Make cool search in `explorer` 
 X #0 Optimize the `item` notification event handler, current one is no efficent!!
 #0 Make Gmail like navigators for {ARCHIVES, SHARED, TRASHES} folders
+#0 Fix the bug in backward-navigation history
 #1 Create good UI for note-editors
 #2 Find good markup-parser for code-block purposes
 #3 Fix public access right problem
