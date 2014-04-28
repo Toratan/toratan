@@ -187,7 +187,7 @@
         </div><!-- /.modal -->
         <div class="container-fluid" style="padding-top:0.5%">
         <?php if($user_logged) :  ?>
-            <iframe id="explorer-nav-frame" name="explorer-nav-frame" frameborder="0" style="height: 300px" src="/frame/en" class="pull-left col-lg-2 col-md-2 col-sm-3 col-xm-3"></iframe>
+            <iframe id="explorer-nav-frame" name="explorer-nav-frame" frameborder="0" style="height: 250px" src="/frame/en" class="pull-left col-lg-2 col-md-2 col-sm-3 col-xm-3"></iframe>
             <iframe id="explorer-frame" name="explorer-frame" frameborder="0" style="height: 768px" src="" class="col-lg-7 col-md-7 col-sm-9 col-xm-9"></iframe>
             <iframe id="feed-frame" name="feed-frame" frameborder="0" style="height: 768px" src="/frame/f" class="pull-right col-lg-3 col-md-3 hidden-sm hidden-xs"></iframe>
         <?php else: ?>
@@ -196,8 +196,17 @@
         </div>
         <script type="text/javascript">
             (function(){
-                // re-size the frames
-                $('iframe').css('height', ($('body').height() - 90)+'px');
+                // modify frames' size on window resize event
+                $(window).resize(function() {
+                    var $frames = $('iframe#explorer-frame, iframe#feed-frame');
+                    if($(window).height() >= 420)
+                        // re-size the frames
+                        $frames.css('height', ($(window).height() - 90)+'px');
+                    else
+                        $frames.css('height', '768px');
+                });
+                // init frames' size to window's size
+                $(window).resize();
                 // re-locate the explorer
                 $('#explorer-nav-frame').attr('src', '/frame/en/'+window.location.hash);
             })(jQuery);
