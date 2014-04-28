@@ -16,12 +16,12 @@ class itemInfo extends \zinux\kernel\model\baseModel
         if(!$item) throw new \zinux\kernel\exceptions\invalideArgumentException("item cannot be null");
         $s = array_merge(
             array(
-                "i"  => $item->{"{$item->WhoAmI()}_id"},
-                "s" => $item->is_public?"0":"1",
-                "a" => $item->is_archive?"0":"1"
+                $item->{"{$item->WhoAmI()}_id"},
+                $item->is_public?"0":"1",
+                $item->is_archive?"0":"1",
             )
         );
-        return json_encode($s);
+        return implode(";", $s);
     } 
     /**
      * decode an item's information
@@ -32,6 +32,10 @@ class itemInfo extends \zinux\kernel\model\baseModel
     public static function decode($info, $assoc = false) {
         if(!is_string($info))
             throw new \zinux\kernel\exceptions\invalideArgumentException("expecting `info` be a string");
-        return json_decode($info, $assoc);
+        $e = explode(";", $info);
+        if(count($e) !== 3) throw new \zinux\kernel\exceptions\invalideArgumentException("Invalid format");
+        $s = array_combine(array("i", "s", "a"), $e);
+        if($assoc) return $s;
+        return ((object)$s);
     }
 }

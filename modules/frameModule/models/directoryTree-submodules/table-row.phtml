@@ -1,6 +1,5 @@
-<tr class="<?php echo $type ?> item-row <?php if($this->tree_type === self::REGULAR && $part_of_all_precent  >= 0.1 && !$fetch_more_meet) { $fetch_more_meet = 1; echo "fetch-more"; } ?>">
-    <td>
-        <?php if($is_owner) : ?><input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $this->getPostCheckVal($item); ?>" onclick="window.update_menu_checkbox();"/><?php else: ?>&nbsp;<?php endif; ?></td>
+<tr class="<?php echo $type ?> item-row">
+    <td><?php if($is_owner) : ?><input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $this->getPostCheckVal($item); ?>" /><?php else: ?>&nbsp;<?php endif; ?></td>
     <td class="status" status="<?php echo $this->getStatusBinary($item) ?>">
         <?php echo $this->getStatusIcons($item) ?>
     </td>

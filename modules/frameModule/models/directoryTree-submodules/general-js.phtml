@@ -1,3 +1,5 @@
+<script src="/access/js/jquery.datetime-0.9.min.js"></script>
+<script src="/access/js/jquery.tablesorter.min.js"></script>
 <script src="/access/js/jquery.filtertable.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
@@ -58,6 +60,53 @@
                     $(this).parent().parent().css("background-color", "transparent");
                     $(this).parent().siblings('.item-name').removeClass("item-checked-name");
                     $(this).parent().parent().removeClass("item-checked");
+                }
+                window.update_menu_checkbox();
+            });
+            window.update_menu_checkbox();
+        };
+        window.init_times = function() {
+            $('td.updated-at:not(.time-inited)').each(function(){
+                $(this)
+                    .attr('title', new Date($(this).attr('title')).toLocaleString())
+                    .children('time')
+                    .attr('title', $(this).attr('title'))
+                    .addClass(".time-inited");
+            }).children("time").datetime();
+        };
+        window.update_times = function() {
+            $(" td.updated-at time").datetime(); 
+        };
+        window.sort_table = function() {
+            var defaultHeadIndex = 2;
+            var defaultHeadOrder = 0;
+            var $activeHead = 'table thead tr th.headerSortDown, table thead tr th.headerSortUp';
+            if($($activeHead).length !== 0) {
+                defaultHeadIndex = $($activeHead).index();
+                defaultHeadOrder = $($activeHead).hasClass('headerSortDown') ? 0 : 1;
+            }
+            // remove any previous click handler 
+            // bound to table's headers if we don't
+            // this the next `tablesorter()` will invoke
+            // both of handler(i.e the previous handlers 
+            // and the following new one) and thing will
+            // get messy!!
+            $('table.table .header').unbind('click');
+            // make/re-make the table sortable
+            $('table.table').tablesorter({
+                sortList: [[defaultHeadIndex, defaultHeadOrder]],
+                textExtraction: function(node) {
+                    var txt = $(node).text();
+                    if($(node).hasClass('updated-at')) {
+                        txt = new Date($(node).attr('origin-date')).getTime();
+                    }
+                    if($(node).hasClass('status')) {
+                        txt = $(node).attr('status') + $(node).next("td").text().trim();
+                    }
+                    return txt;
+                },
+                headers:{
+                    0: { sorter: false }
                 }
             });
         };
@@ -147,17 +196,18 @@
                     break;
                 case window.APPLY_REMOVE:
                     var to_remove = $("tr.item-checked").length;
+                    var all_rows = $("tr.item-row").length;
                     $("tr.item-checked").fadeOut(200, function() { 
                         $(this).remove();
                         window.plot_if_no_item_found();
                         window.update_menu_checkbox();
                         window.reset_ajax_placeholder();
                     });
-                    setTimeout(function() { 
-                        window.$o = $("tr.item-row").length + 1;
+                    setTimeout(function() {
+                        window.$o = (all_rows - to_remove);
+                        if(window.$o < 0) window.$o = 0;
                         window.$l = to_remove;
-                        console.log(["limit", $l ,"offset", window.$o]);
-                        window.fetch_more();
+                        window.fetch_more(window.$o - 1);
                         window.$l = <?php echo FETCH_LIMIT; ?>;
                     }, 100);
                     return;

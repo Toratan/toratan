@@ -1,22 +1,6 @@
-<script src="/access/js/jquery.datetime-0.9.min.js"></script>
 <script src="/access/js/jquery.tablesorter.min.js"></script>
-<?php if($this->tree_type === self::REGULAR): ?>
-<script src="/access/js/jquery.waypoints.min.js"></script>
-<?php endif; ?>
 <script type="text/javascript">
     $(document).ready(function(){
-        window.init_times = function() {
-            $('td.updated-at:not(.time-inited)').each(function(){
-                $(this)
-                    .attr('title', new Date($(this).attr('title')).toLocaleString())
-                    .children('time')
-                    .attr('title', $(this).attr('title'))
-                    .addClass(".time-inited");
-            }).children("time").datetime();
-        };
-        window.update_times = function() {
-            $(" td.updated-at time").datetime(); 
-        };
         window.init_checkboxes();
         window.init_times();
         window.setInterval(window.update_times, 500);
@@ -121,7 +105,10 @@
                 $('form#opt-form input[name="ops"]').remove();
             });
         };
+        window.$l = <?php echo FETCH_LIMIT; ?>;
+        window.$o = <?php echo FETCH_LIMIT; ?>;
         window.fetch_more = function() {
+            window.fetching_more = true;
             $(".ajax-loader-img-inf-scroll").removeClass("hidden");
             var sort_base = "";
             var $activeHead = 'table thead tr th.headerSortDown, table thead tr th.headerSortUp';
@@ -135,15 +122,11 @@
                     sort_base = 2;
                     break;
             };
-            if(typeof(window.$o) === "undefined")
-                window.$o = <?php echo FETCH_LIMIT; ?>;
-            if(typeof(window.$l) === "undefined")
-                window.$l = <?php echo FETCH_LIMIT; ?>;
             console.log("<?php echo $this->request->getURI() ?>");
             console.log("o="+$o+"&l="+$l+"sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>");
             $.ajax({
                 type: "GET",
-                global:false,
+                global: false,
                 url: "<?php echo $this->request->getURI() ?>",
                 data: "o="+$o+"&l="+$l+"sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
                 success: function(data) {
@@ -162,13 +145,9 @@
                         // re-sort table
                         window.sort_table();
                     } else {
-                        $("tr.item-row.fetch-more").removeClass("fetch-more");
+                        $(window).unbind("scroll");
                         window.plot_if_no_item_found();
                     }
-<?php if($this->tree_type === self::REGULAR): ?>
-                    // bind a new scroll-more event handler
-                    $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
-<?php endif; ?>
                     // set a timeout(50ms) for re-binding the ajax success method
                     setTimeout(function() { $(window).ajaxSuccess(window.ajax_success); }, 50);
                 },
@@ -176,19 +155,18 @@
                     window.top.open_errorModal(xhr.responseText);
                 }
             }).always(function(){
+                window.fetching_more = false;
                 $(".ajax-loader-img-inf-scroll").addClass("hidden");
             });
         };
 <?php if($this->tree_type === self::REGULAR): ?>
-        window.scroll_more = function() {
-                // remove the fetch-more class from current element
-                $(this).removeClass("fetch-more");
-                // disable any future scoll callbacks from curremt element
-                $(this).waypoint('disable');
-                // fetch more item
+        window.fetching_more = false;
+        $(window).scroll(function() {
+            var threshold = ($(window).scrollTop() === $(document).height() - $(window).height());
+            if(!window.fetching_more &&  threshold) {
                 window.fetch_more();
-            };
-            $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
+            }
+        });
 <?php endif; ?>
             window.sort_table();
     });
