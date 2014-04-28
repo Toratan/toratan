@@ -194,7 +194,6 @@ abstract class item extends baseModel
         }
         else
         {
-            $options = array();
             # if no conditions presence at $options, just make a room for it
             $options ["conditions"] = $conditions["conditions"];
         }
