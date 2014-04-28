@@ -167,18 +167,12 @@ class directoryTree extends \stdClass
      * @param boolean $is_owner is current user is owner of current tree?
      * @throws \zinux\kernel\exceptions\invalideArgumentException if item is NULL
      */
-    protected function plotTableRow(\core\db\models\item $item, $type, $parent_id, $is_owner) {
+    public function plotTableRow(\core\db\models\item $item, $type, $parent_id, $is_owner, $part_of_all_precent = 0) {
         if($item === NULL) {
             throw new \zinux\kernel\exceptions\invalideArgumentException("The item cannot be null...");
         }
+        static $fetch_more_meet = 0;
         require 'directoryTree-submodules/table-row.phtml';
-    }
-    /**
-     * Plots necessary JS for table operations
-     * @param string $active_type Which type this directory tree contains?
-     */
-    protected function plotTableJS($active_type) {
-        require 'directoryTree-submodules/table-js.phtml';
     }
     /**
      * Plot entire collection directory tree
@@ -187,11 +181,13 @@ class directoryTree extends \stdClass
      * @param string|integer $pid the parrent directory this directory tree
      * @param boolean $is_owner is current user is owner of current tree?
      */
-    protected  function plotItems($active_type, array $collection, $parent_id, $is_owner) {
+    public  function plotItems($active_type, array $collection, $parent_id, $is_owner) {
         $this->plotTableHeader($active_type);
+        $index = 0;
+        $all_count = count($collection);
         foreach($collection as $folder)
         {
-            $this->plotTableRow($folder, $active_type, $parent_id, $is_owner);
+            $this->plotTableRow($folder, $active_type, $parent_id, $is_owner, (++$index)/$all_count);
         }
         $this->plotTableFooter();
         if(!count($collection)) {
@@ -199,6 +195,13 @@ class directoryTree extends \stdClass
             return;
         }
         $this->plotTableJS($active_type);
+    }
+    /**
+     * Plots necessary JS for table operations
+     * @param string $active_type Which type this directory tree contains?
+     */
+    protected function plotTableJS($active_type) {
+        require 'directoryTree-submodules/table-js.phtml';
     }
     /**
      * Plots collection as { `Type`: `Folder` }

@@ -1,6 +1,7 @@
 <?php
 namespace modules\frameModule\controllers;
 use core\db\models\item;
+defined("FETCH_LIMIT") || define("FETCH_LIMIT", 30);
 /**
  * The modules\frameModule\controllers\eController
  * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -55,10 +56,23 @@ class eController extends \zinux\kernel\controller\baseController
             default:
                 throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
         }
+        if(!isset($this->request->params["o"]))
+            $this->request->params["o"] = 0;
         $this->view->is_owner = ($uid == \core\db\models\user::GetInstance()->user_id); 
-        $this->view->items = ($instance->fetchItems($uid, $pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
+        $this->view->items = ($instance->fetchItems($uid, $pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET, array("order" => "{$instance->WhoAmI()}_title asc", 'limit' => FETCH_LIMIT, 'offset' => $this->request->params["o"])));
         $folder = new \core\db\models\folder;
         $this->view->route = $folder->fetchRouteToRoot($pid, $uid);
+        if(isset($this->request->params["fetch"])) {
+            $dt = new \modules\frameModule\models\directoryTree($this->request, \modules\frameModule\models\directoryTree::REGULAR);
+            $index = 0;
+            $all_count = count($this->view->items);
+            sleep(3);
+            foreach ($this->view->items as $item)
+            {
+                $dt->plotTableRow($item, $item->WhoAmI(), $pid, $this->view->is_owner, (++$index)/$all_count);
+            }
+            exit;
+        }
     }
 
     /**

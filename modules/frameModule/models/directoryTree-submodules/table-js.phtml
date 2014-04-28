@@ -1,5 +1,6 @@
 <script src="/access/js/jquery.datetime-0.9.min.js"></script>
 <script src="/access/js/jquery.tablesorter.min.js"></script>
+<script src="/access/js/jquery.waypoints.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         $('td.updated-at').each(function(){
@@ -129,6 +130,27 @@
                 $('form#opt-form input[name="ops"]').remove();
             });
         };
-        window.sort_table();
+        window.scroll_more = function() {
+                // remove the fetch-more class from current element
+                $(this).removeClass("fetch-more");
+                // disable any future scoll callbacks from curremt element
+                $(this).waypoint('disable');
+                console.log($(this).text());
+                $.ajax({
+                    type: "GET",
+                    url: "<?php echo $this->request->getURI() ?>",
+                    data: "o=0&fetch",
+                    success: function(data) {
+                        // unbind the success method to ignore the general result output
+                        $(window).unbind('ajaxSuccess');
+                        $("#explorer-table table.table").append(data);
+                        $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
+                        // set a timeout(50ms) for re-binding the ajax success method
+                        setTimeout(function() { $(window).ajaxSuccess(window.ajax_success); }, 50);
+                    }
+                });
+            };
+            $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
+            window.sort_table();
     });
 </script>

@@ -75,10 +75,10 @@
     <?php endif; ?>
         window.ajax_start = function() {
             $("#ajax-placeholder *").prop("readonly", true);
-            $("#ajax-loader-img").removeClass("hidden");
+            $(".ajax-loader-img-general").removeClass("hidden");
         };
         window.ajax_stop = function() {
-            $("#ajax-loader-img").addClass("hidden");
+            $(".ajax-loader-img-general").addClass("hidden");
         };
         window.ajax_error = function(){
             $("#ajax-placeholder *").prop("readonly", false).first().focus();
