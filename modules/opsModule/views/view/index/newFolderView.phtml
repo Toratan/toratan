@@ -17,26 +17,6 @@
             </span>
         </div><!-- /input-group -->
     </form>
-    <script>
-        $(document).ready(function(){
-            setTimeout(function() { $('input[name="folder_title"]').focus(); }, 500);
-            $("#new-folder-ui form" ).submit(function(e) {
-<?php if(isset($this->values['folder_title'])): ?>
-                e.preventDefault();
-                $.ajax({
-                    type: $(this).attr("method"),
-                    url: $(this).attr("action"),
-                    data: $(this).serialize()+"&suppress_redirection=1&"+$(this).attr("action").split("?")[1],
-                    success: function() {
-                        window.apply_change(
-                            window.APPLY_NAME_EDITTED,
-                            $("input[name='folder_title']").val()
-                        );
-                    }
-                });
-<?php endif; ?>
-            });
-        });
-    </script>
+    <?php echo \modules\opsModule\views\helper\newItemHelper::plotJS($this, "folder"); ?>
 </div>
 <div class="clearfix"></div>

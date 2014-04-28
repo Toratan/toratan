@@ -260,6 +260,11 @@ __OP_FUNC:
             # return
             return;
         }
+        if(isset($this->request->params["ajax"])) {
+            $dt = new \modules\frameModule\models\directoryTree($this->request);
+            echo $dt->plotTableRow($item_value, strtolower($this->request->GetIndexedParam(0)), $item_value->parent_id, 1);
+            exit;
+        }
         # otherwise relocate properly
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {

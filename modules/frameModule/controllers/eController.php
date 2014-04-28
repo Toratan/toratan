@@ -22,7 +22,6 @@ class eController extends \zinux\kernel\controller\baseController
     public function IndexAction()
     {
         if(!\core\db\models\user::IsSignedin()) { trigger_error("UNREGISTERED USERS SHOULD BE ABLE TO VIEW PUBLIC ITESM", E_USER_ERROR); return; }
-//        \zinux\kernel\utilities\debug::_var($this->request->params);
         $this->layout->AddTitle("Home");
         $f = new \core\db\models\folder();
         if(!isset($this->request->params["directory"]))
@@ -58,8 +57,24 @@ class eController extends \zinux\kernel\controller\baseController
             default:
                 throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
         }
+        $sort_base = "{$instance->WhoAmI()}_title";
+        if(isset($this->request->params["sort"])) {
+            switch($this->request->params["sort"]) {
+                case 2:
+                    $sort_base = "updated_at";
+                    break;
+            }
+        }
+        $order = "asc";
+        if(isset($this->request->params["order"])) {
+            switch($this->request->params["order"]) {
+                case 1:
+                    $order = "desc";
+                    break;
+            }
+        }
         $this->view->is_owner = ($uid == \core\db\models\user::GetInstance()->user_id); 
-        $this->view->items = ($instance->fetchItems($uid, $pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET, array("order" => "{$instance->WhoAmI()}_title asc", 'limit' => FETCH_LIMIT, 'offset' => $this->request->params["o"])));
+        $this->view->items = ($instance->fetchItems($uid, $pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET, array("order" => "$sort_base $order", 'limit' => FETCH_LIMIT, 'offset' => $this->request->params["o"])));
         $old_o = $this->request->params["o"];
         $this->request->params["o"] = intval($this->request->params["o"]) + FETCH_LIMIT;
         $folder = new \core\db\models\folder;

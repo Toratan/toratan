@@ -3,13 +3,20 @@
 <script src="/access/js/jquery.waypoints.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-        $('td.updated-at').each(function(){
-            $(this)
-                .attr('title', new Date($(this).attr('title')).toLocaleString())
-                .children('time')
-                .attr('title', $(this).attr('title'));
-        }).children("time").datetime();
-        window.setInterval(function() { $(" td.updated-at time").datetime(); }, 5000 );
+        window.init_times = function() {
+            $('td.updated-at:not(.time-inited)').each(function(){
+                $(this)
+                    .attr('title', new Date($(this).attr('title')).toLocaleString())
+                    .children('time')
+                    .attr('title', $(this).attr('title'))
+                    .addClass(".time-inited");
+            }).children("time").datetime();
+        };
+        window.update_times = function() {
+            $(" td.updated-at time").datetime(); 
+        };
+        window.init_times();
+        window.setInterval(window.update_times, 500);
         window.sort_table = function() {
             var defaultHeadIndex = 2;
             var defaultHeadOrder = 0;
@@ -136,18 +143,37 @@
                 // disable any future scoll callbacks from curremt element
                 $(this).waypoint('disable');
                 $(".ajax-loader-img-inf-scroll").removeClass("hidden");
+                var sort_base = "";
+                var $activeHead = 'table thead tr th.headerSortDown, table thead tr th.headerSortUp';
+                var order = $($activeHead).hasClass('headerSortDown') ? 0 : 1;
+                switch($($activeHead).index()) {
+                    default:
+                    case 2:
+                        sort_base = 1;
+                        break;
+                    case 3:
+                        sort_base = 2;
+                        break;
+                };
+                if(typeof(window.$o) === "undefined")
+                    window.$o = 30;
                 $.ajax({
                     type: "GET",
                     global:false,
                     url: "<?php echo $this->request->getURI() ?>",
-                    data: "o=<?php echo $this->request->params["o"] ?>&fetch&<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
+                    data: "o="+$o+"&sort="+sort_base+"&order="+order+"&fetch&<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
                     success: function(data) {
+                        window.$o += <?php echo FETCH_LIMIT; ?>
                         // unbind the success method to ignore the general result output
                         $(window).unbind('ajaxSuccess');
                         // append data
                         $("#explorer-table table.table").append(data);
+                        // init dates
+                        window.init_times();
                         // update dates
-                        $(" td.updated-at time").datetime(); 
+                        $(" td.updated-at time").datetime();
+                        // re-sort table
+                        window.sort_table();
                         // bind a new scroll-more event handler
                         $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
                         // set a timeout(50ms) for re-binding the ajax success method
