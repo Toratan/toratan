@@ -58,6 +58,17 @@
               return ret;
             }
         };
+        $("input[type='checkbox'].item-checkbox").change(function() {
+            if($(this).prop('checked')) {
+                $(this).parent().parent().css({"background-color": "#f7fafc"});
+                $(this).parent().siblings('.item-name').addClass("item-checked-name");
+                $(this).parent().parent().addClass("item-checked");
+            } else {
+                $(this).parent().parent().css("background-color", "transparent");
+                $(this).parent().siblings('.item-name').removeClass("item-checked-name");
+                $(this).parent().parent().removeClass("item-checked");
+            }
+        });
         $("button[name='ops']").click(function(e){
             if($(this).attr('value') === 'edit') return;
             e.preventDefault();
@@ -90,17 +101,6 @@
                 type: "GET",
                 url: "/ops/edit?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
             });
-        });
-        $("input[type='checkbox'].item-checkbox").change(function() {
-            if($(this).prop('checked')) {
-                $(this).parent().parent().css({"background-color": "#f7fafc"});
-                $(this).parent().siblings('.item-name').addClass("item-checked-name");
-                $(this).parent().parent().addClass("item-checked");
-            } else {
-                $(this).parent().parent().css("background-color", "transparent");
-                $(this).parent().siblings('.item-name').removeClass("item-checked-name");
-                $(this).parent().parent().removeClass("item-checked");
-            }
         });
         window.submit_ops = function($this) {
             $('form#opt-form').prepend($("<input>").attr("type", "hidden").attr("name", "ops").val($($this).attr('value')));
@@ -137,54 +137,59 @@
                 $('form#opt-form input[name="ops"]').remove();
             });
         };
+        window.fetch_more = function() {
+            $(".ajax-loader-img-inf-scroll").removeClass("hidden");
+            var sort_base = "";
+            var $activeHead = 'table thead tr th.headerSortDown, table thead tr th.headerSortUp';
+            var order = $($activeHead).hasClass('headerSortDown') ? 0 : 1;
+            switch($($activeHead).index()) {
+                default:
+                case 2:
+                    sort_base = 1;
+                    break;
+                case 3:
+                    sort_base = 2;
+                    break;
+            };
+            if(typeof(window.$o) === "undefined")
+                window.$o = 30;
+            console.log( "o="+$o+"&sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>");
+            $.ajax({
+                type: "GET",
+                global:false,
+                url: "<?php echo $this->request->getURI() ?>",
+                data: "o="+$o+"&sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
+                success: function(data) {
+                    window.$o += <?php echo FETCH_LIMIT; ?>
+                    // unbind the success method to ignore the general result output
+                    $(window).unbind('ajaxSuccess');
+                    // append data
+                    $("#explorer-table table.table").append(data);
+                    // init dates
+                    window.init_times();
+                    // update dates
+                    $(" td.updated-at time").datetime();
+                    // re-sort table
+                    window.sort_table();
+                    // bind a new scroll-more event handler
+                    $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
+                    // set a timeout(50ms) for re-binding the ajax success method
+                    setTimeout(function() { $(window).ajaxSuccess(window.ajax_success); }, 50);
+                },
+                error: function(xhr) {
+                    window.top.open_errorModal(xhr.responseText);
+                }
+            }).always(function(){
+                $(".ajax-loader-img-inf-scroll").addClass("hidden");
+            });
+        };
         window.scroll_more = function() {
                 // remove the fetch-more class from current element
                 $(this).removeClass("fetch-more");
                 // disable any future scoll callbacks from curremt element
                 $(this).waypoint('disable');
-                $(".ajax-loader-img-inf-scroll").removeClass("hidden");
-                var sort_base = "";
-                var $activeHead = 'table thead tr th.headerSortDown, table thead tr th.headerSortUp';
-                var order = $($activeHead).hasClass('headerSortDown') ? 0 : 1;
-                switch($($activeHead).index()) {
-                    default:
-                    case 2:
-                        sort_base = 1;
-                        break;
-                    case 3:
-                        sort_base = 2;
-                        break;
-                };
-                if(typeof(window.$o) === "undefined")
-                    window.$o = 30;
-                $.ajax({
-                    type: "GET",
-                    global:false,
-                    url: "<?php echo $this->request->getURI() ?>",
-                    data: "o="+$o+"&sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
-                    success: function(data) {
-                        window.$o += <?php echo FETCH_LIMIT; ?>
-                        // unbind the success method to ignore the general result output
-                        $(window).unbind('ajaxSuccess');
-                        // append data
-                        $("#explorer-table table.table").append(data);
-                        // init dates
-                        window.init_times();
-                        // update dates
-                        $(" td.updated-at time").datetime();
-                        // re-sort table
-                        window.sort_table();
-                        // bind a new scroll-more event handler
-                        $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
-                        // set a timeout(50ms) for re-binding the ajax success method
-                        setTimeout(function() { $(window).ajaxSuccess(window.ajax_success); }, 50);
-                    },
-                    error: function(xhr) {
-                        window.top.open_errorModal(xhr.responseText);
-                    }
-                }).always(function(){
-                    $(".ajax-loader-img-inf-scroll").addClass("hidden");
-                });
+                // fetch more item
+                window.fetch_more();
             };
             $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
             window.sort_table();

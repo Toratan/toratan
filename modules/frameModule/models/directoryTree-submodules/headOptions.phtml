@@ -50,7 +50,9 @@
     case self::SHARED:
 __GENERIC: ?>
             <button type="submit" class="btn btn-default w60" title="<?php echo $this->tree_type === self::SHARED? "Un-s":"Toggle S" ?>hare" name="ops" value="share"><span class="glyphicon glyphicon-<?php echo $this->tree_type === self::SHARED? "minus":"share-alt" ?>"></span></button>
+<?php if($this->tree_type !== self::SHARED): ?>
             <button type="submit" class="btn btn-info w60" title="<?php echo $this->tree_type === self::ARCHIVE? "Un-a":"A" ?>rchive" name="ops" value="archive"><span class="glyphicon glyphicon-<?php echo $this->tree_type === self::ARCHIVE?"open":"save" ?>"></span></button>
+<?php endif; ?>
             <button type="submit" class="btn btn-warning w60" title="Delete" name="ops" value="trash"><span class="glyphicon glyphicon-trash"></span></button>
 <?php break;
     case self::TRASH: ?>

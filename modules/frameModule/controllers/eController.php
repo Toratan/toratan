@@ -43,8 +43,7 @@ class eController extends \zinux\kernel\controller\baseController
         $this->view->is_owner = ($uid == \core\db\models\user::GetInstance()->user_id); 
         $this->executeQuery("fetchItems",  
                 \modules\frameModule\models\directoryTree::REGULAR,
-                array($this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
-\zinux\kernel\utilities\debug::_var(\core\db\models\folder::connection()->last_query,1);
+                array($uid, $pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
         $folder = new \core\db\models\folder;
         $this->view->route = $folder->fetchRouteToRoot($pid, $uid);
     }
@@ -85,9 +84,6 @@ class eController extends \zinux\kernel\controller\baseController
         $args[] = array("order" => "$sort_base $order", 'limit' => FETCH_LIMIT, 'offset' => $this->request->params["o"]);
         $this->view->items = call_user_func_array(array($instance, $func), $args);
         if(isset($this->request->params["fetch"])) {
-//     trigger_error("except {REGULAR} directory tree the other trees' `fetch-more` ops does not working right!!", E_USER_ERROR);
-//     \zinux\kernel\utilities\debug::_var($this->request->GetURI());
-//     \zinux\kernel\utilities\debug::_var($this->request->params, 1);
             \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(session_id()));
             $dt = new \modules\frameModule\models\directoryTree($this->request, $dtmode);
             $index = 0;
@@ -96,9 +92,6 @@ class eController extends \zinux\kernel\controller\baseController
             {
                 $dt->plotTableRow($item, $item->WhoAmI(), $item->parent_id, $this->view->is_owner, (++$index)/$all_count);
             }
-\zinux\kernel\utilities\debug::_var(\core\db\models\folder::connection()->last_query);
-\zinux\kernel\utilities\debug::_var($args);
-\zinux\kernel\utilities\debug::_var($this->view->items, 1);
             exit;
         }
     }
