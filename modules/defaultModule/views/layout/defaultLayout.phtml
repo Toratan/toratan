@@ -106,7 +106,7 @@
                        }
                         t += (">"+b.html + '</button>');
                         $(modal_tag+" .modal-footer").append(t).html();
-                        if(typeof(b.callback) !== 'undefined') {
+                        if(typeof(b.callback) !== 'undefined' && b.callback !== null) {
                             $(modal_tag+" .modal-footer button#"+btn_id).click(function() {
                                 var callback = b.callback;
                                 // we have to do this to prevent a UI bug
@@ -115,6 +115,7 @@
                                     // we don't want to repeat this handler
                                     // at next modal show/hidden!!
                                     $(this).off('hidden.bs.modal');
+                                    // call the callback
                                     callback();
                                 }).modal('hide');
                             });
