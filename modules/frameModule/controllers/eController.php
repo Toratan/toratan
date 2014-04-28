@@ -14,6 +14,9 @@ class eController extends \zinux\kernel\controller\baseController
         $this->layout->SetLayout("explorer");
         if(!isset($this->request->params["o"]))
             $this->request->params["o"] = 0;
+        if(!isset($this->request->params["l"]))
+            $this->request->params["l"] = FETCH_LIMIT;
+        
                 
     }
     /**
@@ -81,7 +84,7 @@ class eController extends \zinux\kernel\controller\baseController
                     break;
             }
         }
-        $args[] = array("order" => "$sort_base $order", 'limit' => FETCH_LIMIT, 'offset' => $this->request->params["o"]);
+        $args[] = array("order" => "$sort_base $order", 'limit' => $this->request->params["l"], 'offset' => $this->request->params["o"]);
         $this->view->items = call_user_func_array(array($instance, $func), $args);
         if(isset($this->request->params["fetch"])) {
             \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(session_id()));

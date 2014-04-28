@@ -46,6 +46,29 @@
                 ?>')).fadeIn();
             }
         };
+        window.init_checkboxes = function() {
+            // remove if any previously defined `change` event handler
+            $("input[type='checkbox'].item-checkbox").unbind('change');
+            $("input[type='checkbox'].item-checkbox").change(function() {
+                if($(this).prop('checked')) {
+                    $(this).parent().parent().css({"background-color": "#f7fafc"});
+                    $(this).parent().siblings('.item-name').addClass("item-checked-name");
+                    $(this).parent().parent().addClass("item-checked");
+                } else {
+                    $(this).parent().parent().css("background-color", "transparent");
+                    $(this).parent().siblings('.item-name').removeClass("item-checked-name");
+                    $(this).parent().parent().removeClass("item-checked");
+                }
+            });
+        };
+        // to make `$("input[type='checkbox'].item-checkbox").change()` auto-invokable!!
+        $.propHooks.checked = {
+            set: function(elem, value, name) {
+              var ret = (elem[ name ] = value);
+              $(elem).trigger("change");
+              return ret;
+            }
+        };
         $(".check-all").click(function() {
             $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
             window.update_menu_checkbox();
@@ -131,13 +154,12 @@
                         window.reset_ajax_placeholder();
                     });
                     setTimeout(function() { 
-                        if(typeof(window.$o) === "undefined")
-                            window.$o = 0;
-                        else if(window.$o - to_remove < 0) return;
-                        else window.$o -= to_remove;
-                        console.log(["to-remove", to_remove, "offset", window.$o]);
-                        window.fetch_more(); 
-                    }, 10);
+                        window.$o = $("tr.item-row").length + 1;
+                        window.$l = to_remove;
+                        console.log(["limit", $l ,"offset", window.$o]);
+                        window.fetch_more();
+                        window.$l = <?php echo FETCH_LIMIT; ?>;
+                    }, 100);
                     return;
                 case "nop": break;
                 default:

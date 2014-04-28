@@ -17,6 +17,7 @@
         window.update_times = function() {
             $(" td.updated-at time").datetime(); 
         };
+        window.init_checkboxes();
         window.init_times();
         window.setInterval(window.update_times, 500);
         window.sort_table = function() {
@@ -52,25 +53,6 @@
                 }
             });
         };
-        // to make `$("input[type='checkbox'].item-checkbox").change()` auto-invokable!!
-        $.propHooks.checked = {
-            set: function(elem, value, name) {
-              var ret = (elem[ name ] = value);
-              $(elem).trigger("change");
-              return ret;
-            }
-        };
-        $("input[type='checkbox'].item-checkbox").change(function() {
-            if($(this).prop('checked')) {
-                $(this).parent().parent().css({"background-color": "#f7fafc"});
-                $(this).parent().siblings('.item-name').addClass("item-checked-name");
-                $(this).parent().parent().addClass("item-checked");
-            } else {
-                $(this).parent().parent().css("background-color", "transparent");
-                $(this).parent().siblings('.item-name').removeClass("item-checked-name");
-                $(this).parent().parent().removeClass("item-checked");
-            }
-        });
         $("button[name='ops']").click(function(e){
             if($(this).attr('value') === 'edit') return;
             e.preventDefault();
@@ -154,14 +136,16 @@
                     break;
             };
             if(typeof(window.$o) === "undefined")
-                window.$o = 30;
+                window.$o = <?php echo FETCH_LIMIT; ?>;
+            if(typeof(window.$l) === "undefined")
+                window.$l = <?php echo FETCH_LIMIT; ?>;
             console.log("<?php echo $this->request->getURI() ?>");
-            console.log( "o="+$o+"&sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>");
+            console.log("o="+$o+"&l="+$l+"sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>");
             $.ajax({
                 type: "GET",
                 global:false,
                 url: "<?php echo $this->request->getURI() ?>",
-                data: "o="+$o+"&sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
+                data: "o="+$o+"&l="+$l+"sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
                 success: function(data) {
                     window.$o += <?php echo FETCH_LIMIT; ?>
                     // unbind the success method to ignore the general result output
@@ -169,6 +153,8 @@
                     if(data.length) {
                         // append data
                         $("#explorer-table table.table").append(data);
+                        // init checkboxes
+                        window.init_checkboxes();
                         // init dates
                         window.init_times();
                         // update dates
