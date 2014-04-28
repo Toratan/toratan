@@ -14,6 +14,7 @@ class eController extends \zinux\kernel\controller\baseController
         $this->layout->SetLayout("explorer");
         if(!isset($this->request->params["o"]))
             $this->request->params["o"] = 0;
+                
     }
     /**
     * The modules\frameModule\controllers\eController::IndexAction()
@@ -38,7 +39,6 @@ class eController extends \zinux\kernel\controller\baseController
             $parent = $parent->fetch($pid, $uid);
             if(!$parent->is_public)
                 throw new \zinux\kernel\exceptions\permissionDeniedException("You don't have permission to view this folder.");
-            
         }
         $this->view->is_owner = ($uid == \core\db\models\user::GetInstance()->user_id); 
         $this->executeQuery("fetchItems",  

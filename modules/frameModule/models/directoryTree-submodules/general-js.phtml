@@ -36,6 +36,16 @@
                 $("#explorer-table").animate({"margin-top": $("#explorer-template").css("height")}, "fast");
             });
         };
+        window.plot_if_no_item_found = function() {
+            if($("tr.item-row").length === 0) {
+                $("#explorer-table").after($('<?php 
+                        ob_start();
+                        require 'table-empty.phtml';
+                    $content = ob_get_clean();
+                    echo str_replace("\n", "", $content);
+                ?>')).fadeIn();
+            }
+        };
         $(".check-all").click(function() {
             $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
             window.update_menu_checkbox();
@@ -113,19 +123,21 @@
                     shouldUpdateTime = true;
                     break;
                 case window.APPLY_REMOVE:
+                    var to_remove = $("tr.item-checked").length;
                     $("tr.item-checked").fadeOut(200, function() { 
                         $(this).remove();
-                        if($("tr.item-row").length === 0) {
-                            $("#explorer-table").after($('<?php 
-                                    ob_start();
-                                    require 'table-empty.phtml';
-                                $content = ob_get_clean();
-                                echo str_replace("\n", "", $content);
-                            ?>')).fadeIn();
-                        }
+                        window.plot_if_no_item_found();
                         window.update_menu_checkbox();
                         window.reset_ajax_placeholder();
                     });
+                    setTimeout(function() { 
+                        if(typeof(window.$o) === "undefined")
+                            window.$o = 0;
+                        else if(window.$o - to_remove < 0) return;
+                        else window.$o -= to_remove;
+                        console.log(["to-remove", to_remove, "offset", window.$o]);
+                        window.fetch_more(); 
+                    }, 10);
                     return;
                 case "nop": break;
                 default:

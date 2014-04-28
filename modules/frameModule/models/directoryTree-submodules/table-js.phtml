@@ -1,6 +1,8 @@
 <script src="/access/js/jquery.datetime-0.9.min.js"></script>
 <script src="/access/js/jquery.tablesorter.min.js"></script>
+<?php if($this->tree_type === self::REGULAR): ?>
 <script src="/access/js/jquery.waypoints.min.js"></script>
+<?php endif; ?>
 <script type="text/javascript">
     $(document).ready(function(){
         window.init_times = function() {
@@ -153,6 +155,7 @@
             };
             if(typeof(window.$o) === "undefined")
                 window.$o = 30;
+            console.log("<?php echo $this->request->getURI() ?>");
             console.log( "o="+$o+"&sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>");
             $.ajax({
                 type: "GET",
@@ -163,16 +166,23 @@
                     window.$o += <?php echo FETCH_LIMIT; ?>
                     // unbind the success method to ignore the general result output
                     $(window).unbind('ajaxSuccess');
-                    // append data
-                    $("#explorer-table table.table").append(data);
-                    // init dates
-                    window.init_times();
-                    // update dates
-                    $(" td.updated-at time").datetime();
-                    // re-sort table
-                    window.sort_table();
+                    if(data.length) {
+                        // append data
+                        $("#explorer-table table.table").append(data);
+                        // init dates
+                        window.init_times();
+                        // update dates
+                        $(" td.updated-at time").datetime();
+                        // re-sort table
+                        window.sort_table();
+                    } else {
+                        $("tr.item-row.fetch-more").removeClass("fetch-more");
+                        window.plot_if_no_item_found();
+                    }
+<?php if($this->tree_type === self::REGULAR): ?>
                     // bind a new scroll-more event handler
                     $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
+<?php endif; ?>
                     // set a timeout(50ms) for re-binding the ajax success method
                     setTimeout(function() { $(window).ajaxSuccess(window.ajax_success); }, 50);
                 },
@@ -183,6 +193,7 @@
                 $(".ajax-loader-img-inf-scroll").addClass("hidden");
             });
         };
+<?php if($this->tree_type === self::REGULAR): ?>
         window.scroll_more = function() {
                 // remove the fetch-more class from current element
                 $(this).removeClass("fetch-more");
@@ -192,6 +203,7 @@
                 window.fetch_more();
             };
             $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
+<?php endif; ?>
             window.sort_table();
     });
 </script>
