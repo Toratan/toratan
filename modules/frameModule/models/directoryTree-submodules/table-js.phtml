@@ -135,19 +135,29 @@
                 $(this).removeClass("fetch-more");
                 // disable any future scoll callbacks from curremt element
                 $(this).waypoint('disable');
-                console.log($(this).text());
+                $(".ajax-loader-img-inf-scroll").removeClass("hidden");
                 $.ajax({
                     type: "GET",
+                    global:false,
                     url: "<?php echo $this->request->getURI() ?>",
-                    data: "o=0&fetch",
+                    data: "o=<?php echo $this->request->params["o"] ?>&fetch&<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
                     success: function(data) {
                         // unbind the success method to ignore the general result output
                         $(window).unbind('ajaxSuccess');
+                        // append data
                         $("#explorer-table table.table").append(data);
+                        // update dates
+                        $(" td.updated-at time").datetime(); 
+                        // bind a new scroll-more event handler
                         $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
                         // set a timeout(50ms) for re-binding the ajax success method
                         setTimeout(function() { $(window).ajaxSuccess(window.ajax_success); }, 50);
+                    },
+                    error: function(xhr) {
+                        window.top.open_errorModal(xhr.responseText);
                     }
+                }).always(function(){
+                    $(".ajax-loader-img-inf-scroll").addClass("hidden");
                 });
             };
             $("tr.item-row.fetch-more:last").waypoint(window.scroll_more);
