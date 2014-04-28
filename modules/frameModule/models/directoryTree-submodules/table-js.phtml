@@ -161,7 +161,7 @@
                     type: "GET",
                     global:false,
                     url: "<?php echo $this->request->getURI() ?>",
-                    data: "o="+$o+"&sort="+sort_base+"&order="+order+"&fetch&<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
+                    data: "o="+$o+"&sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
                     success: function(data) {
                         window.$o += <?php echo FETCH_LIMIT; ?>
                         // unbind the success method to ignore the general result output

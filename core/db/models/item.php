@@ -352,8 +352,8 @@ abstract class item extends baseModel
      * @param string $owner_id
      * @return array the trash items
      */
-    public function fetchTrashes($owner_id) {
-        return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_SET);
+    public function fetchTrashes($owner_id, $options = array()) {
+        return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_SET, self::WHATEVER, $options);
     }
     /**
      * Arhives/De-archives an item
@@ -414,8 +414,8 @@ abstract class item extends baseModel
      * @param string $owner_id
      * @return array the archive items
      */
-    public function fetchArchives($owner_id) {
-        return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_UNSET, self::FLAG_SET);
+    public function fetchArchives($owner_id, $options = array()) {
+        return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_UNSET, self::FLAG_SET, $options);
     }
     /**
      * moves an item
@@ -442,8 +442,8 @@ abstract class item extends baseModel
      * @param string $owner_id
      * @return array the shared items
      */
-    public function fetchShared($owner_id) {
-        return $this->fetchItems($owner_id, NULL, self::FLAG_SET, self::FLAG_UNSET);
+    public function fetchShared($owner_id, $options = array()) {
+        return $this->fetchItems($owner_id, NULL, self::FLAG_SET, self::FLAG_UNSET, self::WHATEVER, $options);
     }
     /**
      * Fetches verbal route to toot from an item

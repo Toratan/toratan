@@ -40,6 +40,15 @@ class eController extends \zinux\kernel\controller\baseController
                 throw new \zinux\kernel\exceptions\permissionDeniedException("You don't have permission to view this folder.");
             
         }
+        $this->view->is_owner = ($uid == \core\db\models\user::GetInstance()->user_id); 
+        $this->executeQuery("fetchItems",  
+                \modules\frameModule\models\directoryTree::REGULAR,
+                array($this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
+\zinux\kernel\utilities\debug::_var(\core\db\models\folder::connection()->last_query,1);
+        $folder = new \core\db\models\folder;
+        $this->view->route = $folder->fetchRouteToRoot($pid, $uid);
+    }
+    protected function executeQuery($func, $dtmode, array $args) {
         $instance = NULL;
         switch(strtoupper($this->request->type))
         {
@@ -73,25 +82,26 @@ class eController extends \zinux\kernel\controller\baseController
                     break;
             }
         }
-        $this->view->is_owner = ($uid == \core\db\models\user::GetInstance()->user_id); 
-        $this->view->items = ($instance->fetchItems($uid, $pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET, array("order" => "$sort_base $order", 'limit' => FETCH_LIMIT, 'offset' => $this->request->params["o"])));
-        $old_o = $this->request->params["o"];
-        $this->request->params["o"] = intval($this->request->params["o"]) + FETCH_LIMIT;
-        $folder = new \core\db\models\folder;
-        $this->view->route = $folder->fetchRouteToRoot($pid, $uid);
+        $args[] = array("order" => "$sort_base $order", 'limit' => FETCH_LIMIT, 'offset' => $this->request->params["o"]);
+        $this->view->items = call_user_func_array(array($instance, $func), $args);
         if(isset($this->request->params["fetch"])) {
+//     trigger_error("except {REGULAR} directory tree the other trees' `fetch-more` ops does not working right!!", E_USER_ERROR);
+//     \zinux\kernel\utilities\debug::_var($this->request->GetURI());
+//     \zinux\kernel\utilities\debug::_var($this->request->params, 1);
             \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(session_id()));
-            $dt = new \modules\frameModule\models\directoryTree($this->request, \modules\frameModule\models\directoryTree::REGULAR);
+            $dt = new \modules\frameModule\models\directoryTree($this->request, $dtmode);
             $index = 0;
             $all_count = count($this->view->items);
             foreach ($this->view->items as $item)
             {
-                $dt->plotTableRow($item, $item->WhoAmI(), $pid, $this->view->is_owner, (++$index)/$all_count);
+                $dt->plotTableRow($item, $item->WhoAmI(), $item->parent_id, $this->view->is_owner, (++$index)/$all_count);
             }
+\zinux\kernel\utilities\debug::_var(\core\db\models\folder::connection()->last_query);
+\zinux\kernel\utilities\debug::_var($args);
+\zinux\kernel\utilities\debug::_var($this->view->items, 1);
             exit;
         }
     }
-
     /**
     * The \modules\frameModule\controllers\eController::archivesAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -104,26 +114,8 @@ class eController extends \zinux\kernel\controller\baseController
         if(!isset($this->request->params["directory"]))
             $this->request->params["directory"] = 0;
         $this->view->pid = $pid = $this->request->params["directory"];
-        $uid = \core\db\models\user::GetInstance()->user_id;
-        $instance = NULL;
-        switch(strtoupper($this->request->type))
-        {
-            case 'HTML':
-                $this->request->type = "folders";
-            case "FOLDERS":
-                $instance = new \core\db\models\folder;
-                break;
-            case "NOTES":
-                $instance = new \core\db\models\note;
-                break;
-            case "LINKS":
-                $instance = new \core\db\models\link;
-                break;
-            default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
-        }
-        $this->view->items = ($instance->fetchArchives($uid));
         $this->view->is_owner = 1;
+        $this->executeQuery("fetchArchives",  \modules\frameModule\models\directoryTree::SHARED, array(\core\db\models\user::GetInstance()->user_id));
     }
 
     /**
@@ -138,26 +130,8 @@ class eController extends \zinux\kernel\controller\baseController
         if(!isset($this->request->params["directory"]))
             $this->request->params["directory"] = 0;
         $this->view->pid = $pid = $this->request->params["directory"];
-        $uid = \core\db\models\user::GetInstance()->user_id;
-        $instance = NULL;
-        switch(strtoupper($this->request->type))
-        {
-            case 'HTML':
-                $this->request->type = "folders";
-            case "FOLDERS":
-                $instance = new \core\db\models\folder;
-                break;
-            case "NOTES":
-                $instance = new \core\db\models\note;
-                break;
-            case "LINKS":
-                $instance = new \core\db\models\link;
-                break;
-            default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
-        }
-        $this->view->items = ($instance->fetchShared($uid));  
         $this->view->is_owner = 1;
+        $this->executeQuery("fetchShared",  \modules\frameModule\models\directoryTree::ARCHIVE, array(\core\db\models\user::GetInstance()->user_id));
     }
 
     /**
@@ -172,25 +146,7 @@ class eController extends \zinux\kernel\controller\baseController
         if(!isset($this->request->params["directory"]))
             $this->request->params["directory"] = 0;
         $this->view->pid = $pid = $this->request->params["directory"];
-        $uid = \core\db\models\user::GetInstance()->user_id;
-        $instance = NULL;
-        switch(strtoupper($this->request->type))
-        {
-            case 'HTML':
-                $this->request->type = "folders";
-            case "FOLDERS":
-                $instance = new \core\db\models\folder;
-                break;
-            case "NOTES":
-                $instance = new \core\db\models\note;
-                break;
-            case "LINKS":
-                $instance = new \core\db\models\link;
-                break;
-            default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
-        }
-        $this->view->items = ($instance->fetchTrashes($uid));
         $this->view->is_owner = 1;
+        $this->executeQuery("fetchTrashes",  \modules\frameModule\models\directoryTree::TRASH, array(\core\db\models\user::GetInstance()->user_id));
     }
 }
