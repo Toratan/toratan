@@ -38,6 +38,7 @@
                 window.getLinkHash = function(link) { return "#!/"+String(link).replace(/^(\/frame\/e)?(\/)?/ig,""); };
                 window.updateHash = function(hash) { window.top.location.replace(String(window.top.location).split("#")[0] + hash); };
                 window.top.document.title = $("#explorer-template ol.breadcrumb li.active").text().trim();
+                window.top.location.hash = window.getLinkHash($("#explorer-template ol.breadcrumb li.active span").attr('hash-link'));
                 $("a").click(function(e){
                     if($(this).attr("href").length && $(this).attr("href")[0] !== "#") {
                         e.preventDefault();

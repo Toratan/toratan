@@ -2,7 +2,7 @@
     <h3>&nbsp;</h3>
     <ul class="nav nav-pills nav-stacked">
         <li class="active">
-            <a id='root' user-data="" href="/frame/e" target="explorer-frame"><span class="glyphicon glyphicon-th-large"></span> Root</a>
+            <a id='root' user-data="!/d/0.folders" href="/d/0.folders" target="explorer-frame"><span class="glyphicon glyphicon-th-large"></span> Root</a>
         </li>
         <li>
             <a id='archives' user-data="!/archives" href='/archives' target="explorer-frame"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
@@ -20,26 +20,13 @@
         $("div#exp-nav ul.nav li a[target='explorer-frame']").click(function(){
             window.top.active_nav($(this).attr('id'));
             window.top.location.hash = $(this).attr('user-data');
+            console.log(["u", $(this).attr('user-data')]);
         });
-        window.top.active_nav = function(id) {
-            $(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");
-            $(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li a[target='explorer-frame']#"+id).parent().addClass("active");
-        };
-        window.top.getActiveType = function() {
-            return String($(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li.active").find("a").attr("id")).toLowerCase();
-        };
-        window.top.getActiveNavHtml = function() {
-            var $anh = $(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li.active a[target='explorer-frame']").clone();
-            return $anh.removeAttr("user-data")
-                    .removeAttr("target")
-                        .wrap('<p/>').parent().html();
-        };
         try {
             var uri = 'root';
-            var postFix = '';
-            var defURI = "/frame/e";
+            var defURI = "/d/0.folders";
             if(window.location.hash.length === 0) window.location.hash ="#!"+defURI;
-            if(window.location.hash.split('#!/')[1] !== undefined) {
+            if(window.location.hash.split('#!')[1] !== undefined) {
                 var __uri = String(window.location.hash.split('#!/')[1]).split("/");
                 if(__uri.length && __uri[0].length)
                     uri = __uri[0];
@@ -54,9 +41,12 @@
                 case "shared":
                 case "trashes":
                 case "archives":
+                    if(!window.location.hash.match(/^#\!/ig)) window.location.hash = "#!"+defURI;
                     var target = window.location.hash.split('#!')[1];
-                    if(!target.match(/^#\!/ig) || target.length === 0 || target === "/")
+                    console.log(["uri", uri, "target", target]);
+                    if(target.length === 0 || target === "/")
                         target = defURI;
+                    console.log(["uri", uri, "target", target]);
                     window.top.active_nav(uri);
                     window.top.document.getElementById('explorer-frame').src = target;
                     break;

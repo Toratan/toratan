@@ -171,6 +171,22 @@
                     }
                     open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-question-sign"></span> Confirm', close_timeout, [no, yes]);
                 };
+                window.active_nav = function(id) {
+                    $('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");
+                    $('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li a[target='explorer-frame']#"+id).parent().addClass("active");
+                };
+                window.getActiveType = function() {
+                    return String($('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li.active").find("a").attr("id")).toLowerCase();
+                };
+                window.getActiveNavHtml = function() {
+                    var $anh = $('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li.active a[target='explorer-frame']").clone();
+                    return $anh.removeAttr("user-data")
+                            .removeAttr("target")
+                                .wrap('<p/>').parent().html();
+                };
+                window.getActiveTypeLink = function() {
+                    return $('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li a[target='explorer-frame']#"+window.getActiveType()).attr('href');
+                };
             })(jQuery);
         </script>
         <!-- general modal -->

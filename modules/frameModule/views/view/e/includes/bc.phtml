@@ -1,4 +1,5 @@
 <ol class="breadcrumb">
+<?php $active_folder = NULL; ?>
 <?php
     $i = 1;
     # loading routes
@@ -7,16 +8,19 @@
             <?php 
                 if(!$is_active)
                     echo "<a link-type='folder' status='{$dt->getStatusBinary($folder)}' class='table-nav-link' href='{$dt->getNavigationLink($folder)}'>";
-                echo $folder->folder_title;
+                echo "<span hash-link='{$dt->getNavigationLink($folder)}'>",$folder->folder_title, "</span>";
                 if(!$is_active)
                     echo "</a>";
+                else $active_folder = $folder;
             ?>
         </li>
 <?php endforeach; ?>
 </ol>
 <script>
     (function(){
-        $("#explorer-template ol.breadcrumb").prepend("<li>"+window.top.getActiveNavHtml()+"</li>");
+        console.log(window.top.getActiveNavHtml());
+        console.log(window.top.getActiveTypeLink());
+        $("#explorer-template ol.breadcrumb").prepend("<li>"+$(window.top.getActiveNavHtml()).wrapInner("<span hash-link='"+window.top.getActiveTypeLink()+"'></span>").wrap("<p>").parent().html()+"</li>");
         if($("#explorer-template ol.breadcrumb li.active").length === 0) {
             $("#explorer-template ol.breadcrumb li:last").addClass("active");
             if($("#explorer-template ol.breadcrumb li:last a").length !== 0) {
