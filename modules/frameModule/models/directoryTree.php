@@ -13,12 +13,12 @@ class directoryTree extends \stdClass
      * The type directory Tree
      * @var integer
      */
-    protected $tree_type;
+    public $tree_type;
     /**
      * The request
      * @var \zinux\kernel\routing\request
      */
-    protected $request;
+    public $request;
     /**
      * Construct a new directory tree
      * @param \zinux\kernel\routing\request $request The current request detail
@@ -47,7 +47,7 @@ class directoryTree extends \stdClass
      * @param string $active_type Which type this directory tree contains?
      * @param string|integer $pid the parrent directory this directory tree
      */
-    protected function plot_next_prev_links($active_type, $pid) { if($this->tree_type === self::REGULAR) return; require 'directoryTree-submodules/nextPrevLinks.phtml'; } 
+    public function plot_next_prev_links($active_type, $pid) { if($this->tree_type === self::REGULAR) return; require 'directoryTree-submodules/nextPrevLinks.phtml'; }
     /**
      * Plots general JS for options of directory tree
      * @param string $active_type Which type this directory tree contains?
@@ -59,15 +59,15 @@ class directoryTree extends \stdClass
      * PLots table's header html/js/css
      * @param string $active_type Which type this directory tree contains?
      */
-    protected function plotTableHeader($active_type) { require 'directoryTree-submodules/tableHeader.phtml'; }
+    public function plotTableHeader($active_type) { require 'directoryTree-submodules/tableHeader.phtml'; }
     /**
      * PLots table's footer html/css
      */
-    protected function plotTableFooter() { require 'directoryTree-submodules/tableFooter.phtml'; }
+    public function plotTableFooter() { require 'directoryTree-submodules/tableFooter.phtml'; }
     /**
      * Get a proper navigation link
-     * @param \core\db\models\item $item The target item 
-     * @return string the navigation pure link(i.e no a &lt;a&gt; link just the content of `href`) 
+     * @param \core\db\models\item $item The target item
+     * @return string the navigation pure link(i.e no a &lt;a&gt; link just the content of `href`)
      */
     public function getNavigationLink(\core\db\models\item $item) {
         switch($item->WhoAmI()) {
@@ -83,24 +83,24 @@ class directoryTree extends \stdClass
     }
     /**
      * Get proper value of `taget` for &lt;a&gt;
-     * @param \core\db\models\item $item The target item 
+     * @param \core\db\models\item $item The target item
      * @return string The target value
      */
     protected  function getNavigationTarget(\core\db\models\item $item) {
         switch($item->WhoAmI()) {
             case "note": return "_top";
             case "link": return "_blank";
-            case "folder": return "_self"; 
+            case "folder": return "_self";
             default:
                 trigger_error("Undefined `{$item->WhoAmI()}` item ", E_USER_ERROR);
         }
     }
     /**
      * Get proper status icon of an item
-     * @param \core\db\models\item $item The target item 
+     * @param \core\db\models\item $item The target item
      * @return the status icons string collection
      */
-    protected function getStatusIcons(\core\db\models\item $item) {
+    public function getStatusIcons(\core\db\models\item $item) {
         $si = "";
         $counter = 0;
         if($item->is_public && ++$counter)
@@ -112,7 +112,7 @@ class directoryTree extends \stdClass
         if($counter < 3) {
             switch($item->WhoAmI()) {
                 case "note":
-                    $si = "<span class='glyphicon glyphicon-file' title='Note'></span> $si"; 
+                    $si = "<span class='glyphicon glyphicon-file' title='Note'></span> $si";
                     break;
                 case "link":
                     $si = "<span class='glyphicon glyphicon-link' title='Link'></span> $si";
@@ -131,7 +131,7 @@ class directoryTree extends \stdClass
      * @param \core\db\models\item $item The target item
      * @return string The classes string collection
      */
-    protected function getCheckBoxClasses(\core\db\models\item $item) {
+    public function getCheckBoxClasses(\core\db\models\item $item) {
         $cbc = "item-checkbox";
         if($item->is_public) $cbc .= " public-item";
         if(!$item->is_public) $cbc .= " private-item";
@@ -142,7 +142,7 @@ class directoryTree extends \stdClass
      * @param \core\db\models\item $item The target item
      * @return string The binary representaion of item's status properties
      */
-    protected function getStatusBinary(\core\db\models\item $item) {
+    public function getStatusBinary(\core\db\models\item $item) {
         return ($item->is_public?"1":"0").($item->is_archive?"1":"0").($item->is_trash?"1":"0");
     }
     /**
@@ -150,20 +150,20 @@ class directoryTree extends \stdClass
      * @param \core\db\models\item $item The target item
      * @return string The inverse verbose representaion of item's status properties
      */
-    protected  function getStatusString(\core\db\models\item $item) {
+    public function getStatusString(\core\db\models\item $item) {
         $s = "";
         $s .= ("&share=".($item->is_public?"0":"1"));
         $s .= ("&archive=".($item->is_archive?"0":"1"));
         $s .= ("&trash=".($item->is_trash?"0":"1"));
-        return $s; 
+        return $s;
     }
     /**
      * Get checkbox POST value for an item
      * @param \core\db\models\item $item The target value
      * @return string the value
      */
-    protected function getPostCheckVal(\core\db\models\item $item) {
-         return htmlentities(\modules\opsModule\models\itemInfo::encode($item)); 
+    public function getPostCheckVal(\core\db\models\item $item) {
+         return htmlentities(\modules\opsModule\models\itemInfo::encode($item));
     }
     /**
      * Plots a row of table
@@ -206,7 +206,7 @@ class directoryTree extends \stdClass
      * Plots necessary JS for table operations
      * @param string $active_type Which type this directory tree contains?
      */
-    protected function plotTableJS($active_type) {
+    public function plotTableJS($active_type) {
         require 'directoryTree-submodules/table-js.phtml';
     }
     /**
