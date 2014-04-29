@@ -1,10 +1,10 @@
 <div id="explorer-template">
 <?php
+    $dt = new modules\frameModule\models\directoryTree($this->request, modules\frameModule\models\directoryTree::TRASH);
     require "includes/bc.phtml";
     $type = $this->request->type;
     $parent_id = $this->pid;
     $is_owner = $this->is_owner;
-    $dt = new modules\frameModule\models\directoryTree($this->request, modules\frameModule\models\directoryTree::TRASH);
     $dt->plotOptions($type, $parent_id, $is_owner);
     $dt->plotHeadTypes($type, $parent_id);
     $dt->plotJS($type, $parent_id, $is_owner);

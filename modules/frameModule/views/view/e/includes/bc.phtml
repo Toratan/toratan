@@ -1,6 +1,5 @@
 <ol class="breadcrumb">
 <?php
-    $dt = new modules\frameModule\models\directoryTree($this->request);
     $i = 1;
     # loading routes
     foreach ($this->route as $folder) : $is_active = ($i++==count($this->route)); if(!$folder->folder_id) continue; ?>
@@ -21,8 +20,9 @@
 <?php if(count($this->route)): ?>
         var removeBCByStatusPattern = function(pattern, break_pattern) {
             console.log(["pattern", pattern]);
-            $route_links.each(function(index, elem){
+            $("#explorer-template ol.breadcrumb li a").each(function(index, elem){
                 var status = $(elem).attr('status');
+                if(typeof(status) === "undefined") return;
                 console.log(["elem", $(elem).text().trim(), "status", status]);
                 if(status.match(new RegExp(pattern, "ig"))) {
                     console.log("Matched");

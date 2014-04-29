@@ -1,5 +1,6 @@
 <div id="explorer-template">
 <?php
+    $dt = new modules\frameModule\models\directoryTree($this->request);
     require "includes/bc.phtml";
     $type = $this->request->type;
     $parent_id = $this->pid;
