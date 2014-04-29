@@ -5,7 +5,7 @@
     $dt = new modules\frameModule\models\directoryTree($this->request);
     $i = 1;
     # loading routes
-    foreach ($this->route as $folder) : $is_active = ($i++==count($this->route));?>
+    foreach ($this->route as $folder) : $is_active = ($i++==count($this->route)); if(!$folder->folder_id) continue?>
         <li <?php echo $is_active?" class='active'":""?>>
             <?php 
                 if(!$is_active)
@@ -17,6 +17,11 @@
         </li>
 <?php endforeach; ?>
 </ol>
+<script>
+    (function(){
+        $("#explorer-template ol.breadcrumb").prepend("<li "+($("#explorer-template ol.breadcrumb li.active").length?"":"class='active'")+">"+window.top.getAciveNavHtml()+"</li>");
+    })(jQuery);
+</script>
 <?php endif; ?>
 <?php
     $type = $this->request->type;

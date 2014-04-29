@@ -34,9 +34,20 @@
             </div> <!-- end of padder -->
         </div><!-- end of container -->
         <script>
-            $("a").click(function(){
-                if($(this).attr("href").length && $(this).attr("href")[0] !== "#")
-                    window.top.location.hash = "!/"+$(this).attr("href").replace(/^(\/frame\/e)?(\/)?/ig,"");
+            $(document).ready(function() {
+                window.getLinkHash = function(link) { return "#!/"+String(link).replace(/^(\/frame\/e)?(\/)?/ig,""); };
+                window.updateHash = function(hash) { window.top.location.replace(String(window.top.location).split("#")[0] + hash); };
+                window.top.document.title = $("#explorer-template ol.breadcrumb li.active").text().trim();
+                $("a").click(function(e){
+                    if($(this).attr("href").length && $(this).attr("href")[0] !== "#") {
+                        e.preventDefault();
+                        if(String($(this).attr('href')).toLowerCase().match(/\/d\/0\.\w+/ig)) {
+                            window.top.active_nav("root");
+                        }
+                        window.location = $(this).attr('href');
+                        window.updateHash(window.getLinkHash($(this).attr("href")));
+                    }
+                });
             });
         </script>
         <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>

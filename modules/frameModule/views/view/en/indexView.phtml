@@ -5,27 +5,31 @@
             <a id='root' user-data="" href="/frame/e" target="explorer-frame"><span class="glyphicon glyphicon-th-large"></span> Root</a>
         </li>
         <li>
-            <a id='archives' user-data="!/archives" href='/frame/e/archives' target="explorer-frame"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
+            <a id='archives' user-data="!/archives" href='/archives' target="explorer-frame"><span class="glyphicon glyphicon-floppy-disk"></span> Archives</a>
         </li>
         <li>
-            <a id='shared' user-data="!/shared" href='/frame/e/shared' target="explorer-frame"><span class="glyphicon glyphicon-share-alt"></span> Shared</a>
+            <a id='shared' user-data="!/shared" href='/shared' target="explorer-frame"><span class="glyphicon glyphicon-share-alt"></span> Shared</a>
         </li>
         <li>
-            <a id='trashes' user-data="!/trashes" href='/frame/e/trashes' target="explorer-frame"><span class="glyphicon glyphicon-trash"></span> Trashes</a>
+            <a id='trashes' user-data="!/trashes" href='/trashes' target="explorer-frame"><span class="glyphicon glyphicon-trash"></span> Trashes</a>
         </li>
     </ul>
 </div>
 <script type="text/javascript">
     $(document).ready(function() {
         $("div#exp-nav ul.nav li a[target='explorer-frame']").click(function(){
-            window.active_nav($(this).attr('id'));
+            window.top.active_nav($(this).attr('id'));
             window.top.location.hash = $(this).attr('user-data');
-            window.top.document.title = $(this).text().trim();
         });
-        window.active_nav = function(id) {
-            $("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");
-            $("div#exp-nav ul.nav li a[target='explorer-frame']#"+id).parent().addClass("active");
-            window.top.document.title = $("div#exp-nav ul.nav li.active a[target='explorer-frame']").text().trim();
+        window.top.active_nav = function(id) {
+            $(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");
+            $(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li a[target='explorer-frame']#"+id).parent().addClass("active");
+        };
+        window.top.getAciveNavHtml = function() {
+            var $anh = $(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li a[target='explorer-frame']").clone();
+            return $anh.removeAttr("user-data")
+                    .removeAttr("target")
+                        .wrap('<p/>').parent().html();
         };
         try {
             var uri = 'root';
@@ -37,7 +41,6 @@
             }
             switch(uri) {
                 default:
-                case "d":
                 case "root":
                     switch(String(window.location.hash).toLowerCase()) {
                         case "#!/root":
@@ -54,7 +57,7 @@
                 case "trashes":
                     break;
             }
-            window.active_nav(uri);
+            window.top.active_nav(uri);
             window.top.document.getElementById('explorer-frame').src = $("div#exp-nav ul.nav li a#"+uri).attr('href') + postFix;
         } catch(e) {
             window.location.hash = '';

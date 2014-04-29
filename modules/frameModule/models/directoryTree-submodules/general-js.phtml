@@ -256,6 +256,7 @@
             window.top.open_infoModal('<?php echo addslashes($msgs) ?>', 2700);
         }, 150);
 <?php endif; ?>
+<?php if(false) : ?>
         $("#explorer-table .table").filterTable({
             minRows: 0,
             highlightClass: "filtered-item",
@@ -280,5 +281,6 @@
                 });
             }
         });
+<?php endif; ?>
     });
 </script>

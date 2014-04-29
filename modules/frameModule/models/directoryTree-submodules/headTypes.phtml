@@ -1,5 +1,6 @@
 <div class="visible-xs clearfix"></div>
 <div style="padding: 0% 0 1% 0;" id="directory-tree-headtypes">
+    <?php echo $this->plot_next_prev_links($active_type, $pid); ?>
     <ul class="nav nav-tabs" style="font-weight: 900;font-variant: small-caps"><?php
     foreach(array(
             "folders" => "<span class='glyphicon glyphicon-folder-".(strtoupper("{$active_type}") == "FOLDERS"?"open":"close")."'></span>", 
