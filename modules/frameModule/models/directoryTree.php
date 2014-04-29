@@ -138,7 +138,8 @@ class directoryTree extends \stdClass
         return $cbc;
     }
     /**
-     * Get binary representaion of item's status properties
+     * Get binary representaion of item's status properties<br />
+     * The binary format is `<i>{is_public}{is_archive}{is_trash}</i>`
      * @param \core\db\models\item $item The target item
      * @return string The binary representaion of item's status properties
      */

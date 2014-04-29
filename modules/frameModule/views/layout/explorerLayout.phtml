@@ -41,9 +41,6 @@
                 $("a").click(function(e){
                     if($(this).attr("href").length && $(this).attr("href")[0] !== "#") {
                         e.preventDefault();
-                        if(String($(this).attr('href')).toLowerCase().match(/\/d\/0\.\w+/ig)) {
-                            window.top.active_nav("root");
-                        }
                         window.location = $(this).attr('href');
                         window.updateHash(window.getLinkHash($(this).attr("href")));
                     }

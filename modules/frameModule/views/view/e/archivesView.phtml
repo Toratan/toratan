@@ -1,7 +1,10 @@
 <div id="explorer-template">
-<ol class="breadcrumb">
-    <li class="active">Archives</li>
-</ol>
+<ol class="breadcrumb"></ol>
+<script>
+    (function(){
+        $("#explorer-template ol.breadcrumb").prepend("<li>"+window.top.getActiveNavHtml()+"</li>");
+    })(jQuery);
+</script>
 <?php
     $type = $this->request->type;
     $parent_id = $this->pid;

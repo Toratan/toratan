@@ -25,8 +25,11 @@
             $(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");
             $(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li a[target='explorer-frame']#"+id).parent().addClass("active");
         };
-        window.top.getAciveNavHtml = function() {
-            var $anh = $(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li a[target='explorer-frame']").clone();
+        window.top.getActiveType = function() {
+            return String($(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li.active").find("a").attr("id")).toLowerCase();
+        };
+        window.top.getActiveNavHtml = function() {
+            var $anh = $(window.top.document.getElementById('explorer-nav-frame')).contents().find("div#exp-nav ul.nav li.active a[target='explorer-frame']").clone();
             return $anh.removeAttr("user-data")
                     .removeAttr("target")
                         .wrap('<p/>').parent().html();
