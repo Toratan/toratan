@@ -1,55 +1,6 @@
 <div id="explorer-template">
-<?php if(count($this->route)): ?>
-<ol class="breadcrumb">
 <?php
-    $dt = new modules\frameModule\models\directoryTree($this->request);
-    $i = 1;
-    # loading routes
-    foreach ($this->route as $folder) : $is_active = ($i++==count($this->route)); if(!$folder->folder_id) continue; ?>
-        <li <?php echo $is_active?" class='active'":""?>>
-            <?php 
-                if(!$is_active)
-                    echo "<a link-type='folder' status='{$dt->getStatusBinary($folder)}' class='table-nav-link' href='{$dt->getNavigationLink($folder)}'>";
-                echo $folder->folder_title;
-                if(!$is_active)
-                    echo "</a>";
-            ?>
-        </li>
-<?php endforeach; ?>
-</ol>
-<script>
-    (function(){
-        var $route = $("#explorer-template ol.breadcrumb");
-        var $route_links = $("#explorer-template ol.breadcrumb li a");
-        $route.prepend("<li>"+window.top.getActiveNavHtml()+"</li>");
-        var removeBCByStatusPattern = function(pattern, break_pattern) {
-            console.log(["pattern", pattern]);
-            $route_links.each(function(index, elem){
-                var status = $(elem).attr('status');
-                console.log(["elem", $(elem).text().trim(), "status", status]);
-                if(status.match(new RegExp(pattern, "ig"))) {
-                    console.log("Matched");
-                    $(elem).parent().remove(); 
-                }
-                if(status.match(new RegExp(break_pattern, "ig"))) return false;
-            });
-        };
-        switch(window.top.getActiveType()) {
-            case "root": /* NOP in root type */ break;
-            case "archives":
-                removeBCByStatusPattern("\\d0\d", "\\d1\\d");
-                break;
-            case "trashes":
-                removeBCByStatusPattern("\\d\\d0", "\\d\\d1");
-                break;
-            case "shared":
-                removeBCByStatusPattern("0\\d\\d", "1\\d\\d");
-                break;
-        }
-    })(jQuery);
-</script>
-<?php endif; ?>
-<?php
+    require "includes/bc.phtml";
     $type = $this->request->type;
     $parent_id = $this->pid;
     $is_owner = $this->is_owner;

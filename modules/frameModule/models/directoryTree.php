@@ -76,7 +76,12 @@ class directoryTree extends \stdClass
             case "link":
                 return "/goto/link/{$item->link_id}/".\zinux\kernel\security\hash::Generate($item->link_id, 1, 1);
             case "folder":
-                return "/d/{$item->folder_id}.folders";
+                switch($this->tree_type) {
+                    default: return "/d/{$item->folder_id}.folders";
+                    case self::ARCHIVE: return "/archives/d/{$item->folder_id}.folders";
+                    case self::SHARED: return "/shared/d/{$item->folder_id}.folders";
+                    case self::TRASH: return "/trashes/d/{$item->folder_id}.folders";
+                }
             default:
                 trigger_error("Undefined `{$item->WhoAmI()}` item ", E_USER_ERROR);
         }

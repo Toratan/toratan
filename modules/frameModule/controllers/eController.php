@@ -11,6 +11,7 @@ class eController extends \zinux\kernel\controller\baseController
     public function Initiate ()
     {
         parent::Initiate();
+        $this->view->route = array();
         $this->layout->SetLayout("explorer");
         if(!isset($this->request->params["d"]))
             $this->request->params["d"] = 0;
@@ -100,35 +101,37 @@ class eController extends \zinux\kernel\controller\baseController
     * The \modules\frameModule\controllers\eController::archivesAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function archivesAction()
-    {
-        if(!\core\db\models\user::IsSignedin()) return;
-        $this->layout->AddTitle("Archives");
-        $this->view->is_owner = 1;
-        $this->executeQuery("fetchArchives",  \modules\frameModule\models\directoryTree::SHARED, array(\core\db\models\user::GetInstance()->user_id));
-    }
+    public function archivesAction() { $this->fetchCategory(\modules\frameModule\models\directoryTree::ARCHIVE); }
 
     /**
     * The \modules\frameModule\controllers\eController::sharedAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function sharedAction()
-    {
-        if(!\core\db\models\user::IsSignedin()) return;
-        $this->layout->AddTitle("Shared");
-        $this->view->is_owner = 1;
-        $this->executeQuery("fetchShared",  \modules\frameModule\models\directoryTree::ARCHIVE, array(\core\db\models\user::GetInstance()->user_id));
-    }
+    public function sharedAction() { $this->fetchCategory(\modules\frameModule\models\directoryTree::SHARED); }
 
     /**
     * The \modules\frameModule\controllers\eController::trashesAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function trashesAction()
-    {        
+    public function trashesAction() { $this->fetchCategory(\modules\frameModule\models\directoryTree::TRASH); }
+    /**
+     * Fetches category items
+     * @param integer $category the category types 
+     * @see \modules\frameModule\models\directoryTree constants for $category
+     */
+    protected function fetchCategory($category) {
         if(!\core\db\models\user::IsSignedin()) return;
-        $this->layout->AddTitle("Trashes");
         $this->view->is_owner = 1;
-        $this->executeQuery("fetchTrashes",  \modules\frameModule\models\directoryTree::TRASH, array(\core\db\models\user::GetInstance()->user_id));
+        $func = "";
+        switch ($category) {
+            case \modules\frameModule\models\directoryTree::ARCHIVE: $func = "fetchArchives"; break;
+            case \modules\frameModule\models\directoryTree::SHARED: $func = "fetchShared"; break;
+            case \modules\frameModule\models\directoryTree::TRASH: $func = "fetchTrashes"; break;
+                break;
+            default: throw new \zinux\kernel\exceptions\invalideArgumentException("Undefined `$category`");
+        }
+        if($this->request->params["d"] == 0)
+            $this->executeQuery($func,  $category, array(\core\db\models\user::GetInstance()->user_id));
+        else $this->IndexAction();
     }
 }

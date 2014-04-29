@@ -1,11 +1,6 @@
 <div id="explorer-template">
-<ol class="breadcrumb"></ol>
-<script>
-    (function(){
-        $("#explorer-template ol.breadcrumb").prepend("<li>"+window.top.getActiveNavHtml()+"</li>");
-    })(jQuery);
-</script>
 <?php
+    require "includes/bc.phtml";
     $type = $this->request->type;
     $parent_id = $this->pid;
     $is_owner = $this->is_owner;
