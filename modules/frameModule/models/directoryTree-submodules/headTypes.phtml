@@ -9,16 +9,16 @@
         switch($this->tree_type)
         {
             case self::TRASH:
-                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/frame/e/trashes.$key'>$value</a></li>";
+                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/trashes.$key'>$value</a></li>";
                 break;
             case self::ARCHIVE:
-                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/frame/e/archives.$key'>$value</a></li>";
+                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/archives.$key'>$value</a></li>";
                 break;
             case self::SHARED:
-                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/frame/e/shared.$key'>$value</a></li>";
+                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/shared.$key'>$value</a></li>";
                 break;
             default:
-                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/frame/e/d/$pid.$key'>$value</a></li>";
+                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/d/$pid.$key'>$value</a></li>";
                 break;
         }
     }

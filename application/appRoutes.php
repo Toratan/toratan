@@ -22,7 +22,7 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          *      {/shared} to {/default/index/shared}
          *      {/trashes} to {/default/index/trashes}
          */
-        $this->addRoute("^/(archives|shared|trashes|d)$2", "/frames/e/$1$2");
+        $this->addRoute("^/(archives|shared|trashes|d)$2", "/frame/e/$1$2");
         /**
          * Routes 
          *      {/new} to {/ops/new}
