@@ -40,6 +40,7 @@
         };
         window.plot_if_no_item_found = function() {
             if($("tr.item-row").length === 0) {
+                $("#explorer-table-empty").remove();
                 $("#explorer-table").after($('<?php 
                         ob_start();
                         require 'table-empty.phtml';
