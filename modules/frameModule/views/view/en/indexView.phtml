@@ -40,14 +40,13 @@
             var defURI = "/frame/e";
             if(window.location.hash.length === 0) window.location.hash ="#!"+defURI;
             if(window.location.hash.split('#!/')[1] !== undefined) {
-                console.log(window.location.hash.split('#!/')[1].split("/"));
                 var __uri = String(window.location.hash.split('#!/')[1]).split("/");
                 if(__uri.length && __uri[0].length)
                     uri = __uri[0];
-                console.log(["__BAD", __uri]);
             }
-            console.log(["BAD", uri]);
             switch(uri) {
+                default:
+                    window.location.hash ="#!"+defURI;
                 case "d":
                 case "root":
                 case "frame":
@@ -55,13 +54,12 @@
                 case "shared":
                 case "trashes":
                 case "archives":
-                    if(!window.location.hash.match(/^#\!/ig)) throw ("Bad navigation!");
+                    var target = window.location.hash.split('#!')[1];
+                    if(!target.match(/^#\!/ig) || target.length === 0 || target === "/")
+                        target = defURI;
                     window.top.active_nav(uri);
-                    window.top.document.getElementById('explorer-frame').src = window.location.hash.split('#!')[1];
+                    window.top.document.getElementById('explorer-frame').src = target;
                     break;
-                default:
-                    throw ("Invalid URL `"+uri+"`mode.");
-                    return;
             }
         } catch(e) {
             window.top.open_errorModal("<span class='glyphicon glyphicon-remove'></span> "+e);

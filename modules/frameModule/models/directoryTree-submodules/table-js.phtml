@@ -122,8 +122,6 @@
                     sort_base = 2;
                     break;
             };
-            console.log("<?php echo $this->request->getURI() ?>");
-            console.log("o="+$o+"&l="+$l+"sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>");
             $.ajax({
                 type: "GET",
                 global: false,

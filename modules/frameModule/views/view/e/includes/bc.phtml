@@ -17,15 +17,18 @@
 <script>
     (function(){
         $("#explorer-template ol.breadcrumb").prepend("<li>"+window.top.getActiveNavHtml()+"</li>");
+        if($("#explorer-template ol.breadcrumb li.active").length === 0) {
+            $("#explorer-template ol.breadcrumb li:last").addClass("active");
+            if($("#explorer-template ol.breadcrumb li:last a").length !== 0) {
+                $("#explorer-template ol.breadcrumb li:last").html($("#explorer-template ol.breadcrumb li:last a").html());  
+            }
+        }
 <?php if(count($this->route)): ?>
         var removeBCByStatusPattern = function(pattern, break_pattern) {
-            console.log(["pattern", pattern]);
             $("#explorer-template ol.breadcrumb li a").each(function(index, elem){
                 var status = $(elem).attr('status');
                 if(typeof(status) === "undefined") return;
-                console.log(["elem", $(elem).text().trim(), "status", status]);
                 if(status.match(new RegExp(pattern, "ig"))) {
-                    console.log("Matched");
                     $(elem).parent().remove(); 
                 }
                 if(status.match(new RegExp(break_pattern, "ig"))) return false;
