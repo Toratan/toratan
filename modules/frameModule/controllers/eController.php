@@ -28,9 +28,9 @@ class eController extends \zinux\kernel\controller\baseController
         if(!\core\db\models\user::IsSignedin()) { trigger_error("UNREGISTERED USERS SHOULD BE ABLE TO VIEW PUBLIC ITESM", E_USER_ERROR); return; }
         $this->layout->AddTitle("Home");
         $f = new \core\db\models\folder();
-        if(!isset($this->request->params["directory"]))
-            $this->request->params["directory"] = 0;
-        $this->view->pid = $pid = $this->request->params["directory"];
+        if(!isset($this->request->params["d"]))
+            $this->request->params["d"] = 0;
+        $this->view->pid = $pid = $this->request->params["d"];
         $uid = \core\db\models\user::GetInstance()->user_id;
         if(isset($this->request->params["u"]) && $this->request->params["u"] != $uid)
         {
@@ -107,9 +107,9 @@ class eController extends \zinux\kernel\controller\baseController
         if(!\core\db\models\user::IsSignedin()) return;
         $this->layout->AddTitle("Archives");
         $f = new \core\db\models\folder();
-        if(!isset($this->request->params["directory"]))
-            $this->request->params["directory"] = 0;
-        $this->view->pid = $pid = $this->request->params["directory"];
+        if(!isset($this->request->params["d"]))
+            $this->request->params["d"] = 0;
+        $this->view->pid = $pid = $this->request->params["d"];
         $this->view->is_owner = 1;
         $this->executeQuery("fetchArchives",  \modules\frameModule\models\directoryTree::SHARED, array(\core\db\models\user::GetInstance()->user_id));
     }
@@ -123,9 +123,9 @@ class eController extends \zinux\kernel\controller\baseController
         if(!\core\db\models\user::IsSignedin()) return;
         $this->layout->AddTitle("Shared");
         $f = new \core\db\models\folder();
-        if(!isset($this->request->params["directory"]))
-            $this->request->params["directory"] = 0;
-        $this->view->pid = $pid = $this->request->params["directory"];
+        if(!isset($this->request->params["d"]))
+            $this->request->params["d"] = 0;
+        $this->view->pid = $pid = $this->request->params["d"];
         $this->view->is_owner = 1;
         $this->executeQuery("fetchShared",  \modules\frameModule\models\directoryTree::ARCHIVE, array(\core\db\models\user::GetInstance()->user_id));
     }
@@ -139,9 +139,9 @@ class eController extends \zinux\kernel\controller\baseController
         if(!\core\db\models\user::IsSignedin()) return;
         $this->layout->AddTitle("Trashes");
         $f = new \core\db\models\folder();
-        if(!isset($this->request->params["directory"]))
-            $this->request->params["directory"] = 0;
-        $this->view->pid = $pid = $this->request->params["directory"];
+        if(!isset($this->request->params["d"]))
+            $this->request->params["d"] = 0;
+        $this->view->pid = $pid = $this->request->params["d"];
         $this->view->is_owner = 1;
         $this->executeQuery("fetchTrashes",  \modules\frameModule\models\directoryTree::TRASH, array(\core\db\models\user::GetInstance()->user_id));
     }

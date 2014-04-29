@@ -18,7 +18,7 @@
                 echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/frame/e/shared.$key'>$value</a></li>";
                 break;
             default:
-                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/frame/e/directory/$pid.$key'>$value</a></li>";
+                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/frame/e/d/$pid.$key'>$value</a></li>";
                 break;
         }
     }

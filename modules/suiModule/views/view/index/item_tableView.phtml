@@ -7,7 +7,7 @@
         $type = strtoupper($this->request->type);
         $type = $type=="HTML"?"FOLDERS":$type; 
         # normalizing the current uri
-        $this->request->setURI((isset($this->request->params['u'])?"/u/{$this->request->params['u']}":"")."/directory/{$this->pid}.$type");
+        $this->request->setURI((isset($this->request->params['u'])?"/u/{$this->request->params['u']}":"")."/d/{$this->pid}.$type");
         if(!\function_exists("PrintTypeNav"))
         {
             function PrintTypeNav($view, $type)
@@ -26,7 +26,7 @@
                             echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a class='table-nav-link' link-type='folder' href='/shared.$key'>$value</a></li>";
                             break;
                         default :
-                            echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a class='table-nav-link' link-type='folder' href='".(isset($view->request->params['u'])?"/u/{$view->request->params['u']}":"")."/directory/{$view->pid}.$key'>$value</a></li>";
+                            echo "<li ".($type== strtoupper($value)?"class='active'":"")."><a class='table-nav-link' link-type='folder' href='".(isset($view->request->params['u'])?"/u/{$view->request->params['u']}":"")."/d/{$view->pid}.$key'>$value</a></li>";
                             break;
                     }
                 }
@@ -79,7 +79,7 @@
                                 if($f->is_archive)
                                     echo "<span class='glyphicon glyphicon-floppy-disk' title='Archived'></span> ";
                             ?>
-                            <?php echo "<a class='table-nav-link' link-type='folder' href='".(isset($this->request->params['u'])?"/u/{$this->request->params['u']}":"")."/directory/{$f->folder_id}.folders'>{$f->folder_title}</a>"; ?>
+                            <?php echo "<a class='table-nav-link' link-type='folder' href='".(isset($this->request->params['u'])?"/u/{$this->request->params['u']}":"")."/d/{$f->folder_id}.folders'>{$f->folder_title}</a>"; ?>
                     </td>
                     <td>
                             <div>

@@ -93,11 +93,11 @@
         </div>
         <div class="clearfix"></div>
         <div class="container" style="width: 100%;">
-            <?php if ($user_logged && !preg_match("#^/(sui(/)?(index(/?))?)?(u/[a-z0-9]+(/)?){1,1}(directory(/(.*))?(\.folders|\.notes|\.links)?)?$#i", $this->request->GetURI())) : ?>
+            <?php if ($user_logged && !preg_match("#^/(sui(/)?(index(/?))?)?(u/[a-z0-9]+(/)?){1,1}(d(/(.*))?(\.folders|\.notes|\.links)?)?$#i", $this->request->GetURI())) : ?>
             <div class="pull-left col-lg-2 col-md-2 col-sm-3 col-xs-12">
                 <h3>&nbsp;</h3>
                 <ul class="nav nav-pills nav-stacked">
-                    <li <?php echo preg_match("#^/(sui(/)?(index(/?))?)?(directory(/(.*))?(\.folders|\.notes|\.links)?)?$#i", $this->request->GetURI())? 'class="active"':''?>>
+                    <li <?php echo preg_match("#^/(sui(/)?(index(/?))?)?(d(/(.*))?(\.folders|\.notes|\.links)?)?$#i", $this->request->GetURI())? 'class="active"':''?>>
                       <a href="/sui"><span class="glyphicon glyphicon-th-large"></span> My Root</a>
                     </li>
                     <li <?php echo preg_match("#^/(sui/(index/)?)?archives(.*)#i", $this->request->GetURI())? 'class="active"':''?>>

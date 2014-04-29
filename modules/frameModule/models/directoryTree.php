@@ -70,7 +70,7 @@ class directoryTree extends \stdClass
             case "link":
                 return "/goto/link/{$item->link_id}/".\zinux\kernel\security\hash::Generate($item->link_id, 1, 1);
             case "folder":
-                return "/frame/e/directory/{$item->folder_id}.folders";
+                return "/frame/e/d/{$item->folder_id}.folders";
             default:
                 trigger_error("Undefined `{$item->WhoAmI()}` item ", E_USER_ERROR);
         }

@@ -278,7 +278,7 @@ __OP_FUNC:
                     # redirect if any redirection provided
                     $this->Redirect();
                     # relocate the browser
-                    header("location: /directory/{$item_value->parent_id}.{$item}s");
+                    header("location: /d/{$item_value->parent_id}.{$item}s");
                     exit;
                 }
                 break;
@@ -295,7 +295,7 @@ __OP_FUNC:
         }
         if(!$this->suppress_redirect) {
             # relocate the browser
-            header("location: /directory/{$this->view->pid}.{$item}s");
+            header("location: /d/{$this->view->pid}.{$item}s");
             # halt the PHP
             exit;
         }
@@ -426,7 +426,7 @@ __OP_FUNC:
                     # redirect if any redirection provided
                     $this->Redirect();
                     # relocate the browser
-                    header("location: /directory/{$item_value->parent_id}.{$item}s");
+                    header("location: /d/{$item_value->parent_id}.{$item}s");
                     exit;
                 }
                 break;
@@ -551,7 +551,7 @@ __OP_FUNC:
             # redirect if any redirection provided
             $this->Redirect();
             # otherwise relocate properly
-            header("location: /directory/{$deleted_item->parent_id}.{$item}s");
+            header("location: /d/{$deleted_item->parent_id}.{$item}s");
             exit;
         }
         if(!$this->ops_index_interface) exit;
@@ -612,7 +612,7 @@ __OP_FUNC:
             # redirect if any redirection provided
             $this->Redirect();
             # otherwise relocate properly
-            header("location: /directory/{$archived_item->parent_id}.{$item}s");
+            header("location: /d/{$archived_item->parent_id}.{$item}s");
             exit;
         }
         if(!$this->ops_index_interface) exit;
@@ -673,7 +673,7 @@ __OP_FUNC:
             # redirect if any redirection provided
             $this->Redirect();
             # otherwise relocate properly
-            header("location: /directory/{$shared_item->parent_id}.{$item}s");
+            header("location: /d/{$shared_item->parent_id}.{$item}s");
             exit;
         }
         if(!$this->ops_index_interface) exit;

@@ -8,7 +8,7 @@
         <li <?php echo $is_active?" class='active'":""?>>
             <?php 
                 if(!$is_active)
-                    echo "<a link-type='folder' class='table-nav-link' href='/frame/e/directory/{$folder->folder_id}.{$this->request->type}' onclick='window.top.document.title = \"/ $folder->folder_title\";'>";
+                    echo "<a link-type='folder' class='table-nav-link' href='/frame/e/d/{$folder->folder_id}.{$this->request->type}' onclick='window.top.document.title = \"/ $folder->folder_title\";'>";
                 echo $folder->folder_title;
                 if(!$is_active)
                     echo "</a>";
