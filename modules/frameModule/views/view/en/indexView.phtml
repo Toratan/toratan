@@ -22,37 +22,43 @@
             window.top.location.hash = $(this).attr('user-data');
             console.log(["u", $(this).attr('user-data')]);
         });
-        try {
-            var uri = 'root';
-            var defURI = "/d/0.folders";
-            if(window.location.hash.length === 0) window.location.hash ="#!"+defURI;
-            if(window.location.hash.split('#!')[1] !== undefined) {
-                var __uri = String(window.location.hash.split('#!/')[1]).split("/");
-                if(__uri.length && __uri[0].length)
-                    uri = __uri[0];
+        window.top.update_nav = function(auto_redirect) {
+            if(typeof(auto_redirect) === "undefined") auto_redirect = false;
+            try {
+                var uri = 'root';
+                var defURI = "/d/0.folders";
+                if(window.location.hash.length === 0) window.location.hash ="#!"+defURI;
+                if(window.location.hash.split('#!')[1] !== undefined) {
+                    var __uri = String(window.location.hash.split('#!/')[1]).split("/");
+                    if(__uri.length && __uri[0].length)
+                        uri = __uri[0];
+                }
+                switch(uri) {
+                    default:
+                        window.location.hash ="#!"+defURI;
+                    case "d":
+                    case "root":
+                    case "frame":
+                        uri = 'root';
+                    case "shared":
+                    case "trashes":
+                    case "archives":
+                        console.log(["Auto Redirection", uri]);
+                        if(!window.location.hash.match(/^#\!/ig)) window.location.hash = "#!"+defURI;
+                        var target = window.location.hash.split('#!')[1];
+                        console.log(["uri", uri, "target", target]);
+                        if(target.length === 0 || target === "/")
+                            target = defURI;
+                        console.log(["uri", uri, "target", target]);
+                        window.top.active_nav(uri);
+                        if(auto_redirect)
+                            window.top.document.getElementById('explorer-frame').src = target;
+                        break;
+                }
+            } catch(e) {
+                window.top.open_errorModal("<span class='glyphicon glyphicon-remove'></span> "+e);
             }
-            switch(uri) {
-                default:
-                    window.location.hash ="#!"+defURI;
-                case "d":
-                case "root":
-                case "frame":
-                    uri = 'root';
-                case "shared":
-                case "trashes":
-                case "archives":
-                    if(!window.location.hash.match(/^#\!/ig)) window.location.hash = "#!"+defURI;
-                    var target = window.location.hash.split('#!')[1];
-                    console.log(["uri", uri, "target", target]);
-                    if(target.length === 0 || target === "/")
-                        target = defURI;
-                    console.log(["uri", uri, "target", target]);
-                    window.top.active_nav(uri);
-                    window.top.document.getElementById('explorer-frame').src = target;
-                    break;
-            }
-        } catch(e) {
-            window.top.open_errorModal("<span class='glyphicon glyphicon-remove'></span> "+e);
-        }
+        };
+        window.top.update_nav(true);
     });
 </script>

@@ -18,11 +18,32 @@
 </ol>
 <script>
     (function(){
+<?php
+    $pattern = array();
+    $type = "root";
+    switch($dt->tree_type) {
+            case \modules\frameModule\models\directoryTree::REGULAR: /* NOP in root type */ break;
+            case \modules\frameModule\models\directoryTree::ARCHIVE:
+                $type = "archives";
+                $pattern = array("\\d0\\d", "\\d1\\d");
+                break;
+            case \modules\frameModule\models\directoryTree::SHARED:
+                $type = "trashes";
+                $pattern = array("\\d\\d0", "\\d\\d1");
+                break;
+            case \modules\frameModule\models\directoryTree::TRASH;
+                $type = "shares";
+                $pattern = array("0\\d\\d", "1\\d\\d");
+                break;
+        }
+?>
+        window.top.active_nav('<?php echo $type ?>');
         $("#explorer-template ol.breadcrumb").prepend("<li>"+$(window.top.getActiveNavHtml()).wrapInner("<span hash-link='"+window.top.getActiveTypeLink()+"'></span>").wrap("<p>").parent().html()+"</li>");
         if($("#explorer-template ol.breadcrumb li.active").length === 0) {
             $("#explorer-template ol.breadcrumb li:last").addClass("active");
             if($("#explorer-template ol.breadcrumb li:last a").length !== 0) {
                 $("#explorer-template ol.breadcrumb li:last").html($("#explorer-template ol.breadcrumb li:last a").html());  
+                window.updateHash(window.top.getActiveType());
             }
         }
 <?php if(count($this->route)): ?>
@@ -36,18 +57,9 @@
                 if(status.match(new RegExp(break_pattern, "ig"))) return false;
             });
         };
-        switch(window.top.getActiveType()) {
-            case "root": /* NOP in root type */ break;
-            case "archives":
-                removeBCByStatusPattern("\\d0\\d", "\\d1\\d");
-                break;
-            case "trashes":
-                removeBCByStatusPattern("\\d\\d0", "\\d\\d1");
-                break;
-            case "shared":
-                removeBCByStatusPattern("0\\d\\d", "1\\d\\d");
-                break;
-        }
+<?php if(count($pattern)): ?>
+        removeBCByStatusPattern(<?php echo "'$pattern[0]', '$pattern[1]'"; ?>);
+<?php endif; ?>
 <?php endif; ?>
     })(jQuery);
 </script>
