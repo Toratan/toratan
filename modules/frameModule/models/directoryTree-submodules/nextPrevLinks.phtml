@@ -1,12 +1,15 @@
 <?php 
     if(!isset($this->request->params["p"])) $this->request->params["p"] = 0;
     if(!isset($total_count)) $total_count = "unknown";
+    if($total_count == 0) return;
     $disable_left = ($this->request->params["p"] <= 0);
     $disable_right = (($this->request->params["p"] + 1) * FETCH_LIMIT >= $total_count);
     $left_uri = "/" . $this->request->action->name . "/p/" .($this->request->params["p"] + 1);
     $right_uri = "";
     if($disable_left) $left_uri = "#";
     if($disable_right) $right_uri = "#";
+    $lower_bound = $this->request->params["p"] * FETCH_LIMIT + 1;
+    $upper_bound = min(array(($this->request->params["p"] + 1) * FETCH_LIMIT, $total_count));
 ?>
 <div class="pull-right" id="next-prev-container">
     <style>
@@ -19,7 +22,7 @@
         }
     </style>
     <div id="next-prev-status" class="btn disabled">
-        <strong><?php echo $this->request->params["p"] * FETCH_LIMIT + 1, "-", ($this->request->params["p"] + 1) * FETCH_LIMIT ?></strong> of <strong><?php echo $total_count ?></strong>
+        <strong><?php echo $lower_bound, "-", $upper_bound ?></strong> of <strong><?php echo $total_count ?></strong>
     </div>
     <ul class="pagination btn" style="margin: 0">
       <li class="<?php echo $disable_left ? "disabled": "" ?>"><a href="<?php echo $left_uri ?>"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
