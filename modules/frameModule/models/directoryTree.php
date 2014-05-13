@@ -41,13 +41,13 @@ class directoryTree extends \stdClass
      * @param string $active_type Which type this directory tree contains?
      * @param string|integer $pid the parrent directory this directory tree
      */
-    public function plotHeadTypes($active_type, $pid) { $active_type = \ActiveRecord\Utils::pluralize($active_type); require 'directoryTree-submodules/headTypes.phtml'; }
+    public function plotHeadTypes($active_type, $pid, $total_count = 'unknown') { $active_type = \ActiveRecord\Utils::pluralize($active_type); require 'directoryTree-submodules/headTypes.phtml'; }
     /**
      * PLots head next-prev
      * @param string $active_type Which type this directory tree contains?
      * @param string|integer $pid the parrent directory this directory tree
      */
-    public function plot_next_prev_links($active_type, $pid) { if($this->tree_type === self::REGULAR) return; require 'directoryTree-submodules/nextPrevLinks.phtml'; }
+    public function plot_next_prev_links($active_type, $pid, $total_count = 'unknown') { if($this->tree_type === self::REGULAR) return; require 'directoryTree-submodules/nextPrevLinks.phtml'; }
     /**
      * Plots general JS for options of directory tree
      * @param string $active_type Which type this directory tree contains?

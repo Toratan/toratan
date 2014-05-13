@@ -1,0 +1,15 @@
+<?php if(!isset($dt)) throw new \zinux\kernel\exceptions\invalidOperationException("Undefined `dt` instance."); ?>
+<div id="explorer-template">
+<?php
+    require "bc.phtml";
+    $type = $this->request->type;
+    $parent_id = $this->pid;
+    $is_owner = $this->is_owner;
+    $dt->plotOptions($type, $parent_id, $is_owner);
+    $dt->plotHeadTypes($type, $parent_id, @$this->total_count);
+    $dt->plotJS($type, $parent_id, $is_owner);
+?>
+</div>
+<?php
+    $dt->{"plot{$type}"}($this->items, $parent_id, $is_owner);
+?>

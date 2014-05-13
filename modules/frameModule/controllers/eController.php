@@ -19,6 +19,9 @@ class eController extends \zinux\kernel\controller\baseController
             $this->request->params["o"] = 0;
         if(!isset($this->request->params["l"]))
             $this->request->params["l"] = FETCH_LIMIT;
+        if(isset($this->request->params["p"]))
+            $this->request->params["o"] = ($this->request->params["p"] - 1) * FETCH_LIMIT;
+        else $this->request->params["p"] = ($this->request->params["o"] / FETCH_LIMIT);
         $this->view->pid = $this->request->params["d"];
     }
     /**
@@ -82,6 +85,30 @@ class eController extends \zinux\kernel\controller\baseController
                     break;
             }
         }
+        if(!count($args)) throw new \zinux\kernel\exceptions\invalidArgumentException("Empty `args` passed!");
+        $count_arg = array("conditions" => array());
+        $count_arg["conditions"][] = "owner_id = ?";
+        switch($dtmode) {
+            case \modules\frameModule\models\directoryTree::ARCHIVE: 
+                $count_arg["conditions"][0] .= " AND is_archive = 1";
+                $count_arg["conditions"][] =  $args[0];
+                break;
+            case \modules\frameModule\models\directoryTree::SHARED:
+                $count_arg["conditions"][0] .= " AND is_public= 1";
+                $count_arg["conditions"][] =  $args[0];
+                break;
+            case \modules\frameModule\models\directoryTree::TRASH: 
+                $count_arg["conditions"][0] .= " AND is_trash = 1";
+                $count_arg["conditions"][] =  $args[0];
+                break;
+            case \modules\frameModule\models\directoryTree::REGULAR:
+                $count_arg["conditions"][0] .= " AND parent_id = ?";
+                $count_arg["conditions"][] =  $args[0];
+                $count_arg["conditions"][] =  $args[1];
+                break;
+            default: throw new \zinux\kernel\exceptions\invalideArgumentException("Undefined `$dtmode`");
+        }
+        $this->view->total_count = $instance->count($count_arg);
         $args[] = array("order" => "$sort_base $order", 'limit' => $this->request->params["l"], 'offset' => $this->request->params["o"]);
         $this->view->items = call_user_func_array(array($instance, $func), $args);
         if(isset($this->request->params["fetch"])) {
@@ -126,7 +153,6 @@ class eController extends \zinux\kernel\controller\baseController
             case \modules\frameModule\models\directoryTree::ARCHIVE: $func = "fetchArchives"; break;
             case \modules\frameModule\models\directoryTree::SHARED: $func = "fetchShared"; break;
             case \modules\frameModule\models\directoryTree::TRASH: $func = "fetchTrashes"; break;
-                break;
             default: throw new \zinux\kernel\exceptions\invalideArgumentException("Undefined `$category`");
         }
         if($this->request->params["d"] == 0)
