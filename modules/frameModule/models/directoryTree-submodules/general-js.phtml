@@ -1,4 +1,4 @@
-<script src="/access/js/jquery.datetime-0.9.min.js"></script>
+<script src="/access/js/moment.min.js"></script>
 <script src="/access/js/jquery.tablesorter.min.js"></script>
 <script src="/access/js/jquery.filtertable.min.js"></script>
 <script type="text/javascript">
@@ -68,16 +68,17 @@
         };
         window.init_times = function() {
             $('td.updated-at:not(.time-inited)').each(function(){
+                var time = moment($(this).find("time").attr("datetime"), 'ddd, DD MMM YYYY HH:mm:ss ZZ').format("lll");
+                var time_str = (moment($(this).find("time").attr("datetime"), 'ddd, DD MMM YYYY HH:mm:ss ZZ').fromNow("lll")) + " ago";
                 $(this)
-                    .attr('title', new Date($(this).attr('title')).toLocaleString())
+                    .attr('title', time)
                     .children('time')
                     .attr('title', $(this).attr('title'))
-                    .addClass(".time-inited");
-            }).children("time").datetime();
+                    .addClass(".time-inited")
+                    .html(time_str);
+            });
         };
-        window.update_times = function() {
-            $(" td.updated-at time").datetime(); 
-        };
+        window.update_times = function() { window.init_times(); };
         window.sort_table = function() {
             var defaultHeadIndex = 2;
             var defaultHeadOrder = 0;

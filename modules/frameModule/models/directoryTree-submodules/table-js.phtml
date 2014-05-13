@@ -136,10 +136,8 @@
                         $("#explorer-table table.table").append(data);
                         // init checkboxes
                         window.init_checkboxes();
-                        // init dates
-                        window.init_times();
                         // update dates
-                        $(" td.updated-at time").datetime();
+                        window.update_times();
                         // re-sort table
                         window.sort_table();
                     } else {
