@@ -18,8 +18,6 @@
 </ol>
 <script>
     (function(){
-        console.log(window.top.getActiveNavHtml());
-        console.log(window.top.getActiveTypeLink());
         $("#explorer-template ol.breadcrumb").prepend("<li>"+$(window.top.getActiveNavHtml()).wrapInner("<span hash-link='"+window.top.getActiveTypeLink()+"'></span>").wrap("<p>").parent().html()+"</li>");
         if($("#explorer-template ol.breadcrumb li.active").length === 0) {
             $("#explorer-template ol.breadcrumb li:last").addClass("active");
@@ -29,7 +27,7 @@
         }
 <?php if(count($this->route)): ?>
         var removeBCByStatusPattern = function(pattern, break_pattern) {
-            $("#explorer-template ol.breadcrumb li a").each(function(index, elem){
+            $("#explorer-template ol.breadcrumb li a[link-type='folder']").each(function(index, elem){
                 var status = $(elem).attr('status');
                 if(typeof(status) === "undefined") return;
                 if(status.match(new RegExp(pattern, "ig"))) {
@@ -41,7 +39,7 @@
         switch(window.top.getActiveType()) {
             case "root": /* NOP in root type */ break;
             case "archives":
-                removeBCByStatusPattern("\\d0\d", "\\d1\\d");
+                removeBCByStatusPattern("\\d0\\d", "\\d1\\d");
                 break;
             case "trashes":
                 removeBCByStatusPattern("\\d\\d0", "\\d\\d1");
