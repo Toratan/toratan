@@ -43,13 +43,10 @@
                     case "shared":
                     case "trashes":
                     case "archives":
-                        console.log(["Auto Redirection", uri]);
                         if(!window.location.hash.match(/^#\!/ig)) window.location.hash = "#!"+defURI;
                         var target = window.location.hash.split('#!')[1];
-                        console.log(["uri", uri, "target", target]);
                         if(target.length === 0 || target === "/")
                             target = defURI;
-                        console.log(["uri", uri, "target", target]);
                         window.top.active_nav(uri);
                         if(auto_redirect)
                             window.top.document.getElementById('explorer-frame').src = target;

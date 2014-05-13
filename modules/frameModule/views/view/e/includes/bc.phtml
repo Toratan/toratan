@@ -43,7 +43,6 @@
             $("#explorer-template ol.breadcrumb li:last").addClass("active");
             if($("#explorer-template ol.breadcrumb li:last a").length !== 0) {
                 $("#explorer-template ol.breadcrumb li:last").html($("#explorer-template ol.breadcrumb li:last a").html());  
-                window.updateHash(window.top.getActiveType());
             }
         }
 <?php if(count($this->route)): ?>
