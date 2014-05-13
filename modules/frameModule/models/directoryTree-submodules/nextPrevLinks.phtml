@@ -2,25 +2,17 @@
     if(!isset($this->request->params["p"])) $this->request->params["p"] = 0;
     if(!isset($total_count)) $total_count = "unknown";
     if($total_count == 0) return;
-    $disable_left = ($this->request->params["p"] <= 0);
-    $disable_right = (($this->request->params["p"] + 1) * FETCH_LIMIT >= $total_count);
-    $left_uri = "/" . $this->request->action->name . "/p/" .($this->request->params["p"] + 1);
-    $right_uri = "";
+    $disable_left = ($this->request->params["p"] <= 1);
+    $disable_right = (($this->request->params["p"]) * FETCH_LIMIT >= $total_count);
+    $left_uri = "/" . $this->request->action->name . "/p/" .($this->request->params["p"] - 1);
+    $right_uri = "/" . $this->request->action->name . "/p/" .($this->request->params["p"] + 1);
     if($disable_left) $left_uri = "#";
     if($disable_right) $right_uri = "#";
-    $lower_bound = $this->request->params["p"] * FETCH_LIMIT + 1;
-    $upper_bound = min(array(($this->request->params["p"] + 1) * FETCH_LIMIT, $total_count));
+    $lower_bound = ($this->request->params["p"] - 1) * FETCH_LIMIT + 1;
+    $upper_bound = min(array(($this->request->params["p"]) * FETCH_LIMIT, $total_count));
 ?>
 <div class="pull-right" id="next-prev-container">
-    <style>
-        #next-prev-container {margin-top: -10px;}
-        #next-prev-container .next-prev-link {
-            border: 1px solid #DDDDDD;
-            border-radius: 0;
-        }
-        #next-prev-container #next-prev-status {
-        }
-    </style>
+    <style>#next-prev-container {margin-top: -10px;}#next-prev-container .next-prev-link {border: 1px solid #DDDDDD;border-radius: 0;}</style>
     <div id="next-prev-status" class="btn disabled">
         <strong><?php echo $lower_bound, "-", $upper_bound ?></strong> of <strong><?php echo $total_count ?></strong>
     </div>

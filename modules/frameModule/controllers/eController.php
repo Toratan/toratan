@@ -21,7 +21,7 @@ class eController extends \zinux\kernel\controller\baseController
             $this->request->params["l"] = FETCH_LIMIT;
         if(isset($this->request->params["p"]))
             $this->request->params["o"] = ($this->request->params["p"] - 1) * FETCH_LIMIT;
-        else $this->request->params["p"] = ($this->request->params["o"] / FETCH_LIMIT);
+        else $this->request->params["p"] = floor($this->request->params["o"] / FETCH_LIMIT) + 1;
         $this->view->pid = $this->request->params["d"];
     }
     /**
