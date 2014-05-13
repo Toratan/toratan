@@ -10,17 +10,10 @@
         <!-- jQuery -->
         <script type="text/javascript" src="/access/js/jquery-1.10.2.min.js"></script>
         <style>
-            #explorer-template {
-                position: fixed;background-color: #FFF;width: 99.7%;z-index: 10000;top:0;left:0;border: 0!important;
-            }
+            #explorer-template {position: fixed;background-color: #FFF;width: 99.7%;z-index: 10000;top:0;left:0;border: 0!important;}
         </style>
     </head>
     <body>
-        <script>
-            window.setTitle = function (title) {
-                window.top.document.title = title;
-            };
-        </script>
         <div class="container-fluid">
             <div style="padding: 10px;">
                 <?php
@@ -35,9 +28,10 @@
         </div><!-- end of container -->
         <script>
             (function() {
+                window.setTitle = function (title) {window.top.document.title = title;};
                 window.getLinkHash = function(link) { return "#!/"+String(link).replace(/^(\/frame\/e)?(\/)?/ig,""); };
                 window.updateHash = function(hash) { window.top.location.replace(String(window.top.location).split("#")[0] + hash); };
-                window.top.document.title = $("#explorer-template ol.breadcrumb li.active").text().trim();
+                window.setTitle($("#explorer-template ol.breadcrumb li.active").text().trim());
                 window.updateHash(window.getLinkHash('<?php echo $this->request->getURI(); ?>'));
                 $("a").click(function(e){
                     if($(this).attr("href").length && $(this).attr("href")[0] !== "#") {

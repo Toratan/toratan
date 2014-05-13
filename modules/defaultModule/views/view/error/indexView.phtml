@@ -1,0 +1,4 @@
+<?php if(!@count($this->error) || !is_array($this->error)) : ?>
+~~NO ERROR~~
+<?php endif; ?>
+<?php foreach ($this->error as $e) echo "<div>", ucfirst($e->getMessage()), "</div><hr />"; ?>

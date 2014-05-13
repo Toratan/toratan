@@ -190,16 +190,10 @@ catch(Exception $e)
     /**
      * You can redirect this exception to a controller e.g /error
      */
-    echo "<legend>Oops!</legend>";
-    echo "<p>Error happened ...</p>";
-    echo "<p><b>Message: </b></p><p>";
-    require_once PROJECT_ROOT.'zinux/kernel/utilities/debug.php';
-    zinux\kernel\utilities\debug::_var($e->getMessage());
-    header('HTTP/1.1 500');
-    exit;
-    echo "</p>";
-    echo "<p><b>Stack Trace: </b></p><pre>".$e->getTraceAsString()."</pre>";
-    zinux\kernel\utilities\debug::_var($e->getTrace());
+    $mp = new \zinux\kernel\utilities\pipe("__ERRORS__");
+    $mp->write(serialize($e));
+    $api = new zinux\kernel\application\api();
+    $api->call("/error");
 }
 $exeTime = new \core\db\models\execution;
 $load_time = $exeTime->record($load);
