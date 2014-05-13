@@ -1,9 +1,26 @@
+<?php 
+    if(!isset($dt)) throw new \zinux\kernel\exceptions\invalideArgumentException("un-initialized \$dt instance.");
+    /**
+     * checks if should the passed item involed in breadcrumb list with given tree type
+     */
+    $should_apply2breadcrumb = function(\core\db\models\item $item, $tree_type) {
+        static $apply = false;
+        if($apply) return true;
+        switch ($tree_type) {
+            case modules\frameModule\models\directoryTree::REGULAR: return true;
+            case modules\frameModule\models\directoryTree::ARCHIVE: return ($apply = $item->is_archive);
+            case modules\frameModule\models\directoryTree::SHARED: return ($apply = $item->is_public);
+            case modules\frameModule\models\directoryTree::TRASH: return ($apply = $item->is_trash);
+            default: throw new \zinux\kernel\exceptions\invalideArgumentException("invalid tree type `{$tree_type}`");
+        }
+    }
+?>
 <ol class="breadcrumb">
 <?php $active_folder = NULL; ?>
 <?php
     $i = 1;
     # loading routes
-    foreach ($this->route as $folder) : $is_active = ($i++==count($this->route)); if(!$folder->folder_id) continue; ?>
+    foreach ($this->route as $folder) : $is_active = ($i++==count($this->route)); if(!$folder->folder_id || !$should_apply2breadcrumb($folder, $dt->tree_type)) continue; ?>
         <li <?php echo $is_active?" class='active'":""?>>
             <?php 
                 if(!$is_active)
@@ -19,46 +36,15 @@
 <script>
     (function(){
 <?php
-    $pattern = array();
-    $type = "root";
-    switch($dt->tree_type) {
-            case \modules\frameModule\models\directoryTree::REGULAR: /* NOP in root type */ break;
-            case \modules\frameModule\models\directoryTree::ARCHIVE:
-                $type = "archives";
-                $pattern = array('\\\d0\\\d', '\\\d1\\\d');
-                break;
-            case \modules\frameModule\models\directoryTree::SHARED:
-                $type = 'trashes';
-                $pattern = array('\\\d\\\d0', '\\\d\\\d1');
-                break;
-            case \modules\frameModule\models\directoryTree::TRASH;
-                $type = 'shares';
-                $pattern = array('0\\\d\\\d', '1\\\d\\\d');
-                break;
-        }
+    $type = $this->request->action->name;
+    if($dt->tree_type==\modules\frameModule\models\directoryTree::REGULAR) $type = "root";
 ?>
-        window.top.active_nav('<?php echo $type ?>');
-        $("#explorer-template ol.breadcrumb").prepend("<li>"+$(window.top.getActiveNavHtml()).wrapInner("<span hash-link='"+window.top.getActiveTypeLink()+"'></span>").wrap("<p>").parent().html()+"</li>");
-        if($("#explorer-template ol.breadcrumb li.active").length === 0) {
-            $("#explorer-template ol.breadcrumb li:last").addClass("active");
-            if($("#explorer-template ol.breadcrumb li:last a").length !== 0) {
-                $("#explorer-template ol.breadcrumb li:last").html($("#explorer-template ol.breadcrumb li:last a").html());  
-            }
-        }
-<?php if(count($this->route)): ?>
-        var removeBCByStatusPattern = function(pattern, break_pattern) {
-            $("#explorer-template ol.breadcrumb li a[link-type='folder']").each(function(index, elem){
-                var status = $(elem).attr('status');
-                if(typeof(status) === "undefined") return;
-                if(status.match(new RegExp(pattern, "ig"))) {
-                    $(elem).parent().remove(); 
-                }
-                if(status.match(new RegExp(break_pattern, "ig"))) return false;
-            });
-        };
-<?php if(count($pattern)): ?>
-        removeBCByStatusPattern(<?php echo "'$pattern[0]', '$pattern[1]'"; ?>);
-<?php endif; ?>
-<?php endif; ?>
+        window.top.active_nav('<?php echo  $type ?>');
+        $("#explorer-template ol.breadcrumb")
+                .prepend("<li>"+$(window.top.getActiveNavHtml()).wrapInner("<span hash-link='"+window.top.getActiveTypeLink()+"'></span>").wrap("<p>").parent().html()+"</li>")
+                .find("li:last")
+                    .addClass("active")
+                    .html($("#explorer-template ol.breadcrumb li:last a").html());
     })(jQuery);
 </script>
+<?php unset($should_apply2breadcrumb); ?>

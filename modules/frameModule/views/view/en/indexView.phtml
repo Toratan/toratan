@@ -20,7 +20,6 @@
         $("div#exp-nav ul.nav li a[target='explorer-frame']").click(function(){
             window.top.active_nav($(this).attr('id'));
             window.top.location.hash = $(this).attr('user-data');
-            console.log(["u", $(this).attr('user-data')]);
         });
         window.top.update_nav = function(auto_redirect) {
             if(typeof(auto_redirect) === "undefined") auto_redirect = false;
