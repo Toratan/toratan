@@ -20,7 +20,6 @@ class eController extends \zinux\kernel\controller\baseController
         if(!isset($this->request->params["l"]))
             $this->request->params["l"] = FETCH_LIMIT;
         $this->view->pid = $this->request->params["d"];
-//        sleep(1);
     }
     /**
     * The modules\frameModule\controllers\eController::IndexAction()
