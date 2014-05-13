@@ -212,6 +212,16 @@
                         window.$o = (all_rows - to_remove);
                         if(window.$o < 0) window.$o = 0;
                         window.$l = to_remove;
+                        if($("#next-prev-container #next-prev-status #total-count").length !== 0) {
+                            $("#next-prev-container #next-prev-status #total-count").html(Math.max($("#next-prev-container #next-prev-status #total-count").html() - to_remove, 0));
+                            if($("#next-prev-container #next-prev-status #total-count").html() === "0") $("#next-prev-container").remove();
+                            else {
+                                $("#next-prev-container #next-prev-status #bounds #upper-bound")
+                                    .html(Math.min($("#next-prev-container #next-prev-status #total-count").html(), $("#next-prev-container #next-prev-status #bounds #upper-bound").html()));
+                                if($("#next-prev-container #next-prev-status #total-count").html() <= '<?php echo FETCH_LIMIT; ?>')
+                                   $("#next-prev-container .pagination #right-btn").addClass('disabled').children('a').attr("href", "#");
+                            }
+                        }
                         window.fetch_more(window.$o - 1);
                         window.$l = <?php echo FETCH_LIMIT; ?>;
                     }, 100);
@@ -228,8 +238,8 @@
                     .attr('origin-date', updateTime.toISOString())
                     .children('time')
                         .attr('datetime', updateTime.toISOString())
-                        .attr('title', updateTime)
-                    .datetime();
+                        .attr('title', updateTime);
+                window.update_times();
             }
             // tag checked items to be trackable
             $("tr.item-checked").addClass("item-anim-tag");

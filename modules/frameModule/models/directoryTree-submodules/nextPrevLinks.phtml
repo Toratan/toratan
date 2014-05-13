@@ -14,10 +14,12 @@
 <div class="pull-right" id="next-prev-container">
     <style>#next-prev-container {margin-top: -10px;}#next-prev-container .next-prev-link {border: 1px solid #DDDDDD;border-radius: 0;}</style>
     <div id="next-prev-status" class="btn disabled">
-        <strong><?php echo $lower_bound, "-", $upper_bound ?></strong> of <strong><?php echo $total_count ?></strong>
+        <strong id="bounds"><?php 
+            echo "<span id='lower-bound'>$lower_bound</span>", "-", "<span id='upper-bound'>$upper_bound</span>" 
+        ?></strong> of <strong id="total-count"><?php echo $total_count ?></strong>
     </div>
     <ul class="pagination btn" style="margin: 0">
-      <li class="<?php echo $disable_left ? "disabled": "" ?>"><a href="<?php echo $left_uri ?>"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-      <li class="<?php echo $disable_right ? "disabled": "" ?>"><a href="<?php echo $right_uri ?>"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+      <li class="<?php echo $disable_left ? "disabled": "" ?>" id="left-btn"><a href="<?php echo $left_uri ?>"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+      <li class="<?php echo $disable_right ? "disabled": "" ?>" id="right-btn"><a href="<?php echo $right_uri ?>"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
     </ul>
 </div>
