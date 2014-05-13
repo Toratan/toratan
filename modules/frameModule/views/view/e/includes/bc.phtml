@@ -25,15 +25,15 @@
             case \modules\frameModule\models\directoryTree::REGULAR: /* NOP in root type */ break;
             case \modules\frameModule\models\directoryTree::ARCHIVE:
                 $type = "archives";
-                $pattern = array("\\d0\\d", "\\d1\\d");
+                $pattern = array('\\\d0\\\d', '\\\d1\\\d');
                 break;
             case \modules\frameModule\models\directoryTree::SHARED:
-                $type = "trashes";
-                $pattern = array("\\d\\d0", "\\d\\d1");
+                $type = 'trashes';
+                $pattern = array('\\\d\\\d0', '\\\d\\\d1');
                 break;
             case \modules\frameModule\models\directoryTree::TRASH;
-                $type = "shares";
-                $pattern = array("0\\d\\d", "1\\d\\d");
+                $type = 'shares';
+                $pattern = array('0\\\d\\\d', '1\\\d\\\d');
                 break;
         }
 ?>
