@@ -94,7 +94,7 @@ class directoryTree extends \stdClass
     protected  function getNavigationTarget(\core\db\models\item $item) {
         switch($item->WhoAmI()) {
             case "note": return "_top";
-            case "link": return "_blank";
+            case "link": return "_top";
             case "folder": return "_self";
             default:
                 trigger_error("Undefined `{$item->WhoAmI()}` item ", E_USER_ERROR);
