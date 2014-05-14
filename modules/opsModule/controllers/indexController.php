@@ -752,11 +752,11 @@ __OP_FUNC:
     public function gotoAction()
     {
         if($this->request->CountIndexedParam() !== 3) throw new \zinux\kernel\exceptions\invalidArgumentException;
-        $this->view->suppressView();
+        $this->layout->SuppressLayout();
         \zinux\kernel\security\security::IsSecure($this->request->params, array("link"));
-        if(\zinux\kernel\security\hash::Generate($this->request->params["link"], 1, 1) !== $this->request->GetIndexedParam(2))
+        if(\zinux\kernel\security\hash::Generate($this->request->params["link"]) != $this->request->GetIndexedParam(2))
                 throw new \zinux\kernel\exceptions\invalidArgumentException;
         $link = new \core\db\models\link;
-        $link->fetch(-1);
+        $this->view->link = $link->fetch($this->request->params["link"]);
     }
 }

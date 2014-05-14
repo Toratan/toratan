@@ -74,7 +74,7 @@ class directoryTree extends \stdClass
             case "note":
                 return "/view/note/{$item->note_id}";
             case "link":
-                return "/goto/link/{$item->link_id}/".\zinux\kernel\security\hash::Generate($item->link_id, 1, 1);
+                return "/goto/link/{$item->link_id}/".\zinux\kernel\security\hash::Generate($item->link_id);
             case "folder":
                 switch($this->tree_type) {
                     default: return "/d/{$item->folder_id}.folders";

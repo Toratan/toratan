@@ -4,7 +4,7 @@
         <?php echo $this->getStatusIcons($item) ?>
     </td>
     <td class="item-name filterable">
-        <a href='<?php echo $this->getNavigationLink($item); ?>' target='<?php echo $this->getNavigationTarget($item) ?>' onclick='//window.top.document.title = "/ <?php echo $item->{"{$item->WhoAmI()}_title"}; ?>";'><?php echo $item->{"{$item->WhoAmI()}_title"}; ?></a>
+        <a href='<?php echo $this->getNavigationLink($item); ?>' target='<?php echo $this->getNavigationTarget($item) ?>'><?php echo $item->{"{$item->WhoAmI()}_title"}; ?></a>
     </td>
     <td class="updated-at timeago text-muted" id="<?php echo $type, '-', $item->{"{$item->WhoAmI()}_id"}?>-updated" origin-date="<?php echo $item->updated_at?>" title="<?php echo $item->updated_at?>"><time datetime="<?php echo $item->updated_at?>"></time></td>
 </tr>
