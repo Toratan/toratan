@@ -7,6 +7,15 @@ require_once 'authController.php';
  */
 class indexController extends authController
 {
+    public function Initiate()
+    {
+        parent::Initiate();
+        if(array_key_exists("suppress_layout", $this->request->params))
+        {
+            $this->layout->SuppressLayout ();
+            unset($this->request->params["suppress_layout"]);
+        }
+    }
     /**
     * The modules\authModule\controllers\indexController::IndexAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
