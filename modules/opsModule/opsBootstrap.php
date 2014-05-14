@@ -15,11 +15,12 @@ class opsBootstrap
         if(\core\db\models\user::IsSignedin())
             # no need for check
             return;
-        # a list of exception {controller => action} which does not need signin sig.
+        # a list of exception array({controller => action}) which does not need signin sig.
         $signin_free_ops = array(
-            "index" => "view",
-            "index" => "explorer",
-            "profile" => "index"
+            array("index", "view"),
+            array("index", "goto"),
+            array("index", "explorer"),
+            array("profile", "index")
         );
         # the normalized currently requested {conttroller => action} 
         $current_request = array(
@@ -29,10 +30,16 @@ class opsBootstrap
             strtolower($request->action->name)
         );
         # if current request's matches with an index in the signin free list
-        if(array_key_exists($current_request[0], $signin_free_ops))
+        foreach ($signin_free_ops as $pair)
         {
+            if(!is_array($pair)) throw new \zinux\kernel\exceptions\invalidOperationException("expecting `pair` to be array");
+            $controller = $pair[0];
+            $action = $pair[1];
             # proceed to checking actions
-            if($signin_free_ops[$current_request[0]] == $current_request[1])
+            if(
+                strtolower($controller) == $current_request[0] &&
+                strtolower($action) == $current_request[1]
+            )
                 # if it matches, we are OK
                 # no need to signin
                 return;

@@ -745,11 +745,18 @@ __OP_FUNC:
         exit;
     }
     /**
-    * The \modules\opsModule\controllers\indexController::gotoAction()
+    * @access via /ops/share/link/(ID)/hash_sum
+    * @hash-sum \zinux\kernel\security\hash::Generate((ID), 1, 1)
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function gotoAction()
     {
-        trigger_error("NOT IMPLEMENTED", E_USER_ERROR);
+        if($this->request->CountIndexedParam() !== 3) throw new \zinux\kernel\exceptions\invalidArgumentException;
+        $this->view->suppressView();
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("link"));
+        if(\zinux\kernel\security\hash::Generate($this->request->params["link"], 1, 1) !== $this->request->GetIndexedParam(2))
+                throw new \zinux\kernel\exceptions\invalidArgumentException;
+        $link = new \core\db\models\link;
+        $link->fetch(-1);
     }
 }

@@ -59,6 +59,24 @@
         </div>
         <div class="clearfix"></div>
         <?php require 'dialogsLayout.phtml'; ?>
+        <script>
+            window.active_nav = function(id) {
+                $('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");
+                $('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li a[target='explorer-frame']#"+id).parent().addClass("active");
+            };
+            window.getActiveType = function() {
+                return String($('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li.active").find("a").attr("id")).toLowerCase();
+            };
+            window.getActiveNavHtml = function() {
+                var $anh = $('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li.active a[target='explorer-frame']").clone();
+                return $anh.removeAttr("user-data")
+                        .removeAttr("target")
+                            .wrap('<p/>').parent().html();
+            };
+            window.getActiveTypeLink = function() {
+                return $('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li a[target='explorer-frame']#"+window.getActiveType()).attr('href');
+            };
+        </script>
         <div class="container-fluid" style="padding-top:0.5%">
         <?php if($user_logged) :  ?>
             <iframe id="explorer-nav-frame" name="explorer-nav-frame" frameborder="0" style="height: 250px" src="/frame/en" class="pull-left col-lg-2 col-md-2 col-sm-3 col-xm-3"></iframe>
@@ -66,10 +84,48 @@
             <iframe id="feed-frame" name="feed-frame" frameborder="0" style="height: 768px" src="/frame/f" class="pull-right col-lg-3 col-md-3 hidden-sm hidden-xs"></iframe>
         <?php else: ?>
             <legend>Not logged in {Fames go here!!}</legend>
+            <iframe id="explorer-frame" name="explorer-frame" frameborder="0" style="height: 768px" src="" class="col-lg-12 col-md-12 col-sm-12 col-xm-12"></iframe>
         <?php endif; ?>
         </div>
+        <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
         <script type="text/javascript">
             (function(){
+                window.update_nav = function(auto_redirect) {
+                    if(typeof(auto_redirect) === "undefined") auto_redirect = false;
+                    try {
+                        var uri = 'root';
+                        var defURI = "/d/0.folders";
+                        if(window.location.hash.length === 0) window.location.hash ="#!"+defURI;
+                        if(window.location.hash.split('#!')[1] !== undefined) {
+                            var __uri = String(window.location.hash.split('#!/')[1]).split("/");
+                            if(__uri.length && __uri[0].length)
+                                uri = __uri[0];
+                        }
+                        switch(uri) {
+                            default:
+                                window.location.hash ="#!"+defURI;
+                            case "d":
+                            case "root":
+                            case "goto":
+                            case "frame":
+                                uri = 'root';
+                            case "shared":
+                            case "trashes":
+                            case "archives":
+                                if(!window.location.hash.match(/^#\!/ig)) window.location.hash = "#!"+defURI;
+                                var target = window.location.hash.split('#!')[1];
+                                if(target.length === 0 || target === "/")
+                                    target = defURI;
+                                window.active_nav(uri);
+                                if(auto_redirect)
+                                    window.document.getElementById('explorer-frame').src = target;
+                                break;
+                        }
+                    } catch(e) {
+                        window.open_errorModal("<span class='glyphicon glyphicon-remove'></span> "+e);
+                    }
+                };
+                window.update_nav(true);
                 // modify frames' size on window resize event
                 $(window).resize(function() {
                     var $frames = $('iframe#explorer-frame, iframe#feed-frame');
@@ -85,6 +141,5 @@
                 $('#explorer-nav-frame').attr('src', '/frame/en/'+window.location.hash);
             })(jQuery);
         </script>
-        <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
     </body>
 </html>
