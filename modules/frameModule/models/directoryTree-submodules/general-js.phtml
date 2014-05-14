@@ -233,14 +233,13 @@
             }
             if(shouldUpdateTime) {
                 // update the update row
-                var updateTime = new Date();
+                var updateTime = moment().format('ddd, DD MMM YYYY HH:mm:ss ZZ');
                 $("tr.item-checked td.updated-at")
                     .attr('title', updateTime)
-                    .attr('origin-date', updateTime.toISOString())
+                    .attr('origin-date', updateTime)
                     .children('time')
-                        .attr('datetime', updateTime.toISOString())
+                        .attr('datetime', updateTime)
                         .attr('title', updateTime);
-                window.update_times();
             }
             // tag checked items to be trackable
             $("tr.item-checked").addClass("item-anim-tag");
