@@ -7,7 +7,7 @@ class newItemHelper {
             case "folder":
             case "link":
                 break;
-            default: throw new \zinux\kernel\exceptions\invalideArgumentException("Undefined `$target_type`");
+            default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `$target_type`");
         }
 ?>
     <script type="text/javascript">

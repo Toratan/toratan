@@ -21,7 +21,7 @@ class avatar
             case self::GRAVATAR:
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("No support exists for '$avatar_type'....");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("No support exists for '$avatar_type'....");
         }
         switch(\strtolower($size))
         {
@@ -30,7 +30,7 @@ class avatar
             case self::LARGE_SIZE:
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("No size support exists for '$size'....");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("No size support exists for '$size'....");
         }
         $uri ="//avatars.io/$avatar_type/$email_or_id?size=$size";
         if($auto_echo)
@@ -81,7 +81,7 @@ class avatar
                 $source_image =  imagecreatefrompng($src);
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideOperationException("Image type `".end(\array_filter(\explode(".", $dest)))."` not supported");
+                throw new \zinux\kernel\exceptions\invalidOperationException("Image type `".end(\array_filter(\explode(".", $dest)))."` not supported");
         }
 	$width = imagesx($source_image);
 	$height = imagesy($source_image);

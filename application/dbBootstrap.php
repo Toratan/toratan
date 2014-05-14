@@ -39,7 +39,7 @@ class dbBootstrap extends \zinux\kernel\application\applicationBootstrap
                 \ActiveRecord\Config::instance()->set_default_connection($mode);
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Invalid mode supplied!");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid mode supplied!");
         }
         # testing db connection
         \ActiveRecord\Connection::instance();

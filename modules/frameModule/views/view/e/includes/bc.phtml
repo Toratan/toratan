@@ -1,5 +1,5 @@
 <?php 
-    if(!isset($dt)) throw new \zinux\kernel\exceptions\invalideArgumentException("un-initialized \$dt instance.");
+    if(!isset($dt)) throw new \zinux\kernel\exceptions\invalidArgumentException("un-initialized \$dt instance.");
     /**
      * checks if should the passed item involed in breadcrumb list with given tree type
      */
@@ -11,7 +11,7 @@
             case modules\frameModule\models\directoryTree::ARCHIVE: return ($apply = $item->is_archive);
             case modules\frameModule\models\directoryTree::SHARED: return ($apply = $item->is_public);
             case modules\frameModule\models\directoryTree::TRASH: return ($apply = $item->is_trash);
-            default: throw new \zinux\kernel\exceptions\invalideArgumentException("invalid tree type `{$tree_type}`");
+            default: throw new \zinux\kernel\exceptions\invalidArgumentException("invalid tree type `{$tree_type}`");
         }
     }
 ?>

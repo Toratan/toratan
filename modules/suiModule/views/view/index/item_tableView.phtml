@@ -166,7 +166,7 @@
                             </div>
                     </td>
                         <?php endif;  break;?>
-                    <?php default : throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer...."); ?>
+                    <?php default : throw new \zinux\kernel\exceptions\invalidArgumentException("Extention `{$this->request->type}` does not supported by explorer...."); ?>
                     <?php } ?>
                 </tr>
             <?php if(!count($this->items)) break; ?>

@@ -1,4 +1,4 @@
-<?php if(!@$this->profile) throw new \zinux\kernel\exceptions\invalideArgumentException("Not profile instance provided...."); ?>
+<?php if(!@$this->profile) throw new \zinux\kernel\exceptions\invalidArgumentException("Not profile instance provided...."); ?>
 <?php $is_profile_owner = (@\core\db\models\user::GetInstance()->user_id == $this->profile->user_id); ?>
 <style type='text/css'>
     table tr td[rowspan]{width: 1%}

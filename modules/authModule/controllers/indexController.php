@@ -179,7 +179,7 @@ class indexController extends authController
     {
         $this->view->suppressView();
         if(!$this->request->IsPOST())
-            throw new \zinux\kernel\exceptions\invalideOperationException;
+            throw new \zinux\kernel\exceptions\invalidOperationException;
         \zinux\kernel\security\security::IsSecure($_POST, array("oa_action", "oa_social_login_token", "connection_token"));
         //Get connection_token
         $token = $_POST['connection_token'];
@@ -196,7 +196,7 @@ class indexController extends authController
         //http://docs.oneall.com/api/resources/connections/read-connection-details/
         $resource_uri = 'https://'.$site_domain.'/connections/'.$token .'.json';
         if(!\function_exists("curl_init"))
-            throw new \zinux\kernel\exceptions\invalideOperationException("Function `<a href='http://www.php.net/manual/en/book.curl.php' target='__blank'>\\curl</a>` not found! It seems you have to install it on your system first!");
+            throw new \zinux\kernel\exceptions\invalidOperationException("Function `<a href='http://www.php.net/manual/en/book.curl.php' target='__blank'>\\curl</a>` not found! It seems you have to install it on your system first!");
         //Setup connection
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $resource_uri);
@@ -249,10 +249,10 @@ class indexController extends authController
                 //that the user has used to connect with
                 $identity_token = $data->user->identity->identity_token;
                 if(!isset($data->user->identity->emails) || !\is_array($data->user->identity->emails) || !\count($data->user->identity->emails))
-                    throw new \zinux\kernel\exceptions\invalideOperationException("No email address provided!!");
+                    throw new \zinux\kernel\exceptions\invalidOperationException("No email address provided!!");
                 $primary_email_address = \array_shift($data->user->identity->emails);
                 if(!@$primary_email_address->value)
-                    throw new \zinux\kernel\exceptions\invalideOperationException("No email address provided!!");                    
+                    throw new \zinux\kernel\exceptions\invalidOperationException("No email address provided!!");                    
                 // 1) Check if you have a userID for this token in your database
                 $user_id = \core\db\models\user::Fetch($primary_email_address->value);
                # if($user_id) $user_id->delete();
@@ -343,11 +343,11 @@ __CHECK_ERROR:
             }
             else
             {
-                throw new \zinux\kernel\exceptions\invalideOperationException("Operation was <b>not successfull</b>!");
+                throw new \zinux\kernel\exceptions\invalidOperationException("Operation was <b>not successfull</b>!");
             }
             break;
           default:
-              throw new \zinux\kernel\exceptions\invalideOperationException("Un-expected operation work-flow!!");
+              throw new \zinux\kernel\exceptions\invalidOperationException("Un-expected operation work-flow!!");
               /**
                * Alert the ower by email!
                */

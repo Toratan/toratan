@@ -20,12 +20,12 @@ class alert extends htmlPrinter
      * @param boolean $immediate_echo set TRUE if should echo the output[default]; otherwise returns the generated alert
      * @param boolean $auto_dispose set TRUE if should the output get disposed after 10 seconds[default]; otherwise returns the generated alert
      * @return string if $immediate_echo == 0 returns the alert string
-     * @throws \zinux\kernel\exceptions\invalideArgumentException if input is not string
+     * @throws \zinux\kernel\exceptions\invalidArgumentException if input is not string
      */
     public static function Cout($data, $alert_type = alert::ALERT_INFO, $auto_dispose = 1, $immediate_echo = 1, $show_time = 7000)
     {
         if(!is_string($data))
-            throw new \zinux\kernel\exceptions\invalideArgumentException;
+            throw new \zinux\kernel\exceptions\invalidArgumentException;
         $alert = 
             "<div class='alert fade in $alert_type ' style='z-index:10000000;border: 1px solid;padding: 1%;margin:0.5%;' id='".($id="alert-".sha1($data))."'>
                 <button type='button' class='close' data-dismiss='alert' aria-hidden='true' >&times;</button>

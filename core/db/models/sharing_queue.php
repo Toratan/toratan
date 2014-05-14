@@ -10,7 +10,7 @@ class sharing_queue extends \core\db\models\baseModel
     public static function add_queue(\core\db\models\folder $folder)
     {
         if(!$folder)
-            throw new \zinux\kernel\exceptions\invalideArgumentException("The arg cannot be null!");
+            throw new \zinux\kernel\exceptions\invalidArgumentException("The arg cannot be null!");
         $sq = new \core\db\models\sharing_queue;
         $sq->folder_id = $folder->folder_id;
         try

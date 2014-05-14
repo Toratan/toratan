@@ -67,7 +67,7 @@ class eController extends \zinux\kernel\controller\baseController
                 $instance = new \core\db\models\link;
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
         }
         $sort_base = "{$instance->WhoAmI()}_title";
         if(isset($this->request->params["sort"])) {
@@ -106,7 +106,7 @@ class eController extends \zinux\kernel\controller\baseController
                 $count_arg["conditions"][] =  $args[0];
                 $count_arg["conditions"][] =  $args[1];
                 break;
-            default: throw new \zinux\kernel\exceptions\invalideArgumentException("Undefined `$dtmode`");
+            default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `$dtmode`");
         }
         $this->view->total_count = $instance->count($count_arg);
         $args[] = array("order" => "$sort_base $order", 'limit' => $this->request->params["l"], 'offset' => $this->request->params["o"]);
@@ -153,7 +153,7 @@ class eController extends \zinux\kernel\controller\baseController
             case \modules\frameModule\models\directoryTree::ARCHIVE: $func = "fetchArchives"; break;
             case \modules\frameModule\models\directoryTree::SHARED: $func = "fetchShared"; break;
             case \modules\frameModule\models\directoryTree::TRASH: $func = "fetchTrashes"; break;
-            default: throw new \zinux\kernel\exceptions\invalideArgumentException("Undefined `$category`");
+            default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `$category`");
         }
         if($this->request->params["d"] == 0)
             $this->executeQuery($func,  $category, array(\core\db\models\user::GetInstance()->user_id));

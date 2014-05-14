@@ -25,7 +25,7 @@ class user extends baseModel
      * @param string $username the new user's username
      * @param string $email the new user's email
      * @param strign $password the new user's password
-     * @throws \zinux\kernel\exceptions\invalideArgumentException is any of params were not string or an empty passed through
+     * @throws \zinux\kernel\exceptions\invalidArgumentException is any of params were not string or an empty passed through
      * @throws \core\exceptions\exceptionCollection a collection exception that produced during the signup opt.
      */
     public function Signup($username, $email, $password)
@@ -34,20 +34,20 @@ class user extends baseModel
         $ec = new \core\exceptions\exceptionCollection;
         # validate username
         if(!strlen($username))
-            $ec->addException(new \zinux\kernel\exceptions\invalideArgumentException("Username cannot be empty!"));
+            $ec->addException(new \zinux\kernel\exceptions\invalidArgumentException("Username cannot be empty!"));
         elseif(preg_match('#[^a-z0-9]#i', $username))
             $ec->addException (
-                new \zinux\kernel\exceptions\invalideArgumentException(
+                new \zinux\kernel\exceptions\invalidArgumentException(
                     "Username '$username' contains <a href='http://en.wikipedia.org/wiki/Special_characters' title='See wikipedia' target='__blank'>special characters</a>!"));
         # validate email address
         # validate username
         if(!strlen($email))
-            $ec->addException(new \zinux\kernel\exceptions\invalideArgumentException("Email cannot be empty!"));
+            $ec->addException(new \zinux\kernel\exceptions\invalidArgumentException("Email cannot be empty!"));
         elseif(!filter_var($email, FILTER_VALIDATE_EMAIL))
-            $ec->addException (new \zinux\kernel\exceptions\invalideArgumentException("Email '$email' is not a valid email address!"));
+            $ec->addException (new \zinux\kernel\exceptions\invalidArgumentException("Email '$email' is not a valid email address!"));
         # validate password
         if(empty($password))
-            $ec->addException(new \zinux\kernel\exceptions\invalideArgumentException("Password cannot be empty!"));
+            $ec->addException(new \zinux\kernel\exceptions\invalidArgumentException("Password cannot be empty!"));
         # throw if any exception collected
         $ec->ThrowCollected();
         # add email

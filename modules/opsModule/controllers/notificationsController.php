@@ -23,7 +23,7 @@ class notificationsController extends \zinux\kernel\controller\baseController
     {
         $this->layout->SuppressLayout();
         if(false && !$this->request->IsPOST())
-            throw new \zinux\kernel\exceptions\invalideOperationException;
+            throw new \zinux\kernel\exceptions\invalidOperationException;
         if(!@$this->request->params["since"])
             $this->request->params["since"] = 0;
         # $limit variable for fecthing notifs

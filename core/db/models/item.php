@@ -114,8 +114,8 @@ abstract class item extends baseModel
      * @param string $body the item's body
      * @param string $parent_id the item's parent id
      * @param string $owner_id the item's owner
-     * @throws \zinux\kernel\exceptions\invalideArgumentException if title not string or be empty
-     * @throws \zinux\kernel\exceptions\invalideOperationException if duplication problem raise during saving item to db
+     * @throws \zinux\kernel\exceptions\invalidArgumentException if title not string or be empty
+     * @throws \zinux\kernel\exceptions\invalidOperationException if duplication problem raise during saving item to db
      * @throws \core\db\models\Exception if any other exception raised that didn't match with previous excepions
      * @return item the create item
     */
@@ -141,7 +141,7 @@ abstract class item extends baseModel
             throw new \core\db\exceptions\dbNotFoundException("The parent folder not found!!");
         # validate  the owner id match with parent's owner id
         if($parent->owner_id && $parent->owner_id != $owner_id)
-            throw new \zinux\kernel\exceptions\invalideOperationException("You don't have the write permission under directory# $parent_id");
+            throw new \zinux\kernel\exceptions\invalidOperationException("You don't have the write permission under directory# $parent_id");
         # set the title
        $item->{"{$this->item_name}_title"} = $title;
         # set the body
@@ -166,7 +166,7 @@ abstract class item extends baseModel
      * @param array $conditions the find conditons
      * @param array $options the other options this also can have conditons in it
      * @return array the genaral options
-     * @throws \zinux\kernel\exceptions\invalideArgumentException if $options has "condition" and it does not have the conditons string
+     * @throws \zinux\kernel\exceptions\invalidArgumentException if $options has "condition" and it does not have the conditons string
      */
     protected function normalize_conditions_options_ops(
             $conditions = array(),
@@ -183,7 +183,7 @@ abstract class item extends baseModel
             # if the option has invalid conditions format
             if(!is_string($options["conditions"][0]))
                 # flag the error
-                throw new \zinux\kernel\exceptions\invalideArgumentException("invalid \$options format");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("invalid \$options format");
             # merge the $options' conditional string with genuine $conditions array
             $conditions["conditions"][0] .= " AND (".array_shift($options["conditions"]).")";
             # fetch the othe condition arguments, if any exists
@@ -342,7 +342,7 @@ abstract class item extends baseModel
                 $item->save();
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("undefined ops demand!");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("undefined ops demand!");
         }
         # return the deleted item
         return $item;
@@ -361,7 +361,7 @@ abstract class item extends baseModel
      * @param string $owner_id the item's owner's ID
      * @param integer $ARCHIVE_STATUS valid input for this are <b>self::FLAG_SET</b>, <b>self::FLAG_UNSET</b>
      * @return item the modified item
-     * @throws \zinux\kernel\exceptions\invalideOperationException if $ARCHIVE_STATUS is not valid
+     * @throws \zinux\kernel\exceptions\invalidOperationException if $ARCHIVE_STATUS is not valid
      */
     public function archive(
             $item_id,
@@ -377,7 +377,7 @@ abstract class item extends baseModel
                 $item->save();
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideOperationException;
+                throw new \zinux\kernel\exceptions\invalidOperationException;
         }
         # return the item
         return $item;
@@ -388,7 +388,7 @@ abstract class item extends baseModel
      * @param string $owner_id the item's owner's ID
      * @param integer $SHARE_STATUS valid input for this are <b>self::FLAG_SET</b>, <b>self::FLAG_UNSET</b>
      * @return item the modified item
-     * @throws \zinux\kernel\exceptions\invalideOperationException if $SHARE_STATUS is not valid
+     * @throws \zinux\kernel\exceptions\invalidOperationException if $SHARE_STATUS is not valid
      */
     public function share(
             $item_id,
@@ -404,7 +404,7 @@ abstract class item extends baseModel
                 $item->save();
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideOperationException;
+                throw new \zinux\kernel\exceptions\invalidOperationException;
         }
         # return the item
         return $item;

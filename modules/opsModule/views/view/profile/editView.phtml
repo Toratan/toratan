@@ -48,7 +48,7 @@
         case $max_step:
             require realpath(dirname(__FILE__)."/profile-steps/step{$this->step}.php");
             break;
-            throw new \zinux\kernel\exceptions\invalideOperationException("The step: '{$this->step}' is not defined...");
+            throw new \zinux\kernel\exceptions\invalidOperationException("The step: '{$this->step}' is not defined...");
     }
 ?>
                 <hr />

@@ -9,7 +9,7 @@ abstract class baseModel extends \ActiveRecord\Model
     /**
      * The save procedure interface for item
      * @param boolean $validate should it validate the attribs
-     * @throws \zinux\kernel\exceptions\invalideOperationException if duplication error happen
+     * @throws \zinux\kernel\exceptions\invalidOperationException if duplication error happen
      * @throws \core\db\models\Exception if any other error happen
      */
     public function save($validate = true)

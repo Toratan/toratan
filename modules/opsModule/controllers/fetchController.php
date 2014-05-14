@@ -18,7 +18,7 @@ class fetchController extends \zinux\kernel\controller\baseController
         \zinux\kernel\security\security::IsSecure($this->request->params, array("page", "item"));
         # secure the request item
         if(!in_array($this->request->params["item"], array("folder", "note", "link")))
-            throw new \zinux\kernel\exceptions\invalideArgumentException("Undefined `{$this->request->params["item"]}`");
+            throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `{$this->request->params["item"]}`");
     }
     /**
     * The modules\opsModule\controllers\fetchController::IndexAction()

@@ -23,7 +23,7 @@ class profileController extends \zinux\kernel\controller\baseController
             # and also misses the profile ID
             if(!$this->request->CountIndexedParam())
                 # this would be an invalid operations
-                throw new \zinux\kernel\exceptions\invalideOperationException("Empty profile ID!");
+                throw new \zinux\kernel\exceptions\invalidOperationException("Empty profile ID!");
             # otherwise user the first argument as profile ID
             if(!($user = \core\db\models\user::find(array("conditions"=> array("user_id = ?", $this->request->GetIndexedParam(0))))))
                 # if not found, indicate it
@@ -92,7 +92,7 @@ class profileController extends \zinux\kernel\controller\baseController
             # otherwise
             else $this->view->step=1;
                 # this is an error
-                #throw new \zinux\kernel\exceptions\invalideOperationException("Miss-configured input!!!");
+                #throw new \zinux\kernel\exceptions\invalidOperationException("Miss-configured input!!!");
             # if not a POST req.
             if(!$this->request->IsPOST())
                 # just show the view
@@ -105,7 +105,7 @@ class profileController extends \zinux\kernel\controller\baseController
                 # are we going to back?
                 case isset($this->request->params['back']):
                     if($current_step==1)
-                        throw new \zinux\kernel\exceptions\invalideOperationException("Cannot go back!!!");
+                        throw new \zinux\kernel\exceptions\invalidOperationException("Cannot go back!!!");
                     # decreasing step count
                     $this->view->step--;
                     # purging un-necessary indexes
@@ -151,7 +151,7 @@ class profileController extends \zinux\kernel\controller\baseController
                     exit;
                 
                 default:
-                    throw new \zinux\kernel\exceptions\invalideOperationException;
+                    throw new \zinux\kernel\exceptions\invalidOperationException;
             }
             # save on session cache socket
             $sc->save("step#$current_step", $this->request->POST);
@@ -168,13 +168,13 @@ class profileController extends \zinux\kernel\controller\baseController
     /**
      * Submits a profile data saved on a session cache
      * @param \zinux\kernel\caching\sessionCache $session_cache profile data container
-     * @throws \zinux\kernel\exceptions\invalideArgumentException if $session_cache is NULL
+     * @throws \zinux\kernel\exceptions\invalidArgumentException if $session_cache is NULL
      */
     private function submitProfile(\zinux\kernel\caching\sessionCache $session_cache)
     {
         # check session cache instance existance
         if(!$session_cache)
-            throw new \zinux\kernel\exceptions\invalideArgumentException("NULL cache passed!!");
+            throw new \zinux\kernel\exceptions\invalidArgumentException("NULL cache passed!!");
         # fetch the user's profile instance
         $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
         # foreach value stored in cache
@@ -182,7 +182,7 @@ class profileController extends \zinux\kernel\controller\baseController
         {
             # the head values should always be an array
             if(!\is_array($value))
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Invalid input! profile was not created....");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid input! profile was not created....");
             # since the $value is an array already
             # make an iteration on its subvalue
             foreach($value as $key=> $_value)
@@ -282,7 +282,7 @@ class profileController extends \zinux\kernel\controller\baseController
                     foreach (array(PUBLIC_HTML."/access/img/upload", PUBLIC_HTML."/access/img/upload/thumbnail") as $value)
                         if(!file_exists($value))
                             if(!@mkdir ($value, 0777, 1))
-                                    throw new \zinux\kernel\exceptions\invalideOperationException("Unable to create directroy `$value`.");
+                                    throw new \zinux\kernel\exceptions\invalidOperationException("Unable to create directroy `$value`.");
                     # upload the avatar
                     $this->upload_avatar($key, $profile);
                     break;
@@ -319,14 +319,14 @@ class profileController extends \zinux\kernel\controller\baseController
      * A safe avatar uploader
      * @param array $_FILES the files inputs
      * @param \core\db\models\profile $profile A profile instance
-     * @throws \zinux\kernel\exceptions\invalideArgumentException if no data found in $_FILES
+     * @throws \zinux\kernel\exceptions\invalidArgumentException if no data found in $_FILES
      * @return boolean TRUE if upload was successful; otherwise FALSE
      */
     protected function upload_avatar($index_name, \core\db\models\profile &$profile)
     {
         # validate the $_FILES input
         if(!count($_FILES))
-            throw new \zinux\kernel\exceptions\invalideArgumentException("No file uploaded!");
+            throw new \zinux\kernel\exceptions\invalidArgumentException("No file uploaded!");
         # define supported format
         $image_support_types = array('png' => 'image/png',
             'jpe' => 'image/jpeg',
@@ -346,7 +346,7 @@ class profileController extends \zinux\kernel\controller\baseController
         # if we have a miss configured project
         if(!$orig_path || !$thum_path)
             # indecate it
-            throw new \zinux\kernel\exceptions\invalideArgumentException("No configuration found for `upload.avatar`!!");
+            throw new \zinux\kernel\exceptions\invalidArgumentException("No configuration found for `upload.avatar`!!");
         # fetch file's extention
         $ext = end(\array_filter(explode(".", $_FILES[$index_name]["name"])));
         # fetch file's original name
@@ -378,7 +378,7 @@ class profileController extends \zinux\kernel\controller\baseController
         $profile->setSetting("/profile/avatar/custom/origin_image", "/$orig_path", 0);
         # create a thumbnail for original image
         if(!@\core\ui\html\avatar::make_thumbnail($orig_path, $thum_path))
-            throw new \zinux\kernel\exceptions\invalideOperationException("File uploaded but unable to create thumbnail!");
+            throw new \zinux\kernel\exceptions\invalidOperationException("File uploaded but unable to create thumbnail!");
         # setting the profile settings for thumbnail image path
         $profile->setSetting("/profile/avatar/custom/thumb_image", "/$thum_path", 0);
     }
@@ -437,7 +437,7 @@ __RELOCATE:
     public function avatar_viewAction()
     {
         if($this->request->CountIndexedParam() != 1)
-            throw new \zinux\kernel\exceptions\invalideOperationException;
+            throw new \zinux\kernel\exceptions\invalidOperationException;
         $this->view->profile = \core\db\models\profile::getInstance($this->request->GetIndexedParam(0));
         if(!$this->view->profile)
             throw new \zinux\kernel\exceptions\notFoundException("Profile not found!");

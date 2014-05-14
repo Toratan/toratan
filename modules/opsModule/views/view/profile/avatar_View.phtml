@@ -1,4 +1,4 @@
-<?php if(!@$this->profile) throw new \zinux\kernel\exceptions\invalideArgumentException; ?>
+<?php if(!@$this->profile) throw new \zinux\kernel\exceptions\invalidArgumentException; ?>
 <?php $orig_uri = \core\ui\html\avatar::get_avatar_link($this->profile->user_id); ?>
 <center>
     <img src="<?php echo array_pop($orig_uri) ?>" class="image imageblock img-responsive img-thumbnail"/>

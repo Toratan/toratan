@@ -177,11 +177,11 @@ class directoryTree extends \stdClass
      * @param string $active_type Which type this directory tree contains?
      * @param string|integer $pid the parrent directory this directory tree
      * @param boolean $is_owner is current user is owner of current tree?
-     * @throws \zinux\kernel\exceptions\invalideArgumentException if item is NULL
+     * @throws \zinux\kernel\exceptions\invalidArgumentException if item is NULL
      */
     public function plotTableRow(\core\db\models\item $item, $type, $parent_id, $is_owner, $part_of_all_precent = 0) {
         if($item === NULL) {
-            throw new \zinux\kernel\exceptions\invalideArgumentException("The item cannot be null...");
+            throw new \zinux\kernel\exceptions\invalidArgumentException("The item cannot be null...");
         }
         static $fetch_more_meet = 0;
         require 'directoryTree-submodules/table-row.phtml';

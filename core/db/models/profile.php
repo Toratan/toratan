@@ -107,7 +107,7 @@ class profile extends baseModel
      * @param string $address the setting's address with "/" separator
      * @param mixed $value
      * @param boolean $auto_save should auto save the settings or not
-     * @throws \zinux\kernel\exceptions\invalideArgumentException if $address is not string or is empty
+     * @throws \zinux\kernel\exceptions\invalidArgumentException if $address is not string or is empty
      */
     public function setSetting($address, $value, $auto_save = 1, $splitter = "/", $save_in_cache = 1)
     {
@@ -115,7 +115,7 @@ class profile extends baseModel
         $address = @trim($address);
         # validate the $address input
         if(!\is_string($address) || !\strlen($address))
-            throw new \zinux\kernel\exceptions\invalideArgumentException("setting's \$address is not valid....");
+            throw new \zinux\kernel\exceptions\invalidArgumentException("setting's \$address is not valid....");
         # if currently no setting has been saved
         if(!($this->settings instanceof \stdClass))
             # create an instance for settings
@@ -157,7 +157,7 @@ class profile extends baseModel
      * Get a setting
      * @param string $address the setting's address with "/" separator
      * @return mixed the setting's value or NULL if no setting found
-     * @throws \zinux\kernel\exceptions\invalideArgumentException if $address is not string or is empty
+     * @throws \zinux\kernel\exceptions\invalidArgumentException if $address is not string or is empty
      */
     public function getSetting($address, $splitter = "/")
     {  
@@ -165,7 +165,7 @@ class profile extends baseModel
         $address = @trim($address);
         # validate the $address input
         if(!\is_string($address) || !\strlen($address))
-            throw new \zinux\kernel\exceptions\invalideArgumentException("setting's \$address is not valid....");
+            throw new \zinux\kernel\exceptions\invalidArgumentException("setting's \$address is not valid....");
         # explode the address
         $address_partials = array_filter(\explode($splitter, $address));
         # initiate a linked list instance
@@ -189,7 +189,7 @@ class profile extends baseModel
      * @param string $address the setting's address with "/" separator
      * @param boolean $auto_save should auto save the settings or not
      * @return mixed the setting's value or NULL if no setting found
-     * @throws \zinux\kernel\exceptions\invalideArgumentException if $address is not string or is empty
+     * @throws \zinux\kernel\exceptions\invalidArgumentException if $address is not string or is empty
      */
     public function unsetSetting($address, $auto_save = 1, $splitter = "/", $save_in_cache = 1)
     {  
@@ -197,7 +197,7 @@ class profile extends baseModel
         $address = @trim($address);
         # validate the $address input
         if(!\is_string($address) || !\strlen($address))
-            throw new \zinux\kernel\exceptions\invalideArgumentException("setting's \$address is not valid....");
+            throw new \zinux\kernel\exceptions\invalidArgumentException("setting's \$address is not valid....");
         # explode the address
         $address_partials = array_filter(\explode($splitter, $address));
         # recursively delete the address

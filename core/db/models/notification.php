@@ -207,7 +207,7 @@ class notification extends \core\db\models\baseModel
                 $notif->notification_type = $notification_type;
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Invalid income notification type ID# $notification_type");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid income notification type ID# $notification_type");
         }
         $notif->save();
     }

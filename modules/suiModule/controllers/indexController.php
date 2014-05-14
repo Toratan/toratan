@@ -52,7 +52,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 $instance = new \core\db\models\link;
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
         }
         $this->view->is_owner = ($uid == \core\db\models\user::GetInstance()->user_id); 
         $this->view->items = ($instance->fetchItems($uid, $pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
@@ -87,7 +87,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 $instance = new \core\db\models\link;
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
         }
         $this->view->items = ($instance->fetchTrashes($uid));
     }
@@ -119,7 +119,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 $instance = new \core\db\models\link;
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
         }
         $this->view->items = ($instance->fetchArchives($uid));
     }
@@ -151,7 +151,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 $instance = new \core\db\models\link;
                 break;
             default:
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
         }
         $this->view->items = ($instance->fetchShared($uid));
     }

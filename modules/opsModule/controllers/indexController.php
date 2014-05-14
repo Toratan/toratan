@@ -44,16 +44,16 @@ class indexController extends \zinux\kernel\controller\baseController
     public function IndexAction()
     {
         # make sure that we get our data from POST
-        if(!$this->request->IsPOST()) throw new \zinux\kernel\exceptions\invalideOperationException;
+        if(!$this->request->IsPOST()) throw new \zinux\kernel\exceptions\invalidOperationException;
         \zinux\kernel\security\security::IsSecure($this->request->params, 
                 array("type", "ops", "items", "continue"),
                 array('is_array' => $this->request->params["items"]));
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params, 
                 array($this->request->params["type"], $this->request->params["continue"], session_id()));
         if(!in_array($this->request->params["type"], array("folder", "note", "link")))
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Undefined `{$this->request->params["type"]}`");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `{$this->request->params["type"]}`");
         if(!in_array($this->request->params["ops"], array("share", "archive", "trash", "restore", "remove")))
-                throw new \zinux\kernel\exceptions\invalideArgumentException("Undefined ops `{$this->request->params["ops"]}`");
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined ops `{$this->request->params["ops"]}`");
         $continue = $this->request->params["continue"];
         $method = $_SERVER['REQUEST_METHOD'];
         $infos = $this->request->params["items"];
@@ -75,11 +75,11 @@ class indexController extends \zinux\kernel\controller\baseController
             $func = $ops;
             switch($ops) {
                 case "archive":
-                    if(!isset($item->a)) throw new \zinux\kernel\exceptions\invalideOperationException;
+                    if(!isset($item->a)) throw new \zinux\kernel\exceptions\invalidOperationException;
                     $flag = $item->a;
                     break;
                 case "share":
-                    if(!isset($item->s)) throw new \zinux\kernel\exceptions\invalideOperationException;
+                    if(!isset($item->s)) throw new \zinux\kernel\exceptions\invalidOperationException;
                     $flag = $item->s;
                     if($flag) $shared++;
                     else $unshared++;
@@ -139,7 +139,7 @@ __OP_FUNC:
     {
         # we need at least a param to go for
         if(!count($this->request->params))
-            throw new \zinux\kernel\exceptions\invalideOperationException;
+            throw new \zinux\kernel\exceptions\invalidOperationException;
         # the PID is essential to get provided
         \zinux\kernel\security\security::IsSecure(
                 $this->request->params,
@@ -171,7 +171,7 @@ __OP_FUNC:
                 break;
             default:
                 # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalideOperationException;
+                throw new \zinux\kernel\exceptions\invalidOperationException;
         }
         # fetch the user id
         $uid = \core\db\models\user::GetInstance()->user_id;
@@ -221,7 +221,7 @@ __OP_FUNC:
                             $this->request->params["note_title"] = "Untitled Note ......";
                         break;
                     default:
-                        throw new \zinux\kernel\exceptions\invalideArgumentException("Invalid text version!");
+                        throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid text version!");
                 }
                 break;
         }
@@ -291,7 +291,7 @@ __OP_FUNC:
                 break;
             default:
                 # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalideOperationException;
+                throw new \zinux\kernel\exceptions\invalidOperationException;
         }
         if(!$this->suppress_redirect) {
             # relocate the browser
@@ -310,7 +310,7 @@ __OP_FUNC:
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
-            throw new \zinux\kernel\exceptions\invalideOperationException;
+            throw new \zinux\kernel\exceptions\invalidOperationException;
         # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params,
@@ -331,7 +331,7 @@ __OP_FUNC:
                 break;
             default:
                 # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalideOperationException;
+                throw new \zinux\kernel\exceptions\invalidOperationException;
         }
         # the error container
         $this->view->errors = array();
@@ -379,7 +379,7 @@ __OP_FUNC:
                             $this->request->params["note_title"] = "Untitled Note ......";
                         break;
                     default:
-                        throw new \zinux\kernel\exceptions\invalideArgumentException("Invalid text version!");
+                        throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid text version!");
                 }
                 break;
         }
@@ -439,7 +439,7 @@ __OP_FUNC:
                 break;
             default:
                 # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalideOperationException;
+                throw new \zinux\kernel\exceptions\invalidOperationException;
         }
         if(!$this->ops_index_interface) exit;
     }
@@ -451,7 +451,7 @@ __OP_FUNC:
     {
         # check we have our 2 params loaded
         if($this->request->CountIndexedParam()!=2)
-            throw new \zinux\kernel\exceptions\invalideOperationException;
+            throw new \zinux\kernel\exceptions\invalidOperationException;
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
@@ -462,7 +462,7 @@ __OP_FUNC:
                 break;
             default:
                 # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalideOperationException;
+                throw new \zinux\kernel\exceptions\invalidOperationException;
         }
         # fetch the user id
         $uid = (\core\db\models\user::IsSignedin()?\core\db\models\user::GetInstance()->user_id:NULL);
@@ -503,7 +503,7 @@ __OP_FUNC:
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
-            throw new \zinux\kernel\exceptions\invalideOperationException;
+            throw new \zinux\kernel\exceptions\invalidOperationException;
         # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params,
@@ -518,7 +518,7 @@ __OP_FUNC:
                 break;
             default:
                 # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalideOperationException;
+                throw new \zinux\kernel\exceptions\invalidOperationException;
         }
         if(!isset($this->request->params["trash"]))
             $is_trash = 0;
@@ -532,7 +532,7 @@ __OP_FUNC:
                     $is_trash = $this->request->params["trash"];
                     break;
                 default:
-                    throw new \zinux\kernel\exceptions\invalideOperationException;
+                    throw new \zinux\kernel\exceptions\invalidOperationException;
             }
         }
         # fetch the items name
@@ -565,7 +565,7 @@ __OP_FUNC:
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
-            throw new \zinux\kernel\exceptions\invalideOperationException;
+            throw new \zinux\kernel\exceptions\invalidOperationException;
         # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params,
@@ -580,7 +580,7 @@ __OP_FUNC:
                 break;
             default:
                 # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalideOperationException;
+                throw new \zinux\kernel\exceptions\invalidOperationException;
         }
         if(!isset($this->request->params["archive"]))
             $is_archive = 0;
@@ -593,7 +593,7 @@ __OP_FUNC:
                     $is_archive = $this->request->params["archive"];
                     break;
                 default:
-                    throw new \zinux\kernel\exceptions\invalideOperationException;
+                    throw new \zinux\kernel\exceptions\invalidOperationException;
             }
         }
         # fetch the items name
@@ -626,7 +626,7 @@ __OP_FUNC:
     {
         # we need at least 2 params to go for
         if($this->request->CountIndexedParam()<2)
-            throw new \zinux\kernel\exceptions\invalideOperationException;
+            throw new \zinux\kernel\exceptions\invalidOperationException;
         # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
         \zinux\kernel\security\security::ArrayHashCheck(
                 $this->request->params,
@@ -641,7 +641,7 @@ __OP_FUNC:
                 break;
             default:
                 # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalideOperationException;
+                throw new \zinux\kernel\exceptions\invalidOperationException;
         }
         if(!isset($this->request->params["share"]))
             $is_share = 0;
@@ -654,7 +654,7 @@ __OP_FUNC:
                     $is_share = $this->request->params["share"];
                     break;
                 default:
-                    throw new \zinux\kernel\exceptions\invalideOperationException;
+                    throw new \zinux\kernel\exceptions\invalidOperationException;
             }
         }
         # fetch the items name
