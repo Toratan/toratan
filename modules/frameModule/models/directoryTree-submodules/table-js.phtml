@@ -67,7 +67,7 @@
             if($("input[type='checkbox'].item-checkbox:checked").first() === 0) return;
             $.ajax({
                 type: "GET",
-                url: "/ops/edit?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
+                url: "/ops/editAPI?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&suppress_layout=1<?php echo zinux\kernel\security\security::GetHashString(array($active_type, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo $this->request->GetURI(); ?>"
             });
         });
         window.submit_ops = function($this) {

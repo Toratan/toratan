@@ -302,6 +302,28 @@ __OP_FUNC:
         if(!$this->ops_index_interface) exit;
     }
     /**
+     * An api-access point for {editAction()}
+    * @access GET via /ops/editAPI/{folder|note|link}=DIGIT;DIGIT;DIGIT?hash_sum
+    * @hash-sum {folder|note|link}.session_id().user_id
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+     */
+    public function editAPIAction() {
+        if($this->request->CountIndexedParam() < 2) throw new \zinux\kernel\exceptions\invalidOperationException;
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, 
+                array($this->request->GetIndexedParam(0), session_id(), \core\db\models\user::GetInstance()->user_id));
+        $item = \modules\opsModule\models\itemInfo::decode($this->request->GetIndexedParam(1));
+        $this->request->params[$this->request->GetIndexedParam(0)] = $item->i;
+        $this->request->params = array_merge($this->request->params, 
+                \zinux\kernel\security\security::GetHashArray(
+                        array(
+                                $this->request->GetIndexedParam(0), 
+                                $item->i, 
+                                session_id(), 
+                                \core\db\models\user::GetInstance()->user_id)));
+        $this->request->GenerateIndexedParams();
+        $this->editAction();
+    }
+    /**
     * @access via /ops/edit/{folder|note|link}/(ID)?hash_sum
     * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
