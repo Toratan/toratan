@@ -158,7 +158,7 @@
 <?php if($this->tree_type === self::REGULAR): ?>
         window.fetching_more = false;
         $(window).scroll(function() {
-            var threshold = ($(window).scrollTop() === $(document).height() - $(window).height());
+            var threshold = window.pageYOffset + window.innerHeight >= document.body.scrollHeight - 200;
             if(!window.fetching_more &&  threshold) {
                 window.fetch_more();
             }
