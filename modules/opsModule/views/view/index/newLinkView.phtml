@@ -1,9 +1,11 @@
 <div id="new-link-ui">
+<?php if(count($this->errors)): ?>
     <ol class='text-danger' style="list-style-image: url('/access/img/bullet.png');padding:0;margin-left:15px;">
     <?php foreach ($this->errors as $error) : ?>
         <li><?php echo $error ?></li>
     <?php endforeach; ?>
     </ol>
+<?php endif ; ?>
     <style>
         .double-input .form-control {
             width: 50%;
@@ -25,5 +27,5 @@
             </span>
         </div><!-- /input-group -->
     </form>
-    <?php echo \modules\opsModule\views\helper\newItemHelper::plotJS($this, "folder"); ?>
+    <?php echo \modules\opsModule\views\helper\newItemHelper::plotJS($this, "link"); ?>
 </div>
