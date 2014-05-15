@@ -8,9 +8,7 @@
     <span class='pull-right' style='font-size: medium'>
         <a href='/<?php echo \core\db\models\subscribe::has_subscribed($this->profile->user_id, \core\db\models\user::GetInstance()->user_id)?"un":"" ?>subscribe/<?php 
             echo "{$this->profile->user_id}?".(\zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, $this->profile->user_id, session_id()."subscribe"))); 
-        ?>'><?php echo \core\db\models\subscribe::has_subscribed($this->profile->user_id, \core\db\models\user::GetInstance()->user_id)?"Unf":"F" ?>ollow</a> | <a href='/messages/new/<?php 
-            echo "{$this->profile->user_id}?".(\zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, $this->profile->user_id, session_id()."message"))); 
-        ?>'>Send Message</a></span>
+        ?>'><?php echo \core\db\models\subscribe::has_subscribed($this->profile->user_id, \core\db\models\user::GetInstance()->user_id)?"Unf":"F" ?>ollow</a></span>
     <?php endif; ?>
 </legend>
 <div class='visible-sm visible-xs' style='margin: 1%;'></div>
