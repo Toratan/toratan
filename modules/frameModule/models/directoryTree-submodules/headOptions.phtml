@@ -34,7 +34,7 @@
             </button>
             <ul class="dropdown-menu pull-right" role="menu">
               <li title="Create A Folder"><a href="#!/new/folder/?pid=<?php echo $pid, \zinux\kernel\security\security::GetHashString(array("folder", $pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>" data-tag="folder" class="new-item"><span class="inline glyphicon glyphicon-folder-close"></span> Folder</a></li>
-              <li title="Create A Note"><a href="#!/new/note/?pid=<?php echo $pid, \zinux\kernel\security\security::GetHashString(array("note", $pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>" data-tag="note" class="new-item"><span class="inline glyphicon glyphicon-file"></span> Note</a></li>
+              <li title="Create A Note"><a href="#!/noteAPI/new/<?php echo $pid,"?", \zinux\kernel\security\security::GetHashString(array("note", $pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>" data-tag="note" class="new-item"><span class="inline glyphicon glyphicon-file"></span> Note</a></li>
               <li title="Create A Link"><a href="#!/new/link/?pid=<?php echo $pid, \zinux\kernel\security\security::GetHashString(array("link", $pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>" data-tag="link" class="new-item"><span class="inline glyphicon glyphicon-link"></span> Link</a></li>
             </ul>
           </div>

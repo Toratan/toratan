@@ -324,6 +324,14 @@ __OP_FUNC:
         $this->editAction();
     }
     /**
+    * @access via /ops/noteAPI/{new|edit|view}/(ID)(?hash_sum:{not for view})
+    * @hash-sum {new|edit}.(ID).session_id().user_id
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function noteAPIAction() {
+        throw new \zinux\kernel\exceptions\notImplementedException;
+    }
+    /**
     * @access via /ops/edit/{folder|note|link}/(ID)?hash_sum
     * @hash-sum {folder|note|link}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>
