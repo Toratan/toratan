@@ -155,6 +155,12 @@
                 $(".ajax-loader-img-inf-scroll").addClass("hidden");
             });
         };
+<?php if($active_type === 'link'): ?>
+    $(".item-row .item-name a").click(function($e){
+        $e.preventDefault();
+        window.top.open($(this).attr('href').split("#!")[1]);
+    });
+<?php endif; ?>
 <?php if($this->tree_type === self::REGULAR): ?>
         window.fetching_more = false;
         $(window).scroll(function() {

@@ -155,6 +155,7 @@
                     }, 400, this);
                     break;
                 case "note":
+                    window.top.open($(this).attr('href').split("#!")[1]);
                     break;
                 default:
             }
