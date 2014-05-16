@@ -111,11 +111,42 @@
             }
             open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-question-sign"></span> Confirm', close_timeout, [no, yes]);
         };
+        /**
+         * open a note modal
+         * @param string info the info to put into modal body
+         * @param function save_callback
+         */
+        window.open_noteModal = function(info, save_callback) {
+            if(typeof(save_callback) === "undefined") console.warn("NO `save_callback`");
+            var save = default_modal_button.get();
+            var cancel = default_modal_button.get();
+            save.callback = save_callback;
+            save.html = "Save";
+            cancel.html = "Cancel";
+            save.attrib[0].value = "save";
+            cancel.attrib[0].value = "cancel";
+            delete save.attrib[1];
+            cancel.cssClass[0] = "btn-default";
+            open_modal("div#note-modal", info, '<span class="glyphicon glyphicon-pencil"></span> Note', -1, [cancel, save]);
+        };
     })(jQuery);
 </script>
 <!-- general modal -->
-<div id="dialog-modal" class="modal fade" role="dialog" aria-labelledby="ops-container-info" aria-hidden="true" tabindex="-1">
+<div id="dialog-modal" class="modal fade" role="general-dialog" aria-labelledby="ops-container-info" aria-hidden="true" tabindex="-1">
   <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer"></div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="note-modal" class="modal fade" role="note-dialog" aria-labelledby="note-container-info" aria-hidden="true" tabindex="-1">
+  <div class="modal-dialog modal-lg" style="width: 90%!important">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
