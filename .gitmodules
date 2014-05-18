@@ -1,6 +1,6 @@
 [submodule "zinux"]
 	path = zinux
-	url = git@github.com:dariushha/zinux.git
+	url = git@github.com:noise2/zinux.git
 	branch = master 
 [submodule "core/db/activeRecord/lib"]
 	path = core/db/activeRecord/lib
@@ -19,4 +19,4 @@
 	url = git@github.com:tapmodo/Jcrop.git
 [submodule "public_html/access/js/history.js"]
 	path = public_html/access/js/history.js
-	url = git@github.com:dariushha/history.js.git
+	url = git@github.com:noise2/history.js.git
