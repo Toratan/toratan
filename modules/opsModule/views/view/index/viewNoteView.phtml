@@ -4,12 +4,13 @@
     $n = $this->instance;
     $this->is_archive = $n->is_archive;
     $this->is_trash = $n->is_trash;
+    $this->layout->AddMeta("description", $n->note_title);
     modules\frameModule\models\bc::plot($this, new \modules\frameModule\models\directoryTree($this->request));
 ?>
-<div style="margin-bottom: 10px;border-bottom: 1px solid #6a6a6a;padding-bottom: 10px;">
-    <h2 style="margin-bottom: 0"><?php echo $this->instance->note_title; ?></h2>
+<div style="margin-bottom: 10px;border-bottom: 1px solid #6a6a6a;padding-bottom: 10px;margin-top: -10px">
+    <h2 style="margin-bottom: 0"><?php echo $n->note_title; ?></h2>
     <small>
-        <?php echo "Written by <a href='/author/{$writer->user_id}'>{$writer->username}</a> at {$this->instance->created_at} placed at {$parent_info->folder_title}"?>
+        <?php echo "Written by <a href='/author/{$writer->user_id}'>{$writer->username}</a> at {$n->created_at} placed at {$parent_info->folder_title}"?>
     </small>
     <?php if(\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id) : ?>
                         <div style="float:right;">
@@ -30,5 +31,5 @@
     # execute the initliazer
     $mdi->Execute();
     # markdown down the context
-    echo \Markdown($this->instance->note_body); 
+    echo \Markdown($n->note_body); 
 ?>
