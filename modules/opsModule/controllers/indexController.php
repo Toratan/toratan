@@ -324,6 +324,7 @@ __OP_FUNC:
         $this->editAction();
     }
     /**
+    * An api-access point for notes related operations
     * @access via /ops/noteAPI/{new|edit|view}/(ID)(?hash_sum:{not for view})
     * @hash-sum {new|edit}.(ID).session_id().user_id
     * @by Zinux Generator <b.g.dariush@gmail.com>

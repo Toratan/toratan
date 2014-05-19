@@ -155,7 +155,7 @@
                 $(".ajax-loader-img-inf-scroll").addClass("hidden");
             });
         };
-<?php if($active_type === 'link'): ?>
+<?php if($active_type === 'link' || $active_type === "note"): ?>
     $(".item-row .item-name a").click(function($e){
         $e.preventDefault();
         window.top.open($(this).attr('href').split("#!")[1]);
