@@ -329,7 +329,24 @@ __OP_FUNC:
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function noteAPIAction() {
-        throw new \zinux\kernel\exceptions\notImplementedException;
+        $this->view->suppressView();
+        if($this->request->CountIndexedParam() < 2)
+            throw new \zinux\kernel\exceptions\invalidArgumentException;
+        switch(strtolower($this->request->GetIndexedParam(0))) {
+            case "new":
+            case "edit":
+                break;
+            case "view":
+                $this->request->params = array("note" => $this->request->GetIndexedParam(1));
+                $this->request->GET = array();
+                $this->request->POST = array();
+                $this->request->GenerateIndexedParams();
+                $this->layout->SetLayout("basic");
+                $this->view->suppressView(0);
+                $this->viewAction();
+                break;
+            default: throw new \zinux\kernel\exceptions\invalidOperationException();
+        }
     }
     /**
     * @access via /ops/edit/{folder|note|link}/(ID)?hash_sum
@@ -518,6 +535,9 @@ __OP_FUNC:
             throw new \zinux\kernel\exceptions\notFoundException("The `$item` you are looking for does not exists or you don't have the pemission to view it.");
         # pass the item's instance to view
         $this->view->instance = $item_value;
+		# fetch route path to current note
+        $folder = new \core\db\models\folder;
+        $this->view->route = $folder->fetchRouteToRoot($item_value->parent_id, $item_value->owner_id);
     }
     /**
     * The \modules\opsModule\controllers\indexController::deleteAction()

@@ -1,7 +1,7 @@
 <?php if(!isset($dt)) throw new \zinux\kernel\exceptions\invalidOperationException("Undefined `dt` instance."); ?>
 <div id="explorer-template">
 <?php
-    require "bc.phtml";
+    modules\frameModule\models\bc::plot($this, $dt);
     $type = $this->request->type;
     $parent_id = $this->pid;
     $is_owner = $this->is_owner;

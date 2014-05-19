@@ -4,6 +4,7 @@
     $n = $this->instance;
     $this->is_archive = $n->is_archive;
     $this->is_trash = $n->is_trash;
+    modules\frameModule\models\bc::plot($this, new \modules\frameModule\models\directoryTree($this->request));
 ?>
 <div style="margin-bottom: 10px;border-bottom: 1px solid #6a6a6a;padding-bottom: 10px;">
     <h2 style="margin-bottom: 0"><?php echo $this->instance->note_title; ?></h2>
