@@ -72,7 +72,7 @@ class directoryTree extends \stdClass
     public function getNavigationLink(\core\db\models\item $item) {
         switch($item->WhoAmI()) {
             case "note":
-                return "/noteAPI/view/{$item->note_id}";
+                return "/noteapi/view/{$item->note_id}";
             case "link":
                 return "#!/goto/link/{$item->link_id}/".\zinux\kernel\security\hash::Generate($item->link_id);
             case "folder":
