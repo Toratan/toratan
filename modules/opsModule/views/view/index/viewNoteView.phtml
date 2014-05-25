@@ -5,8 +5,14 @@
     $this->is_archive = $n->is_archive;
     $this->is_trash = $n->is_trash;
     $this->layout->AddMeta("description", $n->note_title);
-    modules\frameModule\models\bc::plot($this, new \modules\frameModule\models\directoryTree($this->request));
+    $this->route[0]->folder_title = "";
 ?>
+<ol class="breadcrumb">
+    <?php $count = 0; foreach($this->route as $folder) : $active = count($this->route) == ++$count; ?>
+        <?php if($count === 1): ?><li style='padding: 0;margin: -3px;'></li><?php else: ?>
+        <li <?php echo $active?"class='active'":""?>><?php echo !$active?"<a href='/#!/d/<?php echo $folder->folder_id ?>.folders'>":"", $folder->folder_title, !$active?"</a>":""?></li>
+    <?php endif;endforeach;unset($count);?>
+</ol>
 <div style="margin-bottom: 10px;border-bottom: 1px solid #6a6a6a;padding-bottom: 10px;margin-top: -10px">
     <h2 style="margin-bottom: 0"><?php echo $n->note_title; ?></h2>
     <small>

@@ -45,10 +45,10 @@ class indexController extends \zinux\kernel\controller\baseController
     {
         # make sure that we get our data from POST
         if(!$this->request->IsPOST()) throw new \zinux\kernel\exceptions\invalidOperationException;
-        \zinux\kernel\security\security::IsSecure($this->request->params, 
+        \zinux\kernel\security\security::IsSecure($this->request->params,
                 array("type", "ops", "items", "continue"),
                 array('is_array' => $this->request->params["items"]));
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, 
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params,
                 array($this->request->params["type"], $this->request->params["continue"], session_id()));
         if(!in_array($this->request->params["type"], array("folder", "note", "link")))
                 throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `{$this->request->params["type"]}`");
@@ -116,9 +116,9 @@ __OP_FUNC:
         }
         $result = "<span class='glyphicon glyphicon-ok'></span> Total<b># $counter <u>$type".($counter>1?"s":"")."</u></b> ha".($counter>1?"ve":"s")." been <b>$op_name</b>.";
         if($ops === "share") {
-            $result = 
+            $result =
                     ($shared ? sprintf("<span class='glyphicon glyphicon-ok'></span> <b>#$shared $type%s</b> ha%s been <b>shared</b>.<br />", ($shared>1?"s":""), ($shared>1?"ve":"s")) : "").
-                    ($unshared ? sprintf("<span class='glyphicon glyphicon-ok'></span> <b>#$unshared $type%s</b> ha%s been <b>un-shared</b>.<br />", ($unshared>1?"s":""), ($unshared>1?"ve":"s")) : "");                    
+                    ($unshared ? sprintf("<span class='glyphicon glyphicon-ok'></span> <b>#$unshared $type%s</b> ha%s been <b>un-shared</b>.<br />", ($unshared>1?"s":""), ($unshared>1?"ve":"s")) : "");
         }
         if($ajax) {
             echo $result;
@@ -164,6 +164,8 @@ __OP_FUNC:
             case "NOTE":
                 if(isset($this->request->params["version"]))
                     $note_version = $this->request->params["version"];
+                $folder = new \core\db\models\folder;
+                $this->view->route = $folder->fetchRouteToRoot($this->request->params["pid"], \core\db\models\user::GetInstance()->user_id);
             case "FOLDER":
             case "LINK":
                 # set the proper view
@@ -207,18 +209,6 @@ __OP_FUNC:
                     case "html":
                         break;
                     case "ace":
-                        $matches = array();
-                        $preg_target = "##(.*)##";
-                        $preg_pattern = "/^[\s|\n]*$preg_target/im";
-                        $preg_delimiter = "/";
-                        if(preg_match($preg_pattern, preg_quote($this->request->params['note_body'], $preg_delimiter), $matches))
-                        {
-                            $this->request->params["note_title"] = \zinux\kernel\utilities\string::inverse_preg_quote($matches[1]);
-                            $this->request->params["note_body"] =
-                                    preg_replace("/^([\s|\n]*##{$this->request->params["note_title"]}##)/im", "", $this->request->params["note_body"]);
-                        }
-                        else
-                            $this->request->params["note_title"] = "Untitled Note ......";
                         break;
                     default:
                         throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid text version!");
@@ -309,46 +299,19 @@ __OP_FUNC:
      */
     public function editAPIAction() {
         if($this->request->CountIndexedParam() < 2) throw new \zinux\kernel\exceptions\invalidOperationException;
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, 
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params,
                 array($this->request->GetIndexedParam(0), session_id(), \core\db\models\user::GetInstance()->user_id));
         $item = \modules\opsModule\models\itemInfo::decode($this->request->GetIndexedParam(1));
         $this->request->params[$this->request->GetIndexedParam(0)] = $item->i;
-        $this->request->params = array_merge($this->request->params, 
+        $this->request->params = array_merge($this->request->params,
                 \zinux\kernel\security\security::GetHashArray(
                         array(
-                                $this->request->GetIndexedParam(0), 
-                                $item->i, 
-                                session_id(), 
+                                $this->request->GetIndexedParam(0),
+                                $item->i,
+                                session_id(),
                                 \core\db\models\user::GetInstance()->user_id)));
         $this->request->GenerateIndexedParams();
         $this->editAction();
-    }
-    /**
-    * An api-access point for notes related operations
-    * @access via /ops/noteAPI/{new|edit|view}/(ID)(?hash_sum:{not for view})
-    * @hash-sum {new|edit}.(ID).session_id().user_id
-    * @by Zinux Generator <b.g.dariush@gmail.com>
-    */
-    public function noteAPIAction() {
-        $this->view->suppressView();
-        if($this->request->CountIndexedParam() < 2)
-            throw new \zinux\kernel\exceptions\invalidArgumentException;
-        $op = strtolower($this->request->GetIndexedParam(0));
-        switch($op) {
-            case "new":
-            case "edit":
-                $this->layout->frame_uri = "/$op/note/{$this->request->GetIndexedParam(1)}/?".\zinux\kernel\security\security::GetHashString(array("note", $this->request->GetIndexedParam(1),session_id (), \core\db\models\user::GetInstance ()->user_id));
-                break;
-            case "view":
-                $this->request->params = array("note" => $this->request->GetIndexedParam(1));
-                $this->request->GET = array();
-                $this->request->POST = array();
-                $this->request->GenerateIndexedParams();
-                $this->view->suppressView(0);
-                $this->viewAction();
-                break;
-            default: throw new \zinux\kernel\exceptions\invalidOperationException();
-        }
     }
     /**
     * @access via /ops/edit/{folder|note|link}/(ID)?hash_sum
@@ -592,7 +555,7 @@ __OP_FUNC:
             # invoke a message pipe line
             $mp = new \core\utiles\messagePipe;
             # indicate the success
-            $mp->write("One $item has been <b>".($is_trash?"deleted":"restored")."</b> successfully....");                                                                                                                                                                          
+            $mp->write("One $item has been <b>".($is_trash?"deleted":"restored")."</b> successfully....");
             # redirect if any redirection provided
             $this->Redirect();
             # otherwise relocate properly
