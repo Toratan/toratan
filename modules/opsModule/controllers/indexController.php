@@ -401,6 +401,7 @@ __OP_FUNC:
             $this->view->values["{$item}_title"] = $item_value->{"{$item}_title"};
             $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
             $this->view->pid = $item_value->parent_id;
+            $this->layout->AddTitle("Editing - {$this->view->values["{$item}_title"]}");
             return;
         }
          switch($item)

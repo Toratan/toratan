@@ -17,9 +17,6 @@
 <script>
         $(document).ready(function()
         {
-            //$(window).bind('beforeunload', function(e){
-               // return "Preventing data loss!";
-            //});
             window.editor = ace.edit("editor");
             window.editor.setTheme("ace/theme/twilight");
             window.editor.getSession().setMode("ace/mode/markdown");
@@ -29,18 +26,14 @@
                 bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
                 exec: save
             });
-            window.editor.commands.addCommand({
-                name: 'alert',
-                bindKey: {win: 'Ctrl-A',  mac: 'Command-A'},
-                exec: function(editor)
-                {
-                    alert(editor.getValue());
-                }
-            });
             window.editor.focus();
             window.editor.navigateFileEnd();
-            window.editor.resize();
-            $("div#editor").css("height", ($(window).height() - 160) + "px").show();
+            window.editor.getSession().setUseWrapMode(true);
+            $(window).resize(function() {
+                $("div#editor").css("height", ($(window).height() - 160) + "px").show();
+                window.editor.resize();
+            });
+            $(window).resize();
         });
         function save(editor) 
         {
@@ -74,9 +67,10 @@
                       <span class="glyphicon glyphicon-cog"></span>  <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu pull-right" role="menu">
-                    <li title="Change to classic editor"><a href="#"><span class="glyphicon glyphicon-credit-card"></span> Classic editor</a></li>
+                      <li title="Change to classic editor"><a href="#" onclick="alert('switch to ckeditor');"><span class="glyphicon glyphicon-credit-card"></span> Classic editor</a></li>
+                    <li><a href='#' onclick="alert('open a modal for configuring the editor\'s options(like font-size, warp-things, show-line#, etc) and AJX it to users\'s profile\'s setting and restore it on loading ace editor.');"><span class="glyphicon glyphicon-th-list"></span> Editor's options</a></li>
                     <li class="divider"></li>
-                    <li><a href="#"><span class="glyphicon glyphicon-trash"></span> Discard</a></li>
+                    <li><a href="/@/<?php echo $this->pid ?>" onclick="alert('ops redirection problem of default layout\'s JS routing...');return 1;"><span class="glyphicon glyphicon-trash"></span> Discard</a></li>
                   </ul>
                 </div>
             </div>
