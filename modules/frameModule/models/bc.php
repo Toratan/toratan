@@ -42,12 +42,14 @@ class bc {
             $type = $view->request->action->name;
             if($dt->tree_type==\modules\frameModule\models\directoryTree::REGULAR) $type = "root";
         ?>
-                window.top.active_nav('<?php echo  $type ?>');
-                $("ol#bc-template.breadcrumb")
-                        .prepend("<li>"+$(window.top.getActiveNavHtml()).wrapInner("<span hash-link='"+window.top.getActiveTypeLink()+"'></span>").wrap("<p>").parent().html()+"</li>")
-                        .find("li:last")
-                            .addClass("active")
-                            .html($("#explorer-template ol.breadcrumb li:last a").html());
+                if(typeof(window.top.active_nav) !== "undefined")
+                    window.top.active_nav('<?php echo  $type ?>');
+                if(typeof(window.top.getActiveNavHtml) !== "undefined")
+                    $("ol#bc-template.breadcrumb")
+                            .prepend("<li>"+$(window.top.getActiveNavHtml()).wrapInner("<span hash-link='"+window.top.getActiveTypeLink()+"'></span>").wrap("<p>").parent().html()+"</li>")
+                            .find("li:last")
+                                .addClass("active")
+                                .html($("#explorer-template ol.breadcrumb li:last a").html());
             })(jQuery);
         </script>
 <?php
