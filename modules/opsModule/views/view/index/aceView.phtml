@@ -6,13 +6,13 @@
         $title = $this->values['note_title'];
         $body = $this->values['note_body'];
     }
-    $value= "##$title##\r\n$body";
+    $value= "$body";
     $this->layout->setlayout("ace");
 ?>
 <style type="text/css" media="screen">
-    #editor-container, 
-    #editor { position: fixed; top: 10px; right: 0; bottom: 10px; left: 10px; width: 50%;height: 92%; margin-top: 55px; padding: 10px; border: 1px solid #000}
-    #editor-container {top:0; left:0; width: 55%; height: 100%}
+    #editor-container {top:0; left:0; width: 100%;}
+    #editor-parent {width: 100%; margin-top: 10px; }
+    #editor { margin-top: 10px;}
 </style>
 <script>
         $(document).ready(function()
@@ -40,7 +40,7 @@
             window.editor.focus();
             window.editor.navigateFileEnd();
             window.editor.resize();
-            $("div#editor").show();
+            $("div#editor").css("height", ($(window).height() - 160) + "px").show();
         });
         function save(editor) 
         {
@@ -53,7 +53,37 @@
 </script>
 <!-- ace aditor placeholder -->
 <div id="editor-container" class="container-fluid">
-    <div id="editor" class="container-fluid" style="padding-top:0.5%;display: none;"><?php echo htmlspecialchars($value) ?></div>
+    <div id="editor-parent">
+        <ol class="breadcrumb">
+            <li><a href="#">Root</a></li>
+            <li><a href="#">Root 2</a></li>
+            <li><a href="#">Root 3</a></li>
+            <li><a href="#">Root 4</a></li>
+            <li class="active">Root 5</li>
+        </ol>
+        <div class="input-group pull-left" style="margin-top: -10px;">
+            <input type="text" name="title"  id="editor-title" class="block input form-control" placeholder="Your note's title" value="<?php echo str_replace('"', "&quot;", isset($this->values['note_title'])?$this->values['note_title']:"") ?>" />
+            <span class="input-group-btn">
+                <button onclick="save(window.editor);" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;">
+                    <span class="glyphicon glyphicon-hdd"></span> Save
+                </button>
+            </span>
+            <div class="input-group inline pull-right" style="">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                      <span class="glyphicon glyphicon-cog"></span>  <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu pull-right" role="menu">
+                    <li title="Change to classic editor"><a href="#"><span class="glyphicon glyphicon-credit-card"></span> Classic editor</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-trash"></span> Discard</a></li>
+                  </ul>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div id="editor" class="" style="display: none;"><?php echo htmlspecialchars($value) ?></div>
+    </div>
 </div>
 <script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note' style="display: none;">

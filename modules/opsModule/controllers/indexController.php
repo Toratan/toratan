@@ -333,16 +333,18 @@ __OP_FUNC:
         $this->view->suppressView();
         if($this->request->CountIndexedParam() < 2)
             throw new \zinux\kernel\exceptions\invalidArgumentException;
-        switch(strtolower($this->request->GetIndexedParam(0))) {
+        $op = strtolower($this->request->GetIndexedParam(0));
+        switch($op) {
             case "new":
             case "edit":
+                $this->layout->frame_uri = "/$op/note/{$this->request->GetIndexedParam(1)}/?".\zinux\kernel\security\security::GetHashString(array("note", $this->request->GetIndexedParam(1),session_id (), \core\db\models\user::GetInstance ()->user_id));
                 break;
             case "view":
                 $this->request->params = array("note" => $this->request->GetIndexedParam(1));
                 $this->request->GET = array();
                 $this->request->POST = array();
                 $this->request->GenerateIndexedParams();
-                $this->layout->SetLayout("basic");
+                $this->layout->SetLayout("noteapi");
                 $this->view->suppressView(0);
                 $this->viewAction();
                 break;
@@ -413,18 +415,6 @@ __OP_FUNC:
                     case "html":
                         break;
                     case "ace":
-                        $matches = array();
-                        $preg_target = "##(.*)##";
-                        $preg_pattern = "/$preg_target/im";
-                        $preg_delimiter = "/";
-                        if(preg_match($preg_pattern, preg_quote($this->request->params['note_body'], $preg_delimiter), $matches))
-                        {
-                            $this->request->params["note_title"] = \zinux\kernel\utilities\string::inverse_preg_quote($matches[1]);
-                            $this->request->params["note_body"] =
-                                    preg_replace("/^([\s|\n]*##{$this->request->params["note_title"]}##)/im", "", $this->request->params["note_body"]);
-                        }
-                        else
-                            $this->request->params["note_title"] = "Untitled Note ......";
                         break;
                     default:
                         throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid text version!");
