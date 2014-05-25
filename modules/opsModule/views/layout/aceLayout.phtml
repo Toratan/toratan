@@ -3,9 +3,6 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <noscript>
-            <meta http-equiv="Refresh" content="10; URL=<?php echo $this->request->getURI() ?>?&ui=html">
-        </noscript>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- twitter bootstrap -->
         <link rel="stylesheet" href="/access/css/bootstrap.min.css">
@@ -74,7 +71,7 @@
         </div> <!-- /container -->
         <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
         <noscript style="z-index: 2000000; position: absolute; width:  100%; top:0;">
-            <?php \core\ui\html\alert::Cout("Your browser javascript is not enabled, the browser will redirect to html version!!", \core\ui\html\alert::ALERT_DANGER); ?>
+            <?php \core\ui\html\alert::Cout("!!Your browser's javascript IS NOT enabled!!", \core\ui\html\alert::ALERT_DANGER); ?>
         </noscript>
   </body>
 </html>

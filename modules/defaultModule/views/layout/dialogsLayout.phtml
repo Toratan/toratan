@@ -102,13 +102,8 @@
             no.html = "No";
             yes.attrib[0].value = "yes";
             no.attrib[0].value = "no";
-            if(is_yes_primary) {
-                delete yes.attrib[1];
-                no.cssClass[0] = "btn-default";
-            } else {
-                delete no.attrib[1];
-                yes.cssClass[0] = "btn-default";
-            }
+            if(is_yes_primary) no.cssClass[0] = "btn-default";
+            else yes.cssClass[0] = "btn-default";
             open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-question-sign"></span> Confirm', close_timeout, [no, yes]);
         };
         /**

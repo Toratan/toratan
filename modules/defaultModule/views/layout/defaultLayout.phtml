@@ -78,6 +78,14 @@
             window.update_nav = function(auto_redirect) {
                 if(typeof(auto_redirect) === "undefined") auto_redirect = false;
                 try {
+                    // compatiblity fail-safe
+                    if(typeof(window.location.pathname) === "undefined") window.location.pathname = "/";
+                    // if we are redirecting to a URL?
+                    if(String(window.location.pathname).match(/^\/@(.*)/ig)) {
+                        // relocate to target URL
+                        window.location.replace("/#!" + String(window.location.pathname).replace(/^\/@(\/)?/ig, "/", window.location.pathname));
+                        return;
+                    }
                     var uri = 'root';
                     var defURI = "/d/0.folders";
                     if(window.location.hash.length === 0) window.location.hash ="#!"+defURI;

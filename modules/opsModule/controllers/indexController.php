@@ -344,7 +344,6 @@ __OP_FUNC:
                 $this->request->GET = array();
                 $this->request->POST = array();
                 $this->request->GenerateIndexedParams();
-                $this->layout->SetLayout("noteapi");
                 $this->view->suppressView(0);
                 $this->viewAction();
                 break;

@@ -15,8 +15,7 @@
     #editor { margin-top: 10px;}
 </style>
 <script>
-        $(document).ready(function()
-        {
+        $(document).ready(function() {
             window.editor = ace.edit("editor");
             window.editor.setTheme("ace/theme/twilight");
             window.editor.getSession().setMode("ace/mode/markdown");
@@ -34,15 +33,35 @@
                 window.editor.resize();
             });
             $(window).resize();
+            $("a#note-discard").click(function(e) {
+                e.preventDefault();
+                var href = $(this).attr('href');
+                var yes_func =function() {
+                    $(window).unbind("beforeunload");
+                    window.location = "/" + href;
+                };
+                if(!anything_changed()) {
+                    yes_func();
+                    return;
+                }
+                window.open_yesnoModal("Are you sure to <b>discard</b>?", yes_func, undefined, false);
+            });
+            $(window).bind("beforeunload",function() {
+                if(anything_changed())
+                    return "Changes are not saved!";
+            });
         });
-        function save(editor) 
-        {
+        function anything_changed() {
+            if("<?php echo  str_replace('"', "&quot;", isset($this->values['note_title'])?$this->values['note_title']:"") ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
+            return window.editor.session.getUndoManager().isClean() !== true;
+        };
+        function save(editor) {
             $(window).unbind('beforeunload');
             $("form[name='note'] input[name='note_title']").val($("#editor-title").val());
             $("form[name='note'] textarea[name='note_body']").html(editor.getValue());
             $("form[name='note'] input[name='version']").val("ace");
             $("form[name='note']").submit();
-        }        
+        };
 </script>
 <!-- ace aditor placeholder -->
 <div id="editor-container" class="container-fluid">
@@ -70,7 +89,7 @@
                       <li title="Change to classic editor"><a href="#" onclick="alert('switch to ckeditor');"><span class="glyphicon glyphicon-credit-card"></span> Classic editor</a></li>
                     <li><a href='#' onclick="alert('open a modal for configuring the editor\'s options(like font-size, warp-things, show-line#, etc) and AJX it to users\'s profile\'s setting and restore it on loading ace editor.');"><span class="glyphicon glyphicon-th-list"></span> Editor's options</a></li>
                     <li class="divider"></li>
-                    <li><a href="/@/<?php echo $this->pid ?>" onclick="alert('ops redirection problem of default layout\'s JS routing...');return 1;"><span class="glyphicon glyphicon-trash"></span> Discard</a></li>
+                    <li><a href="#!/d/<?php echo $this->pid ?>.notes" id='note-discard'><span class="glyphicon glyphicon-trash"></span> Discard</a></li>
                   </ul>
                 </div>
             </div>
@@ -86,3 +105,4 @@
     <textarea rows="10" cols="80" name="note_body" ><?php echo isset($this->values['note_body'])?$this->values['note_body']:"" ?></textarea>
     <input type="submit" value="Create" />
 </form>
+<?php require MODULE_ROOT . '/defaultModule/views/layout/dialogsLayout.phtml'; ?>
