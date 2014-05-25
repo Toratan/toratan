@@ -67,11 +67,9 @@
 <div id="editor-container" class="container-fluid">
     <div id="editor-parent">
         <ol class="breadcrumb">
-            <li><a href="#">Root</a></li>
-            <li><a href="#">Root 2</a></li>
-            <li><a href="#">Root 3</a></li>
-            <li><a href="#">Root 4</a></li>
-            <li class="active">Root 5</li>
+            <?php $count = 0; foreach($this->route as $folder) : $active = count($this->route) == ++$count; ?>
+                <li <?php echo $active?"class='active'":""?>><?php echo !$active?"<a href='/#!/d/<?php echo $folder->folder_id ?>.folders'>":"", $folder->folder_title, !$active?"</a>":""?></li>
+            <?php endforeach;unset($count);?>
         </ol>
         <div class="input-group pull-left" style="margin-top: -10px;">
             <input type="text" name="title"  id="editor-title" class="block input form-control" placeholder="Your note's title" value="<?php echo str_replace('"', "&quot;", isset($this->values['note_title'])?$this->values['note_title']:"") ?>" />
