@@ -11,7 +11,7 @@
 <script src="/access/rte/ckeditor/adapters/jquery.js"></script>
 <script>
         $( document ).ready( function() {
-            window.editor = CKEDITOR.replace('note_body');
+            window.editor = window.CKEDITOR.replace('note_body');
             window.editor.config.height = $(window).height() - 300;
             jQuery.fn.cke_resize = function() {
                 return this.each(function() {
@@ -22,7 +22,7 @@
                     $(this).next("div.cke").find(".cke_contents").css("height", height);
                });
             };
-            CKEDITOR.on('instanceReady', function(){$("textarea.ckeditor").cke_resize(); $("textarea.ckeditor").show()});
+            window.CKEDITOR.on('instanceReady', function(){$("textarea.ckeditor").cke_resize();});
             $(window).resize(function() {$("textarea.ckeditor").cke_resize();});
             $(window).resize();
             $(window).bind('beforeunload', function(e){
@@ -50,7 +50,7 @@
                     yes_func();
                     return;
                 }
-                window.open_yesnoModal("Are you sure to <b>discard</b>?", yes_func, undefined, false);
+                window.open_yesnoModal("Changes <b>are not</b> saved, are you sure to <b>discard</b>?", yes_func, undefined, false);
             });
         } );
         function anything_changed() {
