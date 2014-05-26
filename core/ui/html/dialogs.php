@@ -96,6 +96,20 @@ class dialogs
             open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-remove-sign"></span> Oops!', close_timeout);
         };
         /**
+         * open a wait modal
+         * @param integer close_timeout the timeout for closing modal
+         */
+        window.open_waitModal = function(close_timeout) {
+            if(typeof(close_timeout) === 'undefined') close_timeout = -1;
+            var modal_tag = "div#wait-modal";
+            $(modal_tag).modal('show');
+            if(close_timeout > 0) {
+                setTimeout(function(modal_tag){
+                    $(modal_tag).modal('hide');
+                }, close_timeout, modal_tag);
+            }
+        };
+        /**
          * open a YES/NO modal
          * @param string info the info to put into modal body
          * @param function yes_callback
@@ -136,25 +150,6 @@ class dialogs
             cancel.cssClass[0] = "btn-default";
             open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-tasks"></span> '+title, close_timeout, [cancel, save]);
         };
-        /**
-         * open a note modal
-         * @param string info the info to put into modal body
-         * @param function save_callback
-         */
-        window.open_noteModal = function(info, save_callback, cancel_callback) {
-            if(typeof(save_callback) === "undefined") console.warn("NO `save_callback`");
-            var save = default_modal_button.get();
-            var cancel = default_modal_button.get();
-            save.callback = save_callback;
-            cancel.callback = cancel_callback;
-            save.html = "Save";
-            cancel.html = "Cancel";
-            save.attrib[0].value = "save";
-            cancel.attrib[0].value = "cancel";
-            delete save.attrib[1];
-            cancel.cssClass[0] = "btn-default";
-            open_modal("div#note-modal", info, '<span class="glyphicon glyphicon-pencil"></span> Note', -1, [cancel, save]);
-        };
     })(jQuery);
 </script>
 <!-- general modal -->
@@ -171,15 +166,10 @@ class dialogs
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div id="note-modal" class="modal fade" role="note-dialog" aria-labelledby="note-container-info" aria-hidden="true" tabindex="-1">
-  <div class="modal-dialog modal-lg" style="width: 90%!important;height: 90%!important;">
+<div id="wait-modal" class="modal fade" role="wait-dialog" aria-labelledby="wait-container-info" aria-hidden="true" tabindex="-1">
+  <div class="modal-dialog modal-sm">
     <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title"></h4>
-      </div>
-      <div class="modal-body"></div>
-      <div class="modal-footer"></div>
+      <div class="modal-body"><div class='text-center'><img src='/access/img/ajax-loader.gif' /></div></div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
