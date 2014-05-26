@@ -11,81 +11,103 @@
 <script src="/access/rte/ckeditor/adapters/jquery.js"></script>
 <script>
         $( document ).ready( function() {
+            window.editor = CKEDITOR.replace('note_body');
+            window.editor.config.height = $(window).height() - 300;
+            jQuery.fn.cke_resize = function() {
+                return this.each(function() {
+                    var threshold = 200;
+                    var height = $(window).height() - 300;
+                    if(height < threshold)
+                        height = threshold;
+                    $(this).next("div.cke").find(".cke_contents").css("height", height);
+               });
+            };
+            CKEDITOR.on('instanceReady', function(){$("textarea.ckeditor").cke_resize(); $("textarea.ckeditor").show()});
+            $(window).resize(function() {$("textarea.ckeditor").cke_resize();});
+            $(window).resize();
             $(window).bind('beforeunload', function(e){
-                return "Preventing data loss!";
-            });
-            $editor = $( 'textarea#editor-platform' ).ckeditor();
-            $('ul.nav li a#setting-flip-flop').click(function($e){
-                if($('div#editor').css("display") === "none")
-                    $('ul.nav li a#setting-flip-flop span#setting-flip-flop-name').html("Settings");
-                else
-                    $('ul.nav li a#setting-flip-flop span#setting-flip-flop-name').html("Editor");
-                $('div#editor').slideToggle();
-                $('div#setting-bar').slideToggle();
-                $e.preventDefault();
+                if(anything_changed())
+                    return "Changes are not saved!";
             });
             $("a#switch-editor").click(function(e) {
-                $(window).unbind('beforeunload');
                 e.preventDefault();
                 var href = String($(this).attr('href')).substr(1); // remove first `#` char. 
                 if(false && !anything_changed()) { window.location = href; return;}
                 $("form[name='note']")
                         .append('<input type="hidden" name="submit-type" value="change-editor" />')
                         .append('<input type="hidden" name="pid" value="<?php echo $this->pid ?>" />')
-                        .attr('action', href)
-                        .submit();
+                        .attr('action', href);
+                save();
+            });
+            $("a.note-discard").click(function(e) {
+                e.preventDefault();
+                var href = $(this).attr('href');
+                var yes_func =function() {
+                    $(window).unbind("beforeunload");
+                    window.location = "/" + href;
+                };
+                if(!anything_changed()) {
+                    yes_func();
+                    return;
+                }
+                window.open_yesnoModal("Are you sure to <b>discard</b>?", yes_func, undefined, false);
             });
         } );
+        function anything_changed() {
+            if("<?php echo  str_replace('"', "&quot;", $title) ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
+            return window.editor.checkDirty();
+        }
+        function save() {
+            $(window).unbind('beforeunload');
+            $("form[name='note']").submit();
+        }
 </script>
-
-<noscript>
-    <?php \core\ui\html\alert::Cout("Your browser javascript is not enabled, the <b>html version</b> has been loaded!!", \core\ui\html\alert::ALERT_DANGER); ?>
-</noscript>
-<!-- Sidebar placeholder -->
-<ul class="nav nav-pills pull-right inline">
-    <li>
-        <a href="#" id="setting-flip-flop"><span id="setting-flip-flop-name">Settings</span> <span class="caret"></span></a>
-    </li>
-</ul>
-<div class="clearfix visible-xs"></div>
-<div id="setting-bar" class="" style="width: 80%;padding: 0%;display: none/**/">
-    <table class="table-bordered table-responsive" style="margin:1%;margin-left:1.7%">
-        <tbody>
-            <tr>
-                <td>
-                    <ul class="nav nav-pills">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <span class="glyphicon glyphicon-list-alt"></span>
-                                <span class="badge"> 2</span> Text Editor [<span id="rte-type">Classic</span>] <b class="caret"></b></a>
-                                <ul class="dropdown-menu pull-left">
-                                    <li><a href="#/change/editor/to/ace?continue=<?php echo urlencode($this->request->getURI()); ?>" id="switch-editor"><span class="glyphicon glyphicon-credit-card"></span> Ace editor</a></li>
-                                    <li class='active'><a href="#">Classic</a></li>
-                                </ul>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<div class="clearfix visible-xs"></div>
-<div id="editor" class="" style="margin:0">
+<style type="text/css">
+    #editor-container {margin-top: 10px;margin-bottom: 10px;}
+</style>
+<!-- ckeditor placeholder -->
+<div id="editor-container" class="container-fluid">
     <form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note'>
         <input type="hidden" name="version" value="html" />
-        <input type="text" style="width: 80%;float: left" name="note_title" maxlength="250" class="form-control" value="<?php echo $title ?>" required="required"/><br />
-        <div class="clearfix" style="margin: 1%"></div>
-        <textarea class="ckeditor form-control" id="editor-platform" rows="10" tabindex="1" name="note_body" style="width: 100%"><?php
-            # invoke the markdown initiliazer
-            $mdi = new \core\ui\markdown\markdownInitiliazer;
-            # execute the initliazer
-            $mdi->Execute();
-            # markdown the context
-            echo \Markdown($body);
-        ?></textarea>
-        <div class="col-lg-1 pull-right" style="margin:0;padding:0;margin-top: 1%;width: 8%">
-            <small class="pull-right" style="margin: 0"><a class="btn btn-warning btn-small" href="/d/<?php echo $this->pid ?>.notes">Cancel</a></small>
-            <input type="submit" value="Done" class="btn btn-primary btn-small apull-left" onclick="$(window).unbind('beforeunload');"/>
+        <div id="editor-parent">
+            <ol class="breadcrumb">
+                <?php $count = 0; foreach($this->route as $folder) : $active = count($this->route) == ++$count; ?>
+                    <li <?php echo $active?"class='active'":""?>><?php echo !$active?"<a href='/#!/d/{$folder->folder_id}.folders'>":"", $folder->folder_title, !$active?"</a>":""?></li>
+                <?php endforeach;unset($count);?>
+            </ol>
+            <div class="input-group pull-left" style="margin-top: -10px;">
+                <input type="text" name="note_title"  id="editor-title" class="block input form-control" placeholder="Your note's title" value="<?php echo str_replace('"', "&quot;", isset($this->values['note_title'])?$this->values['note_title']:"") ?>" autofocus="" maxlength="300"/>
+                <span class="input-group-btn">
+                    <button onclick="save();" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;" tabindex="-1" title="Save">
+                        <span class="glyphicon glyphicon-hdd"></span>
+                    </button>
+                    <a href="#!/d/<?php echo $this->pid ?>.notes" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;"><span class="glyphicon glyphicon-trash"></span></a>
+                </span>
+                <div class="pull-right">
+                    <div class="input-group inline" style="">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1">
+                              <span class="glyphicon glyphicon-cog"></span>  <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <li><a href='#' onclick="alert('open a modal for configuring the editor\'s options(like font-size, warp-things, show-line#, etc) and AJX it to users\'s profile\'s setting and restore it on loading ace editor.');"><span class="glyphicon glyphicon-th-list"></span> Editor's options</a></li>
+                                <li class="divider"></li>
+                                <li title="Change to Ace editor"><a href="#/change/editor/to/ace?continue=<?php echo urlencode($this->request->getURI()); ?>" id="switch-editor"><span class="glyphicon glyphicon-credit-card"></span> Ace editor</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix" style="margin: 10px;"></div>
+            <textarea class="ckeditor form-control hidden" id="editor-platform" tabindex="1" name="note_body" style="width: 100%;"><?php
+                # invoke the markdown initiliazer
+                $mdi = new \core\ui\markdown\markdownInitiliazer;
+                # execute the initliazer
+                $mdi->Execute();
+                # markdown the context
+                echo \Markdown($body);
+            ?></textarea>
         </div>
     </form>
 </div>
+<?php new \core\ui\html\dialogs() ?>
