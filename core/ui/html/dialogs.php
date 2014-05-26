@@ -97,11 +97,17 @@ class dialogs
         };
         /**
          * open a wait modal
+         * @param integer close_modal instruct to close any wait modal
          * @param integer close_timeout the timeout for closing modal
          */
-        window.open_waitModal = function(close_timeout) {
+        window.open_waitModal = function(close_modal, close_timeout) {
             if(typeof(close_timeout) === 'undefined') close_timeout = -1;
+            if(typeof(close_modal) === 'undefined') close_modal = false;
             var modal_tag = "div#wait-modal";
+            if(close_modal) {
+                $(modal_tag).modal('hide'); 
+                return;
+            }
             $(modal_tag).modal('show');
             if(close_timeout > 0) {
                 setTimeout(function(modal_tag){
