@@ -359,7 +359,25 @@ __OP_FUNC:
         $item_value = NULL;
         if($this->request->IsGET())
         {
+            $item_value = new \stdClass;
+            if(strtolower($item) === "note") {
+                $sc = new \zinux\kernel\caching\sessionCache("editor-buffer");
+                if($sc->isCached("buffer")) {
+                    $b = $sc->fetch("buffer");
+                    $sc->delete("buffer");
+                    if(!is_array($b)) goto __FETCH_FROM_DB;
+                    if(!\zinux\kernel\security\security::IsSecure($b, array("note_title", "note_body", "pid", "owner_id"), array(), array(), 0))
+                        goto __FETCH_FROM_DB;
+                    $item_value->note_title = $b["note_title"];
+                    $item_value->note_body = $b["note_body"];
+                    $item_value->parent_id = $b["pid"];
+                    $item_value->owner_id = $b["owner_id"];
+                    goto __PASS_ITEM_VALUE;
+                }
+            }
+__FETCH_FROM_DB:
             $item_value = $item_ins->fetch($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id);
+__PASS_ITEM_VALUE:
             # resore back the values to views
             $this->view->values["{$item}_title"] = $item_value->{"{$item}_title"};
             $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
@@ -745,5 +763,36 @@ __OP_FUNC:
         $link = new \core\db\models\link;
         $this->view->link = $link->fetch($this->request->params["link"]);
         $this->layout->SuppressLayout();
+    }
+    /**
+    * @access via /ops/change/editor/to/{ace|classic}?continue=(URI)
+    * The \modules\opsModule\controllers\indexController::change_editorAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function change_editorAction()
+    {
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("to", "continue"));
+        $this->request->params["continue"] = preg_replace("#&ui=\w+#i", "", $this->request->params["continue"]);
+        $this->request->params["continue"] .= "&ui={$this->request->params["to"]}";
+        if($this->request->IsGET()) {
+            $this->Redirect();
+            exit;
+        }
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("submit-type", "note_title", "note_body", "pid"));
+        switch(strtolower($this->request->params["submit-type"]))
+        {
+                case "change-editor":
+                    break;
+                default: throw new \zinux\kernel\exceptions\invalidOperationException;
+        }
+        $sc = new \zinux\kernel\caching\sessionCache("editor-buffer");
+        $sc->deleteAll();
+        $sc->save("buffer", array(
+                "note_title" => $this->request->params["note_title"], 
+                "note_body" => $this->request->params["note_body"], 
+                "owner_id" => \core\db\models\user::GetInstance()->user_id,
+                "pid" => $this->request->params["pid"]));
+        $this->Redirect();
+        exit;
     }
 }

@@ -51,9 +51,12 @@
             });
             $("a#switch-editor").click(function(e) {
                 e.preventDefault();
-                var href = String($(this).attr('href')).substr(1); // remove first `#` char. 
-                if(!anything_changed()) { window.location = href; return;}
-                console.log("need to buffer inputs");
+                var href = String($(this).attr('href')).substr(1); // remove first `#` char.
+                $("form[name='note']")
+                        .append('<input type="hidden" name="submit-type" value="change-editor" />')
+                        .append('<input type="hidden" name="pid" value="<?php echo $this->pid ?>" />')
+                        .attr('action', href);
+                save(window.editor);
             });
         });
         function anything_changed() {
@@ -73,7 +76,7 @@
     <div id="editor-parent">
         <ol class="breadcrumb">
             <?php $count = 0; foreach($this->route as $folder) : $active = count($this->route) == ++$count; ?>
-                <li <?php echo $active?"class='active'":""?>><?php echo !$active?"<a href='/#!/d/<?php echo $folder->folder_id ?>.folders'>":"", $folder->folder_title, !$active?"</a>":""?></li>
+                <li <?php echo $active?"class='active'":""?>><?php echo !$active?"<a href='/#!/d/{$folder->folder_id}.folders'>":"", $folder->folder_title, !$active?"</a>":""?></li>
             <?php endforeach;unset($count);?>
         </ol>
         <div class="input-group pull-left" style="margin-top: -10px;">
@@ -93,7 +96,7 @@
                         <ul class="dropdown-menu pull-right" role="menu">
                             <li><a href='#' onclick="alert('open a modal for configuring the editor\'s options(like font-size, warp-things, show-line#, etc) and AJX it to users\'s profile\'s setting and restore it on loading ace editor.');"><span class="glyphicon glyphicon-th-list"></span> Editor's options</a></li>
                             <li class="divider"></li>
-                            <li title="Change to classic editor"><a href="#<?php echo preg_replace("#&ui=\w+#i", "", $this->request->getURI()); ?>&ui=classic" id="switch-editor"><span class="glyphicon glyphicon-credit-card"></span> Classic editor</a></li>
+                            <li title="Change to classic editor"><a href="#/change/editor/to/classic?continue=<?php echo urlencode($this->request->getURI()); ?>" id="switch-editor"><span class="glyphicon glyphicon-credit-card"></span> Classic editor</a></li>
                         </ul>
                     </div>
                 </div>

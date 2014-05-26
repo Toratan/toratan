@@ -24,6 +24,17 @@
                 $('div#setting-bar').slideToggle();
                 $e.preventDefault();
             });
+            $("a#switch-editor").click(function(e) {
+                $(window).unbind('beforeunload');
+                e.preventDefault();
+                var href = String($(this).attr('href')).substr(1); // remove first `#` char. 
+                if(false && !anything_changed()) { window.location = href; return;}
+                $("form[name='note']")
+                        .append('<input type="hidden" name="submit-type" value="change-editor" />')
+                        .append('<input type="hidden" name="pid" value="<?php echo $this->pid ?>" />')
+                        .attr('action', href)
+                        .submit();
+            });
         } );
 </script>
 
@@ -48,7 +59,7 @@
                                 <span class="glyphicon glyphicon-list-alt"></span>
                                 <span class="badge"> 2</span> Text Editor [<span id="rte-type">Classic</span>] <b class="caret"></b></a>
                                 <ul class="dropdown-menu pull-left">
-                                    <li><a href="<?php echo $this->request->getURI(); ?>&ui=ace" onclick="$(window).unbind('beforeunload');">Ace</a></li>
+                                    <li><a href="#/change/editor/to/ace?continue=<?php echo urlencode($this->request->getURI()); ?>" id="switch-editor"><span class="glyphicon glyphicon-credit-card"></span> Ace editor</a></li>
                                     <li class='active'><a href="#">Classic</a></li>
                                 </ul>
                         </li>
