@@ -77,10 +77,12 @@ class editorController extends \zinux\kernel\controller\baseController
     * The \modules\opsModule\controllers\editorController::optionsAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function optionsAction()
-    {
+    public function optionsAction() {
         $this->layout->SuppressLayout();
-        $this->view->themes = glob("./access/rte/ace/src-min-noconflict/theme-*");
-        $this->view->modes = glob("./access/rte/ace/src-min-noconflict/mode-*");
+        if($this->request->IsGET()) {
+            $this->view->themes = glob("./access/rte/ace/src-min-noconflict/theme-*");
+        } else {
+            \zinux\kernel\utilities\debug::_var($this->request->params, 1);
+        }
     }
 }
