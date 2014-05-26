@@ -118,6 +118,25 @@ class dialogs
             open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-question-sign"></span> Confirm', close_timeout, [no, yes]);
         };
         /**
+         * open a SAVE/CLOSE modal
+         * @param string info the info to put into modal body
+         * @param function save_callback
+         * @param string title The dialog's title(default: Dialog)
+         * @param integer close_timeout the timeout for closing modal
+         */
+        window.open_savecloseModal = function(info, save_callback, title, close_timeout) {
+            if(typeof(title) === "undefined") title = "Dialog";
+            var save = default_modal_button.get();
+            var cancel = default_modal_button.get();
+            save.callback = save_callback;
+            save.html = "Save";
+            cancel.html = "Close";
+            save.attrib[0].value = "save";
+            cancel.attrib[0].value = "close";
+            cancel.cssClass[0] = "btn-default";
+            open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-tasks"></span> '+title, close_timeout, [cancel, save]);
+        };
+        /**
          * open a note modal
          * @param string info the info to put into modal body
          * @param function save_callback
