@@ -156,26 +156,12 @@ __OP_FUNC:
             # if not the below method will raise an exception
             $parent_folder->fetch($this->request->params["pid"], \core\db\models\user::GetInstance()->user_id);
         }
+        # the error container
+        $this->view->errors = array();
+        # views values container in case of errors
+        $this->view->values = array();
+        # default note version
         $note_version = "html";
-        # if reach here we are OK to proceed the opt
-        switch (strtoupper($this->request->GetIndexedParam(0)))
-        {
-            # the valid 'new' opts are
-            case "NOTE":
-                if(isset($this->request->params["version"]))
-                    $note_version = $this->request->params["version"];
-                $folder = new \core\db\models\folder;
-                $this->view->route = $folder->fetchRouteToRoot($this->request->params["pid"], \core\db\models\user::GetInstance()->user_id);
-                $this->layout->AddTitle("Creating new note");
-            case "FOLDER":
-            case "LINK":
-                # set the proper view
-                $this->view->setView("new{$this->request->GetIndexedParam(0)}");
-                break;
-            default:
-                # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalidOperationException;
-        }
         # fetch the user id
         $uid = \core\db\models\user::GetInstance()->user_id;
         # pass PID to the view
@@ -188,10 +174,29 @@ __OP_FUNC:
                             $this->view->pid,
                             session_id(),
                             $uid));
-        # the error container
-        $this->view->errors = array();
-        # views values container in case of errors
-        $this->view->values = array();
+        # if reach here we are OK to proceed the opt
+        switch (strtoupper($this->request->GetIndexedParam(0)))
+        {
+            # the valid 'new' opts are
+            case "NOTE":
+                if(isset($this->request->params["version"]))
+                    $note_version = $this->request->params["version"];
+                if($this->request->IsGET()) {
+                    if($this->isUsingEditorBuffer())
+                        $this->view->edit = 1;
+                }
+                $folder = new \core\db\models\folder;
+                $this->view->route = $folder->fetchRouteToRoot($this->request->params["pid"], \core\db\models\user::GetInstance()->user_id);
+                $this->layout->AddTitle("Creating new note");
+            case "FOLDER":
+            case "LINK":
+                # set the proper view
+                $this->view->setView("new{$this->request->GetIndexedParam(0)}");
+                break;
+            default:
+                # if no ops matched, raise an exception
+                throw new \zinux\kernel\exceptions\invalidOperationException;
+        }
         # if it is a get return
         if(!$this->request->IsPOST())
             return;
@@ -359,30 +364,15 @@ __OP_FUNC:
         $item_value = NULL;
         if($this->request->IsGET())
         {
-            $item_value = new \stdClass;
-            if(strtolower($item) === "note") {
-                $sc = new \zinux\kernel\caching\sessionCache("editor-buffer");
-                if($sc->isCached("buffer")) {
-                    $b = $sc->fetch("buffer");
-                    $sc->delete("buffer");
-                    if(!is_array($b)) goto __FETCH_FROM_DB;
-                    if(!\zinux\kernel\security\security::IsSecure($b, array("note_title", "note_body", "pid", "owner_id"), array(), array(), 0))
-                        goto __FETCH_FROM_DB;
-                    $item_value->note_title = $b["note_title"];
-                    $item_value->note_body = $b["note_body"];
-                    $item_value->parent_id = $b["pid"];
-                    $item_value->owner_id = $b["owner_id"];
-                    goto __PASS_ITEM_VALUE;
-                }
+            $item_value = null;
+            if(!($item_value = $this->isUsingEditorBuffer())) {
+                $item_value = $item_ins->fetch($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id);
+                # resore back the values to views
+                $this->view->values["{$item}_title"] = $item_value->{"{$item}_title"};
+                $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
+                $this->view->pid = $item_value->parent_id;
+                $this->layout->AddTitle("Editing - {$this->view->values["{$item}_title"]}");
             }
-__FETCH_FROM_DB:
-            $item_value = $item_ins->fetch($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id);
-__PASS_ITEM_VALUE:
-            # resore back the values to views
-            $this->view->values["{$item}_title"] = $item_value->{"{$item}_title"};
-            $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
-            $this->view->pid = $item_value->parent_id;
-            $this->layout->AddTitle("Editing - {$this->view->values["{$item}_title"]}");
             if($item == "note") {
                 $folder = new \core\db\models\folder;
                 $this->view->route = $folder->fetchRouteToRoot($item_value->parent_id, $item_value->owner_id);
@@ -778,21 +768,80 @@ __PASS_ITEM_VALUE:
             $this->Redirect();
             exit;
         }
-        \zinux\kernel\security\security::IsSecure($this->request->params, array("submit-type", "note_title", "note_body", "pid"));
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("submit-type"));
         switch(strtolower($this->request->params["submit-type"]))
         {
                 case "change-editor":
                     break;
                 default: throw new \zinux\kernel\exceptions\invalidOperationException;
         }
-        $sc = new \zinux\kernel\caching\sessionCache("editor-buffer");
-        $sc->deleteAll();
-        $sc->save("buffer", array(
-                "note_title" => $this->request->params["note_title"], 
-                "note_body" => $this->request->params["note_body"], 
-                "owner_id" => \core\db\models\user::GetInstance()->user_id,
-                "pid" => $this->request->params["pid"]));
+        $this->initEditorBuffer($this->request->params);
         $this->Redirect();
         exit;
+    }
+    /**
+     * Init editor buffer with it's standard data format
+     * @param array $data the data for fill, should always contain {"{$item_type}_title", "{$item_type}_body", "pid"}.
+     * @param string $item_type should be one of {note|folder|link}
+     * @throws \zinux\kernel\exceptions\accessDeniedException if user not signed in current session
+     */
+    protected function initEditorBuffer(array $data, $item_type = "note") {
+        switch(strtolower($item_type)) {
+            case "note": case "folder": case "link": break;
+            default: throw new \zinux\kernel\exceptions\invalidArgumentException("`$item_type` not defined");
+        }
+        if(!\core\db\models\user::IsSignedin())
+            throw new \zinux\kernel\exceptions\accessDeniedException;
+        \zinux\kernel\security\security::IsSecure($data, array("{$item_type}_title", "{$item_type}_body", "pid"));
+        $sc = new \zinux\kernel\caching\sessionCache("editor-buffer");
+        $sc->deleteAll();
+        if(!isset($data["owner_id"]))
+            $data["owner_id"] = \core\db\models\user::GetInstance()->user_id;
+        $sc->save("buffer",$data);
+    }
+    /**
+     * Validates if we should be using editor buffer for an instance?<br />
+     * If so, it also automatically initializes the view's variables according to {new|edit}Action()'s views standard data-format
+     * @param string $item_type should be one of {note|folder|link}
+     * @return \stdClass|null if fails to use buffer returns NULL otherwise returns an instance of stdClass containing {"{$item_type}_title", "{$item_type}_body", "pid", "owner_id"} attributes
+     */
+    protected function isUsingEditorBuffer($item_type = "note") {
+        switch(strtolower($item_type)) {
+            case "note": case "folder": case "link": break;
+            default: throw new \zinux\kernel\exceptions\invalidArgumentException("`$item_type` not defined");
+        }
+        # create a new instance of stdClass
+        $value =new \stdClass;
+        # open-up a session cache socket with "editor-buffer" ID
+        $sc = new \zinux\kernel\caching\sessionCache("editor-buffer");
+        # check if anything has been buffered?
+        if($sc->isCached("buffer")) {
+            # if so?
+            # fetch the buffered data
+            $b = $sc->fetch("buffer");
+            # truncate the buffer
+            $sc->delete("buffer");
+            # validate the fetched data
+            if(!is_array($b) || !\zinux\kernel\security\security::IsSecure($b, array("{$item_type}_title", "{$item_type}_body", "pid", "owner_id"), array(), array(), 0))
+                goto __USE_DEFAULT;
+            # extract and deploy the fetched data
+            $value->{"{$item_type}_title"} = $b["{$item_type}_title"];
+            $value->{"{$item_type}_body"} = $b["{$item_type}_body"];
+            $value->parent_id = $b["pid"];
+            $value->owner_id = $b["owner_id"];
+            goto __PASS_DATA_2_VALUE;
+        }
+        # if we reach here it means we failed to fetch any data from buffer
+        goto __USE_DEFAULT;
+__PASS_DATA_2_VALUE:
+        # resore back the values to views
+        $this->view->values["{$item_type}_title"] = $value->{"{$item_type}_title"};
+        $this->view->values["{$item_type}_body"] = $value->{"{$item_type}_body"};
+        $this->view->pid = $value->parent_id;
+        # return extracted values
+        return $value;
+__USE_DEFAULT:
+        # we failed!
+        return null;
     }
 }
