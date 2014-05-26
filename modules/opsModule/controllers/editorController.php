@@ -79,6 +79,8 @@ class editorController extends \zinux\kernel\controller\baseController
     */
     public function optionsAction()
     {
-        
+        $this->layout->SuppressLayout();
+        $this->view->themes = glob("./access/rte/ace/src-min-noconflict/theme-*");
+        $this->view->modes = glob("./access/rte/ace/src-min-noconflict/mode-*");
     }
 }

@@ -1,44 +1,28 @@
-<div class="hidden" id="editor-options">
+<?php 
+$fetch_normalized = function($value, $type) {
+    $orig_value = preg_replace(array("#^($type-)#i", "#_#i"), array("", " "), basename($value, ".js"));
+    $value = strtoupper($orig_value[0]).  substr($orig_value, 1);
+    return array($value, $orig_value);
+}
+?>
+<div class="" id="editor-options">
     <div class="text">
-        <?php $themes = glob("./access/rte/ace/src-min-noconflict/theme-*"); ?>
         <div class="form-group">
           <label for="theme-list" class="control-label">Theme</label>
               <select class="form-control" id="theme-list">
-      <?php
-                  foreach ($themes as $value):
-                      $orig_value = preg_replace(array("#^(theme-)#i", "#_#i"), array("", " "), basename($value, ".js"));
-                      $value = strtoupper($orig_value[0]).  substr($orig_value, 1);
-      ?>
+                <?php foreach ($this->themes as $value): list($value, $orig_value) = $fetch_normalized($value, "theme"); ?>
                   <option value="ace/theme/<?php echo str_replace(" ", "_", $orig_value)?>"><?php echo $value ?></option>
-      <?php
-                  endforeach;
-      ?>
+                <?php endforeach; ?>
               </select>
           </div>
-<!--        <ul class="nav nav-pills" >
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="width: 100%; overflow: hidden">
-                    <span class="glyphicon glyphicon-list-alt"></span>
-                    <span class="badge">
-                        <?php echo count($themes) ?>
-                    </span> Themes [<span id="theme-name">Twilight</span>] <b class="caret"></b></a>
-                <ul class="dropdown-menu pull-left">
-        <?php
-            foreach ($themes as $value) 
-            {
-                $orig_value = preg_replace(array("#^(theme-)#i", "#_#i"), array("", " "), basename($value, ".js"));
-                $value = strtoupper($orig_value[0]).  substr($orig_value, 1);
-        ?>
-                    <li>
-                        <a href="#" onclick="window.editor.setTheme('ace/theme/<?php echo str_replace(" ", "_", $orig_value)?>');$('span#theme-name').html('<?php echo $value?>');" >
-                            <?php  echo $value ?>
-                        </a>
-                    </li>
-        <?php
-            }
-        ?>
-                </ul>
-            </li>
-        </ul>-->
+        <div class="form-group">
+          <label for="theme-list" class="control-label">Modes</label>
+              <select class="form-control" id="mode-list">
+                <?php foreach ($this->modes as $value): list($value, $orig_value) = $fetch_normalized($value, "mode"); ?>
+                  <option value="ace/mode/<?php echo str_replace(" ", "_", $orig_value)?>"><?php echo $value ?></option>
+                <?php endforeach; ?>
+              </select>
+          </div>
     </div>
 </div> 
+<?php unset($fetch_normalized); ?>

@@ -56,6 +56,18 @@
                 }
                 window.open_yesnoModal("Are you sure to <b>discard</b>?", yes_func, undefined, false);
             });
+            window.ajax_start = function(){ window.open_waitModal();};
+            window.ajax_stop = function() { window.open_waitModal(true);};
+            window.ajax_error = function (event, jqXHR, settings, exception) { 
+                var error = jqXHR
+                        .responseText
+                            .replace(/^[\S\s]*<body[^>]*?>/i, "")
+                            .replace(/<\/body[\S\s]*$/i, "");
+                window.open_errorModal(error);
+            };
+            $(window).ajaxStart(window.ajax_start);
+            $(window).ajaxStop(window.ajax_stop);
+            $(window).ajaxError(window.ajax_error);
             openOptions();
         });
         function anything_changed() {
@@ -70,6 +82,14 @@
             $("form[name='note']").submit();
         };
         function openOptions() {
+            $.ajax({
+                type: "get", url: "/editor/options",
+                success: function(data) {
+                    setTimeout(function(data) {
+                        window.open_savecloseModal(data);
+                    }, 200, data);
+                },
+            });
         }
 </script>
 <!-- ace editor placeholder -->
