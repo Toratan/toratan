@@ -12,11 +12,11 @@
         $this->request->params["ui"] = 
             !$profile->getSetting("/rte/type")?"classic":$profile->getSetting("/rte/type");
     $profile->setSetting("/rte/type", $this->request->params["ui"]);
+    $this->layout->setLayout('editor');
     switch($this->request->params["ui"])
     {
         default:
         case "classic":
-            $this->layout->setLayout("wide");
             $this->RenderPartial("ckeditor");
             break;
         case "ace":

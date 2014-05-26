@@ -1,18 +1,37 @@
+<?php
+namespace modules\defaultModule\views\layout;
+/**
+ * renders general layout header
+ *
+ * @author dariush
+ */
+class genLayoutHeader extends \zinux\kernel\layout\baseLayout
+{
+    /**
+     * @var \zinux\kernel\layout\baseLayout
+     */
+    protected $layout;
+            
+    public function __construct(\zinux\kernel\layout\baseLayout $layout)
+    {
+        $this->layout = $layout;
+    }
+    function render_header() {
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Sign up page">
         <!-- twitter bootstrap -->
         <link rel="stylesheet" href="/access/css/bootstrap.min.css">
         <link rel="stylesheet" href="/access/css/bootstrap-theme.min.css">
         <!-- jQuery -->
         <script type="text/javascript" src="/access/js/jquery-1.10.2.min.js"></script>
         <link rel="shortcut icon" href="/favicon.ico">
-        <?php $this->RenderTitle();?>
-        <?php $this->RenderImports(); ?>
+        <?php $this->layout->RenderTitle();?>
+        <?php $this->layout->RenderImports(); ?>
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -57,24 +76,14 @@
             <div class="clearfix"></div>
         </div>
         <div class="clearfix"></div>
-        <div class="container-fluid" style="margin-top:10px;">
-            <?php echo $this->content; ?>
-            <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
-            <script type="text/javascript">
-                (function(){
-                    // modify frames' size on window resize event
-                    $(window).resize(function() {
-                        var $frames = $('iframe');
-                        if($(window).height() >= 420)
-                            // re-size the frames
-                            $frames.css('height', ($(window).height() - 90)+'px');
-                        else
-                            $frames.css('height', '768px');
-                    });
-                    // init frames' size to window's size
-                    $(window).resize();
-                })(jQuery);
-            </script>
-        </div>
+<?php
+    }
+    public function render_footer() {
+?>
+        <div class="footer"></div>
+        <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
     </body>
 </html>
+<?php
+    }
+}

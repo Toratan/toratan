@@ -1,3 +1,8 @@
+<style type="text/css">
+    .form-signin {width: 420px;padding: 15px;margin: 10px auto;background-color: #efefef;border: 1px solid #e4e4e4;}
+    .form-signin .form-control { position: relative; height: auto; -webkit-box-sizing: border-box; -moz-box-sizing: border-box;box-sizing: border-box; padding: 10px;font-size: 16px;}
+    .form-signin .form-control:focus {z-index: 2;}
+</style>
 <form class="form-signin" action="/auth/signin" method="post"  role="form">
     <input type="hidden" name="continue" value="<?php echo $this->continue; ?>" />
     <ul style="color:red;font-variant: small-caps;padding:10px;padding-left: 0;font-weight: bold" class="list-unstyled">
