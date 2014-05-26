@@ -755,51 +755,6 @@ __OP_FUNC:
         $this->layout->SuppressLayout();
     }
     /**
-    * @access via /ops/change/editor/to/{ace|classic}?continue=(URI)
-    * The \modules\opsModule\controllers\indexController::change_editorAction()
-    * @by Zinux Generator <b.g.dariush@gmail.com>
-    */
-    public function change_editorAction()
-    {
-        \zinux\kernel\security\security::IsSecure($this->request->params, array("to", "continue"));
-        $this->request->params["continue"] = preg_replace("#&ui=\w+#i", "", $this->request->params["continue"]);
-        $this->request->params["continue"] .= "&ui={$this->request->params["to"]}";
-        if($this->request->IsGET()) {
-            $this->Redirect();
-            exit;
-        }
-        \zinux\kernel\security\security::IsSecure($this->request->params, array("submit-type"));
-        switch(strtolower($this->request->params["submit-type"]))
-        {
-                case "change-editor":
-                    break;
-                default: throw new \zinux\kernel\exceptions\invalidOperationException;
-        }
-        $this->initEditorBuffer($this->request->params);
-        $this->Redirect();
-        exit;
-    }
-    /**
-     * Init editor buffer with it's standard data format
-     * @param array $data the data for fill, should always contain {"{$item_type}_title", "{$item_type}_body", "pid"}.
-     * @param string $item_type should be one of {note|folder|link}
-     * @throws \zinux\kernel\exceptions\accessDeniedException if user not signed in current session
-     */
-    protected function initEditorBuffer(array $data, $item_type = "note") {
-        switch(strtolower($item_type)) {
-            case "note": case "folder": case "link": break;
-            default: throw new \zinux\kernel\exceptions\invalidArgumentException("`$item_type` not defined");
-        }
-        if(!\core\db\models\user::IsSignedin())
-            throw new \zinux\kernel\exceptions\accessDeniedException;
-        \zinux\kernel\security\security::IsSecure($data, array("{$item_type}_title", "{$item_type}_body", "pid"));
-        $sc = new \zinux\kernel\caching\sessionCache("editor-buffer");
-        $sc->deleteAll();
-        if(!isset($data["owner_id"]))
-            $data["owner_id"] = \core\db\models\user::GetInstance()->user_id;
-        $sc->save("buffer",$data);
-    }
-    /**
      * Validates if we should be using editor buffer for an instance?<br />
      * If so, it also automatically initializes the view's variables according to {new|edit}Action()'s views standard data-format
      * @param string $item_type should be one of {note|folder|link}
