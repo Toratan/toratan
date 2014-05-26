@@ -5,24 +5,71 @@ $fetch_normalized = function($value, $type) {
     return array($value, $orig_value);
 }
 ?>
+<style type="text/css">
+    #editor-options table.table {border: 1px #ddd solid;}
+    #editor-options table.table tbody tr { height: 40px;}
+    #editor-options table.table tbody tr td:first-child { font-weight: bold; padding-top: 2.5%; width: 30%}
+</style>
 <div class="" id="editor-options">
     <div class="text">
-        <div class="form-group">
-          <label for="theme-list" class="control-label">Theme</label>
-              <select class="form-control" id="theme-list">
-                <?php foreach ($this->themes as $value): list($value, $orig_value) = $fetch_normalized($value, "theme"); ?>
-                  <option value="ace/theme/<?php echo str_replace(" ", "_", $orig_value)?>"><?php echo $value ?></option>
-                <?php endforeach; ?>
-              </select>
-          </div>
-        <div class="form-group">
-          <label for="theme-list" class="control-label">Modes</label>
-              <select class="form-control" id="mode-list">
-                <?php foreach ($this->modes as $value): list($value, $orig_value) = $fetch_normalized($value, "mode"); ?>
-                  <option value="ace/mode/<?php echo str_replace(" ", "_", $orig_value)?>"><?php echo $value ?></option>
-                <?php endforeach; ?>
-              </select>
-          </div>
+        <table class="table table-hover table-striped">
+            <tbody>
+                <tr>
+                    <td>Theme</td>
+                    <td>
+                        <select class="form-control" id="theme-list" name='theme' onchange="window.editor.setTheme(this.value);">
+                          <?php foreach ($this->themes as $value): list($value, $orig_value) = $fetch_normalized($value, "theme"); ?>
+                            <option value="ace/theme/<?php echo str_replace(" ", "_", $orig_value)?>"><?php echo $value ?></option>
+                          <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Font Size</td>
+                    <td>
+                        <div class='input-group'>
+                            <select class="form-control" id="font-size-list" name='font-size' onchange="document.getElementById('editor').style.fontSize = this.value+'px';">
+                                <?php for($i = 12; $i<65; $i++): ?>
+                                <option value='<?php echo $i ?>'><?php echo $i ?></option>
+                                <?php endfor; ?>
+                            </select>
+                            <span class='input-group-addon' title='Pixel'>px</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Tab Size</td>
+                    <td>
+                        <div class='input-group'>
+                            <select class="form-control" id="font-size-list" name='tab-size' onchange="window.editor.getSession().setTabSize(this.value);">
+                                <option value='2'>2</option>
+                                <option value='4'>4</option>
+                                <option value='8'>8</option>
+                            </select>
+                            <span class='input-group-addon' title='Space'>sp</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Wrap?</td>
+                    <td>
+                        <input type='checkbox' class='checkbox input-mini' name='use-wrap' onchange='window.editor.getSession().setUseWrapMode(this.checked);'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Highlight Line?</td>
+                    <td>
+                        <input type='checkbox' class='checkbox input-mini' name='highlight-line' title='Highlight Active Line?' onchange="window.editor.setHighlightActiveLine(this.checked);"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Show Line#?</td>
+                    <td>
+                        <input type='checkbox' class='checkbox input-mini' name='show-line-no' title='Show Line#?' onchange="editor.renderer.setShowGutter(this.checked);"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div> 
 <?php unset($fetch_normalized); ?>

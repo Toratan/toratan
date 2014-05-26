@@ -86,7 +86,9 @@
                 type: "get", url: "/editor/options",
                 success: function(data) {
                     setTimeout(function(data) {
-                        window.open_savecloseModal(data);
+                        window.open_savecloseModal(data, function(){
+                            alert("Saved");
+                        }, "Options");
                     }, 200, data);
                 },
             });
