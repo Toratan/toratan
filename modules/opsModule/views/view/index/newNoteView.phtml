@@ -1,6 +1,6 @@
 <?php $this->edit = isset($this->edit)?$this->edit:0; ?>
 <?php if(count($this->errors)): ?>
-<ol style="color:red;">
+<ol class='text-danger' style="list-style-image: url('/access/img/bullet.png');padding:0;margin:10px 35px 0;font-weight: bold">
 <?php foreach ($this->errors as $error) : ?>
     <li><?php echo $error ?></li>
 <?php endforeach; ?>

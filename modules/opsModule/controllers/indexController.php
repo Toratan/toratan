@@ -166,6 +166,7 @@ __OP_FUNC:
                     $note_version = $this->request->params["version"];
                 $folder = new \core\db\models\folder;
                 $this->view->route = $folder->fetchRouteToRoot($this->request->params["pid"], \core\db\models\user::GetInstance()->user_id);
+                $this->layout->AddTitle("Creating new note");
             case "FOLDER":
             case "LINK":
                 # set the proper view

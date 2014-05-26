@@ -25,7 +25,6 @@
                 bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
                 exec: save
             });
-            window.editor.focus();
             window.editor.navigateFileEnd();
             window.editor.getSession().setUseWrapMode(true);
             $(window).resize(function() {
@@ -33,7 +32,7 @@
                 window.editor.resize();
             });
             $(window).resize();
-            $("a#note-discard").click(function(e) {
+            $("a.note-discard").click(function(e) {
                 e.preventDefault();
                 var href = $(this).attr('href');
                 var yes_func =function() {
@@ -72,23 +71,26 @@
             <?php endforeach;unset($count);?>
         </ol>
         <div class="input-group pull-left" style="margin-top: -10px;">
-            <input type="text" name="title"  id="editor-title" class="block input form-control" placeholder="Your note's title" value="<?php echo str_replace('"', "&quot;", isset($this->values['note_title'])?$this->values['note_title']:"") ?>" />
+            <input type="text" name="title"  id="editor-title" class="block input form-control" placeholder="Your note's title" value="<?php echo str_replace('"', "&quot;", isset($this->values['note_title'])?$this->values['note_title']:"") ?>" autofocus=""/>
             <span class="input-group-btn">
-                <button onclick="save(window.editor);" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;">
-                    <span class="glyphicon glyphicon-hdd"></span> Save
+                <button onclick="save(window.editor);" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;" tabindex="-1" title="Save">
+                    <span class="glyphicon glyphicon-hdd"></span>
                 </button>
+                <a href="#!/d/<?php echo $this->pid ?>.notes" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;"><span class="glyphicon glyphicon-trash"></span></a>
             </span>
-            <div class="input-group inline pull-right" style="">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                      <span class="glyphicon glyphicon-cog"></span>  <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu pull-right" role="menu">
-                      <li title="Change to classic editor"><a href="#" onclick="alert('switch to ckeditor');"><span class="glyphicon glyphicon-credit-card"></span> Classic editor</a></li>
-                    <li><a href='#' onclick="alert('open a modal for configuring the editor\'s options(like font-size, warp-things, show-line#, etc) and AJX it to users\'s profile\'s setting and restore it on loading ace editor.');"><span class="glyphicon glyphicon-th-list"></span> Editor's options</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#!/d/<?php echo $this->pid ?>.notes" id='note-discard'><span class="glyphicon glyphicon-trash"></span> Discard</a></li>
-                  </ul>
+            <div class="pull-right">
+                <div class="input-group inline" style="">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1">
+                          <span class="glyphicon glyphicon-cog"></span>  <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu pull-right" role="menu">
+                            <li title="Change to classic editor"><a href="#" onclick="alert('switch to ckeditor');"><span class="glyphicon glyphicon-credit-card"></span> Classic editor</a></li>
+                            <li><a href='#' onclick="alert('open a modal for configuring the editor\'s options(like font-size, warp-things, show-line#, etc) and AJX it to users\'s profile\'s setting and restore it on loading ace editor.');"><span class="glyphicon glyphicon-th-list"></span> Editor's options</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#!/d/<?php echo $this->pid ?>.notes" class='note-discard'><span class="glyphicon glyphicon-trash"></span> Discard</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
