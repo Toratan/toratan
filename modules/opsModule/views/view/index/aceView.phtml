@@ -110,4 +110,4 @@
     <textarea rows="10" cols="80" name="note_body" ><?php echo isset($this->values['note_body'])?$this->values['note_body']:"" ?></textarea>
     <input type="submit" value="Create" />
 </form>
-<?php require MODULE_ROOT . '/defaultModule/views/layout/dialogsLayout.phtml'; ?>
+<?php new \core\ui\html\dialogs() ?>

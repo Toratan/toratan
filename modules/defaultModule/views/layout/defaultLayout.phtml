@@ -57,7 +57,7 @@
             <div class="clearfix"></div>
         </div>
         <div class="clearfix"></div>
-        <?php require 'dialogsLayout.phtml'; ?>
+        <?php new \core\ui\html\dialogs(); ?>
         <script>
             window.active_nav = function(id) {
                 $('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");

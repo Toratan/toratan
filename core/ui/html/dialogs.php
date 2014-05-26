@@ -1,4 +1,15 @@
-<script>
+<?php
+namespace core\ui\html;
+/**
+ * Description of dialogs
+ *
+ * @author dariush
+ */
+class dialogs
+{
+    function __construct ()
+    {
+?><script>
     (function() {
         window.default_modal_button = new (function() {
             this.get = function() { return {
@@ -153,3 +164,6 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<?php
+    }
+}
