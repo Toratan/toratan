@@ -37,7 +37,7 @@ class aceEditorOptions extends \modules\opsModule\models\EditorOptions
       */
      public function __construct()
      {
-         $this->theme = "ace/theme/twilight";
+         $this->theme = "ace/theme/github";
          $this->font_size = 16;
          $this->tab_size = 4;
          $this->should_highlight_line = true;
