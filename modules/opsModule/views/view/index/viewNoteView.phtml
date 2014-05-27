@@ -7,6 +7,9 @@
     $this->layout->AddMeta("description", $n->note_title);
     $this->layout->addTitle($n->note_title);
 ?>
+<style>
+    #note-body {padding: 0 10px;}
+</style>
 <ol class="breadcrumb">
     <?php $count = 0; foreach($this->route as $folder) : $active = count($this->route) == ++$count; ?>
         <li <?php echo $active?"class='active'":""?>><?php echo "<a href='/#!/d/{$folder->folder_id}.".(!$active?"folders":"notes")."'>", $folder->folder_title, "</a>" ?></li>
@@ -30,6 +33,12 @@
                         </div>
     <?php endif; ?>
 </div>
+<script>
+    $(document).ready(function(){
+        prettyPrint();
+    });
+</script>
+<div id="note-body">
 <?php
     (new \vendor\markdown\Ciconia\CiconiaInitializer())->Execute();
     use Ciconia\Extension\Gfm;
@@ -42,4 +51,6 @@
     $ciconia->addExtension(new Gfm\UrlAutoLinkExtension());
     echo $ciconia->render($n->note_body);
 ?>
-<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+</div>
+<link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
+<script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
