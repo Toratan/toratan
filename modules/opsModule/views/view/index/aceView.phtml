@@ -163,7 +163,7 @@
 </div>
 <script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note' style="display: none;">
-    <input type="hidden" name="version" value="html" />
+    <input type="hidden" name="version" value="ace" />
     <input type="text" name="note_title" maxlength="250" value="<?php echo $title ?>" required="required"/><br />
     <textarea rows="10" cols="80" name="note_body" ><?php echo $body ?></textarea>
     <input type="submit" value="Create" />

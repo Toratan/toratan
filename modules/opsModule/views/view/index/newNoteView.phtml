@@ -13,7 +13,15 @@
             !$profile->getSetting("/rte/type")?"classic":$profile->getSetting("/rte/type");
     $profile->setSetting("/rte/type", $this->request->params["ui"]);
     $this->layout->setLayout('editor');
-    switch($this->request->params["ui"])
+    $ui = $this->request->params["ui"];
+    if($this->edit) {
+        switch($this->editor_type) {
+            case 0: $ui = "html"; break;
+            case 1: $ui = "ace"; break;
+            default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined editor type `$this->editor_type`");
+        }
+    }
+    switch($ui)
     {
         default:
         case "classic":
