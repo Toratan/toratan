@@ -51,12 +51,21 @@
             });
             $("a#switch-editor").click(function(e) {
                 e.preventDefault();
-                var href = String($(this).attr('href')).substr(1); // remove first `#` char.
-                $("form[name='note']")
-                        .append('<input type="hidden" name="submit-type" value="change-editor" />')
-                        .append('<input type="hidden" name="pid" value="<?php echo $this->pid ?>" />')
-                        .attr('action', href);
-                save(window.editor);
+                var $this = $(this);
+<?php if($this->edit) : ?>
+                window.open_yesnoModal(
+                        "<b>Switching between editors can cause incompatibility issues, and can cause note's pure text seem agly, and might make note development harder.<br /> Are you sure do you want to change the editor?</b>", 
+                        function() {
+<?php endif; ?>
+                            var href = String($this.attr('href')).substr(1); // remove first `#` char.
+                            $("form[name='note']")
+                                    .append('<input type="hidden" name="submit-type" value="change-editor" />')
+                                    .append('<input type="hidden" name="pid" value="<?php echo $this->pid ?>" />')
+                                    .attr('action', href);
+                            save(window.editor);
+<?php if($this->edit) : ?>
+                        }, undefined, false);
+<?php endif; ?>
             });
             $("a.note-discard").click(function(e) {
                 e.preventDefault();
