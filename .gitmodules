@@ -5,9 +5,6 @@
 [submodule "core/db/activeRecord/lib"]
 	path = core/db/activeRecord/lib
 	url = git@github.com:jpfuentes2/php-activerecord.git
-[submodule "core/ui/markdown/lib"]
-	path = core/ui/markdown/lib
-	url = git@github.com:michelf/php-markdown.git
 [submodule "public_html/access/rte/ckeditor"]
 	path = public_html/access/rte/ckeditor
 	url = git@github.com:ckeditor/ckeditor-releases.git
