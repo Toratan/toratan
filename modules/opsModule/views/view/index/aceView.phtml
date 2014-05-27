@@ -6,6 +6,11 @@
         $title = $this->values['note_title'];
         $body = $this->values['note_body'];
     }
+    $profile =\core\db\models\profile::getInstance();
+    if(!($eo = $profile->getSetting("/rte/options/ace")) || !($eo instanceof \modules\opsModule\models\aceEditorOptions)) {
+        $eo = new \modules\opsModule\models\aceEditorOptions;
+        $profile->setSetting("/rte/options/ace", $eo);
+    }
 ?>
 <style type="text/css" media="screen">
     #editor-container {top:0; left:0; width: 100%;}
@@ -15,9 +20,19 @@
 <script>
         $(document).ready(function() {
             window.editor = ace.edit("editor");
-            window.editor.setTheme("ace/theme/twilight");
+            /**
+             * Setting area
+             */
+            window.editor.setTheme('<?php echo $eo->theme ?>');
+            editor.renderer.setShowGutter(<?php echo boolval($eo->should_show_line_no) ?>);
+            window.editor.getSession().setTabSize(<?php echo intval($eo->tab_size) ?>);
+            window.editor.setHighlightActiveLine(<?php echo boolval($eo->should_highlight_line) ?>);
+            window.editor.getSession().setUseWrapMode(<?php echo boolval($eo->should_warp) ?>);
+            document.getElementById('editor').style.fontSize = <?php echo intval($eo->font_size) ?>+'px';           
+            /**
+             * END OF Setting area
+             */
             window.editor.getSession().setMode("ace/mode/markdown");
-            window.editor.getSession().setTabSize(4);
             window.editor.commands.addCommand({
                 name: 'save',
                 bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
@@ -68,7 +83,6 @@
             $(window).ajaxStart(window.ajax_start);
             $(window).ajaxStop(window.ajax_stop);
             $(window).ajaxError(window.ajax_error);
-            openOptions();
         });
         function anything_changed() {
             if("<?php echo  str_replace('"', "&quot;", $title) ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
@@ -83,7 +97,7 @@
         };
         function openOptions() {
             $.ajax({
-                type: "get", url: "/editor/options",
+                type: "get", url: "/editor/options/type/ace",
                 success: function(data) {
                     setTimeout(function(data) {
                         window.open_savecloseModal(data, function(){

@@ -1,8 +1,12 @@
 <?php 
+if(!isset($this->current_options) || !($this->current_options instanceof \modules\opsModule\models\EditorOptions))
+    throw new \zinux\kernel\exceptions\invalidArgumentException("No `current options` provided!");
+$o = $this->current_options;
 $fetch_normalized = function($value, $type) {
     $orig_value = preg_replace(array("#^($type-)#i", "#_#i"), array("", " "), basename($value, ".js"));
     $value = strtoupper($orig_value[0]).  substr($orig_value, 1);
-    return array($value, $orig_value);
+    $path = "ace/$type/".str_replace(" ", "_", $orig_value);
+    return array($value, $path);
 }
 ?>
 <style type="text/css">
@@ -17,7 +21,7 @@ $fetch_normalized = function($value, $type) {
             $(form).attr('action'), 
             $(form).serialize(),
             function(data) {
-                window.open_dialogModal(data);
+                window.open_dialogModal(data, 2000);
             }
         );
     };
@@ -31,8 +35,8 @@ $fetch_normalized = function($value, $type) {
                         <td>Theme</td>
                         <td>
                             <select class="form-control" id="theme-list" name='theme' onchange="window.editor.setTheme(this.value);">
-                              <?php foreach ($this->themes as $value): list($value, $orig_value) = $fetch_normalized($value, "theme"); ?>
-                                <option value="ace/theme/<?php echo str_replace(" ", "_", $orig_value)?>"><?php echo $value ?></option>
+                              <?php foreach ($this->themes as $value): list($value, $path) = $fetch_normalized($value, "theme"); ?>
+                                <option value="<?php echo $path ?>" <?php echo $o->theme == $path?"selected":"" ?>><?php echo $value ?></option>
                               <?php endforeach; ?>
                             </select>
                         </td>
@@ -41,9 +45,9 @@ $fetch_normalized = function($value, $type) {
                         <td>Font Size</td>
                         <td>
                             <div class='input-group'>
-                                <select class="form-control" id="font-size-list" name='font-size' onchange="document.getElementById('editor').style.fontSize = this.value+'px';">
+                                <select class="form-control" id="font-size-list" name='font_size' onchange="document.getElementById('editor').style.fontSize = this.value+'px';">
                                     <?php for($i = 12; $i<65; $i++): ?>
-                                    <option value='<?php echo $i ?>'><?php echo $i ?></option>
+                                    <option value='<?php echo $i ?>' <?php echo $o->font_size == $i?"selected":"" ?>><?php echo $i ?></option>
                                     <?php endfor; ?>
                                 </select>
                                 <span class='input-group-addon' title='Pixel'>px</span>
@@ -54,10 +58,10 @@ $fetch_normalized = function($value, $type) {
                         <td>Tab Size</td>
                         <td>
                             <div class='input-group'>
-                                <select class="form-control" id="font-size-list" name='tab-size' onchange="window.editor.getSession().setTabSize(this.value);">
-                                    <option value='2'>2</option>
-                                    <option value='4'>4</option>
-                                    <option value='8'>8</option>
+                                <select class="form-control" id="font-size-list" name='tab_size' onchange="window.editor.getSession().setTabSize(this.value);">
+                                    <option value='2' <?php echo $o->tab_size == 2?"selected":"" ?>>2</option>
+                                    <option value='4' <?php echo $o->tab_size == 4?"selected":"" ?>>4</option>
+                                    <option value='8' <?php echo $o->tab_size == 8?"selected":"" ?>>8</option>
                                 </select>
                                 <span class='input-group-addon' title='Space'>sp</span>
                             </div>
@@ -66,19 +70,19 @@ $fetch_normalized = function($value, $type) {
                     <tr>
                         <td>Wrap?</td>
                         <td>
-                            <input type='checkbox' class='checkbox input-mini' name='use-wrap' onchange='window.editor.getSession().setUseWrapMode(this.checked);'/>
+                            <input type='checkbox' class='checkbox input-mini' name='should_warp' onchange='window.editor.getSession().setUseWrapMode(this.checked);' <?php echo $o->should_warp?"checked":"" ?>/>
                         </td>
                     </tr>
                     <tr>
                         <td>Highlight Line?</td>
                         <td>
-                            <input type='checkbox' class='checkbox input-mini' name='highlight-line' title='Highlight Active Line?' onchange="window.editor.setHighlightActiveLine(this.checked);"/>
+                            <input type='checkbox' class='checkbox input-mini' name='should_highlight_line' title='Highlight Active Line?' onchange="window.editor.setHighlightActiveLine(this.checked);" <?php echo $o->should_highlight_line?"checked":"" ?>/>
                         </td>
                     </tr>
                     <tr>
                         <td>Show Line#?</td>
                         <td>
-                            <input type='checkbox' class='checkbox input-mini' name='show-line-no' title='Show Line#?' onchange="editor.renderer.setShowGutter(this.checked);"/>
+                            <input type='checkbox' class='checkbox input-mini' name='should_show_line_no' title='Show Line#?' onchange="window.editor.renderer.setShowGutter(this.checked);" <?php echo $o->should_show_line_no?"checked":"" ?>/>
                         </td>
                     </tr>
                 </tbody>

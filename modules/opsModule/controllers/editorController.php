@@ -78,11 +78,30 @@ class editorController extends \zinux\kernel\controller\baseController
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function optionsAction() {
+        \zinux\kernel\security\security::IsSecure($this->request->params, array('type'));
+        $type = $this->request->params["type"];
+        unset($this->request->params["type"]);
+        switch(strtolower($type)) {
+            case "ace": case "classic": break;
+            default: throw new \zinux\kernel\exceptions\invalidArgumentException("undefined `$type` editor.");
+        }
         $this->layout->SuppressLayout();
+        $class = "\\modules\\opsModule\\models\\{$type}EditorOptions";
+        $this->view->current_options = new $class;
+        $profile =\core\db\models\profile::getInstance();
         if($this->request->IsGET()) {
             $this->view->themes = glob("./access/rte/ace/src-min-noconflict/theme-*");
+            if(($opt = $profile->getSetting("/rte/options/$type"))) {
+                if($opt instanceof \modules\opsModule\models\EditorOptions)
+                    $this->view->current_options = $opt;
+            }
         } else {
-            \zinux\kernel\utilities\debug::_var($this->request->params, 1);
+            if(!count($this->request->params))
+                throw new \zinux\kernel\exceptions\invalidArgumentException;
+            $this->view->current_options->__parse($this->request->params);
+            $profile->setSetting("/rte/options/$type", $this->view->current_options);
+            echo "<span class='glyphicon glyphicon-ok'></span> Settings successfully saved.";
+            exit;
         }
     }
 }
