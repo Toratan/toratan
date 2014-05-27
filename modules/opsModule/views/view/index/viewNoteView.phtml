@@ -5,6 +5,7 @@
     $this->is_archive = $n->is_archive;
     $this->is_trash = $n->is_trash;
     $this->layout->AddMeta("description", $n->note_title);
+    $this->layout->addTitle($n->note_title);
 ?>
 <ol class="breadcrumb">
     <?php $count = 0; foreach($this->route as $folder) : $active = count($this->route) == ++$count; ?>

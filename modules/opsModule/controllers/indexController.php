@@ -371,8 +371,8 @@ __OP_FUNC:
                 $this->view->values["{$item}_title"] = $item_value->{"{$item}_title"};
                 $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
                 $this->view->pid = $item_value->parent_id;
-                $this->layout->AddTitle("Editing - {$this->view->values["{$item}_title"]}");
             }
+            $this->layout->AddTitle("Editing - {$this->view->values["{$item}_title"]}");
             if($item == "note") {
                 $folder = new \core\db\models\folder;
                 $this->view->route = $folder->fetchRouteToRoot($item_value->parent_id, $item_value->owner_id);
