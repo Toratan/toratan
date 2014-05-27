@@ -15,7 +15,7 @@
 <style type="text/css" media="screen">
     #editor-container {top:0; left:0; width: 100%;}
     #editor-parent {width: 100%; margin-top: 10px; }
-    #editor { margin-top: 10px;}
+    #editor { margin-top: 10px; border: 4px solid #eee;}
 </style>
 <script>
         $(document).ready(function() {
@@ -109,7 +109,7 @@
             });
         };
         function openGuides() {
-            window.open_infoModal($("#ace-guide").html());
+            window.open_dialogModal($("#ace-guide").html());
         };
 </script>
 <!-- ace editor placeholder -->
@@ -135,7 +135,7 @@
                           <span class="glyphicon glyphicon-cog"></span>  <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right" role="menu">
-                            <li><a href="#" onclick="openGuides();">Guide</a></li>
+                            <li><a href="#" onclick="openGuides();"><span class="glyphicon glyphicon-road"></span> Guide Lines</a></li>
                             <li><a href='#' onclick="openOptions();"><span class="glyphicon glyphicon-th-list"></span> Editor's options</a></li>
                             <li class="divider"></li>
                             <li title="Change to classic editor">
@@ -217,13 +217,13 @@
         <div class="panel-heading">
           <h4 class="panel-title">
             <a data-toggle="collapse" data-parent=".accordion" data-target=".mark-down-hint" href="#" class="collapsed">
-              Markdown
+              Markdown Syntax
             </a>
           </h4>
         </div>
-          <div class="mark-down-hint panel-collapse collapse">
-          <div class="panel-body">
-              This is editor 
+          <div class="mark-down-hint panel-collapse collapse in">
+          <div class="panel-body text-justify">
+              We are using <a href="http://ciconia.kzykhys.com/" target="__blank">Ciconia <span class="glyphicon glyphicon-share-alt small"></span></a> markdown parser to parse markdown texts, you can see full supported markdown syntax from <a href="http://ciconia.kzykhys.com/syntax.html" target="__blank">here <span class="glyphicon glyphicon-share-alt small"></span></a>.
           </div>
         </div>
       </div>
