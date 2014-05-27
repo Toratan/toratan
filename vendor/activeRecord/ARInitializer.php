@@ -1,5 +1,5 @@
 <?php
-namespace core\db\activeRecord;
+namespace vendor\activeRecord;
 
 
 class ARInitializer extends \zinux\kernel\application\baseInitializer

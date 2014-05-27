@@ -14,3 +14,6 @@
 [submodule "public_html/access/js/history.js"]
 	path = public_html/access/js/history.js
 	url = git@github.com:noise2/history.js.git
+[submodule "vendor/activeRecord/lib"]
+	path = vendor/activeRecord/lib
+	url = git@github.com:jpfuentes2/php-activerecord.git

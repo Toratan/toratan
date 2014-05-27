@@ -164,7 +164,7 @@ try
             ->SetBootstrap(new application\dbBootstrap)
             
             # init activerecord as db handler
-            ->SetInitializer(new \core\db\activeRecord\ARInitializer())
+            ->SetInitializer(new \vendor\activeRecord\ARInitializer())
             
             # load project basic config initializer
             ->SetConfigIniliazer(new \zinux\kernel\utilities\iniParser(PROJECT_ROOT."/config/default.cfg", RUNNING_ENV))
