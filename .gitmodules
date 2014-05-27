@@ -2,9 +2,6 @@
 	path = zinux
 	url = git@github.com:noise2/zinux.git
 	branch = master 
-[submodule "core/db/activeRecord/lib"]
-	path = core/db/activeRecord/lib
-	url = git@github.com:jpfuentes2/php-activerecord.git
 [submodule "public_html/access/rte/ckeditor"]
 	path = public_html/access/rte/ckeditor
 	url = git@github.com:ckeditor/ckeditor-releases.git
