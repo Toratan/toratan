@@ -75,12 +75,11 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
             <a href="/" style="font-size: x-large;" class="navbar-brand text-muted" >Toratan</a>
             <div class="clearfix"></div>
         </div>
-        <div class="clearfix"></div>
+        <div class="clearfix" style="margin-top:10px;"></div>
 <?php
     }
     public function render_footer() {
 ?>
-        <div class="footer"></div>
         <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
     </body>
 </html>
