@@ -24,6 +24,10 @@ class dialogs
             };
         });
         /**
+         * Closes any open modal
+         */
+        window.close_modal = function() { $(".modal").modal('hide'); };
+        /**
          * Opens a modal
          * @param string modal_tag the target modal tag
          * @param string data the data to put into modal body
