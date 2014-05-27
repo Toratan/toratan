@@ -31,10 +31,15 @@
     <?php endif; ?>
 </div>
 <?php
-    # invoke the markdown initiliazer
-    $mdi = new \core\ui\markdown\markdownInitiliazer;
-    # execute the initliazer
-    $mdi->Execute();
-    # markdown down the context
-    echo \Markdown($n->note_body); 
+    (new \vendor\markdown\Ciconia\CiconiaInitializer())->Execute();
+    use Ciconia\Extension\Gfm;
+    $ciconia = new \Ciconia\Ciconia();
+    $ciconia->addExtension(new Gfm\FencedCodeBlockExtension());
+    $ciconia->addExtension(new Gfm\TaskListExtension());
+    $ciconia->addExtension(new Gfm\InlineStyleExtension());
+    $ciconia->addExtension(new Gfm\WhiteSpaceExtension());
+    $ciconia->addExtension(new Gfm\TableExtension());
+    $ciconia->addExtension(new Gfm\UrlAutoLinkExtension());
+    echo $ciconia->render($n->note_body);
 ?>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
