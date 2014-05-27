@@ -162,6 +162,7 @@ __OP_FUNC:
         $this->view->values = array();
         # default note version
         $note_version = "html";
+        $editor_version_id = 0;
         # fetch the user id
         $uid = \core\db\models\user::GetInstance()->user_id;
         # pass PID to the view
@@ -215,6 +216,7 @@ __OP_FUNC:
                     case "html":
                         break;
                     case "ace":
+                        $editor_version_id = 1;
                         break;
                     default:
                         throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid text version!");
@@ -231,13 +233,29 @@ __OP_FUNC:
         # try adding the item to db
         try
         {
-            # if the item was a folder
-            if($item == "folder")
-                # we don't need to pass the fake body generated above, so we deal with it differently
-                $item_value = $item_ins->newItem($this->request->params["{$item}_title"], $this->view->pid, $uid);
-            else
-                # otherwise we use the same interface for it
-                $item_value = $item_ins->newItem($this->request->params["{$item}_title"], $this->request->params["{$item}_body"], $this->view->pid, $uid);
+			switch($item) {
+                case "folder":
+                    # we don't need to pass the fake body generated above, so we deal with it differently
+                    $item_value = $item_ins->newItem(
+                            $this->request->params["{$item}_title"],
+                            $this->view->pid,
+                            $uid);
+                    break;
+                case "note":
+                    # we need to pass the edito verion too
+                    $item_value = $item_ins->newItem(
+                            $this->request->params["{$item}_title"],
+                            $this->request->params["{$item}_body"],
+                            $this->view->pid,
+                            $uid,
+                            $editor_version_id);
+                    break;
+                case "link":
+                    # otherwise we use the same interface for it
+                    $item_value = $item_ins->newItem($this->request->params["{$item}_title"], $this->request->params["{$item}_body"], $this->view->pid, $uid);
+                    break;
+                default: throw new \zinux\kernel\exceptions\invalidOperationException;
+            }
         }
         # catch any exception raised
         catch(\zinux\kernel\exceptions\appException $e)
@@ -334,6 +352,7 @@ __OP_FUNC:
                 $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
         $note_version = "html";
+        $editor_version_id = 0;
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
@@ -371,6 +390,7 @@ __OP_FUNC:
                 $this->view->values["{$item}_title"] = $item_value->{"{$item}_title"};
                 $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
                 $this->view->pid = $item_value->parent_id;
+                $this->view->editor_type = $item_value->editor_type;
             }
             $this->layout->AddTitle("Editing - {$this->view->values["{$item}_title"]}");
             if($item == "note") {
@@ -391,6 +411,7 @@ __OP_FUNC:
                     case "html":
                         break;
                     case "ace":
+                        $editor_version_id = 1;
                         break;
                     default:
                         throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid text version!");
@@ -399,16 +420,38 @@ __OP_FUNC:
         }
         # checkpoint for item body and title existance
         \zinux\kernel\security\security::IsSecure($this->request->params, array("{$item}_title", "{$item}_body"));
-        # try adding the item to db
+        # try to save the item
         try
         {
-            # if the item was a folder
-            if($item == "folder")
-                # we don't need to pass the fake body generated above, so we deal with it differently
-                $item_value = $item_ins->edit($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $this->request->params["{$item}_title"]);
-            else
-                # we don't need to pass the fake body generated above, so we deal with it differently
-                $item_value = $item_ins->edit($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $this->request->params["{$item}_title"], $this->request->params["{$item}_body"]);
+            switch($item) {
+                case "folder":
+                    # we don't need to pass the fake body generated above, so we deal with it differently
+                    $item_value = $item_ins->edit(
+                            $this->request->GetIndexedParam(1),
+                            \core\db\models\user::GetInstance()->user_id,
+                            $this->request->params["{$item}_title"]);
+                    break;
+                case "note":
+                    $nc = \core\db\models\item::NOCHANGE;
+                    # we need to pass the editor type as well
+                    $item_value = $item_ins->edit(
+                            $this->request->GetIndexedParam(1),
+                            \core\db\models\user::GetInstance()->user_id,
+                            $this->request->params["{$item}_title"],
+                            $this->request->params["{$item}_body"],
+                            $nc, $nc, $nc,
+                            $editor_version_id);
+                    break;
+                case "link":
+                    # routine link edit
+                    $item_value = $item_ins->edit(
+                            $this->request->GetIndexedParam(1),
+                            \core\db\models\user::GetInstance()->user_id,
+                            $this->request->params["{$item}_title"],
+                            $this->request->params["{$item}_body"]);
+                    break;
+                default: throw new \zinux\kernel\exceptions\invalidOperationException;
+            }
         }
         # catch any exception raised
         catch(\zinux\kernel\exceptions\appException $e)

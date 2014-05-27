@@ -280,6 +280,7 @@ abstract class item extends baseModel
      * @param boolean $is_public should it be public or not, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @param boolean $is_trash should it be trashed or not, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @param boolean $is_archive should it be archived or not, pass '<b>item::NOCHANGE</b>' to don't chnage
+     * @return item the edited item
      * @throws \core\db\exceptions\dbNotFoundException if the item not found
      */
     public function edit(
