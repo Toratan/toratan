@@ -73,7 +73,8 @@
             });
             window.ajax_start = function(){ window.open_waitModal();};
             window.ajax_stop = function() { window.open_waitModal(true);};
-            window.ajax_error = function (event, jqXHR, settings, exception) { 
+            window.ajax_error = function (event, jqXHR, settings, exception) {
+                // extract the body's content of error data text
                 var error = jqXHR
                         .responseText
                             .replace(/^[\S\s]*<body[^>]*?>/i, "")
@@ -83,6 +84,7 @@
             $(window).ajaxStart(window.ajax_start);
             $(window).ajaxStop(window.ajax_stop);
             $(window).ajaxError(window.ajax_error);
+            openGuides();
         });
         function anything_changed() {
             if("<?php echo  str_replace('"', "&quot;", $title) ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
@@ -106,7 +108,10 @@
                     }, 200, data);
                 },
             });
-        }
+        };
+        function openGuides() {
+            window.open_infoModal($("#ace-guide").html());
+        };
 </script>
 <!-- ace editor placeholder -->
 <div id="editor-container" class="container-fluid">
@@ -131,9 +136,14 @@
                           <span class="glyphicon glyphicon-cog"></span>  <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right" role="menu">
-                            <li><a href='#' onclick="console.log('open a modal for configuring the editor\'s options(like font-size, warp-things, show-line#, etc) and AJX it to users\'s profile\'s setting and restore it on loading ace editor.');openOptions();"><span class="glyphicon glyphicon-th-list"></span> Editor's options</a></li>
+                            <li><a href="#" onclick="openGuides();">Guide</a></li>
+                            <li><a href='#' onclick="openOptions();"><span class="glyphicon glyphicon-th-list"></span> Editor's options</a></li>
                             <li class="divider"></li>
-                            <li title="Change to classic editor"><a href="#/editor/change/to/classic?continue=<?php echo urlencode($this->request->getURI()); ?>" id="switch-editor"><span class="glyphicon glyphicon-credit-card"></span> Classic editor</a></li>
+                            <li title="Change to classic editor">
+                                <a href="#/editor/change/to/classic?continue=<?php echo urlencode($this->request->getURI()); ?>" id="switch-editor">
+                                    <span class="glyphicon glyphicon-credit-card"></span> Classic editor
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -150,4 +160,97 @@
     <textarea rows="10" cols="80" name="note_body" ><?php echo $body ?></textarea>
     <input type="submit" value="Create" />
 </form>
+<script>
+    $(document).ready(function() {
+        var meta = [
+           ["Save", "Ctrl + S", "CMD + S"], 
+           ["Change to upper-case", "Ctrl + U", "Ctrl + U"], 
+           ["Change to lower-case", "Ctrl + Shift + U", "Ctrl + Shift + U"],
+           ["Copy lines down", "Alt + Shift + <span class='glyphicon glyphicon-arrow-down'></span>", "CMD + Option + <span class='glyphicon glyphicon-arrow-down'></span>"],
+           ["Copy lines up", "Alt + Shift + <span class='glyphicon glyphicon-arrow-up'></span>", "CMD + Option + <span class='glyphicon glyphicon-arrow-up'></span>"],
+           ["Duplicate selection", "Ctrl + Shift + D", "CMD + Shift + D"],
+           ["Find", "Ctrl + F", "CMD + F"],
+           ["Find next", "Ctrl + K", "CMD + G"],
+           ["Find previous", "Ctrl + Shift + K", "CMD + Shift + K"],
+           ["Fold selection", "Alt + L | Ctrl + F1", "CMD + Option + L | CMD + F1"],
+           ["Go to end", "Ctrl + End", "CMD + End | CMD + <span class='glyphicon glyphicon-arrow-down'></span>"],
+           ["Go to line", "Ctrl + L", "CMD + L"],
+           ["Go to line start", "Home", "Home"],
+           ["Go to line end", "End", "End"],
+           ["Go to matching bracket", "Ctrl + P", ""],
+           ["Go to start", "Ctrl + Home", "CMD + Home"],
+           ["Move lines down", "Alt + <span class='glyphicon glyphicon-arrow-down'></span>", "Option + <span class='glyphicon glyphicon-arrow-down'></span>"],
+           ["Move lines up", "Alt + <span class='glyphicon glyphicon-arrow-up'></span>", "Option + <span class='glyphicon glyphicon-arrow-up'></span>"],
+           ["Remove line", "Ctrl + D", "CMD + D"],
+           ["Remove to line start", "Alt + Backspace", "CMD + Backspace"],
+           ["Remove to line end", "Alt + Delete", "Ctrl + K"],
+           ["Remove word left", "Ctrl + Backspace", "Option + Backspace"],
+           ["Remove word right", "Ctrl + Delete", "Option + Delete"],
+           ["Scroll line down", "Ctrl + <span class='glyphicon glyphicon-arrow-down'></span>", "CMD + <span class='glyphicon glyphicon-arrow-down'></span>"],
+           ["Scroll line up", "Ctrl + <span class='glyphicon glyphicon-arrow-up'></span>", ""],
+           ["Select down", "Shift + Down", "Shift + Down"],
+           ["Select left", "Shift + Left", "Shift + Left"],
+           ["Select line end", "Shift + End", "Shift + End"],
+           ["Select line start", "Shift + Home", "Shift + Home"],
+           ["Select page down", "Shift + PageDown", "Shift + PageDown"],
+           ["Select page up", "Shift + PageUp", "Shift + PageUp"],
+           ["Select right", "Shift + Right", "Shift + Right"],
+           ["Select to end", "Ctrl + Shift + End", "CMD + Shift + Down"],
+           ["Select to line end", "Alt + Shift + Right", "CMD + Shift + Right"],
+           ["Select to line start", "Alt + Shift + Left", "CMD + Shift + Left"],
+           ["Select to matching bracket", "Ctrl + Shift + P", ""],
+           ["Select to start", "Ctrl + Shift + Home", "CMD + Shift + Up"],
+           ["Select up", "Shift + Up", "Shift + Up"],
+           ["Select word left", "Ctrl + Shift + Left", "Option + Shift + Left"],
+           ["Select word right", "Ctrl + Shift + Right", "Option + Shift + Right"], 
+           ["Toggle comment", "Ctrl + /", "CMD + /"],
+        ];
+        meta.forEach(function(shortcut) {
+            var row =("<tr><td>"+shortcut[0]+"</td><td>"+shortcut[1]+"</td><td>"+
+                    String(shortcut[2]).replace(/(CMD)(\s*\+)/ig, '&#8984;$2')+"</td></tr>");
+            $(".ace-guide-panels table.table.shortcut-table tbody").append(row);
+        });
+    });
+</script>
+<div class="hide" id="ace-guide">
+    <div class="panel-group accordion ace-guide-panels">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent=".accordion" data-target=".mark-down-hint" href="#" class="collapsed">
+              Markdown
+            </a>
+          </h4>
+        </div>
+          <div class="mark-down-hint panel-collapse collapse">
+          <div class="panel-body">
+              This is editor 
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent=".accordion" data-target=".editor-shortcuts" href="#" class="collapsed">
+              Editor's Shortcuts
+            </a>
+          </h4>
+        </div>
+          <div class="editor-shortcuts panel-collapse collapse">
+          <div class="panel-body">
+              <table class="table table-striped shortcut-table">
+                  <thead>
+                      <tr>
+                          <th>Action</th>
+                          <th>PC (Windows/Linux)</th>
+                          <th>&#8984; Mac</th>
+                      </tr>
+                  </thead>
+                  <tbody></tbody>
+              </table>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
 <?php new \core\ui\html\dialogs() ?>
