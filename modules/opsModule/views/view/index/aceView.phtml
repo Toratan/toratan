@@ -87,7 +87,7 @@
                 success: function(data) {
                     setTimeout(function(data) {
                         window.open_savecloseModal(data, function(){
-                            alert("Saved");
+                            $(data).submit();
                         }, "Options");
                     }, 200, data);
                 },

@@ -10,66 +10,80 @@ $fetch_normalized = function($value, $type) {
     #editor-options table.table tbody tr { height: 40px;}
     #editor-options table.table tbody tr td:first-child { font-weight: bold; padding-top: 2.5%; width: 30%}
 </style>
-<div class="" id="editor-options">
-    <div class="text">
-        <table class="table table-hover table-striped">
-            <tbody>
-                <tr>
-                    <td>Theme</td>
-                    <td>
-                        <select class="form-control" id="theme-list" name='theme' onchange="window.editor.setTheme(this.value);">
-                          <?php foreach ($this->themes as $value): list($value, $orig_value) = $fetch_normalized($value, "theme"); ?>
-                            <option value="ace/theme/<?php echo str_replace(" ", "_", $orig_value)?>"><?php echo $value ?></option>
-                          <?php endforeach; ?>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Font Size</td>
-                    <td>
-                        <div class='input-group'>
-                            <select class="form-control" id="font-size-list" name='font-size' onchange="document.getElementById('editor').style.fontSize = this.value+'px';">
-                                <?php for($i = 12; $i<65; $i++): ?>
-                                <option value='<?php echo $i ?>'><?php echo $i ?></option>
-                                <?php endfor; ?>
+<script type="text/javascript">
+    function submit_options() {
+        var form = "form[name='editor-options-form']";
+        $.post( 
+            $(form).attr('action'), 
+            $(form).serialize(),
+            function(data) {
+                window.open_dialogModal(data);
+            }
+        );
+    };
+</script>
+<form action="<?php echo $this->request->getURI(); ?>" method="POST" name="editor-options-form" onsubmit="submit_options(); return false;">
+    <div class="" id="editor-options">
+        <div class="text">
+            <table class="table table-hover table-striped">
+                <tbody>
+                    <tr>
+                        <td>Theme</td>
+                        <td>
+                            <select class="form-control" id="theme-list" name='theme' onchange="window.editor.setTheme(this.value);">
+                              <?php foreach ($this->themes as $value): list($value, $orig_value) = $fetch_normalized($value, "theme"); ?>
+                                <option value="ace/theme/<?php echo str_replace(" ", "_", $orig_value)?>"><?php echo $value ?></option>
+                              <?php endforeach; ?>
                             </select>
-                            <span class='input-group-addon' title='Pixel'>px</span>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Tab Size</td>
-                    <td>
-                        <div class='input-group'>
-                            <select class="form-control" id="font-size-list" name='tab-size' onchange="window.editor.getSession().setTabSize(this.value);">
-                                <option value='2'>2</option>
-                                <option value='4'>4</option>
-                                <option value='8'>8</option>
-                            </select>
-                            <span class='input-group-addon' title='Space'>sp</span>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Wrap?</td>
-                    <td>
-                        <input type='checkbox' class='checkbox input-mini' name='use-wrap' onchange='window.editor.getSession().setUseWrapMode(this.checked);'/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Highlight Line?</td>
-                    <td>
-                        <input type='checkbox' class='checkbox input-mini' name='highlight-line' title='Highlight Active Line?' onchange="window.editor.setHighlightActiveLine(this.checked);"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Show Line#?</td>
-                    <td>
-                        <input type='checkbox' class='checkbox input-mini' name='show-line-no' title='Show Line#?' onchange="editor.renderer.setShowGutter(this.checked);"/>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Font Size</td>
+                        <td>
+                            <div class='input-group'>
+                                <select class="form-control" id="font-size-list" name='font-size' onchange="document.getElementById('editor').style.fontSize = this.value+'px';">
+                                    <?php for($i = 12; $i<65; $i++): ?>
+                                    <option value='<?php echo $i ?>'><?php echo $i ?></option>
+                                    <?php endfor; ?>
+                                </select>
+                                <span class='input-group-addon' title='Pixel'>px</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Tab Size</td>
+                        <td>
+                            <div class='input-group'>
+                                <select class="form-control" id="font-size-list" name='tab-size' onchange="window.editor.getSession().setTabSize(this.value);">
+                                    <option value='2'>2</option>
+                                    <option value='4'>4</option>
+                                    <option value='8'>8</option>
+                                </select>
+                                <span class='input-group-addon' title='Space'>sp</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Wrap?</td>
+                        <td>
+                            <input type='checkbox' class='checkbox input-mini' name='use-wrap' onchange='window.editor.getSession().setUseWrapMode(this.checked);'/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Highlight Line?</td>
+                        <td>
+                            <input type='checkbox' class='checkbox input-mini' name='highlight-line' title='Highlight Active Line?' onchange="window.editor.setHighlightActiveLine(this.checked);"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Show Line#?</td>
+                        <td>
+                            <input type='checkbox' class='checkbox input-mini' name='show-line-no' title='Show Line#?' onchange="editor.renderer.setShowGutter(this.checked);"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div> 
+</form>
 <?php unset($fetch_normalized); ?>

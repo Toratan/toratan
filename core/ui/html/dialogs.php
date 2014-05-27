@@ -42,9 +42,9 @@ class dialogs
             if(typeof(__buttons) === 'undefined') {
                 __buttons = [ default_modal_button.get() ];
             }
-            $(modal_tag+" .modal-body").html(data);
-            $(modal_tag+" .modal-title").html(title);
-            $(modal_tag+" .modal-footer").html('');
+            $(modal_tag+" .modal-body").html(data).show();
+            $(modal_tag+" .modal-title").html(title).show();
+            $(modal_tag+" .modal-footer").html('').show();
             for(var index = 0; index < __buttons.length; index++) {
                 var b = __buttons[index];
                 if(typeof(b.html) === 'undefined') {
@@ -76,12 +76,22 @@ class dialogs
                     });
                 }
             }
+            window.close_modal();
             $(modal_tag).modal('show');
             if(close_timeout > 0) {
                 setTimeout(function(tag){
                     $(tag).modal('hide');
                 }, close_timeout, modal_tag);
             }
+        };
+        /**
+         * open a dialog modal(without any button) 
+         * @param string info the info to put into modal body
+         * @param integer close_timeout the timeout for closing modal
+         */
+        window.open_dialogModal = function(info, close_timeout) {
+            open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-comment"></span> Dialog', close_timeout);
+            $("div#dialog-modal .modal-footer").hide();
         };
         /**
          * open an info modal  

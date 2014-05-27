@@ -71,11 +71,16 @@ class profile extends baseModel
     }
     /**
      * Get a profile instance with an user id
-     * @param string|integer $user_id a user id
+     * @param string|integer $user_id a user id(if passed NULL, the current user's user ID with be used)
      * @return profile the fetched profile
      */
-    public static function getInstance($user_id, $skip_settings = 0, $use_cache = 1)
+    public static function getInstance($user_id = NULL, $skip_settings = 0, $use_cache = 1)
     {
+        if(!$user_id) {
+            if(!user::IsSignedin())
+                throw new \zinux\kernel\exceptions\accessDeniedException;
+            $user_id = user::GetInstance()->user_id;
+        }
         if($use_cache)
         {
             $cached = self::fetch_from_cache($user_id, $skip_settings);
