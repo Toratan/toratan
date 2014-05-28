@@ -1,12 +1,14 @@
 <?php
 namespace core\ui\html;
 /**
- * Description of dialogs
- *
+ * Provides HTML/JS dialog modal interfaces
  * @author dariush
  */
 class dialogs
 {
+    /**
+     * Applies HTML/JS dialog modal interfaces
+     */
     function __construct ()
     {
 ?><script>
