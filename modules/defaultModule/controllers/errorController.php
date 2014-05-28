@@ -34,31 +34,31 @@ class errorController extends \zinux\kernel\controller\baseController
                 case $last instanceof \zinux\kernel\exceptions\invalidCookieException:
                 case $last instanceof \zinux\kernel\exceptions\invalidArgumentException:
                 case $last instanceof \zinux\kernel\exceptions\invalidOperationException:
-                    /* Bad Request */
+                    $msg = "Bad Request";
                     $code = 400;
                     break;
                 case $last instanceof \zinux\kernel\exceptions\securityException:
                 case $last instanceof \zinux\kernel\exceptions\accessDeniedException:
                 case $last instanceof \zinux\kernel\exceptions\permissionDeniedException:
-                    /* Unauthorized */
-                    $code = 401;
+                    $msg = "Forbidden";
+                    $code = 403;
                     break;
                 case $last instanceof \zinux\kernel\exceptions\notFoundException:
                 case $last instanceof \core\db\exceptions\dbNotFoundException:
-                    /* Not Found */
+                    $msg = "Not Found ";
                     $code = 404;
                     break;
                 default: 
-                    /* Intername Server Error */
+                    $msg = "Intername Server Error";
                     $code  = 500;
                     break;
                 case $last instanceof \zinux\kernel\exceptions\notImplementedException: 
-                    /* Not Implemented */
+                    $msg = "Not Implemented";
                     $code = 501; 
                     break;
             }
-            $this->view->setView($code);
-            header("HTTP/1.1 $code");
+            $this->view->setView("e$code");
+            header("HTTP/1.1 $code $msg");
         }
     }
 }
