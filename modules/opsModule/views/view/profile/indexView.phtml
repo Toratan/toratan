@@ -32,7 +32,7 @@
         </div>
     </a>
 <?php endif ; ?>
-    <a href="/profile/avatar/view/<?php echo $this->profile->user_id?>" target="__blank">
+    <a href="/profile/avatar/view/<?php echo $this->profile->user_id, "?", \zinux\kernel\security\security::GetHashString(array($this->profile->user_id)) ?>" target="__blank">
         <img id="thumbnail" width="200" height="200" class='img-responsive img-thumbnail' src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>';"  />
     </a>
 </div>

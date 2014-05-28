@@ -495,13 +495,16 @@ __RELOCATE:
     }
 
     /**
-    * The \modules\opsModule\controllers\profileController::avatar_viewAction()
+    * Provides view access to profile
+    * @access via /ops/avatar/view/(PROFILE_ID)?hash_sum
+    * @hash-sum PROFILE_ID
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function avatar_viewAction()
     {
-        if($this->request->CountIndexedParam() != 1)
+        if($this->request->CountIndexedParam() < 1)
             throw new \zinux\kernel\exceptions\invalidOperationException;
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->GetIndexedParam(0)));
         $this->view->profile = \core\db\models\profile::getInstance($this->request->GetIndexedParam(0));
         if(!$this->view->profile)
             throw new \zinux\kernel\exceptions\notFoundException("Profile not found!");
