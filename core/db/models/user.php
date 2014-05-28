@@ -185,4 +185,21 @@ class user extends baseModel
         # set the cookie
         $sec_cookie->set($name, $value, $expire_from_now, $path, $domain, $secure, $httponly);
     }
+    /**
+     * Returns user's realname in capitalized format if any exist; otherwise return the user's username
+     * @param bool $full_name TRUE if should be full name; FALSE if only want first name
+     * @param bool $restrict if the output name is empty throw exception?
+     * @return string
+     */
+    public function get_RealName_or_Username($full_name = 1, $restrict = 1) {
+        $fn = $this->profile->first_name;
+        if($full_name)
+            $fn = "$fn {$this->profile->last_name}";
+        $fn = ucwords(strtolower($fn));
+        if(!strlen($fn))
+            $fn = $this->user_name;
+        if($restrict && !strlen($fn))
+            throw new \zinux\kernel\exceptions\appException("Empty name not expected!");
+        return $fn;
+    }
 }

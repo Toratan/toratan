@@ -18,7 +18,7 @@
 <div style="margin-bottom: 10px;border-bottom: 1px solid #6a6a6a;padding-bottom: 10px;margin-top: -10px">
     <h2 style="margin-bottom: 0"><?php echo $n->note_title; ?></h2>
     <small>
-        <?php echo "Written by <a href='/author/{$writer->user_id}'>{$writer->username}</a> at {$n->created_at} placed at {$parent_info->folder_title}"?>
+        <?php echo "Written by <a href='/author/{$writer->user_id}'>{$writer->get_RealName_or_Username()}</a> at {$n->created_at} placed at {$parent_info->folder_title}"?>
     </small>
     <?php if(\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id) : ?>
                         <div style="float:right;">
