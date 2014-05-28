@@ -46,21 +46,21 @@ class indexController extends \zinux\kernel\controller\baseController
         # make sure that we get our data from POST
         if(!$this->request->IsPOST()) throw new \zinux\kernel\exceptions\invalidOperationException;
         \zinux\kernel\security\security::IsSecure($this->request->params,
-                array("type", "ops", "items", "continue"),
+                array("type", "op", "items", "continue"),
                 array('is_array' => $this->request->params["items"]));
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params,
                 array($this->request->params["type"], $this->request->params["continue"], session_id()));
         if(!in_array($this->request->params["type"], array("folder", "note", "link")))
                 throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `{$this->request->params["type"]}`");
-        if(!in_array($this->request->params["ops"], array("share", "archive", "trash", "restore", "remove")))
-                throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined ops `{$this->request->params["ops"]}`");
+        if(!in_array($this->request->params["op"], array("share", "archive", "trash", "restore", "remove")))
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined op `{$this->request->params["op"]}`");
         $continue = $this->request->params["continue"];
         $method = $_SERVER['REQUEST_METHOD'];
         $infos = $this->request->params["items"];
         $type = $this->request->params["type"];
-        $ops = strtolower($this->request->params["ops"]);
+        $op = strtolower($this->request->params["op"]);
         $ajax = isset($this->request->params["ajax"]);
-        $this->ops_index_interface = 1;
+        $this->op_index_interface = 1;
         $this->suppress_redirect = 1;
         $counter = 0;
         $uid = \core\db\models\user::GetInstance()->user_id;
@@ -72,8 +72,8 @@ class indexController extends \zinux\kernel\controller\baseController
         foreach ($infos as $info)
         {
             $item = \modules\opsModule\models\itemInfo::decode($info);
-            $func = $ops;
-            switch($ops) {
+            $func = $op;
+            switch($op) {
                 case "archive":
                     if(!isset($item->a)) throw new \zinux\kernel\exceptions\invalidOperationException;
                     $flag = $item->a;
@@ -99,8 +99,8 @@ __OP_FUNC:
             $ins->$func($item->i, $uid, $flag);
             $counter++;
         }
-        $op_name = "toggle-{$ops}d";
-        switch($ops) {
+        $op_name = "toggle-{$op}d";
+        switch($op) {
             case "archive":
                 $op_name = (!$flag ? "un-" : "")."archived";
                 break;
@@ -115,7 +115,7 @@ __OP_FUNC:
                 break;
         }
         $result = "<span class='glyphicon glyphicon-ok'></span> Total<b># $counter <u>$type".($counter>1?"s":"")."</u></b> ha".($counter>1?"ve":"s")." been <b>$op_name</b>.";
-        if($ops === "share") {
+        if($op === "share") {
             $result =
                     ($shared ? sprintf("<span class='glyphicon glyphicon-ok'></span> <b>#$shared $type%s</b> ha%s been <b>shared</b>.<br />", ($shared>1?"s":""), ($shared>1?"ve":"s")) : "").
                     ($unshared ? sprintf("<span class='glyphicon glyphicon-ok'></span> <b>#$unshared $type%s</b> ha%s been <b>un-shared</b>.<br />", ($unshared>1?"s":""), ($unshared>1?"ve":"s")) : "");
