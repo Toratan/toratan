@@ -6,15 +6,6 @@
         })(jQuery);
     </script>
     <div class="container">
-        <div class="alert alert-block alert-danger">
-            <strong><span class="glyphicon glyphicon-remove"></span> Oops!</strong>
-            <hr />
-            <div class="text-center">
-                <?php echo $this->content; ?>
-            </div>
-            <div class="clearfix"></div>
-            <div class="pull-right" style="margin-top: 22px;margin-right: -15px;">
-                <a href="/d/0.folders" class="btn btn-primary">Go Back</a>
-            </div>
-        </div>
+        <?php echo $this->content; ?>
+    </div>    
 <?php $glayout->render_footer(); ?>
