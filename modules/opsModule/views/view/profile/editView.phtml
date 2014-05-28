@@ -57,8 +57,10 @@
                     <?php if($this->step>1): ?>
                     <input type="submit" name="back"  value="Back" class="pull-right btn btn-info" style="margin-right:10px;" formnovalidate/>
                     <?php endif; ?>
+                    <?php if ($this->step > 1) : ?>
                     <input type="submit" name="cancel"  value="Cancel" class="pull-left btn btn-danger" formnovalidate/>
-                    <input type="submit" name="skip"  value="Save & Skip " class="pull-left btn btn-warning" formnovalidate style="margin-left: 1%"/>
+                    <?php endif; ?>
+                    <input type="submit" name="skip"  value="Save & Skip " class="pull-left btn btn-warning" style="margin-left: 1%"/>
                 </div>
             </div>
         </form>
