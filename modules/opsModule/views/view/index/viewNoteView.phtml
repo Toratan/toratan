@@ -19,7 +19,7 @@
             var time = moment(sTime, format).format("lll");
             var time_str = (moment(sTime, format).fromNow("lll")) + " ago";
             $(this)
-                .attr('title', time)
+                .attr('title', 'Updated at : ' + time)
                 .children('time')
                 .attr('title', $(this).attr('title'))
                 .addClass(".time-inited")
@@ -53,11 +53,14 @@
         <tr>
             <td>
                 <topic-meta>
-                    &mdash;&mdash; Written by <a href='<?php echo $author_link ?>' rel='author' target='__blank'>
+                    &mdash;&mdash;
+                    Written by
+                    <a href='<?php echo $author_link ?>' rel='author' target='__blank'>
                         <?php echo $writer->get_RealName_or_Username() ?>
-                    </a> at 
-                    <?php $dt = $n->created_at ?>
-                    <abbr title="<?php echo $dt; ?>" class="initialism timeago">
+                    </a>
+                    &angmsd;
+                    <?php $dt = $n->updated_at ?>
+                    <abbr title="<?php echo $dt; ?>" class="initialism timeago" style='cursor: pointer!important'>
                         <time datetime="<?php echo $dt; ?>" >
                             <?php echo $dt; ?>
                         </time>
