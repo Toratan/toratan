@@ -47,7 +47,7 @@
         <tr>
             <td style='width: 30%'>Name</td>
             <td>
-                <span class='' style=''><?php echo "{$this->profile->first_name} {$this->profile->last_name}"?></span>
+                <span class='' style=''><?php echo ucwords(strtolower("{$this->profile->first_name} {$this->profile->last_name}")) ?></span>
                 <?php if(!empty($this->profile->nick_name)): ?>(<abbr title='Also Known As'><?php echo $this->profile->nick_name ?></abbr>)<?php endif; ?>
             </td>
             <?php if($is_profile_owner): ?><td rowspan="3"><a href='/profile/edit/step/1' class='pull-right' >Edit</a></td><?php endif; ?>

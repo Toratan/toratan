@@ -10,6 +10,7 @@ class profileController extends \zinux\kernel\controller\baseController
     const PROFILE_NOT_CREATED = 0;
     const PROFILE_SKIPPED = 1;
     const PROFILE_CREATED = 2;
+    const PROFILE_DONE = 3;
     /**
     * The modules\opsModule\controllers\profileController::IndexAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -135,18 +136,15 @@ class profileController extends \zinux\kernel\controller\baseController
                     $profile_status = self::PROFILE_SKIPPED;
                     # purging un-necessary indexes
                     unset($this->request->POST['skip']);
-                    # save ops section
+                    # go to save ops section
                     goto __SAVE_OPS;
                 case isset($this->request->params['cancel']):
-                    # destroy any data on session cache
-                    $sc->deleteAll();
-                    # relocate the browser
-                    if(\core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id)->getSetting("/profile/status"))
-                        header("location: /profile");
-                    else
-                        header("location: /");
-                    exit;
-                
+                    #   indicate that profile is done
+                    $profile_status = self::PROFILE_DONE;
+                    # purging un-necessary indexes
+                    unset($this->request->POST['cancel']);
+                    # go to deploy section
+                    goto __DEPLOY;
                 default:
                     throw new \zinux\kernel\exceptions\invalidOperationException;
             }
@@ -158,6 +156,7 @@ __SAVE_OPS:
             }
             # save on session cache socket
             $sc->save("step#$current_step", $this->request->POST);
+__DEPLOY:
             # if we are on submit mession?
             switch(@$profile_status) {
                 case self::PROFILE_CREATED:
@@ -166,7 +165,15 @@ __SAVE_OPS:
                     $this->submitProfile($sc);
                     # save the profile creation status
                     \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id)->setSetting("/profile/status", $profile_status);
-                    break;
+                case self::PROFILE_DONE:
+                    # destroy any data on session cache
+                    $sc->deleteAll();
+                    # relocate the browser
+                    if(\core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id)->getSetting("/profile/status"))
+                        header("location: /profile");
+                    else
+                        header("location: /");
+                    exit;                    
             }
         }
         # IF ANYTHING HAPPENED
