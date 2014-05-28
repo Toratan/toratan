@@ -1,4 +1,6 @@
 <?php
+    if(!isset($this->route) || !is_array($this->route))
+        throw new \zinux\kernel\exceptions\invalidArgumentException("`route` no provied");
     $writer = \core\db\models\user::find($this->instance->owner_id);
     $n = $this->instance;
     $this->is_archive = $n->is_archive;
@@ -8,6 +10,10 @@
     $author_link = "/profile/{$writer->user_id}";
     $cURL = $this->request->getURI();
     $is_owner = (\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id);
+	# if the note is in root?    
+	if(count($this->route) > 1)
+		# remove the root title(we don't want to have ROOT in html, it's pretty in this way)
+        $this->route[0]->folder_title = "";
     $get_options_links = function(\core\db\models\note $note, $type, $cURL) {
         $uri = '';
         switch(strtolower($type)) {
@@ -91,8 +97,8 @@
     });
 </script>
 <ol class="breadcrumb">
-    <?php $count = 0; foreach($this->route as $folder) : $active = count($this->route) == ++$count; ?>
-        <li <?php echo $active?"class='active'":""?>><?php echo "<a href='/#!/d/{$folder->folder_id}.".(!$active?"folders":"notes")."'>", $folder->folder_title, "</a>" ?></li>
+    <?php $count = 0; foreach($this->route as $folder) : $active = count($this->route) == ++$count; $should_link = ($is_owner && strlen($folder->folder_title)); ?>
+        <li <?php echo $active?"class='active'":""?>><?php echo $should_link ? "<a href='/#!/d/{$folder->folder_id}.".(!$active?"folders":"notes")."'>":"", $folder->folder_title, $should_link ? "</a>" : "" ?></li>
     <?php endforeach;unset($count);?>
 </ol>
 <style>
