@@ -20,7 +20,8 @@ class opsBootstrap
             array("index", "view"),
             array("index", "goto"),
             array("index", "explorer"),
-            array("profile", "index")
+            array("profile", "index"),
+            array("profile", "avatar_view"),
         );
         # the normalized currently requested {conttroller => action} 
         $current_request = array(
