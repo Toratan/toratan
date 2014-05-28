@@ -64,8 +64,8 @@ class dialogs
                 t += (">"+b.html + '</button>');
                 $(modal_tag+" .modal-footer").append(t).html();
                 if(typeof(b.callback) !== 'undefined' && b.callback !== null) {
+                    var callback = b.callback;
                     $(modal_tag+" .modal-footer button#"+btn_id).click(function() {
-                        var callback = b.callback;
                         // we have to do this to prevent a UI bug
                         $(modal_tag).on('hidden.bs.modal', function () {
                             // unregister current handler
@@ -151,7 +151,9 @@ class dialogs
             no.attrib[0].value = "no";
             if(is_yes_primary) no.cssClass[0] = "btn-default";
             else yes.cssClass[0] = "btn-default";
-            open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-question-sign"></span> Confirm', close_timeout, [no, yes]);
+            var btns = [no, yes];
+            if(!is_yes_primary) btns.reverse();
+            open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-question-sign"></span> Confirm', close_timeout, btns);
         };
         /**
          * open a SAVE/CLOSE modal
