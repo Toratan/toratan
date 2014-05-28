@@ -28,6 +28,12 @@
         </div><!-- end of container -->
         <script>
             (function() {
+                // if we have directory jumped into explorer frame
+                if(window.top === window) {
+                    // redirect the URL
+                    window.location = "/#!" + window.location.pathname;
+                    return;
+                }
                 window.setTitle = function (title) {window.top.document.title = title;};
                 window.getLinkHash = function(link) { return "#!/"+String(link).replace(/^(\/frame\/e)?(\/)?/ig,""); };
                 window.updateHash = function(hash) { window.top.location.replace(String(window.top.location).split("#")[0] + hash); };
