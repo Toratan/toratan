@@ -70,7 +70,8 @@
         prettyPrint();
         $("#owner-options [role='menu'] a.delete-permanent").click(function(e) {
             e.preventDefault();
-            var href = $(this).attr('href');
+            // for fail-safe
+            var href = String($(this).attr('href')).split("#!")[1];
             window.open_yesnoModal("Are you sure do you want to delete this note <b>permanently</b>?", function(){
                 window.location = href;
             }, undefined, false);
@@ -136,7 +137,7 @@
                 <div class="pull-right" id='owner-options'>
                     <div class="input-group inline" >
                         <div class="btn-group">
-                            <button class="btn btn-link dropdown-toggle" data-toggle="dropdown" tabindex="-1" >
+                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1" >
                                 <span class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
@@ -148,7 +149,7 @@
                                 <?php if($this->is_trash): ?>
                                 <li class='divider'></li>
                                 <li>
-                                    <a href="<?php echo $get_options_links($n, 'restore', $cURL) ?>" style="color:#787878">
+                                    <a href="<?php echo $get_options_links($n, 'restore', $cURL) ?>" style="">
                                         <span class='glyphicon glyphicon-cloud-upload'></span> Restore
                                     </a>
                                 </li>
@@ -167,8 +168,9 @@
                                 <?php endif; ?>
                                 <li class='divider'></li>
                                 <li>
-                                    <a href="<?php echo $get_options_links($n, 'delete', $cURL); ?>" class='alert-<?php echo $this->is_trash?"danger delete-permanent":"warning"?>'>
-                                        <span class='glyphicon glyphicon-trash'></span> Delete
+                                    <a href="<?php echo $this->is_trash ? "#!": "" /* we add # to delete permanent op. for fail-safe and only launch if a notice dialog pop-out by JS*/,
+                                            $get_options_links($n, 'delete', $cURL); ?>" class='<?php echo $this->is_trash?"delete-permanent":""?>' style='color:#777'>
+                                        <span class='glyphicon glyphicon-trash'></span> <?php echo $this->is_trash?"Delete permanent":"Put to trash" ?>
                                     </a>
                                 </li>
                             </ul>
