@@ -177,7 +177,7 @@ class dialogs
     })(jQuery);
 </script>
 <!-- general modal -->
-<div id="dialog-modal" class="modal fade" role="general-dialog" aria-labelledby="ops-container-info" aria-hidden="true" tabindex="-1">
+<div id="dialog-modal" class="modal fade" role="general-dialog" aria-labelledby="ops-container-info" aria-hidden="true" tabindex="-1" data-backdrop="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -190,7 +190,7 @@ class dialogs
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div id="wait-modal" class="modal fade" role="wait-dialog" aria-labelledby="wait-container-info" aria-hidden="true" tabindex="-1">
+<div id="wait-modal" class="modal fade" role="wait-dialog" aria-labelledby="wait-container-info" aria-hidden="true" tabindex="-1" data-backdrop="false">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-body"><div class='text-center'><img src='/access/img/ajax-loader.gif' /></div></div>
