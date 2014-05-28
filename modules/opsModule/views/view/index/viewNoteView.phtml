@@ -10,7 +10,6 @@
     $is_owner = (\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id);
     $get_options_links = function(\core\db\models\note $note, $type, $cURL) {
         $uri = '';
-//        $uri = '/ops/type/note/op';
         switch(strtolower($type)) {
             case "delete":
                 $uri =
@@ -49,34 +48,6 @@
             default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined type `$type`.");
         }
         return $uri = "$uri&continue=$cURL";
-//        switch(strtolower($type)) {
-//            case "delete":
-//                    if($note->is_trash)
-//                        $uri .= "/remove";
-//                    else
-//                        $uri .= "/trash";
-//                    break;
-//            case "restore":
-//                    $uri .= "/restore";
-//                    break;
-//            case "edit":
-//                return
-//                    "/edit/".
-//                    $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
-//                    "?".\zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
-//                    break;
-//            case "archive":
-//                    $uri .= "/archive";
-//                    break;
-//            case "share":
-//                    $uri .= "/share";
-//                break;
-//            default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined type `$type`");
-//        }
-//        return 
-//                "$uri?items[]=".modules\opsModule\models\itemInfo::encode($note).
-//                "&continue=$cURL&suppress_layout=1".
-//                \zinux\kernel\security\security::GetHashString(array("note", $cURL, session_id()));
     };
 ?>
 <script type="text/javascript">
