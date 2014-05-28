@@ -6,22 +6,72 @@
     $this->is_trash = $n->is_trash;
     $this->layout->AddMeta("description", $n->note_title);
     $this->layout->addTitle($n->note_title);
+    $author_link = "/profile/{$writer->user_id}";
 ?>
 <style>
     #note-body {padding: 0 10px;}
 </style>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('abbr.timeago').each(function(){
+            var sTime = $(this).find('time').attr("datetime");
+            var format = 'ddd, DD MMM YYYY HH:mm:ss ZZ';
+            var time = moment(sTime, format).format("lll");
+            var time_str = (moment(sTime, format).fromNow("lll")) + " ago";
+            $(this)
+                .attr('title', time)
+                .children('time')
+                .attr('title', $(this).attr('title'))
+                .addClass(".time-inited")
+                .html(time_str);
+        });
+    });
+</script>
 <ol class="breadcrumb">
     <?php $count = 0; foreach($this->route as $folder) : $active = count($this->route) == ++$count; ?>
         <li <?php echo $active?"class='active'":""?>><?php echo "<a href='/#!/d/{$folder->folder_id}.".(!$active?"folders":"notes")."'>", $folder->folder_title, "</a>" ?></li>
     <?php endforeach;unset($count);?>
 </ol>
-<div style="margin-bottom: 10px;border-bottom: 1px solid #6a6a6a;padding-bottom: 10px;margin-top: -10px">
-    <h2 style="margin-bottom: 0"><?php echo $n->note_title; ?></h2>
-    <small>
-        <?php echo "Written by <a href='/author/{$writer->user_id}'>{$writer->get_RealName_or_Username()}</a> at {$n->created_at} placed at {$parent_info->folder_title}"?>
-    </small>
+<style>
+    table#title {margin:0; margin-top: -10px; margin-bottom: 5px;}
+    table#title tr td{border: 0;padding: 0}
+    topic-meta {font-size: 80%;line-height: 1.42857143;color: #999;}
+</style>
+<table class="table table-responsive " id="title">
+    <tbody>
+        <tr>
+            <?php list($avatar, $def_avatar) = \core\ui\html\avatar::get_avatar_link($writer->user_id); ?>
+            <td rowspan="2" style="width: 80px;height: 80px;">
+                <a href='<?php echo $author_link ?>' rel='author' target='__blank'>
+                    <img src="<?php echo $avatar ?>" onerror="this.src='<?php echo $def_avatar ?>'" class="image img-responsive img-thumbnail" style="width: 90%"/>
+                </a>
+            </td>
+            <td colspan="2" class='h2 text-justify' style='line-height: initial;'>
+                <?php echo str_repeat($n->note_title. " ", 100); ?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <topic-meta>
+                    &mdash;&mdash; Written by <a href='<?php echo $author_link ?>' rel='author' target='__blank'>
+                        <?php echo $writer->get_RealName_or_Username() ?>
+                    </a> at 
+                    <?php $dt = $n->created_at ?>
+                    <abbr title="<?php echo $dt; ?>" class="initialism timeago">
+                        <time datetime="<?php echo $dt; ?>" >
+                            <?php echo $dt; ?>
+                        </time>
+                    </abbr>
+                    <?php unset($dt); ?>
+                </topic-meta >
+            </td>
+            <td class="pull-right">HHIHIH</td>
+        </tr>
+    </tbody>
+</table>
     <?php if(\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id) : ?>
-                        <div style="float:right;">
+    <div class="pull-right">
+<!--                        <div style="float:right;">
                             <a href="/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">delete</a> | 
                             <a href="/edit/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
                             <?php if($this->is_trash): ?> | 
@@ -30,15 +80,16 @@
                                 <a href="/archive/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style=""><?php echo $this->is_archive?"de-":""?>archive</a>| 
                                 <a href="/share/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/share/<?php echo  $n->is_public?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style=""><?php echo $n->is_public?"de-":""?>share</a>
                             <?php endif; ?>
-                        </div>
-    <?php endif; ?>
-</div>
+                        </div>-->
+    </div>
+<?php endif; ?>
 <script>
     $(document).ready(function(){
         prettyPrint();
     });
 </script>
-<div id="note-body">
+<hr style='margin: 0'/>
+<div id="note-body" style="width: 100%">
 <?php
     (new \vendor\markdown\Ciconia\CiconiaInitializer())->Execute();
     use Ciconia\Extension\Gfm;
@@ -52,5 +103,6 @@
     echo $ciconia->render($n->note_body);
 ?>
 </div>
+<script src="/access/js/moment.min.js"></script>
 <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
 <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
