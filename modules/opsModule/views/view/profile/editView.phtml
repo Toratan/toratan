@@ -36,6 +36,13 @@
         </style>
         <form action="/profile/edit/step/<?php echo $this->step ?>?<?php echo  $this->hash ?>" method="POST" class="form">
             <div id="profile-content">
+<?php if(isset($this->errors) && count($this->errors)): ?>
+<ol class='text-danger' style="list-style-image: url('/access/img/bullet.png');padding:0;margin:10px 35px 0;font-weight: bold">
+<?php foreach ($this->errors as $error) : ?>
+    <li><?php echo $error ?></li>
+<?php endforeach; ?>
+</ol>
+<?php endif; ?>
 <?php
     $this->post_back = isset($this->post_back) && $this->post_back && isset($this->post) && is_array($this->post);
     $this->user = \core\db\models\user::getInstance();
@@ -46,7 +53,7 @@
         case 1:
         case 2:
         case $max_step:
-            require realpath(dirname(__FILE__)."/profile-steps/step{$this->step}.php");
+            require "profile-steps/step{$this->step}.php";
             break;
             throw new \zinux\kernel\exceptions\invalidOperationException("The step: '{$this->step}' is not defined...");
     }

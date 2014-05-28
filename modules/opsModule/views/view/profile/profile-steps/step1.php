@@ -9,23 +9,23 @@
 </style>
 <div id="step1">
     <div id="name-section" class="row">
-        <div class="">
-            <label><strong class="">First Name</strong></label>
+        <div class="<?php echo isset($this->errors["first_name"])?"has-error":""?>">
+            <label class="control-label"><strong class="">First Name</strong></label>
             <input type="text" name="first_name" class="form-control input input-medium  col-lg-4" required value="<?php echo $this->profile->first_name ?>" <?php \strlen($this->profile->first_name)?"":"autofocus" ?>/>
         </div>
         <div class="">
-            <label><strong>Nick Name</strong></label>
+            <label class="control-label"><strong>Nick Name</strong></label>
             <input type="text" name="nick_name" class="form-control input input-medium col-lg-4" value="<?php echo $this->profile->nick_name ?>"/>
         </div>
-        <div class="">
-            <label><strong class="">Last Name</strong></label>
+        <div class="<?php echo isset($this->errors["first_name"])?"has-error":""?>">
+            <label class="control-label"><strong class="">Last Name</strong></label>
             <input type="text" name="last_name"  class="form-control input input-medium col-lg-4" required value="<?php echo $this->profile->last_name ?>"/>
         </div>
     </div>
     <div class="clearfix" ></div>
     <hr />
     <div id="birthday-section" class="clearfix">
-        <label><strong class="" >Birthday</strong></label>
+        <label class="control-label"><strong class="" >Birthday</strong></label>
         <div class="">
             <select name="birth_month" class="form-control" required>
                 <option disabled="disabled" style="color:#e6e6e6">Month</option>
@@ -44,7 +44,7 @@
     <div class="clearfix" ></div>
     <hr />
     <div id="gender" class="clearfix" style="padding-bottom: 20px;">
-        <label><strong class="">Gender</strong></label>
+        <label class="control-label"><strong class="">Gender</strong></label>
         <div class="">
             <select name="is_male" class="form-control" required>
                 <option <?php echo $this->profile->is_male?'selected="selected"':''?> value="1">Male</option>

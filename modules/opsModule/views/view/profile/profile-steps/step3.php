@@ -14,7 +14,7 @@
 </script>
 <div id="step3">
     <div class="form-group">
-        <strong class="control-label">Public Email Address</strong>
+        <label class="control-label"><strong>Public Email Address</strong></label>
         <?php if(!count($this->profile->public_email)): ?>
         <input type="text" class="form-control input input-medium" name="public_email[]" value="" autofocus/>
         <?php else: foreach(explode(";", $this->profile->public_email) as $value): ?>
@@ -28,7 +28,7 @@
     <hr />
     
     <div class=" bit-left form-group">
-        <strong class="control-label">Phone Number</strong>
+        <label class="control-label"><strong>Phone Number</strong></label>
         <?php if(!count($this->profile->phone)): ?>
         <input type="text" class="form-control input input-medium" name="phone[]" value="" />
         <?php else: foreach(explode(";", $this->profile->phone) as $value): ?>
@@ -42,7 +42,7 @@
     <hr />
     
     <div class="bit-left form-group">
-        <strong class="control-label">Online Site</strong>
+        <label class="control-label"><strong>Online Site</strong></label>
         <?php if(!count($this->profile->site)): ?>
         <input type="text" class="form-control input input-medium" name="site[]" value="" />
         <?php else: foreach(explode(";", $this->profile->site) as $value): ?>

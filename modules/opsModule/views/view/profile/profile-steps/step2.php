@@ -4,17 +4,17 @@
 </style>
 <div id="step2">
     <div class="" >
-        <strong class="">Introduction</strong>
+        <label class="control-label"><strong>Introduction</strong></label>
         <textarea type="text" name="intro" class="form-control input input-medium" <?php echo strlen($this->profile->intro)?"":"autofocus" ?>><?php echo $this->profile->intro ?></textarea>
     </div>
     <div class="clearfix" ></div>
     <hr />
     <div class="">
-        <strong class="">Occupation</strong>
+        <label class="control-label"><strong>Occupation</strong></label>
         <textarea type="text" name="occu" class="form-control input input-medium"  ><?php echo $this->profile->occu ?></textarea>
     </div>
     <div class="">
-        <strong class="">Education</strong>
+        <label class="control-label"><strong>Education</strong></label>
         <textarea type="text" name="edu" class="form-control input input-medium" ><?php echo $this->profile->edu ?></textarea>
     </div>
     <div class="clearfix"></div>
@@ -22,7 +22,7 @@
     
     <div id="block3" class="block">
         <div class="">
-            <strong class="">Country</strong>
+            <label class="control-label"><strong>Country</strong></label>
             <select name="country" class="form-control input input-medium ">
                 <option selected="selected" class="" disabled="disabled" style="color:#e6e6e6">Choose</option>
                 <?php
@@ -41,7 +41,7 @@
             </select>
         </div>
         <div class="">
-            <strong class="">Town</strong>
+            <label class="control-label"><strong>Town</strong></label>
             <input type="text" name="city" class="form-control input input-medium " value="<?php echo $this->profile->city ?>" />
         </div>
     </div>

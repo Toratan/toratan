@@ -77,6 +77,8 @@ class profileController extends \zinux\kernel\controller\baseController
         $current_step = $this->view->step = 1;
         # provide hash value for view
         $this->view->hash = \zinux\kernel\security\security::GetHashString(array(session_id()));
+        # init error container
+        $this->view->errors = array();
         /** open up a session cache socket **/
         $sc = new \zinux\kernel\caching\sessionCache(__METHOD__);
         try
@@ -104,8 +106,9 @@ class profileController extends \zinux\kernel\controller\baseController
             {
                 # are we going to back?
                 case isset($this->request->params['back']):
-                    if($current_step==1)
-                        throw new \zinux\kernel\exceptions\invalidOperationException("Cannot go back!!!");
+                    if($current_step == 1)
+                        # make user back to step `1` again!
+                        $this->view->step = 2;
                     # decreasing step count
                     $this->view->step--;
                     # purging un-necessary indexes
@@ -133,13 +136,7 @@ class profileController extends \zinux\kernel\controller\baseController
                     # purging un-necessary indexes
                     unset($this->request->POST['skip']);
                     # save ops section
-    __SAVE_OPS:
-                    # save on session cache socket
-                    $sc->save("step#$current_step", $this->request->POST);
-                    # submit profile with created session cache
-                    $this->submitProfile($sc);
-                    # save the profile creation status
-                    \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id)->setSetting("/profile/status", $profile_status);
+                    goto __SAVE_OPS;
                 case isset($this->request->params['cancel']):
                     # destroy any data on session cache
                     $sc->deleteAll();
@@ -153,8 +150,24 @@ class profileController extends \zinux\kernel\controller\baseController
                 default:
                     throw new \zinux\kernel\exceptions\invalidOperationException;
             }
+__SAVE_OPS:
+            if(!$this->validate_inputs($current_step)) {
+                # back to current step(do not proceed)
+                $this->view->step = $current_step;
+                return;
+            }
             # save on session cache socket
             $sc->save("step#$current_step", $this->request->POST);
+            # if we are on submit mession?
+            switch(@$profile_status) {
+                case self::PROFILE_CREATED:
+                case self::PROFILE_SKIPPED:
+                    # submit profile with created session cache
+                    $this->submitProfile($sc);
+                    # save the profile creation status
+                    \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id)->setSetting("/profile/status", $profile_status);
+                    break;
+            }
         }
         # IF ANYTHING HAPPENED
         catch(\Exception $e)
@@ -164,6 +177,50 @@ class profileController extends \zinux\kernel\controller\baseController
             # THROW THE EXCEPTION TO GENERAL EXCEPTION HANDLER
             throw $e;
         }
+    }
+    /**
+     * Validates {$this->request->params}
+     * @param ineteger $current_step
+     * @return bool true if validation successed; otherwise false
+     */
+    private function validate_inputs($current_step) {
+        # the validator metadata
+        # note: occurrence_step can be array of multiple step# e.g ... "occurrence_step" => array(1, 3, 5)
+        $validators = array(
+           "first_name" => array(
+                   "occurrence_step"   => 1,
+                   "func"                         =>"strlen", 
+                   "e-msg"                      => "First name cannot be empty"),     
+           "last_name" => array(
+                   "occurrence_step"     => 1,
+                   "func"                           =>"strlen", 
+                   "e-msg"                        => "Last name cannot be empty"),     
+        );
+        # the validator iterator
+        foreach($validators as $index => $validator) {
+            # check if validation function exists?
+            if(!function_exists($validator["func"]))
+                throw new \zinux\kernel\exceptions\invalidOperationException("Function `{$validator["func"]}` not found.");
+            # make indexes can be occure in multiple steps
+            if(!is_array($validator["occurrence_step"]))
+                $validator["occurrence_step"] = array($validator["occurrence_step"]);
+            # current validator should be launched in current step#
+            if(in_array($current_step, $validator["occurrence_step"])) {
+                # fetch param's value
+                $value = @$this->request->params[$index];
+                # if validation failed?
+                if(!isset($value) || !@$validator["func"]($value))
+                    # inject the error message
+                    $this->view->errors[$index] = isset($validator["e-msg"]) ? $validator["e-msg"] : "Invalid parameter";
+            } else {
+                # if we meet an index which is not expected!!??
+                if(isset($this->request->params[$index]))
+                    # output an error too!
+                    $this->view->errors[$index] = "Un-expected `$index` parameter";
+            }
+        }
+        # if any error exists? validation fails; otherwise the params are valid
+        return count($this->view->errors) > 0 ? false : true;
     }
     /**
      * Submits a profile data saved on a session cache
