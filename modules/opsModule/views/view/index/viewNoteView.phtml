@@ -6,21 +6,18 @@
     $this->layout->AddMeta("description", $n->note_title);
     $this->layout->addTitle($n->note_title);
     $author_link = "/profile/{$writer->user_id}";
+    $cURL = $this->request->getURI();
     $is_owner = (\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id);
-    $get_options_links = function(\core\db\models\note $note, $type) {
-        $uri = '/ops/type/note/ops';
+    $get_options_links = function(\core\db\models\note $note, $type, $cURL) {
+        $uri = '';
+//        $uri = '/ops/type/note/op';
         switch(strtolower($type)) {
             case "delete":
-                $auri =
+                $uri =
                     "/delete/".
                     $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
                     "/trash/".($note->is_trash ? \core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH).
                     "?".zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
-                    if($note->is_trash) {
-                        $uri .= "/remove";
-                    } else
-                        $uri .= "/trash";
-                    $uri = "$uri?items[]=$note->note_id";
                     break;
             case "restore":
                 $uri =
@@ -28,7 +25,6 @@
                     $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
                     "/trash/".(\core\db\models\item::DELETE_RESTORE).
                     "?".zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
-                    return $uri;
                     break;
             case "edit":
                 $uri = 
@@ -47,19 +43,67 @@
                 $uri = 
                     "/share/".
                     $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
-                    "/share/".($this->is_public ? 0 : 1).
+                    "/share/".($note->is_public ? 0 : 1).
                     "?".\zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
                     break;
             default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined type `$type`.");
         }
-        return "$uri&ajax=1&continue=none&suppress_layout=1".\zinux\kernel\security\security::GetHashString(array("note", "none", session_id()));
+        return $uri = "$uri&continue=$cURL";
+//        switch(strtolower($type)) {
+//            case "delete":
+//                    if($note->is_trash)
+//                        $uri .= "/remove";
+//                    else
+//                        $uri .= "/trash";
+//                    break;
+//            case "restore":
+//                    $uri .= "/restore";
+//                    break;
+//            case "edit":
+//                return
+//                    "/edit/".
+//                    $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
+//                    "?".\zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
+//                    break;
+//            case "archive":
+//                    $uri .= "/archive";
+//                    break;
+//            case "share":
+//                    $uri .= "/share";
+//                break;
+//            default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined type `$type`");
+//        }
+//        return 
+//                "$uri?items[]=".modules\opsModule\models\itemInfo::encode($note).
+//                "&continue=$cURL&suppress_layout=1".
+//                \zinux\kernel\security\security::GetHashString(array("note", $cURL, session_id()));
     };
 ?>
-<style>
-    #note-body {padding: 0 10px;}
-</style>
 <script type="text/javascript">
-    $(document).ready(function() {
+    (function(){
+        window.ajax_start = function(){ window.open_waitModal();};
+        window.ajax_stop = function() { window.open_waitModal(true);};
+        window.ajax_error = function (event, jqXHR, settings, exception) {
+            // extract the body's content of error data text
+            var error = jqXHR
+                    .responseText
+                        .replace(/^[\S\s]*<body[^>]*?>/i, "")
+                        .replace(/<\/body[\S\s]*$/i, "");
+            window.open_errorModal(error);
+        };
+        $(window).ajaxStart(window.ajax_start);
+        $(window).ajaxStop(window.ajax_stop);
+        $(window).ajaxError(window.ajax_error);
+    })(jQuery);
+    $(document).ready(function(){
+        prettyPrint();
+        $("#owner-options [role='menu'] a.delete-permanent").click(function(e) {
+            e.preventDefault();
+            var href = $(this).attr('href');
+            window.open_yesnoModal("Are you sure do you want to delete this note <b>permanently</b>?", function(){
+                window.location = href;
+            }, undefined, false);
+        });
         $('abbr.timeago').each(function(){
             var sTime = $(this).find('time').attr("datetime");
             var format = 'ddd, DD MMM YYYY HH:mm:ss ZZ';
@@ -83,6 +127,7 @@
     table#title {margin:0; margin-top: -10px; margin-bottom: 5px;}
     table#title tr td{border: 0;padding: 0}
     topic-meta {font-size: 80%;line-height: 1.42857143;color: #999;}
+    #note-body {padding: 10px; text-align: justify}
 </style>
 <table class="table table-responsive " id="title">
     <tbody>
@@ -94,7 +139,7 @@
                 </a>
             </td>
             <td colspan="2" class='h2 text-justify' style='line-height: initial;'>
-                <?php echo str_repeat($n->note_title. " ", 112); ?>
+                <?php echo $n->note_title ?>
             </td>
         </tr>
         <tr>
@@ -125,33 +170,33 @@
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <li>
-                                    <a href="<?php echo $get_options_links($n, 'edit') ?>" style="color:#111100">
+                                    <a href="<?php echo $get_options_links($n, 'edit', $cURL) ?>" style="color:#111100">
                                         <span class='glyphicon glyphicon-edit'></span> Edit
                                     </a>
                                 </li>
                                 <?php if($this->is_trash): ?>
                                 <li class='divider'></li>
                                 <li>
-                                    <a href="<?php echo $get_options_links($n, 'restore') ?>" style="color:#787878">
+                                    <a href="<?php echo $get_options_links($n, 'restore', $cURL) ?>" style="color:#787878">
                                         <span class='glyphicon glyphicon-cloud-upload'></span> Restore
                                     </a>
                                 </li>
                                 <?php else: ?>
                                 <li class='divider'></li>
                                 <li>
-                                    <a href="<?php echo $get_options_links($n, 'share') ?>" style="">
+                                    <a href="<?php echo $get_options_links($n, 'share', $cURL) ?>" style="">
                                         <span class='glyphicon glyphicon-share-alt'></span> <?php echo $n->is_public?"Un-":""?>Share
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="<?php echo $get_options_links($n, 'archive') ?>" style="">
+                                    <a href="<?php echo $get_options_links($n, 'archive', $cURL) ?>" style="">
                                         <span class='glyphicon glyphicon-save'></span> <?php echo $this->is_archive?"Un-":""?>Archive
                                     </a>
                                 </li>
                                 <?php endif; ?>
                                 <li class='divider'></li>
                                 <li>
-                                    <a href="<?php echo $get_options_links($n, "delete"); ?>" class='text-<?php echo $note->is_trash?"danger":"warning"?>'>
+                                    <a href="<?php echo $get_options_links($n, 'delete', $cURL); ?>" class='alert-<?php echo $this->is_trash?"danger delete-permanent":"warning"?>'>
                                         <span class='glyphicon glyphicon-trash'></span> Delete
                                     </a>
                                 </li>
@@ -164,38 +209,6 @@
         </tr>
     </tbody>
 </table>
-<script>
-    (function(){
-        window.ajax_start = function(){ window.open_waitModal();};
-        window.ajax_stop = function() { window.open_waitModal(true);};
-        window.ajax_error = function (event, jqXHR, settings, exception) {
-            // extract the body's content of error data text
-            var error = jqXHR
-                    .responseText
-                        .replace(/^[\S\s]*<body[^>]*?>/i, "")
-                        .replace(/<\/body[\S\s]*$/i, "");
-            window.open_errorModal(error);
-        };
-        $(window).ajaxStart(window.ajax_start);
-        $(window).ajaxStop(window.ajax_stop);
-        $(window).ajaxError(window.ajax_error);
-    })(jQuery);
-    $(document).ready(function(){
-        prettyPrint();
-        $("#owner-options [role='menu'] a").click(function(e) {
-            e.preventDefault();
-            console.log(String($(this).attr('href')).split("#!")[0]);
-            $.ajax({
-                type: "POST", url: String($(this).attr('href')).split("#!")[0],
-                success: function(data) {
-                    setTimeout(function(data) {
-                        window.open_savecloseModal(data);
-                    }, 200, data);
-                },
-            });
-        });
-    });
-</script>
 <hr style='margin: 0'/>
 <div id="note-body" style="width: 100%">
 <?php
