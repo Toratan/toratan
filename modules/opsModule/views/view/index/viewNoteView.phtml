@@ -1,12 +1,53 @@
 <?php
     $writer = \core\db\models\user::find($this->instance->owner_id);
-    $parent_info = core\db\models\folder::find($this->instance->parent_id);
     $n = $this->instance;
     $this->is_archive = $n->is_archive;
     $this->is_trash = $n->is_trash;
     $this->layout->AddMeta("description", $n->note_title);
     $this->layout->addTitle($n->note_title);
     $author_link = "/profile/{$writer->user_id}";
+    $is_owner = (\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id);
+    $get_options_links = function(\core\db\models\note $note, $type) {
+        $uri = '';
+        switch(strtolower($type)) {
+            case "delete":
+                $uri =
+                    "/delete/".
+                    $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
+                    "/trash/".($note->is_trash ? \core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH).
+                    "?".zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
+                    break;
+            case "restore":
+                $uri =
+                    "/delete/".
+                    $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
+                    "/trash/".(\core\db\models\item::DELETE_RESTORE).
+                    "?".zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
+                    break;
+            case "edit":
+                $uri = 
+                    "/edit/".
+                    $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
+                    "?".\zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
+                    break;
+            case "archive":
+                $uri = 
+                    "/archive/".
+                    $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
+                    "/archive/".($this->is_archive ? 0 : 1).
+                    "?".\zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
+                    break;
+            case "share":
+                $uri = 
+                    "/share/".
+                    $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
+                    "/share/".($this->is_public ? 0 : 1).
+                    "?".\zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
+                    break;
+            default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined type `$type`.");
+        }
+        return "#!$uri";
+    };
 ?>
 <style>
     #note-body {padding: 0 10px;}
@@ -47,11 +88,11 @@
                 </a>
             </td>
             <td colspan="2" class='h2 text-justify' style='line-height: initial;'>
-                <?php echo str_repeat($n->note_title. " ", 100); ?>
+                <?php echo str_repeat($n->note_title. " ", 112); ?>
             </td>
         </tr>
         <tr>
-            <td>
+            <td style='padding-top: 5px;' class='text-justify'>
                 <topic-meta>
                     &mdash;&mdash;
                     Written by
@@ -68,24 +109,52 @@
                     <?php unset($dt); ?>
                 </topic-meta >
             </td>
-            <td class="pull-right">HHIHIH</td>
+            <td class="pull-right">
+            <?php if($is_owner) : ?>
+                <div class="pull-right">
+                    <div class="input-group inline" style="">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" tabindex="-1" >
+                                <span class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <li>
+                                    <a href="<?php echo $get_options_links($n, "delete"); ?>" style="color:#787878">
+                                        delete
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?php echo $get_options_links($n, 'edit') ?>" style="color:#111100">
+                                        edit
+                                    </a>
+                                </li>
+                                <?php if($this->is_trash): ?>
+                                <li>
+                                    <a href="<?php echo $get_options_links($n, 'restore') ?>" style="color:#787878">
+                                        restore
+                                    </a>
+                                </li>
+                                <?php else: ?>
+                                <li>
+                                    <a href="<?php echo $get_options_links($n, 'archive') ?>" style="">
+                                        <?php echo $this->is_archive?"de-":""?>archive
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?php echo $get_options_links($n, 'share') ?>" style="">
+                                        <?php echo $n->is_public?"de-":""?>share
+                                    </a>
+                                </li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+            </td>
         </tr>
     </tbody>
 </table>
-    <?php if(\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id) : ?>
-    <div class="pull-right">
-<!--                        <div style="float:right;">
-                            <a href="/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  $this->is_trash?\core\db\models\item::DELETE_PERIOD: core\db\models\item::DELETE_PUT_TARSH ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">delete</a> | 
-                            <a href="/edit/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/?<?php echo \zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#111100">edit</a>
-                            <?php if($this->is_trash): ?> | 
-                                <a href="/delete/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/trash/<?php echo  \core\db\models\item::DELETE_RESTORE; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style="color:#787878">restore</a>
-                            <?php else: ?> | 
-                                <a href="/archive/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/archive/<?php echo  $this->is_archive?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style=""><?php echo $this->is_archive?"de-":""?>archive</a>| 
-                                <a href="/share/<?php echo $n->WhoAmI()?>/<?php echo $n->{"{$n->WhoAmI()}_id"} ?>/share/<?php echo  $n->is_public?0:1; ?>?<?php echo zinux\kernel\security\security::GetHashString(array($n->WhoAmI(), $n->{"{$n->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id))?>" style=""><?php echo $n->is_public?"de-":""?>share</a>
-                            <?php endif; ?>
-                        </div>-->
-    </div>
-<?php endif; ?>
 <script>
     $(document).ready(function(){
         prettyPrint();
@@ -109,3 +178,4 @@
 <script src="/access/js/moment.min.js"></script>
 <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
 <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
+<?php unset($get_options_links); ?>
