@@ -80,7 +80,7 @@ class note extends item
      */
     public static function __normalize($title, $body) {
         $title = ucfirst(strip_tags(trim($title)));
-        $body = ucfirst(strip_tags(trim($body)));
+        $body = ucfirst(trim($body));
         return array($title, $body);
     }
 }
