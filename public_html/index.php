@@ -191,7 +191,7 @@ catch(Exception $e)
      * You can redirect this exception to a controller e.g /error
      */
     $mp = new \zinux\kernel\utilities\pipe("__ERRORS__");
-    $mp->write(serialize($e));
+    $mp->write($e);
     $api = new zinux\kernel\application\api();
     $api->call("/error");
 }
