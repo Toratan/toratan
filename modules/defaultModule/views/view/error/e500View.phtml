@@ -1,0 +1,18 @@
+<div class="error-500">
+    <div class="error-header">
+        <span class="glyphicon glyphicon-warning-sign"></span> Oops
+    </div>
+    <div class="error-body">
+        While processing the page you requested something went wrong.
+<?php if(isset($this->error) && $this->error instanceof \Exception && strlen($this->error->getMessage())) : ?>
+        <div style="font-size: 13px;margin: 10px">
+            <label>
+                <span class="glyphicon glyphicon-comment"></span> Message
+            </label>
+            <div style="border-left: 4px solid #dddddd;padding: 10px;" class="block text-muted text-justify">
+                <?php echo $this->error->getMessage(); ?>
+            </div>
+        </div>
+<?php endif; ?>
+    </div>
+</div>
