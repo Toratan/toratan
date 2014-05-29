@@ -4,6 +4,7 @@
         .error-container {width: 580px;padding: 20px;margin: 10px auto;border: 1px solid #cccccc;}
         .error-header { border-bottom: 1px solid #cccccc; padding-bottom: 10px; font-weight: bold}
         .error-body {text-align: justify; padding: 10px; font-size: 15px}
+        .eref {font-family: monospace;cursor: pointer;width: 98%;overflow: auto}
     </style>
     <script type="text/javascript">
         (function(){
@@ -18,7 +19,11 @@
             <div class="clearfix"></div>
             <small style="padding: 10px;">
                 » <a href="/">Return home</a>
+                <span class="pull-right text-muted eref text-right" title="While trying contact us regarding to this error please pass the #">
+                    Reference# <?php echo $this->view->eref ?>
+                </span>
             </small>
+            <div class="block" style="margin: 5px"></div>
         </div>
-    </div>    
+    </div>
 <?php $glayout->render_footer(); ?>

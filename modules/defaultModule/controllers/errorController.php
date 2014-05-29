@@ -59,7 +59,14 @@ class errorController extends \zinux\kernel\controller\baseController
                 $code = 501; 
                 break;
         }
+        # set proper view file
         $this->view->setView("e$code");
-        header("HTTP/1.1 $code $msg");
+        $er = new \core\db\models\exception;
+        # record the error and fetch the error-reference
+        $this->view->eref = $er->record($last, $code);
+        # if headers has not sent yet
+        if(!headers_sent())
+            # send the error header
+            header("HTTP/1.1 $code $msg");
     }
 }
