@@ -38,7 +38,7 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
           <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
           <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
         <![endif]-->
-        <style>
+        <style type="text/css">
             html,body{margin:0px;padding:0px;height:100%;}/*Custom page header*/.header{border-bottom:1px solid #e5e5e5;}/*Custom page footer*/.footer{padding-top:1%;color:#777;border-top:1px solid #e5e5e5;clear:both;}/*Responsive : Portrait tablets and up*/@media screen and(min-width:768px){/*Remove the padding we set earlier*/.header,.tor,.footer{padding-left:0;padding-right:0;}/*Spaceout the masthead*/.header{margin-bottom:1%;}}/*iframe gen. attribs */iframe{width:100%;border-style:none;border-color:transparent;border-width:0px;}
         </style>
     </head>
@@ -75,6 +75,14 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
             <a href="/" style="font-size: x-large;" class="navbar-brand text-muted" >Toratan</a>
             <div class="clearfix"></div>
         </div>
+        <script type="text/javascript">
+            (function(){
+                // if we are in a frame?
+                if(window.top !== window.self)
+                    // remove the header
+                    $(".header").remove();
+            })(jQuery);
+        </script>
         <div class="clearfix" style="margin-top:10px;"></div>
 <?php
     }
