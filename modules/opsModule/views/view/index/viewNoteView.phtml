@@ -85,7 +85,7 @@
         $(window).ajaxStart(window.ajax_start);
         $(window).ajaxStop(window.ajax_stop);
         $(window).ajaxError(window.ajax_error);
-        setTimeout(window.update_time, 500);
+        setInterval(window.update_time, 500);
     })(jQuery);
     $(document).ready(function(){
         window.update_time();

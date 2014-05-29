@@ -5,6 +5,7 @@
     {
         $title = $this->values['note_title'];
         $body = $this->values['note_body'];
+        $note_id = $this->values['note_id'];
     }
     $profile =\core\db\models\profile::getInstance();
     if(!($eo = $profile->getSetting("/rte/options/ace")) || !($eo instanceof \modules\opsModule\models\aceEditorOptions)) {
@@ -62,7 +63,7 @@
                                     .append('<input type="hidden" name="submit-type" value="change-editor" />')
                                     .append('<input type="hidden" name="pid" value="<?php echo $this->pid ?>" />')
                                     .attr('action', href);
-                            save(window.editor);
+                            save(window.editor, undefined, true);
 <?php if($this->edit) : ?>
                         }, undefined, false);
 <?php endif; ?>
@@ -72,7 +73,7 @@
                 var href = $(this).attr('href');
                 var yes_func =function() {
                     $(window).unbind("beforeunload");
-                    window.location = "/" + href;
+                    window.location = href;
                 };
                 if(!anything_changed()) {
                     yes_func();
@@ -98,8 +99,15 @@
             if("<?php echo  str_replace('"', "&quot;", $title) ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
             return window.editor.session.getUndoManager().isClean() !== true;
         };
-        function save(editor) {
+        function save(editor, obj, force_save) {
             $(window).unbind('beforeunload');
+            if(typeof(force_save) === "undefined") force_save = false;
+<?php if(strtolower($this->request->action->name) != "new") : ?>
+            if(!(force_save || anything_changed())) {
+                $("a.note-discard").click();
+                return;
+            }
+<?php endif; ?>
             $("form[name='note'] input[name='note_title']").val($("#editor-title").val());
             $("form[name='note'] textarea[name='note_body']").val(editor.getValue());
             $("form[name='note'] input[name='version']").val("ace");
@@ -135,7 +143,7 @@
                 <button onclick="save(window.editor);" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;" tabindex="-1" title="Save">
                     <span class="glyphicon glyphicon-hdd"></span>
                 </button>
-                <a href="#!/d/<?php echo $this->pid ?>.notes" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;"><span class="glyphicon glyphicon-trash"></span></a>
+                <a href="<?php echo $this->edit && $note_id ? "/view/note/$note_id" : "/#!/d/{$this->pid}.notes" ?>" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;"><span class="glyphicon glyphicon-trash"></span></a>
             </span>
             <div class="pull-right">
                 <div class="input-group inline" style="">
@@ -164,6 +172,9 @@
 <script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note' style="display: none;">
     <input type="hidden" name="version" value="ace" />
+    <?php if($this->edit) : ?>
+        <input type="hidden" name="note_id" value="<?php echo $note_id ?>" />
+    <?php endif; ?>
     <input type="text" name="note_title" maxlength="250" value="<?php echo $title ?>" required="required"/><br />
     <textarea rows="10" cols="80" name="note_body" ><?php echo $body ?></textarea>
     <input type="submit" value="Create" />

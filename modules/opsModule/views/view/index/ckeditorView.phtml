@@ -5,6 +5,7 @@
     {
         $title = $this->values['note_title'];
         $body = $this->values['note_body'];
+        $note_id = $this->values['note_id'];
     }
 ?>
 <script src="/access/rte/ckeditor/ckeditor.js"></script>
@@ -13,6 +14,12 @@
         $( document ).ready( function() {
             window.editor = window.CKEDITOR.replace('note_body');
             window.editor.config.height = $(window).height() - 300;
+            window.editor.config.fillEmptyBlocks = false;
+            window.editor.config.enterMode = CKEDITOR.ENTER_BR;
+            window.editor.config.shiftEnterMode = CKEDITOR.ENTER_P;
+            window.editor.config.basicEntities = false;
+            console.log(CKEDITOR.version);
+            console.log(editor.config);
             jQuery.fn.cke_resize = function() {
                 return this.each(function() {
                     var threshold = 200;
@@ -22,7 +29,7 @@
                     $(this).next("div.cke").find(".cke_contents").css("height", height);
                });
             };
-            window.CKEDITOR.on('instanceReady', function(){$("textarea.ckeditor").cke_resize();});
+            window.CKEDITOR.on('instanceReady', function(){$("textarea.ckeditor").cke_resize();});//window.editor.config.enterMode = CKEDITOR.ENTER_BR;console.log(window.editor.config)});
             $(window).resize(function() {$("textarea.ckeditor").cke_resize();});
             $(window).resize();
             $(window).bind('beforeunload', function(e){
@@ -43,7 +50,7 @@
                                     .append('<input type="hidden" name="submit-type" value="change-editor" />')
                                     .append('<input type="hidden" name="pid" value="<?php echo $this->pid ?>" />')
                                     .attr('action', href);
-                            save();
+                            save(true);
 <?php if($this->edit) : ?>
                         }, undefined, false);
 <?php endif; ?>
@@ -53,7 +60,7 @@
                 var href = $(this).attr('href');
                 var yes_func =function() {
                     $(window).unbind("beforeunload");
-                    window.location = "/" + href;
+                    window.location = href;
                 };
                 if(!anything_changed()) {
                     yes_func();
@@ -66,8 +73,15 @@
             if("<?php echo  str_replace('"', "&quot;", $title) ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
             return window.editor.checkDirty();
         }
-        function save() {
+        function save(force_save) {
             $(window).unbind('beforeunload');
+            if(typeof(force_save) === "undefined") force_save = false;
+<?php if(strtolower($this->request->action->name) != "new") : ?>
+            if(!(force_save || anything_changed())) {
+                $("a.note-discard").click();
+                return;
+            }
+<?php endif; ?>
             $("form[name='note']").submit();
         }
 </script>
@@ -78,6 +92,9 @@
 <div id="editor-container" class="container">
     <form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note'>
         <input type="hidden" name="version" value="html" />
+    <?php if($this->edit) : ?>
+        <input type="hidden" name="note_id" value="<?php echo $note_id ?>" />
+    <?php endif; ?>
         <div id="editor-parent">
             <ol class="breadcrumb">
                 <?php $count = 0; foreach($this->route as $folder) : $active = count($this->route) == ++$count; ?>
@@ -90,7 +107,7 @@
                     <button onclick="save();" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;" tabindex="-1" title="Save">
                         <span class="glyphicon glyphicon-hdd"></span>
                     </button>
-                    <a href="#!/d/<?php echo $this->pid ?>.notes" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;"><span class="glyphicon glyphicon-trash"></span></a>
+                    <a href="<?php echo $this->edit && $note_id ? "/view/note/$note_id" : "/#!/d/{$this->pid}.notes" ?>" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;"><span class="glyphicon glyphicon-trash"></span></a>
                 </span>
                 <div class="pull-right">
                     <div class="input-group inline" style="">
@@ -117,7 +134,8 @@
                     $ciconia->addExtension(new Gfm\WhiteSpaceExtension());
                     $ciconia->addExtension(new Gfm\TableExtension());
                     $ciconia->addExtension(new Gfm\UrlAutoLinkExtension());
-                    echo $ciconia->render($body);
+                    echo trim($ciconia->render($body));
+//                    echo $body;
 ?></textarea>
         </div>
     </form>

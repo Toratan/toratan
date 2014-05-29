@@ -387,6 +387,7 @@ __OP_FUNC:
             if(!($item_value = $this->isUsingEditorBuffer())) {
                 $item_value = $item_ins->fetch($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id);
                 # resore back the values to views
+                $this->view->values["{$item}_id"] = $item_value->{"{$item}_id"};
                 $this->view->values["{$item}_title"] = $item_value->{"{$item}_title"};
                 $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
                 $this->view->pid = $item_value->parent_id;
@@ -822,6 +823,7 @@ __OP_FUNC:
             if(!is_array($b) || !\zinux\kernel\security\security::IsSecure($b, array("{$item_type}_title", "{$item_type}_body", "pid", "owner_id"), array(), array(), 0))
                 goto __USE_DEFAULT;
             # extract and deploy the fetched data
+            $value->{"{$item_type}_id"} = @$b["{$item_type}_id"];
             $value->{"{$item_type}_title"} = $b["{$item_type}_title"];
             $value->{"{$item_type}_body"} = $b["{$item_type}_body"];
             $value->parent_id = $b["pid"];
@@ -832,6 +834,7 @@ __OP_FUNC:
         goto __USE_DEFAULT;
 __PASS_DATA_2_VALUE:
         # resore back the values to views
+        $this->view->values["{$item_type}_id"] = $value->{"{$item_type}_id"};
         $this->view->values["{$item_type}_title"] = $value->{"{$item_type}_title"};
         $this->view->values["{$item_type}_body"] = $value->{"{$item_type}_body"};
         $this->view->pid = $value->parent_id;
