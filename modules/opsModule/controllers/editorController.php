@@ -60,7 +60,7 @@ class editorController extends \zinux\kernel\controller\baseController
      */
     protected function initEditorBuffer(array $data, $item_type = "note") {
         switch(strtolower($item_type)) {
-            case "note": case "folder": case "link": break;
+            case "note": break;
             default: throw new \zinux\kernel\exceptions\invalidArgumentException("`$item_type` not defined");
         }
         if(!\core\db\models\user::IsSignedin())
@@ -70,6 +70,8 @@ class editorController extends \zinux\kernel\controller\baseController
         $sc->deleteAll();
         if(!isset($data["owner_id"]))
             $data["owner_id"] = \core\db\models\user::GetInstance()->user_id;
+        if(strtolower(@$data["to"]) === "ace")
+            list(, $data["{$item_type}_body"]) =\core\db\models\note::__normalize("", $data["{$item_type}_body"], 1); 
         $sc->save("buffer",$data);
     }
 

@@ -78,9 +78,18 @@ class note extends item
      * @param string $body
      * @return array A normalized array of `array($title, $body)`
      */
-    public static function __normalize($title, $body) {
+    public static function __normalize($title, $body, $ckeditor_normalization = 0) {
         $title = ucfirst(strip_tags(trim($title)));
         $body = ucfirst(trim($body));
+        if($ckeditor_normalization)
+            $body = preg_replace(
+                                array(
+                                        "#(?:<br\b[^>]*>|\R){1,}#i",
+                                        "#<p\b[^>]*>(&nbsp;)?</p>#i"
+                                ), array(
+                                        "<br />\n",
+                                        "",
+                                ), $body);
         return array($title, $body);
     }
 }

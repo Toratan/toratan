@@ -14,7 +14,7 @@
     $profile->setSetting("/rte/type", $this->request->params["ui"]);
     $this->layout->setLayout('editor');
     $ui = $this->request->params["ui"];
-    if($this->edit && isset($this->editor_type)) {
+    if($this->edit && isset($this->editor_type) && !isset($this->request->params["force-ui"])) {
         switch($this->editor_type) {
             case 0: $ui = "html"; break;
             case 1: $ui = "ace"; break;
