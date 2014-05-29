@@ -537,8 +537,8 @@ __OP_FUNC:
         try
         {
             $item_value = $item_ins->fetch($this->request->GetIndexedParam(1));
-            if(@\core\db\models\user::GetInstance()->user_id != $item_value->owner_id && $item_value->is_trash)
-                throw new \zinux\kernel\exceptions\accessDeniedException("The page is not available or you are no longer authorized to access this page.");
+            if($uid != $item_value->owner_id && $item_value->is_trash)
+               throw new \zinux\kernel\exceptions\notFoundException("The page is not available or you are no longer authorized to access this page.");
         }
         catch(\Exception $error_happened){ if(!preg_match("#Couldn't find (.*) with ID=#i", $error_happened->getMessage())) throw $error_happened; }
         # if value not found or the current item is not public and the current user is the owner

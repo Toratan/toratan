@@ -10,9 +10,9 @@
     $author_link = "/profile/{$writer->user_id}";
     $cURL = $this->request->getURI();
     $is_owner = (\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id);
-	# if the note is in root?    
-	if(count($this->route) > 1)
-		# remove the root title(we don't want to have ROOT in html, it's pretty in this way)
+    # if the note is in root?    
+    if(count($this->route) > 1)
+        # remove the root title(we don't want to have ROOT in html, it's pretty in this way)
         $this->route[0]->folder_title = "";
     $get_options_links = function(\core\db\models\note $note, $type, $cURL) {
         $uri = '';
