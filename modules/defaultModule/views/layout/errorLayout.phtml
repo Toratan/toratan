@@ -1,15 +1,17 @@
 <?php $glayout = new \modules\defaultModule\views\layout\genLayoutHeader($this); ?>
 <?php $glayout->render_header(); ?>
-    <script>
-        (function(){
-            if(typeof(window.top) !== "undefined") window.top.document.title = '<?php echo $this->GetTitle(); ?>';
-        })(jQuery);
-    </script>
     <style type="text/css">
-        .error-container {min-width: 480px;max-width: 50%;padding: 20px;margin: 10px auto;border: 1px solid #cccccc;}
+        .error-container {width: 580px;padding: 20px;margin: 10px auto;border: 1px solid #cccccc;}
         .error-header { border-bottom: 1px solid #cccccc; padding-bottom: 10px; font-weight: bold}
         .error-body {text-align: justify; padding: 10px; font-size: 15px}
     </style>
+    <script type="text/javascript">
+        (function(){
+            // if i am in a frame?
+            if(window.top !== window.self)
+                window.top.document.title = '<?php echo $this->getTitle() ?>';
+        })(jQuery);
+    </script>
     <div class="container">
         <div class="error-container">
             <?php echo $this->content; ?>
