@@ -68,11 +68,27 @@
                         .replace(/<\/body[\S\s]*$/i, "");
             window.open_errorModal(error);
         };
+        window.update_time = function() {
+            $('abbr.timeago').each(function(){
+                var sTime = $(this).find('time').attr("datetime");
+                var format = 'ddd, DD MMM YYYY HH:mm:ss ZZ';
+                var time = moment(sTime, format).format("lll");
+                var time_str = (moment(sTime, format).fromNow("lll")) + " ago";
+                $(this)
+                    .attr('title', 'Updated at : ' + time)
+                    .children('time')
+                    .attr('title', $(this).attr('title'))
+                    .addClass(".time-inited")
+                    .html(time_str);
+            });
+        };
         $(window).ajaxStart(window.ajax_start);
         $(window).ajaxStop(window.ajax_stop);
         $(window).ajaxError(window.ajax_error);
+        setTimeout(window.update_time, 500);
     })(jQuery);
     $(document).ready(function(){
+        window.update_time();
         prettyPrint();
         $("#owner-options [role='menu'] a.delete-permanent").click(function(e) {
             e.preventDefault();
@@ -81,18 +97,6 @@
             window.open_yesnoModal("Are you sure do you want to delete this note <b>permanently</b>?<br /><b class='text-muted'><span class='glyphicon glyphicon-info-sign'></span> This operation cannot be un-done.</b>", function(){
                 window.location = href;
             }, undefined, false);
-        });
-        $('abbr.timeago').each(function(){
-            var sTime = $(this).find('time').attr("datetime");
-            var format = 'ddd, DD MMM YYYY HH:mm:ss ZZ';
-            var time = moment(sTime, format).format("lll");
-            var time_str = (moment(sTime, format).fromNow("lll")) + " ago";
-            $(this)
-                .attr('title', 'Updated at : ' + time)
-                .children('time')
-                .attr('title', $(this).attr('title'))
-                .addClass(".time-inited")
-                .html(time_str);
         });
     });
 </script>
