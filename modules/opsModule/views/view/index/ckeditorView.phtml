@@ -104,7 +104,7 @@
             <div class="input-group pull-left" style="margin-top: -10px;">
                 <input type="text" name="note_title"  id="editor-title" class="block input form-control" placeholder="Your note's title" value="<?php echo str_replace('"', "&quot;", isset($this->values['note_title'])?$this->values['note_title']:"") ?>" autofocus="" maxlength="300"/>
                 <span class="input-group-btn">
-                    <button onclick="save();" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;" tabindex="-1" title="Save">
+                    <button onclick="save();" type="button" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;" tabindex="-1" title="Save">
                         <span class="glyphicon glyphicon-hdd"></span>
                     </button>
                     <a href="<?php echo $this->edit && $note_id ? "/view/note/$note_id" : "/#!/d/{$this->pid}.notes" ?>" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;"><span class="glyphicon glyphicon-trash"></span></a>
