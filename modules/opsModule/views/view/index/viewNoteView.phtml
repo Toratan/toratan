@@ -103,9 +103,15 @@
 </ol>
 <style>
     table#title {margin:0; margin-top: -10px; margin-bottom: 5px;}
+    table#title #headline{font-weight: 700;font-size: 140%;font-family: Baskerville, “Baskerville Old Face”, “Hoefler Text”, Garamond, “Times New Roman”, serif;}
     table#title tr td{border: 0;padding: 0}
     topic-meta {font-size: 80%;line-height: 1.42857143;color: #999;}
     #note-body {padding: 10px; text-align: justify}
+    @media screen 
+        and (min-width : 0px) 
+        and (max-width : 500px) {
+            table#title #headline{text-align: left!important}
+    }
 </style>
 <table class="table table-responsive " id="title">
     <tbody>
@@ -116,7 +122,7 @@
                     <img src="<?php echo $avatar ?>" onerror="this.src='<?php echo $def_avatar ?>'" class="image img-responsive img-thumbnail" style="width: 90%"/>
                 </a>
             </td>
-            <td colspan="2" class='h2 text-justify' style='line-height: initial;'>
+            <td colspan="2" class='text-justify' id="headline" style='line-height: initial;'>
                 <?php echo $n->note_title ?>
             </td>
         </tr>
