@@ -12,11 +12,15 @@
 <script src="/access/rte/ckeditor/adapters/jquery.js"></script>
 <script>
         $( document ).ready( function() {
+            var $body = $("[name='note_body']");
+            console.log($body.val());
+            $body.val(String($body.val()).replace(/(\r\n|\r|\n)+/ig, '\n'));
+            console.log($body.val());
             window.editor = window.CKEDITOR.replace('note_body');
             window.editor.config.height = $(window).height() - 300;
             window.editor.config.fillEmptyBlocks = false;
             window.editor.config.enterMode = CKEDITOR.ENTER_BR;
-            window.editor.config.shiftEnterMode = CKEDITOR.ENTER_P;
+            window.editor.config.shiftEnterMode = CKEDITOR.ENTER_BR;
             window.editor.config.basicEntities = false;
             console.log(CKEDITOR.version);
             console.log(editor.config);
@@ -76,12 +80,24 @@
         function save(force_save) {
             $(window).unbind('beforeunload');
             if(typeof(force_save) === "undefined") force_save = false;
+            force_save = true;
 <?php if(strtolower($this->request->action->name) != "new") : ?>
             if(!(force_save || anything_changed())) {
                 $("a.note-discard").click();
                 return;
             }
 <?php endif; ?>
+            window.open_waitModal();
+            $("[name='note_body']").val(
+                    String(editor.getData())
+                        .replace(/<p><\/p>/ig, '')
+                        .replace(/(?:<br\b[^>]*>\n*)+/ig, '<br />')
+                        .replace(/(\r\n|\r|\n)+/ig, '\n')
+                        .trim()
+            );
+            window.close_modal();
+            console.log($("[name='note_body']").val());
+            console.log($("form[name='note']").serializeArray()[3]);
             $("form[name='note']").submit();
         }
 </script>
