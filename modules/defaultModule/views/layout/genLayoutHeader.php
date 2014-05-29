@@ -84,6 +84,7 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
             })(jQuery);
         </script>
         <div class="clearfix" style="margin-top:10px;"></div>
+        <?php new \core\ui\html\dialogs(); ?>
 <?php
     }
     public function render_footer() {

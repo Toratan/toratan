@@ -1,6 +1,5 @@
 <?php $glayout = new \modules\defaultModule\views\layout\genLayoutHeader($this); ?>
 <?php $glayout->render_header(); ?>
-        <?php new \core\ui\html\dialogs(); ?>
         <script>
             window.active_nav = function(id) {
                 $('#explorer-nav-frame').contents().find("div#exp-nav ul.nav li a[target='explorer-frame']").parent().removeClass("active");
