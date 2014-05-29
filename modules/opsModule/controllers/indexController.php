@@ -533,18 +533,13 @@ __OP_FUNC:
         # invoke an instance of item handler
         $item_ins = new $item_class;
         # try fetch from db
-        $item_value = NULL;
-        try
-        {
-            $item_value = $item_ins->fetch($this->request->GetIndexedParam(1));
-            if($uid != $item_value->owner_id && $item_value->is_trash)
-               throw new \zinux\kernel\exceptions\notFoundException("The page is not available or you are no longer authorized to access this page.");
-        }
-        catch(\Exception $error_happened){ if(!preg_match("#Couldn't find (.*) with ID=#i", $error_happened->getMessage())) throw $error_happened; }
+        $item_value = $item_ins->fetch($this->request->GetIndexedParam(1));
+        # check if $uid is the owner?
+        $is_owner = ($item_value->owner_id == $uid);
         # if value not found or the current item is not public and the current user is the owner
-        if(isset($error_happened) || !$item_value || (!$item_value->is_public && (!$uid || $item_value->owner_id != $uid)))
+        if(!$is_owner && (!$item_value->is_public || $item_value->is_trash))
             # drop the balls
-            throw new \zinux\kernel\exceptions\notFoundException("The `$item` you are looking for does not exists or you don't have the pemission to view it.");
+            throw new \zinux\kernel\exceptions\accessDeniedException("The `$item` you are looking for does not exists or you don't have the pemission to view it.");
         # pass the item's instance to view
         $this->view->instance = $item_value;
 		# fetch route path to current note
