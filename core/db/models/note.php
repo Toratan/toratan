@@ -6,6 +6,16 @@ namespace core\db\models;
 class note extends item
 {
     /**
+     * Saves current note into database
+     * @param boolean $validate Should validate?
+     */
+    public function save($validate=true)
+    {
+        # perform a normalization on note's title and body
+        list($this->note_title, $this->note_body) = self::__normalize($this->note_title, $this->note_body);
+        parent::save($validate);
+    }
+    /**
      * Creates a new item in { title | body } datastructure
      * @param string $title the item's title
      * @param string $body the item's body
@@ -61,5 +71,16 @@ class note extends item
             $note->editor_type = $editor_type;
         $note->save();
         return $note;
+    }
+    /**
+     * Normalizes the note's title and body
+     * @param string $title
+     * @param string $body
+     * @return array A normalized array of `array($title, $body)`
+     */
+    public static function __normalize($title, $body) {
+        $title = ucfirst(strip_tags(trim($title)));
+        $body = ucfirst(strip_tags(trim($body)));
+        return array($title, $body);
     }
 }
