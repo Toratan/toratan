@@ -21,7 +21,7 @@
                     $show_time = 7000;
                     while(($msg = $mp->read()))
                         if($msg)
-                            \core\ui\html\alert::Cout($msg, \core\ui\html\alert::ALERT_INFO, 1, 1, ($show_time+=2000));
+                            \core\ui\html\alert::Tout($msg, \core\ui\html\alert::ALERT_INFO, 1, 1, ($show_time+=2000));
                 ?>
                 <?php echo $this->content; ?>
             </div> <!-- end of padder -->

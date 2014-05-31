@@ -1,16 +1,6 @@
 <?php $glayout = new \modules\defaultModule\views\layout\genLayoutHeader($this); ?>
 <?php $glayout->render_header(); ?>
         <div class="" style="width: 100%;">
-            <div class="" >
-                <?php
-                    $mp = new core\utiles\messagePipe;
-                    $msg = $mp->read();
-                    if($msg)
-                    {
-                        \core\ui\html\alert::Cout($msg);
-                    }
-                ?>
-                <?php echo $this->content?>
-            </div>
+            <?php echo $this->content?>
         </div>
 <?php $glayout->render_footer(); ?>

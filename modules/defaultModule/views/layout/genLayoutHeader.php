@@ -44,7 +44,7 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
     </head>
     <body>
         <noscript>
-            <?php \core\ui\html\alert::Cout("!!Your browser's javascript IS NOT enabled!!", \core\ui\html\alert::ALERT_DANGER); ?>
+            <?php \core\ui\html\alert::Tout("Your browser's javascript <b>is not</b> enabled. To site be able to work you have to enable your javascript.", \core\ui\html\alert::ALERT_DANGER); ?>
         </noscript>
         <div class="header">
             <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">

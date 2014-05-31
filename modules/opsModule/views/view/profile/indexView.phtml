@@ -39,7 +39,7 @@
 <?php if(!$this->profile->getSetting("/profile/status")) : ?>
 <div class='clearfix visible-xs'></div>
 <div class='table'>
-    <?php \core\ui\html\alert::Cout("No profile provided by user!", \core\ui\html\alert::ALERT_DANGER, 0); ?>
+    <?php \core\ui\html\alert::Tout("No profile provided by user!", \core\ui\html\alert::PIPE_INFO, 0); ?>
 </div>
 <?php return ; endif; ?>
 <table class="table table-responsive" >

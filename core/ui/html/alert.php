@@ -77,11 +77,11 @@ class alert
                 throw new \zinux\kernel\exceptions\invalidArgumentException;
         }
         return self::out(
-            "<div class='text-justify text-$pipe_type' id='".($id="pipe-".sha1($data))."'>
+            "<div class='text-justify text-center text-$pipe_type' id='".($id="pipe-".sha1($data))."'>
                 <style class='.error-container' type='text/css'>
                     .pipe-msg {width: 100%;padding: 20px;margin: 10px auto;border: 1px solid #cccccc; font-weight:bold}
                 </style>
-                <div class='pipe-msg text-$pipe_type'>
+                <div class='pipe-msg text-$pipe_type text-center '>
                     <span class='glyphicon glyphicon-chevron-right'></span> $data
                 </div>
             </div>
