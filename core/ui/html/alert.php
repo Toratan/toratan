@@ -4,7 +4,7 @@ namespace core\ui\html;
 /**
  * prints an html alert
  */
-class alert extends htmlPrinter
+class alert
 {
     const ALERT_SUCCESS = "success";
     const ALERT_INFO = "info";
