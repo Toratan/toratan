@@ -95,6 +95,10 @@ class avatar
 	/* copy source image at a resized size */
         imagecopyresampled($virtual_image, $source_image, 0, 0, $crop_start_x, $crop_start_y, $desired_width, $desired_height, $crop_width, $crop_height);
         
+        /* check permission */
+        if(!is_writable($dest))
+            throw new \zinux\kernel\exceptions\accessDeniedException;
+        
 	/* create the physical thumbnail image to its destination */
         imagejpeg($virtual_image, $dest);
         
