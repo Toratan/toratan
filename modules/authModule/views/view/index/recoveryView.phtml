@@ -1,16 +1,16 @@
-<?php
-    $mp = new core\utiles\messagePipe("recovery");
-    $message = $mp->read();
-    if($message)
-        \core\ui\html\alert::Cout($message, \core\ui\html\alert::ALERT_INFO);
-?>
-<form class="form-signin" action="/auth/recovery?<?php echo \zinux\kernel\security\security::GetHashString(array(session_id(), "r3c0veRI"))?>" method="post"  role="form">
-    <ul style="color:red;font-variant: small-caps;padding:10px;padding-left: 0;font-weight: bold" class="list-unstyled">
-    <?php foreach ($this->errors as $error) : ?>
-        <li>&gt;&nbsp<?php echo $error ?></li>
-    <?php endforeach; ?>
-    </ul>
-    <input type="text" class="form-control" placeholder="Email address" name="email"  style="margin-bottom: 10px;" required autofocus>
-    <input type="submit" class="btn btn-lg btn-primary pull-right" id="submit-btn" value="Send recovery link" />
-    <div class="clearfix" />
-</form>
+<div class="container" style="width: 50%;">
+    <?php
+        $mp = new core\utiles\messagePipe("recovery");
+        $message = $mp->read();
+        if($message)
+            \core\ui\html\alert::Tout($message, \core\ui\html\alert::PIPE_NONE, 0);
+    ?>
+    <?php if(count(@$this->errors)) : ?>
+    <?php foreach($this->errors as $error) \core\ui\html\alert::Tout($error, \core\ui\html\alert::PIPE_DANGER); ?>
+    <?php endif; ?>
+    <form class="form-signin" action="/auth/recovery?<?php echo \zinux\kernel\security\security::GetHashString(array(session_id(), "r3c0veRI"))?>" method="post"  role="form" style="padding-top: 10px;">
+        <input type="text" class="form-control" placeholder="Email address" name="email"  style="margin-bottom: 10px;" required autofocus>
+        <input type="submit" class="btn btn-lg btn-primary pull-right" id="submit-btn" value="Send recovery link" />
+        <div class="clearfix" />
+    </form>
+</div>
