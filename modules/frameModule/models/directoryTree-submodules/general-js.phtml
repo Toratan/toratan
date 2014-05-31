@@ -1,6 +1,5 @@
 <script src="/access/js/moment.min.js"></script>
 <script src="/access/js/jquery.tablesorter.min.js"></script>
-<script src="/access/js/jquery.filtertable.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
     <?php if($is_owner): ?>
@@ -272,32 +271,6 @@
         setTimeout(function() {
             window.top.open_infoModal('<?php echo addslashes($msgs) ?>', 2700);
         }, 150);
-<?php endif; ?>
-<?php if(false) : ?>
-        $("#explorer-table .table").filterTable({
-            minRows: 0,
-            highlightClass: "filtered-item",
-            filterSelector: '#qacess',
-            callback: function(term, table) {
-                if($("#explorer-table .table tr.filtered-item").length === 0) {
-                    var rows = $("#explorer-table .table .strong-highlighted");
-                    rows.each(function(index, elem) {
-                        $(elem).children("strong.strong-highlighted-filter").each(function(index, $this) {
-                            $($this).replaceWith($($this).text());
-                        });
-                    });
-                    rows.removeClass("strong-highlighted");
-                }
-                $("#explorer-table .table .filtered-item").each(function(index, elem) {
-                    if($(elem).children("a").length) {
-                        $(elem)
-                            .children("a")
-                                .addClass("strong-highlighted")
-                                .html($(elem).text().trim().replace(new RegExp(term, "gi"), '<strong class="strong-highlighted-filter">$&</strong>'));
-                    }
-                });
-            }
-        });
 <?php endif; ?>
     });
 </script>
