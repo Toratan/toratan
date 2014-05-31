@@ -65,7 +65,14 @@
         $("button[value='edit']").click(function(e) {
             e.preventDefault();
             if($("input[type='checkbox'].item-checkbox:checked").first() === 0) return;
+            <?php if($active_type == "note"): ?>
             window.top.open("/ops/editAPI?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"<?php echo zinux\kernel\security\security::GetHashString(array($active_type, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo $this->request->GetURI(); ?>");
+            <?php else: ?>
+                $.ajax({
+                    type: "GET",
+                    url: "/ops/editAPI?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&suppress_layout=1<?php echo zinux\kernel\security\security::GetHashString(array($active_type, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo $this->request->GetURI(); ?>"
+                });
+            <?php endif; ?>
         });
         window.submit_ops = function($this) {
             $('form#opt-form').prepend($("<input>").attr("type", "hidden").attr("name", $($this).attr('name')).val($($this).attr('value')));

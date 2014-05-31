@@ -391,7 +391,8 @@ __OP_FUNC:
                 $this->view->values["{$item}_title"] = $item_value->{"{$item}_title"};
                 $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
                 $this->view->pid = $item_value->parent_id;
-                $this->view->editor_type = $item_value->editor_type;
+                if(isset($item_value->editor_type))
+                    $this->view->editor_type = $item_value->editor_type;
             }
             $this->layout->AddTitle("Editing - {$this->view->values["{$item}_title"]}");
             if($item == "note") {
