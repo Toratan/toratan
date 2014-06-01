@@ -25,8 +25,16 @@
     .header.headerSortUp {
         border-top: 1px solid #000!important;
     }        
-    table#explorer-table thead tr th {
+    #explorer-table table thead tr th {
         border-top: 0!important;
+    }
+    #explorer-table table tr th,
+    #explorer-table table tr td{vertical-align:  middle!important;max-width: 90%;word-break: break-all}
+    @media screen 
+        and (min-width : 0px) 
+        and (max-width : 500px) {
+            #explorer-table #table-header-updated,
+            #explorer-table .updated-at{display:none}
     }
 </style>
 <form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::GetHashString(array($active_type, $this->request->GetURI(), session_id())) ?>">
@@ -37,9 +45,9 @@
             <thead>
                 <tr>
                     <th style="width: 0.1%;"></th>
-                    <th style="width: 70px;overflow: hidden" title="Status"><span class="glyphicon glyphicon-th-large"></span>&nbsp;<span class="ui-icon fs-toggle"></span></th>
-                    <th style="">Name <span class="ui-icon fs-toggle"></span></th>
-                    <th id="table-header-updated" style="width: 200px">Updated at <span class="ui-icon fs-toggle"></span></th>
+                    <th style="width: 70px;overflow: hidden;" title="Status"><span class="glyphicon glyphicon-th-large"></span>&nbsp;<span class="ui-icon fs-toggle"></span></th>
+                    <th style="vertical-align: auto" class="item-heander-name">Name <span class="ui-icon fs-toggle"></span></th>
+                    <th id="table-header-updated" style="min-width: 150px;max-width: 200px;">Updated at <span class="ui-icon fs-toggle"></span></th>
                 </tr>
             </thead>
             <tbody>
