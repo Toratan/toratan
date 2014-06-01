@@ -18,6 +18,8 @@
             case self::SHARED:
                 echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/shared.$key'>$value</a></li>";
                 break;
+            case self::DRAFTS:
+                if($key != "notes") continue;
             default:
                 echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/d/$pid.$key'>$value</a></li>";
                 break;

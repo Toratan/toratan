@@ -112,6 +112,10 @@ class eController extends \zinux\kernel\controller\baseController
                 $count_arg["conditions"][] =  $args[0];
                 $count_arg["conditions"][] =  $args[1];
                 break;
+            case \modules\frameModule\models\directoryTree::DRAFTS: 
+                $count_arg["conditions"][0] .= " AND is_draft = 1";
+                $count_arg["conditions"][] =  $args[0];
+                break;
             default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `$dtmode`");
         }
         $this->view->total_count = $instance->count($count_arg);
@@ -160,7 +164,7 @@ class eController extends \zinux\kernel\controller\baseController
             case \modules\frameModule\models\directoryTree::ARCHIVE: $func = "fetchArchives"; break;
             case \modules\frameModule\models\directoryTree::SHARED: $func = "fetchShared"; break;
             case \modules\frameModule\models\directoryTree::TRASH: $func = "fetchTrashes"; break;
-            case \modules\frameModule\models\directoryTree::TRASH: $func = "fetchItems"; 
+            case \modules\frameModule\models\directoryTree::DRAFTS: $func = "fetchItems"; 
                 $args[] = NULL;
                 $args[] = item::FLAG_SET;
                 break;
@@ -176,6 +180,7 @@ class eController extends \zinux\kernel\controller\baseController
     */
     public function draftsAction()
     {
+        $this->request->type = "notes";
         $this->fetchCategory(\modules\frameModule\models\directoryTree::DRAFTS);
     }
 }
