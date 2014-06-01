@@ -1,20 +1,60 @@
 <?php if(!isset($this->e)) throw new \zinux\kernel\exceptions\invalidArgumentException; ?>
-<?php \zinux\kernel\utilities\debug::_var($this->e); ?>
 <style>
     table tr td:first-child {font-weight: bold;}
+    pre {
+        overflow: auto;
+        word-break: normal !important;
+        word-wrap: normal !important;
+        white-space: pre !important;
+    }​
 </style>
-<table class="table table-hover container">
+<h2>Exception Details</h2>
+<table class="table table-hover">
     <thead>
         <tr>
-            <th style="min-width: 200px;font-weight: bold">Label</th>
-            <th>Info</th>
+            <th style="min-width: 200px;font-weight: bold"></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         <?php foreach ($this->e->to_array() as $key => $value) : $a_key =ucwords(implode(' ', explode("_", $key))); ?>
         <tr class="<?php echo $key ?>">
             <td><?php echo $a_key ?></td>
-            <td><?php echo $value ? $value : "NONE-LOGGEDING"; ?></td>
+            <?php switch(strtolower($key)) : default: ?>
+            <td><?php echo $value ? $value : "NON-LOGGED-IN"; ?></td>
+            <?php break; case "exception_data": ?>
+            <?php $e = (@unserialize($value)); if($e): //\zinux\kernel\utilities\debug::_var($e); ?>
+        </tr>
+        <tr class='e-message'>
+            <td>E-Message</td>
+            <td><strong><?php echo @$e->getMessage() ?></strong></td>
+        </tr>
+        <tr class="e-calltrace">
+            <td>E-CallTrace</td>
+            <td><pre><?php echo @$e->GetTraceAsString();?></pre></td>
+        </tr>
+        <tr class="e-trace">
+            <td>E-Trace</td>
+            <td class='e-trace-ph'>
+                <div class="panel-group accordion ace-guide-panels">
+                    <?php $index=0; foreach($e->getTrace() as $value): $index++; ?>
+                      <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent=".accordion" data-target=".t-<?php echo $index ?>" href="#" class="collapsed">
+                              <?php echo @$value["class"], "::", $value["function"] ?>()
+                            </a>
+                          </h4>
+                        </div>
+                        <div class="t-<?php echo $index ?> panel-collapse collapse">
+                            <div class="panel-body text-justify">
+                                <pre>[args] => <?php print_r($value["args"]); ?></pre>
+                            </div>
+                        </div>
+                      </div>
+                    <?php endforeach; ?>
+            </td>
+            <?php endif; endswitch; ?>
         </tr>
         <?php endforeach; ?>
     </tbody>
@@ -24,7 +64,11 @@
     $(document).ready(function(){
         var $time_elem = $($(".created_at").children("td")[1]);
         $time_elem.html(moment($time_elem.text()).fromNow("lll") + " ago");
-        console.log($time_elem);
-//        var $edata = 
+        var $exception_data =  $($(".exception_data").children("td")[0]);
+        $exception_data.attr('colspan', 2).parent().css("background-color", "#DDD");
+        $($(".exception_id").children("td")[0]).text("Exception ID");
+        $($(".user_id").children("td")[0]).text("User ID");
+        $("table tbody").prepend("<tr>"+$(".e-message").html()+"</tr>");
+        $(".e-message").remove();
     });
 </script>

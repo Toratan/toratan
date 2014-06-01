@@ -6,6 +6,14 @@ namespace core\db\models;
  */
 abstract class baseModel extends \ActiveRecord\Model
 {
+    public static function find()
+    {
+        try {
+            return call_user_func_array("parent::find", func_get_args());
+        }catch(\ActiveRecord\RecordNotFound $rnf) {
+            throw new \zinux\kernel\exceptions\notFoundException($rnf->getMessage());
+        }
+    }
     /**
      * The save procedure interface for item
      * @param boolean $validate should it validate the attribs
