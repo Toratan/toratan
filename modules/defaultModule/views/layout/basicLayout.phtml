@@ -1,0 +1,13 @@
+<?php $glayout = new \modules\defaultModule\views\layout\genLayoutHeader($this); ?>
+<?php $glayout->render_header(); ?>
+    <script type="text/javascript">
+        (function(){
+            // if i am in a frame?
+            if(window.top !== window.self)
+                window.top.document.title = '<?php echo $this->getTitle() ?>';
+        })(jQuery);
+    </script>
+    <div class="container">
+        <?php echo $this->content; ?>
+    </div>
+<?php $glayout->render_footer(); ?>

@@ -12,7 +12,7 @@ class errorController extends \zinux\kernel\controller\baseController
         parent::Initiate();
         $this->layout->SetLayout("error");
         $mp = new \zinux\kernel\utilities\pipe("__ERRORS__");
-        if(!$mp->hasFlow()) {
+        if(!$mp->hasFlow() && strtolower($this->request->action->name) === "index") {
             header("location: /");
             exit;
         }
@@ -68,5 +68,18 @@ class errorController extends \zinux\kernel\controller\baseController
         if(!headers_sent())
             # send the error header
             header("HTTP/1.1 $code $msg");
+    }
+
+    /**
+    * The \modules\defaultModule\controllers\errorController::viewAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function viewAction()
+    {
+        if($this->request->CountIndexedParam() !== 1 )
+            die(\core\ui\html\alert::Tout("BAD REQUEST", \core\ui\html\alert::PIPE_DANGER));
+        $this->view->e = \core\db\models\exception::find($this->request->indexed_param[0]);
+        $this->layout->SetLayout("basic");
+        $this->layout->AddTitle("Error #{$this->view->e->exception_id}");
     }
 }

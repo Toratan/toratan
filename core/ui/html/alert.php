@@ -79,7 +79,7 @@ class alert
         return self::out(
             "<div class='text-justify text-center text-$pipe_type' id='".($id="pipe-".sha1($data))."'>
                 <style class='.error-container' type='text/css'>
-                    .pipe-msg {width: 100%;padding: 20px;margin: 10px auto;border: 1px solid #cccccc; font-weight:bold}
+                    .pipe-msg {width: 100%;padding: 20px;margin: 10px auto;border: 1px solid #cccccc; font-weight:bold;text-align:center}
                 </style>
                 <div class='pipe-msg text-$pipe_type text-center '>
                     <span class='glyphicon glyphicon-chevron-right'></span> $data

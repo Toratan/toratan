@@ -109,6 +109,18 @@ abstract class item extends baseModel
      */
     public function WhoAmI(){ return $this->item_name; }
     /**
+     * Get the item's ID
+     */
+    public function getItemID() { return $this->{"{$this->WhoAmI()}_id"}; }
+    /**
+     * Get the item's TItle
+     */
+    public function getItemTitle() { return $this->{"{$this->WhoAmI()}_title"}; }
+    /**
+     * Get the item's body
+     */
+    public function getItemBody() { return $this->{"{$this->WhoAmI()}_body"}; }
+    /**
      * Creates a new item in { title | body } datastructure
      * @param string $title the item's title
      * @param string $body the item's body

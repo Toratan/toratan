@@ -47,10 +47,16 @@ class eController extends \zinux\kernel\controller\baseController
         $this->view->is_owner = ($uid == \core\db\models\user::GetInstance()->user_id); 
         $this->executeQuery("fetchItems",  
                 \modules\frameModule\models\directoryTree::REGULAR,
-                array($uid, $this->view->pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
+                array($uid, $this->view->pid, item::FLAG_UNSET, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
         $folder = new \core\db\models\folder;
         $this->view->route = $folder->fetchRouteToRoot($this->view->pid, $uid);
     }
+    /**
+     * Executes query
+     * @param string $func to call
+     * @param ineteger $dtmode the directory there mode
+     * @param array $args
+     */
     protected function executeQuery($func, $dtmode, array $args) {
         $instance = NULL;
         switch(strtoupper($this->request->type))
@@ -149,14 +155,28 @@ class eController extends \zinux\kernel\controller\baseController
         if(!\core\db\models\user::IsSignedin()) return;
         $this->view->is_owner = 1;
         $func = "";
+        $args = array(\core\db\models\user::GetInstance()->user_id);
         switch ($category) {
             case \modules\frameModule\models\directoryTree::ARCHIVE: $func = "fetchArchives"; break;
             case \modules\frameModule\models\directoryTree::SHARED: $func = "fetchShared"; break;
             case \modules\frameModule\models\directoryTree::TRASH: $func = "fetchTrashes"; break;
+            case \modules\frameModule\models\directoryTree::TRASH: $func = "fetchItems"; 
+                $args[] = NULL;
+                $args[] = item::FLAG_SET;
+                break;
             default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `$category`");
         }
         if($this->request->params["d"] == 0)
-            $this->executeQuery($func,  $category, array(\core\db\models\user::GetInstance()->user_id));
+            $this->executeQuery($func,  $category, $args);
         else $this->IndexAction();
     }
+    /**
+    * The \modules\frameModule\controllers\eController::draftsAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function draftsAction()
+    {
+        $this->fetchCategory(\modules\frameModule\models\directoryTree::DRAFTS);
+    }
 }
+
