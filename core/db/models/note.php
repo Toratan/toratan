@@ -72,7 +72,7 @@ class note extends item
             throw new \zinux\kernel\exceptions\invalidArgumentException("The `editor type` should be unsigned numeric!");
         $note = parent::newItem($title, $body, $parent_id, $owner_id);
         $note->editor_type = $editor_type;
-        $note->is_draft = $is_draft;
+        $note->is_draft = $is_draft ? 1 : 0;
         $note->save();
         return $note;
     }
@@ -106,7 +106,7 @@ class note extends item
         if($editor_type != self::NOCHANGE)
             $note->editor_type = $editor_type;
         if($is_draft != self::NOCHANGE)
-            $note->is_draft = $is_draft;
+            $note->is_draft = $is_draft ? 1 : 0;
         $note->save();
         return $note;
     }
