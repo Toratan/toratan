@@ -140,7 +140,7 @@
         <div class="input-group pull-left" style="margin-top: -10px;">
             <input type="text" name="title"  id="editor-title" class="block input form-control" placeholder="Your note's title" value="<?php echo str_replace('"', "&quot;", $title) ?>" autofocus="" required=""/>
             <span class="input-group-btn">
-                <button onclick="save(window.editor);" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;" tabindex="-1" title="Save">
+                <button onclick="save(window.editor);" type="button" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;" tabindex="-1" title="Save">
                     <span class="glyphicon glyphicon-hdd"></span>
                 </button>
                 <a href="<?php echo $this->edit && $note_id ? "/view/note/$note_id" : "/#!/d/{$this->pid}.notes" ?>" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;"><span class="glyphicon glyphicon-trash"></span></a>
@@ -276,6 +276,6 @@
 <script type="text/javascript">
     (function(){
         // the window save function
-        shortcut.add("Ctrl+S", save);
+        shortcut.add("Ctrl+S", function() { save(window.editor); });
     })();
 </script>
