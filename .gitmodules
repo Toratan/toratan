@@ -2,9 +2,6 @@
 	path = zinux
 	url = git@github.com:noise2/zinux.git
 	branch = master 
-[submodule "public_html/access/rte/ckeditor"]
-	path = public_html/access/rte/ckeditor
-	url = git@github.com:ckeditor/ckeditor-releases.git
 [submodule "public_html/access/rte/ace"]
 	path = public_html/access/rte/ace
 	url = git@github.com:ajaxorg/ace-builds.git
