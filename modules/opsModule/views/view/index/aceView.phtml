@@ -97,7 +97,7 @@
         });
         function anything_changed() {
             if("<?php echo  str_replace('"', "&quot;", $title) ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
-            return window.editor.session.getUndoManager().isClean() !== true;
+            return <?php echo @$this->is_using_buffer? "true || " : ""  ?>window.editor.session.getUndoManager().isClean() !== true;
         };
         function save(editor, obj, force_save) {
             $(window).unbind('beforeunload');

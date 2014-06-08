@@ -839,9 +839,11 @@ __PASS_DATA_2_VALUE:
         $this->view->values["{$item_type}_title"] = $value->{"{$item_type}_title"};
         $this->view->values["{$item_type}_body"] = $value->{"{$item_type}_body"};
         $this->view->pid = $value->parent_id;
+        $this->view->is_using_buffer = true;
         # return extracted values
         return $value;
 __USE_DEFAULT:
+        $this->view->is_using_buffer = false;
         # we failed!
         return null;
     }
