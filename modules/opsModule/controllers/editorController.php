@@ -106,9 +106,8 @@ class editorController extends \zinux\kernel\controller\baseController
             exit;
         }
     }
-
     /**
-    * The \modules\opsModule\controllers\editorController::previewAction()
+    * Makes a preview of passed note
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function previewAction()
