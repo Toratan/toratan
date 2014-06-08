@@ -1,1 +1,12 @@
-<?php for($i =0;$i<100;$i++) echo "[$i]<br />"; ?>
+<?php $p = $this->profile->to_array() ?>
+<?php unset($p["settings"]); $pj = json_encode($p); ?>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var p = JSON.parse('<?php echo $pj ?>');
+        for(var propertyName in p)
+            $("#about").append(propertyName + " : "+ p[propertyName] + "<br />");
+    });
+</script>
+<div id="about" class="">
+    
+</div>
