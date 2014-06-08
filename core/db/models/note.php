@@ -16,39 +16,6 @@ class note extends item
         parent::save($validate);
     }
     /**
-     * Fetches all sub-items under a parent directory with an owner
-     * @param string $owner_id items' owner id
-     * @param string $parent_id items' parent id, pass '<b>NULL </b>' to select in all parrent pattern
-     * @param boolean $is_draft should it be marked as draft or not, pass '<b>item::WHATEVER</b>' to don't matter
-     * @param boolean $is_public should it be public or not, pass '<b>item::WHATEVER</b>' to don't matter
-     * @param boolean $is_trash should it be trashed or not, pass '<b>item::WHATEVER</b>' to don't matter
-     * @param boolean $is_archive should it be archive or not, pass '<b>item::WHATEVER</b>' to don't matter
-     * @param array $options see \ActiveRecord\Model::find()
-     * @return array of items
-     */
-    public function fetchItems(
-            $owner_id,
-            $parent_id=NULL,
-            $is_draft = self::WHATEVER,
-            $is_public = self::WHATEVER, 
-            $is_trash=self::WHATEVER,
-            $is_archive = self::WHATEVER, 
-            $options=array())
-    {
-        if(!isset($options["conditions"][0]))
-            $options["conditions"][]  = "1";
-        switch($is_draft) {
-            case self::FLAG_SET:
-                $options["conditions"][0] .= " AND is_draft = 1";
-                break;
-            case self::FLAG_UNSET:
-                $options["conditions"][0] .= " AND is_draft = 0";
-                break;
-        }
-        return parent::fetchItems($owner_id, $parent_id, $is_public, $is_trash,
-                $is_archive, $options);
-    }
-    /**
      * Creates a new item in { title | body } datastructure
      * @param string $title the item's title
      * @param string $body the item's body
@@ -65,14 +32,12 @@ class note extends item
             $body,
             $parent_id,
             $owner_id,
-            $editor_type, 
-            $is_draft = self::FLAG_UNSET)
+            $editor_type)
     {
         if(!isset($editor_type) || !is_numeric($editor_type) || $editor_type < 0)
             throw new \zinux\kernel\exceptions\invalidArgumentException("The `editor type` should be unsigned numeric!");
         $note = parent::newItem($title, $body, $parent_id, $owner_id);
         $note->editor_type = $editor_type;
-        $note->is_draft = $is_draft ? 1 : 0;
         $note->save();
         return $note;
     }
@@ -94,7 +59,6 @@ class note extends item
             $owner_id,
             $title,
             $body,
-            $is_draft = self::NOCHANGE,
             $is_public = self::NOCHANGE,
             $is_trash = self::NOCHANGE,
             $is_archive = self::NOCHANGE,
@@ -105,8 +69,6 @@ class note extends item
         $note = parent::edit($item_id, $owner_id, $title, $body, $is_public, $is_trash, $is_archive);
         if($editor_type != self::NOCHANGE)
             $note->editor_type = $editor_type;
-        if($is_draft != self::NOCHANGE)
-            $note->is_draft = $is_draft ? 1 : 0;
         $note->save();
         return $note;
     }

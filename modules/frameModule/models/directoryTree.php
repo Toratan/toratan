@@ -9,7 +9,6 @@ class directoryTree extends \stdClass
     const TRASH = 0x2;
     const ARCHIVE = 0x3;
     const SHARED = 0x4;
-    const DRAFTS = 0x5;
     /**
      * The type directory Tree
      * @var integer
