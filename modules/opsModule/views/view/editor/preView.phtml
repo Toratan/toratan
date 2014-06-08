@@ -1,8 +1,13 @@
-<!--
- The \modules\opsModule\views\view\editor\preView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for '<b>\modules\opsModule\controllers\editorController::preAction()</b>'<br />
-    Location: '<b>/var/www/toratan//modules/opsModule/views/view/editor/preView.phtml</b>'
-</p>
+<?php
+    if(!isset($this->title) || !isset($this->body) || !isset($this->pid)) throw new \zinux\kernel\exceptions\invalidArgumentException;
+    $instance = new \core\db\models\note();
+    $instance->note_title = $this->title;
+    $instance->note_body = $this->body;
+    $instance->owner_id = \core\db\models\user::GetInstance()->user_id;
+    $instance->parent_id = $this->pid;
+    $instance->created_at = new \DateTime();
+    $instance->updated_at = $instance->created_at;
+    $instance->disableSave();
+    $this->route = (new \core\db\models\folder())->fetchRouteToRoot($this->pid, $instance->owner_id);
+    $this->instance = $instance;
+    (new \modules\opsModule\models\noteViewModel($this))->__render(true);

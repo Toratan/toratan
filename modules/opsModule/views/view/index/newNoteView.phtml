@@ -6,13 +6,16 @@
 <?php endforeach; ?>
 </ol>
 <?php endif; ?>
-<div class="container">
+<style type="text/css">
+    .note-container { width: 80%!important} 
+</style>
+<div class="note-container container-fluid">
     <ul class="nav nav-tabs" id="preview-tab">
-        <li class="active"><a href="#" pref="context">Context</a></li>
-        <li><a href="#" pref="preview">Preview</a></li>
+        <li class="active"><a href="#" pref="context"><b>Context</b></a></li>
+        <li><a href="#" pref="preview"><b>Preview</b></a></li>
     </ul>
 </div>
-<div id="newnote-editor-container" class="container">
+<div id="newnote-editor-container" class="note-container container-fluid">
 <?php
     $profile = \core\db\models\profile::getInstance(\core\db\models\user::getInstance()->user_id);
     if(!isset($this->request->params["ui"]))
@@ -55,14 +58,14 @@
             $(this).parent().addClass("active");
             switch(String($(this).attr('pref')).toLocaleString()){
                 case "preview":
-                    $("#editor-container").slideUp();
                     window.open_waitModal();
                     $.ajax({
                         type: "POST",
                         url: "/editor/preview",
-                        data: "t=" + window.getNoteTitle() + "&b="+window.getNoteContext(),
+                        data: "t=" + window.getNoteTitle() + "&b="+window.getNoteContext()+"&p=<?php echo $this->pid ?>",
                         global: false,
                         success: function(data) {
+                            $("#editor-container").slideUp();
                             $("#newnote-editor-container #note-preview")
                                     .html(data)
                                     .show();
@@ -82,6 +85,5 @@
                 default: console.error("Undefined preference `"+$(this).attr('pref')+"`");
             }
         });
-        setTimeout(function(){$(".nav#preview-tab a[pref='preview']").click();}, 500);
     });
 </script>

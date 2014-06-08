@@ -115,7 +115,10 @@ class editorController extends \zinux\kernel\controller\baseController
     {
         if(!$this->request->IsPOST())
             throw new \zinux\kernel\exceptions\accessDeniedException;
-        \zinux\kernel\security\security::IsSecure($this->request->params, array("t", "b"));
-        \zinux\kernel\utilities\debug::_var($this->request->params, 1);
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("t", "b", "p"));
+        $this->layout->SuppressLayout();
+        $this->view->title = $this->request->params["t"];
+        $this->view->body = $this->request->params["b"];
+        $this->view->pid = $this->request->params["p"];
     }
 }
