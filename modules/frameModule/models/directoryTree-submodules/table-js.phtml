@@ -1,8 +1,6 @@
 <script src="/access/js/jquery.tablesorter.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-        window.init_checkboxes();
-        window.init_times();
         window.setInterval(window.update_times, 500);
         window.sort_table = function() {
             var defaultHeadIndex = 2;
@@ -174,7 +172,22 @@
             }
         });
 <?php endif; ?>
-        // initiate sort table procedure
-        window.sort_table();
+        /**
+         * inits the table
+         * @param boolean is_init is this is page's init call?
+         */
+        window.init_table =  function(is_init) {
+            if(typeof(is_init) === "undefined")
+                is_init = false;
+            if(is_init)
+                window.update_menu_checkbox();
+            window.init_checkboxes();
+            window.init_times();
+            window.reset_ajax_placeholder(is_init);
+            window.sort_table();
+            window.trim_rows();
+        };
+        // init the table as page's init call
+        window.init_table(true);
     });
 </script>

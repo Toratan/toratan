@@ -206,7 +206,6 @@ class directoryTree extends \stdClass
             require 'directoryTree-submodules/table-empty.phtml';
             return;
         }
-        $this->plotTableJS($active_type);
     }
     /**
      * Plots necessary JS for table operations

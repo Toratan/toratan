@@ -159,8 +159,6 @@
                 default:
             }
         });
-        window.reset_ajax_placeholder(true);
-        window.update_menu_checkbox();
     <?php endif; ?>
         window.ajax_start = function() {
             $("#ajax-placeholder *").prop("readonly", true);
@@ -282,7 +280,6 @@
                     do{
                         // remove the last 14 `character` of the text
                         txt =  txt.substr(0, txt.length - 14);
-                        console.log(txt);
                         // should we proceed?
                     }while(txt.length / $elem.innerWidth() > ts && txt.length > 0);
                     // if we reached non-zero-length string
@@ -298,17 +295,6 @@
                 $elem.parent().addClass('trimmed');
             });
         };
-        /**
-         * inits the table
-         */
-        window.init_table =  function() {
-            window.init_checkboxes();
-            window.init_times();
-            window.reset_ajax_placeholder();
-            window.sort_table();
-            window.trim_rows();
-        };
-        window.init_table();
 <?php 
         $mp = new \core\utiles\messagePipe();
         $check = $mp->hasFlow();
@@ -324,3 +310,5 @@
 <?php endif; ?>
     });
 </script>
+<?php 
+        $this->plotTableJS($type);
