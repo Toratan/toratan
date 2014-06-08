@@ -30,10 +30,7 @@ class profileController extends \zinux\kernel\controller\baseController
             if(!($user = \core\db\models\user::find(array("conditions"=> array("user_id = ?", $this->request->GetIndexedParam(0))))))
                 # if not found, indicate it
                 throw new \zinux\kernel\exceptions\notFoundException("The profile not found.");
-            # pass the profile instance to view
-            $this->view->profile = \core\db\models\profile::getInstance($user->user_id);
-            # do not proceed the following code-lines
-            return;
+            goto __FETCH_PROFILE;
         }
         # default user for profile viewing, is current user
         $user = \core\db\models\user::GetInstance();
@@ -46,6 +43,7 @@ class profileController extends \zinux\kernel\controller\baseController
             if(!($user = \core\db\models\user::find(array("conditions"=> array("user_id = ?", $this->request->GetIndexedParam(0))))))
                 # otherwise indicate profile not found
                 throw new \zinux\kernel\exceptions\notFoundException("The profile not found.");
+__FETCH_PROFILE:
         # fetch a profile by the provided user instance
         $this->view->profile = \core\db\models\profile::getInstance($user->user_id);
     }
