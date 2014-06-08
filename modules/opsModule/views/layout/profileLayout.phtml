@@ -1,6 +1,44 @@
+<?php if(!@$this->view->profile) throw new \zinux\kernel\exceptions\invalidArgumentException("Not profile instance provided...."); ?>
+<?php $active_type = strtolower(@$this->view->active_type);
+    switch($active_type) {
+        case "about": case "posts": break;
+        default: $active_type = "about";
+    }
+?>
 <?php $glayout = new \modules\defaultModule\views\layout\genLayoutHeader($this); ?>
 <?php $glayout->render_header(); ?>
         <div class="container-fluid" style="width: 77%">
-            <?php echo $this->content?>
+            <div class="container-fluid" style="border-radius: 4px;border: 1px solid #eee;padding: 4px;height: 430px;">
+                <div style="background-color: #000;height: 100%">
+
+                </div>
+            </div>
+            <?php
+                list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link($this->view->profile->user_id);
+            ?>
+            <nav class="navbar navbar-default navbar-static-top" role="navigation">
+                <div class="container">
+                    <ul class="nav navbar-nav ">
+                        <li style="position: static;z-index: 200;margin-top: -230px;">
+                            <a href="/profile/avatar/view/<?php echo $this->view->profile->user_id, "?", \zinux\kernel\security\security::GetHashString(array($this->view->profile->user_id)) ?>" target="__blank">
+                                <img id="thumbnail" width="200" height="200" class='img-responsive img-thumbnail' src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>';"  />
+                            </a>
+                        </li>
+                        <li class="<?php echo $active_type === "about" ? "active" : "" ?>">
+                            <a href="/profile/about">
+                                <b>About</b>
+                            </a>
+                        </li>
+                        <li class="<?php echo $active_type === "posts" ? "active" : "" ?>">
+                            <a href="/profile/posts">
+                                <b>Posts</b>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="container">
+                <?php echo $this->content?>
+            </div>
         </div> <!-- /container -->
 <?php $glayout->render_footer(); ?>

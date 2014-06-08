@@ -12,11 +12,11 @@ class profileController extends \zinux\kernel\controller\baseController
     const PROFILE_CREATED = 2;
     const PROFILE_DONE = 3;
     /**
-    * The modules\opsModule\controllers\profileController::IndexAction()
-    * @by Zinux Generator <b.g.dariush@gmail.com>
-    */
-    public function IndexAction()
-    {
+     * Fetches the profile based on current request and loads it onto current view's handler
+     * @throws \zinux\kernel\exceptions\invalidOperationException if any invalid request
+     * @throws \zinux\kernel\exceptions\notFoundException If profile not found
+     */
+    protected function fetchProfile() {
         # default title
         $this->layout->AddTitle("Profile viewing....");
         # if user not signed in?
@@ -48,6 +48,15 @@ class profileController extends \zinux\kernel\controller\baseController
                 throw new \zinux\kernel\exceptions\notFoundException("The profile not found.");
         # fetch a profile by the provided user instance
         $this->view->profile = \core\db\models\profile::getInstance($user->user_id);
+    }
+    /**
+    * The modules\opsModule\controllers\profileController::IndexAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function IndexAction()
+    {
+        # fetch the profile
+        $this->fetchProfile();
         # if the profile is belong to current user?
         if(\core\db\models\user::GetInstance()->user_id == $this->view->profile->user_id)
         {
@@ -64,7 +73,12 @@ class profileController extends \zinux\kernel\controller\baseController
                 return;
             }
         }
+        # change the layout
         $this->layout->SetLayout("profile");
+        # because of calling from `self::aboutAction()` we need to set it to `indexView`
+        $this->view->setView("index");
+        # set current active type
+        $this->view->active_type = "about";
     }
 
     /**
@@ -512,5 +526,28 @@ __RELOCATE:
         $this->view->profile = \core\db\models\profile::getInstance($this->request->GetIndexedParam(0));
         if(!$this->view->profile)
             throw new \zinux\kernel\exceptions\notFoundException("Profile not found!");
+    }
+
+    /**
+    * The \modules\opsModule\controllers\profileController::aboutAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function aboutAction()
+    {
+        $this->IndexAction();
+    }
+
+    /**
+    * The \modules\opsModule\controllers\profileController::postsAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function postsAction()
+    {
+        # fetch the profile
+        $this->fetchProfile();
+        # change the layout
+        $this->layout->SetLayout("profile");
+        # set current active type
+        $this->view->active_type = "posts";
     }
 }
