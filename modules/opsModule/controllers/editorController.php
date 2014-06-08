@@ -113,6 +113,9 @@ class editorController extends \zinux\kernel\controller\baseController
     */
     public function previewAction()
     {
+        if(!$this->request->IsPOST())
+            throw new \zinux\kernel\exceptions\accessDeniedException;
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("t", "b"));
         \zinux\kernel\utilities\debug::_var($this->request->params, 1);
     }
 }

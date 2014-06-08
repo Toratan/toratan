@@ -8,14 +8,15 @@
 <?php endif; ?>
 <div class="container">
     <ul class="nav nav-tabs" id="preview-tab">
-        <li class="active"><a href="#" pref="content">Content</a></li>
+        <li class="active"><a href="#" pref="context">Context</a></li>
         <li><a href="#" pref="preview">Preview</a></li>
     </ul>
 </div>
+<div id="newnote-editor-container" class="container">
 <?php
     $profile = \core\db\models\profile::getInstance(\core\db\models\user::getInstance()->user_id);
     if(!isset($this->request->params["ui"]))
-        $this->request->params["ui"] = 
+        $this->request->params["ui"] =
             !$profile->getSetting("/rte/type")?"classic":$profile->getSetting("/rte/type");
     $profile->setSetting("/rte/type", $this->request->params["ui"]);
     $this->layout->setLayout('editor');
@@ -38,17 +39,49 @@
             break;
     }
 ?>
+    <div id="note-preview" style="display: none;margin: 10px;"></div>
+</div>
 <script type="text/javascript">
     $(document).ready(function(){
+        // validate if the `window.getEditorTEXT()` is defined in rendered views??
+        if( typeof(window.getNoteTitle) === "undefined" ||
+            typeof(window.getNoteTitle) !== "function") { console.error("Invalid editor interface"); return; }
+        if( typeof(window.getNoteContext) === "undefined" ||
+            typeof(window.getNoteContext) !== "function") { console.error("Invalid editor interface"); return; }
+        // bind a click handler for preview/content links
         $(".nav#preview-tab a").click(function(e){
             e.preventDefault();
-            switch(String($(this).attr('pref')).toLocaleString()){ 
+            $(".nav#preview-tab li.active").removeClass("active");
+            $(this).parent().addClass("active");
+            switch(String($(this).attr('pref')).toLocaleString()){
                 case "preview":
+                    $("#editor-container").slideUp();
+                    window.open_waitModal();
+                    $.ajax({
+                        type: "POST",
+                        url: "/editor/preview",
+                        data: "t=" + window.getNoteTitle() + "&b="+window.getNoteContext(),
+                        global: false,
+                        success: function(data) {
+                            $("#newnote-editor-container #note-preview")
+                                    .html(data)
+                                    .show();
+                        }
+                    }).fail(function(xhr) {
+                        window.open_errorModal(xhr.responseText, -1, true);
+                    }).always(function() {
+                        window.open_waitModal(true);
+                    });
                     break;
-                case "content":
+                case "context":
+                    $("#editor-container").slideDown();
+                    $("#newnote-editor-container #note-preview")
+                                .html("")
+                                .hide();
                     break;
                 default: console.error("Undefined preference `"+$(this).attr('pref')+"`");
             }
         });
+        setTimeout(function(){$(".nav#preview-tab a[pref='preview']").click();}, 500);
     });
 </script>
