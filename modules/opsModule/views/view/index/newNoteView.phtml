@@ -11,8 +11,8 @@
 </style>
 <div class="note-container container-fluid">
     <ul class="nav nav-tabs" id="preview-tab">
-        <li class="active"><a href="#" pref="context"><b>Context</b></a></li>
-        <li><a href="#" pref="preview"><b>Preview</b></a></li>
+        <li class="active"><a href="#" pref="context" title="Shortcut: F1"><b>Context</b></a></li>
+        <li><a href="#" pref="preview" title="Shortcut: F2"><b>Preview</b></a></li>
     </ul>
 </div>
 <div id="newnote-editor-container" class="note-container container-fluid">
@@ -42,13 +42,16 @@
             break;
     }
 ?>
-    <div id="note-preview" style="display: none;margin: 10px;"></div>
+    <div class="container">
+        <div id="note-preview" style="display: none;margin: 10px;"></div>
+    </div>
 </div>
 <script type="text/javascript">
     $(document).ready(function(){
-        // validate if the `window.getEditorTEXT()` is defined in rendered views??
+        // validate if the `window.getNoteTitle()` is defined in rendered views??
         if( typeof(window.getNoteTitle) === "undefined" ||
             typeof(window.getNoteTitle) !== "function") { console.error("Invalid editor interface"); return; }
+        // validate if the `window.getNoteContext()` is defined in rendered views??
         if( typeof(window.getNoteContext) === "undefined" ||
             typeof(window.getNoteContext) !== "function") { console.error("Invalid editor interface"); return; }
         // bind a click handler for preview/content links
@@ -85,5 +88,15 @@
                 default: console.error("Undefined preference `"+$(this).attr('pref')+"`");
             }
         });
+        // validate if the `window.save()` is defined in rendered views??
+        if( typeof(window.save) === "undefined" ||
+            typeof(window.save) !== "function") { console.error("Invalid editor interface"); return; }
+        // the window's save function
+        shortcut.add("Ctrl+S", function() { window.saveAPI(); });
+        // context shortcut
+        shortcut.add("F1", function() { $(".nav#preview-tab a[pref='context']").click(); });
+        // preview shortcut
+        shortcut.add("F2", function() { $(".nav#preview-tab a[pref='preview']").click(); });
     });
 </script>
+<script src="/access/js/shortcut.js"></script>

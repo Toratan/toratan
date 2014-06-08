@@ -105,6 +105,9 @@
             if("<?php echo  str_replace('"', "&quot;", $title) ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
             return <?php echo @$this->is_using_buffer? "true || " : ""  ?>window.editor.session.getUndoManager().isClean() !== true;
         };
+        window.saveAPI = function() {
+            save(window.editor);
+        };
         function save(editor, obj, force_save) {
             $(window).unbind('beforeunload');
             if(typeof(force_save) === "undefined") force_save = false;
@@ -278,10 +281,3 @@
       </div>
     </div>
 </div>
-<script src="/access/js/shortcut.js"></script>
-<script type="text/javascript">
-    (function(){
-        // the window save function
-        shortcut.add("Ctrl+S", function() { save(window.editor); });
-    })();
-</script>

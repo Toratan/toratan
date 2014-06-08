@@ -29,8 +29,6 @@
                  setup: function(ed) {
                      // the editor save function
                      ed.addShortcut("ctrl+s", "Save", save);
-                     // the window save function
-                    shortcut.add("Ctrl+S", save);
                  }
             });
             $(window).bind('beforeunload', function(e){
@@ -80,6 +78,9 @@
             if("<?php echo  str_replace('"', "&quot;", $title) ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
             return <?php echo @$this->is_using_buffer? "true || " : ""  ?>tinymce.get('editor').isDirty();
         }
+        window.saveAPI = function() {
+            save();
+        };
         function save(force_save) {
             $(window).unbind('beforeunload');
             if(typeof(force_save) === "undefined") force_save = false;
@@ -132,7 +133,6 @@
                 </div>
             </div>
             <div class="clearfix" style="margin: 10px;"></div>
-            <!--<textarea name="content" style="width:100%"></textarea>-->
             <textarea id="editor" class="tinyMCE form-control hidden" id="editor-platform" tabindex="1" name="note_body" style="width: 100%;"><?php
                     (new \vendor\markdown\Ciconia\CiconiaInitializer())->Execute();
                     use Ciconia\Extension\Gfm;
@@ -144,7 +144,6 @@
                     $ciconia->addExtension(new Gfm\TableExtension());
                     $ciconia->addExtension(new Gfm\UrlAutoLinkExtension());
                     echo trim($ciconia->render($body));
-//                    echo $body;
                     ?></textarea>
         </div>
     </form>
