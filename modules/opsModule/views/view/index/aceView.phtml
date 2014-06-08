@@ -94,6 +94,12 @@
             $(window).ajaxStart(window.ajax_start);
             $(window).ajaxStop(window.ajax_stop);
             $(window).ajaxError(window.ajax_error);
+            window.getNoteContext = function() {
+                return window.editor.getValue();
+            };
+            window.getNoteTitle = function() {
+                return $("#editor-title").val();
+            };
         });
         function anything_changed() {
             if("<?php echo  str_replace('"', "&quot;", $title) ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
@@ -130,7 +136,7 @@
         };
 </script>
 <!-- ace editor placeholder -->
-<div id="editor-container" class="container">
+<div id="editor-container">
     <div id="editor-parent">
         <ol class="breadcrumb">
             <?php $count = 0; foreach($this->route as $folder) : $active = count($this->route) == ++$count; ?>

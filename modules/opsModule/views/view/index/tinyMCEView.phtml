@@ -69,6 +69,12 @@
                 }
                 window.open_yesnoModal("Changes <b>are not</b> saved, are you sure to <b>discard</b>?", yes_func, undefined, false);
             });
+            window.getNoteContext = function() {
+                return tinymce.get('editor').getContent();
+            };
+            window.getNoteTitle = function() {
+                return $("#editor-title").val();
+            };
         } );
         function anything_changed() {
             if("<?php echo  str_replace('"', "&quot;", $title) ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
@@ -91,7 +97,7 @@
     .mce-panel { border: 1px solid #e6e6e6!important;}
 </style>
 <!-- ckeditor placeholder -->
-<div id="editor-container" class="container">
+<div id="editor-container">
     <form action="<?php echo $this->request->getURI(); ?>" method="POST" name='note'>
         <input type="hidden" name="version" value="html" />
     <?php if($this->edit) : ?>
