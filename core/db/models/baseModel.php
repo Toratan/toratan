@@ -6,6 +6,14 @@ namespace core\db\models;
  */
 abstract class baseModel extends \ActiveRecord\Model
 {
+    /**
+     * Flag that if save disabled for current instance
+     * @var boolean TRUE if save disabled; otherwise FALSE
+     */
+    private $save_disabled;
+    /**
+     * @see \ActiveRecord\Model::find()
+     */
     public static function find()
     {
         try {
@@ -15,6 +23,11 @@ abstract class baseModel extends \ActiveRecord\Model
         }
     }
     /**
+     * Flag that the current is prevented from being saved into database
+     * @param boolean $save_disabled TRUE if save disabled; otherwise FALSE
+     */
+    public function disableSave($save_disabled = true) { $this->save_disabled = $save_disabled; }
+    /**
      * The save procedure interface for item
      * @param boolean $validate should it validate the attribs
      * @throws \zinux\kernel\exceptions\invalidOperationException if duplication error happen
@@ -22,6 +35,8 @@ abstract class baseModel extends \ActiveRecord\Model
      */
     public function save($validate = true)
     {
+        if($this->save_disabled)
+            throw new \zinux\kernel\exceptions\invalidOperationException("The `save()` operation is disabled for current item.");
         try
         {
             # try to save it
