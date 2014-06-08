@@ -176,37 +176,5 @@
 <?php endif; ?>
         // initiate sort table procedure
         window.sort_table();
-        // fetch the constant header height
-        var constH = $("th.item-heander-name").height();
-        // foreach item-name exist
-        $("tr.item-row td.item-name").each(function(index, elem) {
-            // we are interseted in link's text's body
-            var $elem = $(elem).find('a');
-            // backup the original text of element
-            $elem.attr('title', $elem.text());
-            // the cropping threshold [found by examining]
-            var ts = 0.17098226466575716;
-
-            while(constH / $elem.height() < 0.8) {
-                // fetch the text
-                var txt = $elem.text();
-                // down-grade the threshold value as the above `while` condition not satisfied
-                ts -= 0.01;
-                do{
-                    // remove the last 14 `character` of the text
-                    txt =  txt.substr(0, txt.length - 14);
-                    console.log(txt);
-                    // should we proceed?
-                }while(txt.length / $elem.innerWidth() > ts && txt.length > 0);
-                // if we reached non-zero-length string
-                if(txt.length)
-                    $elem.text(txt + " [...]");
-                else break;
-            }
-            // a fail-safe
-            if(String($elem.text()).length === 0)
-                // replace the previously backed up text
-                $elem.text($elem.attr('title'));
-        });
     });
 </script>
