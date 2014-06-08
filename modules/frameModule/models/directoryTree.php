@@ -202,11 +202,11 @@ class directoryTree extends \stdClass
             $this->plotTableRow($folder, $active_type, $parent_id, $is_owner, (++$index)/$all_count);
         }
         $this->plotTableFooter();
+        $this->plotTableJS($active_type);
         if(!count($collection)) {
             require 'directoryTree-submodules/table-empty.phtml';
             return;
         }
-        $this->plotTableJS($active_type);
     }
     /**
      * Plots necessary JS for table operations
