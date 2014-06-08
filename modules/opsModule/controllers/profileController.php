@@ -17,6 +17,7 @@ class profileController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
+        # default title
         $this->layout->AddTitle("Profile viewing....");
         # if user not signed in?
         if(!\core\db\models\user::IsSignedin())
@@ -36,6 +37,8 @@ class profileController extends \zinux\kernel\controller\baseController
         }
         # default user for profile viewing, is current user
         $user = \core\db\models\user::GetInstance();
+        # update the title with user's name
+        $this->layout->AddTitle($user->get_RealName_or_Username()." @toratan");
         # load intial profile
         # if any profile ID is demaned
         if($this->request->CountIndexedParam())
@@ -61,6 +64,7 @@ class profileController extends \zinux\kernel\controller\baseController
                 return;
             }
         }
+        $this->layout->SetLayout("profile");
     }
 
     /**
