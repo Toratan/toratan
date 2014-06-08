@@ -238,8 +238,10 @@ class profile extends baseModel
         # if no more address partial remained
         if(!\count($address_partials))
         {
-            # time to unset the setting
-            unset($settings->$m);
+            # fail-safe for empty patrial
+            if(strlen($m))
+                # time to unset the setting
+                unset($settings->$m);
             # indicate that deletion was successful
             return true;
         }
