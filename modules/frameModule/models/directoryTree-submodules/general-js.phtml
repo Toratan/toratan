@@ -266,14 +266,14 @@
             // fetch the constant header height
             var constH = $("th.item-heander-name").height();
             // foreach item-name exist
-            $("tr.item-row td.item-name:not(.trimmed)").each(function(index, elem) {
+            $("tr.item-row td:not(.trimmed)").each(function(index, elem) {
                 // we are interseted in link's text's body
-                var $elem = $(elem).find('a');
+                var $elem = $(elem).find('a, time');
                 // backup the original text of element
                 $elem.attr('title', $elem.text());
                 // the cropping threshold [found by examining]
                 var ts = 0.17098226466575716;
-
+                // while we didn't find the write trim size?
                 while(constH / $elem.height() < 0.8) {
                     // fetch the text
                     var txt = $elem.text();
