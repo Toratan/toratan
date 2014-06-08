@@ -11,6 +11,9 @@ class dialogs
      */
     function __construct ()
     {
+        static $defined_already = false;
+        if($defined_already) return;
+        $defined_already = true;
 ?><script>
     (function() {
         window.default_modal_button = new (function() {
@@ -33,7 +36,7 @@ class dialogs
          * Opens a modal
          * @param string modal_tag the target modal tag
          * @param string data the data to put into modal body
-         * @param integer close_timeout the timeout for closing modal
+         * @param integer close_timeout<b>(optional, default:false)</b> the timeout for closing modal
          * @param array __button and array of button informations to add to modal { default: close button }
          * @notice __button : each entity should have a format of following {html: 'html context string of button', attrib: ' array attributes of  button', cssClass: 'array of css classes', callback: 'call back function of button'
          * 
@@ -89,7 +92,7 @@ class dialogs
         /**
          * open a dialog modal(without any button) 
          * @param string info the info to put into modal body
-         * @param integer close_timeout the timeout for closing modal
+         * @param integer close_timeout<b>(optional, default:false)</b> the timeout for closing modal
          */
         window.open_dialogModal = function(info, close_timeout) {
             open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-comment"></span> Dialog', close_timeout);
@@ -98,7 +101,7 @@ class dialogs
         /**
          * open an info modal  
          * @param string info the info to put into modal body
-         * @param integer close_timeout the timeout for closing modal
+         * @param integer close_timeout<b>(optional, default:false)</b> the timeout for closing modal
          */
         window.open_infoModal = function(info, close_timeout) {
             open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-comment"></span> Notice', close_timeout);
@@ -106,15 +109,23 @@ class dialogs
         /**
          * open an error modal  
          * @param string info the info to put into modal body
-         * @param integer close_timeout the timeout for closing modal
+         * @param integer close_timeout<b>(optional, default:false)</b> the timeout for closing modal
+         * @param boolean parse_html<b>(optional, default:false)</b> Should the modal treat `info` as a standard error page's content?
          */
-        window.open_errorModal = function(info, close_timeout) {
+        window.open_errorModal = function(info, close_timeout, parse_html) {
+            if(typeof(parse_html) === "undefined")
+                parse_html = false;
+            if(parse_html) {
+                var $body = $('<div>').append($(info)).find("#error-layout").wrap("<div>");
+                $body.find(".container").removeClass("container").css("margin", "-10px").html();
+                info = $body.html();
+            }
             open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-remove-sign"></span> Oops!', close_timeout);
         };
         /**
          * open a wait modal
          * @param integer close_modal instruct to close any wait modal
-         * @param integer close_timeout the timeout for closing modal
+         * @param integer close_timeout<b>(optional, default:false)</b> the timeout for closing modal
          */
         window.open_waitModal = function(close_modal, close_timeout) {
             if(typeof(close_timeout) === 'undefined') close_timeout = -1;
@@ -137,7 +148,7 @@ class dialogs
          * @param function yes_callback
          * @param function no_callback
          * @param boolean is_yes_primary check if `YES` is primary or `NO`
-         * @param integer close_timeout the timeout for closing modal
+         * @param integer close_timeout<b>(optional, default:false)</b> the timeout for closing modal
          */
         window.open_yesnoModal = function(info, yes_callback, no_callback, is_yes_primary, close_timeout) {
             if(typeof(is_yes_primary) === "undefined") is_yes_primary = 1;
@@ -160,7 +171,7 @@ class dialogs
          * @param string info the info to put into modal body
          * @param function save_callback
          * @param string title The dialog's title(default: Dialog)
-         * @param integer close_timeout the timeout for closing modal
+         * @param integer close_timeout<b>(optional, default:false)</b> the timeout for closing modal
          */
         window.open_savecloseModal = function(info, save_callback, title, close_timeout) {
             if(typeof(title) === "undefined") title = "Dialog";
