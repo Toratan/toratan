@@ -106,4 +106,13 @@ class editorController extends \zinux\kernel\controller\baseController
             exit;
         }
     }
+
+    /**
+    * The \modules\opsModule\controllers\editorController::previewAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function previewAction()
+    {
+        \zinux\kernel\utilities\debug::_var($this->request->params, 1);
+    }
 }

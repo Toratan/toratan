@@ -6,6 +6,12 @@
 <?php endforeach; ?>
 </ol>
 <?php endif; ?>
+<div class="container">
+    <ul class="nav nav-tabs" id="preview-tab">
+        <li class="active"><a href="#" pref="content">Content</a></li>
+        <li><a href="#" pref="preview">Preview</a></li>
+    </ul>
+</div>
 <?php
     $profile = \core\db\models\profile::getInstance(\core\db\models\user::getInstance()->user_id);
     if(!isset($this->request->params["ui"]))
@@ -32,3 +38,17 @@
             break;
     }
 ?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".nav#preview-tab a").click(function(e){
+            e.preventDefault();
+            switch(String($(this).attr('pref')).toLocaleString()){ 
+                case "preview":
+                    break;
+                case "content":
+                    break;
+                default: console.error("Undefined preference `"+$(this).attr('pref')+"`");
+            }
+        });
+    });
+</script>
