@@ -48,6 +48,8 @@ __FETCH_PROFILE:
         $this->view->profile = \core\db\models\profile::getInstance($user->user_id, 0, 0);
         # set the related user
         $this->view->user = $user;
+        # flag that current user is owner of the profile or not?
+        $this->view->is_owner = (@\core\db\models\user::GetInstance()->user_id == $this->view->profile->user_id); ;
     }
     /**
     * The modules\opsModule\controllers\profileController::IndexAction()
@@ -549,5 +551,34 @@ __RELOCATE:
         $this->layout->SetLayout("profile");
         # set current active type
         $this->view->active_type = "posts";
+    }
+    /**
+    * The \modules\opsModule\controllers\profileController::previewAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function previewAction()
+    {
+        $action = "index";
+        if($this->request->CountIndexedParam() !== 0) {
+            $action = $this->request->GetIndexedParam(0);
+        }
+        switch(strtolower($action)) {
+            case "index":
+            case "posts":
+            case "about":
+                break;
+            default: throw new \zinux\kernel\exceptions\invalidOperationException("Undefined index `{$this->request->GetIndexedParam(0)}` for preview");
+        }
+        if(!method_exists($this, "{$action}Action"))
+            throw new \zinux\kernel\exceptions\invalidOperationException("Undefined method `".__CLASS__."::{$action}Action()`");
+        # re-init the request params
+        $this->request->params = array();
+        $this->request->GenerateIndexedParams();
+        # call the target action
+        $this->{"{$action}Action"}();
+        # make it a public view
+        $this->view->is_owner = 0;
+        # flag preview mode
+        $this->view->preview_mode = 1;
     }
 }

@@ -1,6 +1,6 @@
 <?php 
     list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link($this->profile->user_id);
-   $is_profile_owner = (@\core\db\models\user::GetInstance()->user_id == $this->profile->user_id); 
+   $is_profile_owner = @$this->is_owner;
     $p = $this->profile->to_array();
     $p["full_name"] = $this->user->get_RealName_or_Username();
     unset($p["settings"]); 
