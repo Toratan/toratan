@@ -161,14 +161,16 @@ __DEFAULT_OPS:
         var prev = null;
         var html = "";
         var item_added = 0;
-        function addInfo(html) {
+        var index_processed = -1;
+        this.addInfo = function(html) {
             html += "</div>";
             $("#about").append(html);
             prev = null;
             html = "";
             item_added++;
-        }
-        function getValues(values, table_class) {
+            index_processed = 0;
+        };
+        this.getValues = function(values, table_class) {
             if(typeof(table_class) === "undefined")
                 table_class = "";
             table_class += " table";
@@ -191,35 +193,53 @@ __DEFAULT_OPS:
             }
             html +="</tbody></table>";
             return html;
-        }
-        info = info.filter(function(n){ return n !== undefined && n !== null; });
-        for(var block in info) {
-            var b = info[block];
-            if(info.length === 1)
-                b.span = 2;
-            if(prev === null || prev.span * 6 === 12 || b.span * 6 === 12) {
-                if(html.length)
-                    addInfo(html);
-                html = "<div class='row'>";
+        };
+        this.__render = function(info) {
+            for(var block in info) {
+                var b = info[block];
+                index_processed++;
+                if(info.length === 1)
+                    b.span = 2;
+                if(    
+                    index_processed && 
+                    index_processed % 2 === 0 || 
+                    prev === null || 
+                    prev.span * 6 === 12 || 
+                    b.span * 6 === 12) {
+                        if(html.length) {
+                            this.addInfo(html);
+                            prev = null;
+                            html = "";
+                            item_added++;
+                            index_processed = 0;
+                        }
+                        html = "<div class='row'>";
+                }
+                html += 
+                        "<div class='col-md-"+(6 * b.span).toString()+" col-sm-12 col-xs-12 about-block'>"+
+                            "<legend>"+b.label+"</legend>"+
+                            "<div class='pull-right' style='margin-top:-42px;'>"+b.options+"</div>"+
+                            this.getValues(b.values, b.class)+
+                        "</div>";
+                if(prev === null)
+                    prev = b;
+                else if(prev.span * 6  === 6 || prev.span * 6 === 12) {
+                    this.addInfo(html);
+                    prev = null;
+                    html = "";
+                    item_added++;
+                    index_processed = 0;
+                }
             }
-            html += 
-                    "<div class='col-md-"+(6 * b.span).toString()+" col-sm-12 col-xs-12 about-block'>"+
-                        "<legend>"+b.label+"</legend>"+
-                        "<div class='pull-right' style='margin-top:-42px;'>"+b.options+"</div>"+
-                        getValues(b.values, b.class)+
-                    "</div>";
-            if(prev === null)
-                prev = b;
-            else if(prev.span * 6  === 6 || prev.span * 6 === 12)
-                addInfo(html);
-        }
-        if(html.length)
-            addInfo(html);
-        if(!item_added) {
-            $('.avatar')
-                    .removeAttr('class')
-                    .addClass('avatar');
-        }
+            if(html.length)
+                this.addInfo(html);
+            else if(!item_added) {
+                $('.avatar')
+                        .removeAttr('class')
+                        .addClass('avatar');
+            }
+        };
+        this.__render(info.filter(function(n){ return n !== undefined && n !== null; }));
     });
 </script>
     <div class='clearfix hidden'></div>
