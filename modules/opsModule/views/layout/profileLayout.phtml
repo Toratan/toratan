@@ -25,26 +25,36 @@
 ?>
 <?php $glayout = new \modules\defaultModule\views\layout\genLayoutHeader($this); ?>
 <?php $glayout->render_header(); ?>
-<div class="container-fluid" style="width: 77%">
+<style type="text/css">
+    #cover-photo img{
+        height: 410px;
+        width: 100%;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        border-bottom: 0;
+    }
+    .navbar-static-top{border-left: 1px solid rgba(0,0,0,.075); border-right: 1px solid rgba(0,0,0,.075); }
+</style>
+<div class="container" style="width: 65%">
     <div id="cover-photo">
-        <img src="<?php echo '/access/img/upload/cover/bc164218f758cd3a59cd5f1cb98fd0563a327f69_2.jpg'; ?>" class="image imageblock img-responsive img-thumbnail" />
+        <img src="<?php echo '/access/img/upload/cover/bc164218f758cd3a59cd5f1cb98fd0563a327f69_2.jpg'; ?>" class="image imageblock img-responsive img-thumbnail" style=""/>
     </div>
     <link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
-    <nav class="navbar navbar-default navbar-static-top" role="navigation">
-        <div class="container">
-            <ul class="nav navbar-nav ">
+    <nav class="navbar navbar-default navbar-static-top" role="navigation" >
+        <div class="container-fluid">
+            <ul class="nav navbar-nav">
                 <li class="<?php echo $active_type === "about" ? "active" : "" ?>">
                     <a href="/profile/about">
-                        <b>About</b>
+                        <span class="glyphicon glyphicon-map-marker"></span> <b>About</b>
                     </a>
                 </li>
                 <li class="<?php echo $active_type === "posts" ? "active" : "" ?>">
                     <a href="/profile/posts">
-                        <b>Posts</b>
+                        <span class="glyphicon glyphicon-pencil"></span> <b>Posts</b>
                     </a>
                 </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav navbar-right" style="margin-right: 0px;">
                 <li title="Send Message">
                     <a href="#"><span class="glyphicon glyphicon-send"></span> Message</a>
                 </li>
@@ -60,7 +70,7 @@
     <div class="container">
         <div class="row">
             <?php if($active_type === "about") : ?>
-            <div class="pull-left col-md-3" style="padding-bottom: 10px;">
+            <div class="pull-left col-md-3">
                 <?php $render_avatar($this->view); ?>
             </div>
             <?php endif; ?>
