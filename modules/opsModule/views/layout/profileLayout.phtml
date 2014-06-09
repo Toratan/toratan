@@ -22,16 +22,13 @@
 <link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
 <style type="text/css">
     .icenter-block { float: none; display: -moz-inline-stack; display:inline-block; vertical-align:top; *display:inline; background-color:transparent; }
-    .cover-ajax-wait {
-        background-color: #FFF;
-        margin-left: 10%
-    }
+    .cover-ajax-wait {background-color: yellowgreen;width: 0;}
 </style>
 <div class="container" style='padding: 0'>
     <div id="cover-photo">
         <div class='mosaic-block bottom-bar icenter-block'>
         <?php if($is_profile_owner) : ?>
-            <a href="/profile/cover"  class="mosaic-overlay" id="change-cover" style="display: inline; left: 0px; bottom: -45px;">
+            <a href="/profile/cover"  class="mosaic-overlay" id="change-cover" style="display: inline; left: 0px; bottom: -40px;">
                 <div style="height: 3px;" class="cover-ajax-wait"></div>
                 <div class="details text-center" style="margin-top: 0;">
                     <h1><span class="glyphicon glyphicon-picture"></span><br /><b>Change Cover</b></h1>
@@ -87,12 +84,28 @@
     (function(){
         $("a#change-cover").click(function(e){
             e.preventDefault();
+            window.ajax_started = 0;
+            $(window).ajaxStart(function(){
+                window.ajax_started = 1;
+                function ajax_loader_go() {
+                    $( ".cover-ajax-wait" ).css({width: 0, "margin-left": 0}).animate({ "width": "+=100%" }, 4000, function(){ setTimeout(ajax_loader_back, 100); });    
+                }
+                 function ajax_loader_back(){
+                    $( ".cover-ajax-wait" ).css({width: "100%", "margin-left": 0}).
+                            animate({ "margin-left": "+=100%" }, 3000, function(){  if(window.ajax_started) setTimeout(ajax_loader_go, 100); else delete window.ajax_started; }); 
+                };
+                ajax_loader_go();
+            });
+            $(window).ajaxStop(function(){ window.ajax_started = 0; });
             $.ajax({
                 url: $(this).attr('href'),
                 data: "ajax=1",
                 success: function(data) {
-                    console.log(data);
+                    window.open_savecloseModal(data);
                 }
+            }).done(function(){
+                $(window).ajaxStart(undefined);
+                $(window).ajaxStop(undefined);
             });
         });
     })(jQuery);
