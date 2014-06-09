@@ -4,11 +4,12 @@
     $max_step = 3;
     if($this->step<1 || $this->step>$max_step)
         $this->step = 1;    
+    $this->post_back = isset($this->post_back) && $this->post_back && isset($this->post) && is_array($this->post);
 ?>
 <div class="pre" style="width: 70%;margin:auto;min-height: 200px;font-family: sans-serif;background-color: inherit;padding:10px;">
     <div style="">
         <h4 style="border-bottom: 5px solid #0088cc;padding-bottom: 3px;">
-            Create your profile
+            <?php echo $this->post_back ? "Create a" : "Edit your" ?> profile
         </h4>
         
         <style>
@@ -44,7 +45,6 @@
 </ol>
 <?php endif; ?>
 <?php
-    $this->post_back = isset($this->post_back) && $this->post_back && isset($this->post) && is_array($this->post);
     $this->user = \core\db\models\user::getInstance();
     switch($this->step)
     {
