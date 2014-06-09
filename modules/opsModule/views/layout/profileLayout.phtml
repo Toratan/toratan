@@ -1,4 +1,5 @@
 <?php if(!@$this->view->profile) throw new \zinux\kernel\exceptions\invalidArgumentException("Not profile instance provided...."); ?>
+<?php $is_profile_owner = (@\core\db\models\user::GetInstance()->user_id == $this->view->profile->user_id);  ?>
 <?php $active_type = strtolower(@$this->view->active_type);
     switch($active_type) {
         case "about": case "posts": break;
@@ -37,12 +38,18 @@
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right" style="margin-right: 0px;">
+<?php if(!$is_profile_owner): ?>
                 <li title="Send Message">
                     <a href="#"><span class="glyphicon glyphicon-send"></span> Message</a>
                 </li>
                 <li title="Follow">
                     <a href="#"><span class="glyphicon glyphicon-plus"></span> Follow</a>
                 </li>
+<?php elseif($active_type === "about"): ?>
+                <li title='Edit Profile'>
+                    <a href='/profile/edit'><span class='glyphicon glyphicon-pencil'></span> Edit</a>
+                </li>
+<?php endif; ?>
             </ul>
         </div>
     </nav>
