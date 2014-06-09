@@ -1,5 +1,6 @@
 <?php if(!@$this->view->profile) throw new \zinux\kernel\exceptions\invalidArgumentException("Not profile instance provided...."); ?>
-<?php $is_profile_owner = @$this->is_owner;  ?>
+<?php $is_profile_owner = @$this->view->is_owner;  ?>
+<?php $is_preview_mode = @$this->view->preview_mode;  ?>
 <?php $active_type = strtolower(@$this->view->active_type);
     switch($active_type) {
         case "about": case "posts": break;
@@ -27,12 +28,12 @@
         <div class="container-fluid">
             <ul class="nav navbar-nav">
                 <li class="<?php echo $active_type === "about" ? "active" : "" ?>">
-                    <a href="/profile/about">
+                    <a href="/profile/<?php echo $is_preview_mode?"preview/":""?>about">
                         <span class="glyphicon glyphicon-map-marker"></span> <b>About</b>
                     </a>
                 </li>
                 <li class="<?php echo $active_type === "posts" ? "active" : "" ?>">
-                    <a href="/profile/posts">
+                    <a href="/profile/<?php echo $is_preview_mode?"preview/":""?>posts">
                         <span class="glyphicon glyphicon-book"></span> <b>Posts</b>
                     </a>
                 </li>
@@ -40,19 +41,24 @@
             <ul class="nav navbar-nav navbar-right" style="margin-right: 0px;">
 <?php if(!$is_profile_owner): ?>
                 <li title="Send Message">
-                    <a href="#"><span class="glyphicon glyphicon-send"></span> Message</a>
+                    <a href="<?php echo $is_preview_mode?"#": "#message"?>"><span class="glyphicon glyphicon-envelope"></span> Message</a>
                 </li>
                 <li title="Follow">
-                    <a href="#"><span class="glyphicon glyphicon-plus"></span> Follow</a>
+                    <a href="<?php echo $is_preview_mode?"#": "#follow"?>"><span class="glyphicon glyphicon-plus"></span> Follow</a>
                 </li>
 <?php elseif($active_type === "about"): ?>
-                <li title='View your public profile'>
-                    <a href='/profile/preview' target="__blank"><span class='glyphicon glyphicon-eye-open'></span> Preview</a>
-                </li>
                 <li title='Edit Profile'>
                     <a href='/profile/edit'><span class='glyphicon glyphicon-pencil'></span> Edit</a>
                 </li>
+                <li title='View your public profile'>
+                    <a href='/profile/preview'><span class='glyphicon glyphicon-eye-open'></span> Preview</a>
+                </li>
 <?php endif; ?>
+<?php if($is_preview_mode): ?>
+                <li title='Go back to your profile' class="active">
+                    <a href='/profile' target=""><span class='glyphicon glyphicon-eye-close'></span> Exit Preview</a>
+                </li>
+<?php endif;  ?>
             </ul>
         </div>
     </nav>

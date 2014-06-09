@@ -35,7 +35,7 @@ class profileController extends \zinux\kernel\controller\baseController
         # default user for profile viewing, is current user
         $user = \core\db\models\user::GetInstance();
         # update the title with user's name
-        $this->layout->AddTitle($user->get_RealName_or_Username()." @toratan");
+        $this->layout->AddTitle($user->get_RealName_or_Username()." on Toratan");
         # load intial profile
         # if any profile ID is demaned
         if($this->request->CountIndexedParam())
@@ -549,6 +549,8 @@ __RELOCATE:
         $this->fetchProfile();
         # change the layout
         $this->layout->SetLayout("profile");
+        # fail-safe for pre-view mode
+        $this->view->setView("posts");
         # set current active type
         $this->view->active_type = "posts";
     }
