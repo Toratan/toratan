@@ -78,31 +78,28 @@ __DEFAULT_OPS:
                  if($should_render($p, $key))
                          $v = $value;
         }
-        if(!strlen($v) && $is_profile_owner) {
-            $eu = "/profile/edit/step/";
-            $step = 1;
-            switch($key) {
-            }
-            $eu .= $step;
-            $v = 'Not specified <span class="small"><a href="'.$eu.'">(Edit)</a></span>';
-        }
+        if(!strlen($v) && $is_profile_owner)
+            $v = '<span class="small text-muted">Not specified</span>';
         if(strlen($v)) {
             $k = "";
+            $step = 1;
             // the UI span row#
             $span = 1;
             switch($s) {
                 case "basic": $k = "Basic Information"; break;
-                case "bio": $k = "Bio."; $span = 2;break;
-                case "contact": $k = "Contact Information"; break;
+                case "bio": $k = "Biography "; $step = $span = 2;break;
+                case "contact": $k = "Contact Information"; $step = 3; break;
                 default: throw new zinux\kernel\exceptions\invalidArgumentException("Undefined `section` value: $s");
             } 
             $inf[$s]["label"] = $k;
             $inf[$s]["span"] = $span;
+            $inf[$s]["options"] = $is_profile_owner ? "<span class='small pull-right'><a href='/profile/edit/step/$step'>Edit</a></span>" : "";
             $inf[$s]["values"][$key]["label"] = $l;
             $inf[$s]["values"][$key]["value"] = $v;
         }
     }
-    \zinux\kernel\utilities\debug::_var($inf);
+    $info = array(@$inf["basic"], @$inf["contact"], @$inf["bio"]);
+    unset($inf);
 ?>
 <script type="text/javascript">
     $(document).ready(function() {
@@ -114,7 +111,7 @@ __DEFAULT_OPS:
     <div class="pull-left col-md-3 col-sm-4 col-xs-4 avatar">
         <div class="row" style="margin:10px;width: 100%">
             <div class=" text-center" style="background-color: transparent;width: 100%">
-                <div class='mosaic-block bottom-bar'>
+                <div class='mosaic-block bottom-bar icenter-block'>
                 <?php if($is_profile_owner) : ?>
                     <a href="/profile/avatar"  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -45px;">
                         <div class="details text-center ">
@@ -139,7 +136,7 @@ __DEFAULT_OPS:
         </div>
     </div>
     <style type='text/css'>
-        .mosaic-block { float: none; display: -moz-inline-stack; display:inline-block; vertical-align:top; *display:inline; background-color:transparent; }
+        .icenter-block { float: none; display: -moz-inline-stack; display:inline-block; vertical-align:top; *display:inline; background-color:transparent; }
         #about .row .about-block{ min-height: 200px}
         #about .row .about-block table{ margin:10px; width: 100%}
         #about .row .about-block .table tr th, 
@@ -157,69 +154,69 @@ __DEFAULT_OPS:
     </style>
 <script type='text/javascript'>
     $(document).ready(function() {
-        var info = JSON.parse('<?php echo addslashes(json_encode($inf)); ?>');
-        console.log(info);
+        var info = JSON.parse('<?php echo addslashes(json_encode($info)); ?>');
+        var prev = null;
+        var html = "";
+        var item_added = 0;
+        function addInfo(html) {
+            html += "</div>";
+            $("#about").append(html);
+            prev = null;
+            html = "";
+            item_added++;
+        }
+        function getValues(values) {
+            console.log(values);
+            var html = "<table class='table' style='width: 100%'>"+
+                        "<thead>"+
+                            "<tr>"+
+                                "<th class='col-md-4'></th>"+
+                                "<th></th>"+
+                            "</tr>"+
+                        "</thead>"+
+                        "<tbody>";
+            for(var v in values) {
+                html += "<tr class='"+v+"'>"+
+                        "<td class='values-label'>"+
+                            values[v].label+
+                        "</td>"+
+                        "<td class='values-value'>"+
+                            values[v].value+
+                        "</td>";
+            }
+            html +="</tbody></table>";
+            return html;
+        }
+        info = info.filter(function(n){ return n !== undefined && n !== null; });
+        for(var block in info) {
+            var b = info[block];
+            if(info.length === 1)
+                b.span = 2;
+            if(prev === null || prev.span * 6 === 12)
+                html = "<div class='row'>";
+            html += 
+                    "<div class='col-md-"+(6 * b.span).toString()+" col-sm-12 col-xs-12 about-block'>"+
+                        "<legend>"+b.label+"</legend>"+
+                        "<div class='pull-right' style='margin-top:-42px;'>"+b.options+"</div>"+
+                        getValues(b.values)+
+                    "</div>";
+            if(prev === null)
+                prev = b;
+            else if(prev.span * 6  === 6 || prev.span * 6 === 12)
+                addInfo(html);
+        }
+        if(html.length)
+            addInfo(html);
+        if(!item_added) {
+            $('.avatar')
+                    .removeAttr('class')
+                    .addClass('avatar');
+        }
     });
 </script>
     <div class='clearfix hidden'></div>
     <div class="pull-left col-md-9 col-sm-8 col-xm-8">
         <div id="about" class=''>
-            <div class='row' style=''>
-                <div class='col-md-6 col-sm-12 col-xs-12 about-block' style=''>
-                    <legend>Basic Information</legend>
-                    <table class='table' style='width: 100%'>
-                        <thead>
-                            <tr>
-                                <th class='col-md-4'></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-<?php if($should_render($p, "birth_month")): ?>
-                            <tr>
-                                <td>Birth Date</td>
-                                <td><?php 
-                                    if($should_render($p, "birth_month"))
-                                        echo date('F ', mktime(0, 0, 0, $p["birth_month"]));
-                                    if($should_render($p, "birth_day"))
-                                        echo $p["birth_day"];
-                                ?></td>
-                            </tr>
-<?php endif; ?>
-<?php if($should_render($p, "birth_year")): ?>
-                            <tr>
-                                <td>Birth Year</td>
-                                <td><?php echo $p["birth_year"] ?></td>
-                            </tr>
-<?php endif; ?>
-<?php if($should_render($p, "is_male")): ?>
-                            <tr>
-                                <td>Gender</td>
-                                <td><?php echo $p["is_male"] ? "Male" : "Female" ?></td>
-                            </tr>
-<?php elseif($is_profile_owner): ?>
-                            <tr>
-                                <td>Gender</td>
-                                <td class='text-muted'>
-                                    Not specified <spall><a href='/profile/edit/step/1'>(Edit)</a></spall>
-                                </td>
-                            </tr>
-<?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-                <div class='col-md-6 col-sm-12 col-xs-12 about-block' style=''>
-                    <legend>Basic Information</legend>
-                </div>
-            </div>
-            <div class='row'>
-                <div class='col-md-6 col-sm-12 col-xs-12 about-block' style=''>
-                    <legend>Basic Information</legend>
-                </div>
-                <div class='col-md-6 col-sm-12 col-xs-12 about-block' style=''>
-                    <legend>Basic Information</legend>
-                </div>
-            </div>
         </div>
     </div>
 </div>
