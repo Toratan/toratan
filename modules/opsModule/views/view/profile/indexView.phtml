@@ -93,6 +93,7 @@ __DEFAULT_OPS:
             } 
             $inf[$s]["label"] = $k;
             $inf[$s]["span"] = $span;
+            $inf[$s]["class"] = $s;
             $inf[$s]["options"] = $is_profile_owner ? "<span class='small pull-right'><a href='/profile/edit/step/$step'>Edit</a></span>" : "";
             $inf[$s]["values"][$key]["label"] = $l;
             $inf[$s]["values"][$key]["value"] = $v;
@@ -143,6 +144,8 @@ __DEFAULT_OPS:
         #about .row .about-block .table tr td{ border: 0!important; padding: 0;}
         #about .row .about-block .table tr td{  padding-bottom: 4px }
         #about .row .about-block .table tr td:first-child{ color: #89919C; }
+        #about .row .about-block .table tr td.info-value {word-break: break-all;overflow: hidden;text-align: justify}
+        #about .row .about-block .table.bio tr th:first-child{width: 100px!important;}
         @media screen and (min-width: 0px) and (max-width: 500px) {
             .clearfix.hidden {display: block!important}
             .avatar {width:100%!important}
@@ -165,9 +168,11 @@ __DEFAULT_OPS:
             html = "";
             item_added++;
         }
-        function getValues(values) {
-            console.log(values);
-            var html = "<table class='table' style='width: 100%'>"+
+        function getValues(values, table_class) {
+            if(typeof(table_class) === "undefined")
+                table_class = "";
+            table_class += " table";
+            var html = "<table class='"+table_class+"' style='width: 100%'>"+
                         "<thead>"+
                             "<tr>"+
                                 "<th class='col-md-4'></th>"+
@@ -177,10 +182,10 @@ __DEFAULT_OPS:
                         "<tbody>";
             for(var v in values) {
                 html += "<tr class='"+v+"'>"+
-                        "<td class='values-label'>"+
+                        "<td class='info-label'>"+
                             values[v].label+
                         "</td>"+
-                        "<td class='values-value'>"+
+                        "<td class='info-value'>"+
                             values[v].value+
                         "</td>";
             }
@@ -192,13 +197,16 @@ __DEFAULT_OPS:
             var b = info[block];
             if(info.length === 1)
                 b.span = 2;
-            if(prev === null || prev.span * 6 === 12)
+            if(prev === null || prev.span * 6 === 12 || b.span * 6 === 12) {
+                if(html.length)
+                    addInfo(html);
                 html = "<div class='row'>";
+            }
             html += 
                     "<div class='col-md-"+(6 * b.span).toString()+" col-sm-12 col-xs-12 about-block'>"+
                         "<legend>"+b.label+"</legend>"+
                         "<div class='pull-right' style='margin-top:-42px;'>"+b.options+"</div>"+
-                        getValues(b.values)+
+                        getValues(b.values, b.class)+
                     "</div>";
             if(prev === null)
                 prev = b;
