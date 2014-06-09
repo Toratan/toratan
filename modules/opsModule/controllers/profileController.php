@@ -58,7 +58,7 @@ __FETCH_PROFILE:
         # fetch the profile
         $this->fetchProfile();
         # if the profile is belong to current user?
-        if(\core\db\models\user::GetInstance()->user_id == $this->view->profile->user_id)
+        if(@\core\db\models\user::GetInstance()->user_id == $this->view->profile->user_id)
         {
             # if so, fetch profile status
             $profile_status = $this->view->profile->getSetting("/profile/status") ;
