@@ -1,5 +1,9 @@
-<?php $p = $this->profile->to_array() ?>
-<?php unset($p["settings"]); $pj = json_encode($p); ?>
+<?php 
+    $p = $this->profile->to_array();
+    $p["full_name"] = $this->user->get_RealName_or_Username();
+    unset($p["settings"]); 
+    $pj = json_encode($p);
+?>
 <script type="text/javascript">
     $(document).ready(function() {
         var p = JSON.parse('<?php echo $pj ?>');

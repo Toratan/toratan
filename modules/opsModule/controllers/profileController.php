@@ -46,6 +46,8 @@ class profileController extends \zinux\kernel\controller\baseController
 __FETCH_PROFILE:
         # fetch a profile by the provided user instance
         $this->view->profile = \core\db\models\profile::getInstance($user->user_id);
+        # set the related user
+        $this->view->user = $user;
     }
     /**
     * The modules\opsModule\controllers\profileController::IndexAction()
