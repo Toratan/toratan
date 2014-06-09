@@ -583,4 +583,12 @@ __RELOCATE:
         # flag preview mode
         $this->view->preview_mode = 1;
     }
+    /**
+    * The \modules\opsModule\controllers\profileController::coverAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function coverAction()
+    {
+        
+    }
 }
