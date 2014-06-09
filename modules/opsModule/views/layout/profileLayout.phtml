@@ -9,7 +9,7 @@
 <?php $glayout->render_header(); ?>
 <style type="text/css">
     #cover-photo img{
-        height: 410px;
+        max-height: 410px;
         width: 100%;
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
@@ -17,7 +17,7 @@
     }
     .navbar-static-top{border-left: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; margin-top:-10px;}
 </style>
-<div class="container" style="width: 65%">
+<div class="container" style='padding: 0'>
     <div id="cover-photo">
         <img src="<?php echo '/access/img/upload/cover/bc164218f758cd3a59cd5f1cb98fd0563a327f69_2.jpg'; ?>" class="image imageblock img-responsive img-thumbnail" style=""/>
     </div>
@@ -46,13 +46,8 @@
             </ul>
         </div>
     </nav>
-    <style type="text/css">
-        #profile-table td{ padding-right: 10px; }
-    </style>
     <div class="container">
-        <div class="row">
-            <?php echo $this->content?>
-        </div>
+        <?php echo $this->content?>
     </div>
 </div> <!-- /container -->
 <?php $glayout->render_footer(); ?>
