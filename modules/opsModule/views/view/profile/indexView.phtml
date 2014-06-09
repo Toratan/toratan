@@ -5,6 +5,104 @@
     $p["full_name"] = $this->user->get_RealName_or_Username();
     unset($p["settings"]); 
     $pj = json_encode($p);
+    /**
+     * Validates if we should render a section of array as profile info
+     */
+    $should_render = function(array $p, $section) {
+        if(!is_string($section)) throw new \zinux\kernel\exceptions\invalidArgumentException("The arg `section` is not string");
+        if(!strlen($section)) throw new \zinux\kernel\exceptions\invalidArgumentException("The arg `section` cannot be empty");
+        if(!array_key_exists($section, $p)) throw new \zinux\kernel\exceptions\invalidArgumentException("The arg `$section` does not exists in array `p`");
+        switch($section) {
+            case "birth_day":
+            case "birth_month":
+            case "birth_year":
+                return $p[$section] != 0;
+            case "is_male":
+                return $p[$section] != -1;
+            default: 
+                if(is_string($p[$section]))
+                    return strlen($p[$section]);
+                if(is_array($p[$section]))
+                    return count($p[$section]);
+                throw new \zinux\kernel\exceptions\invalidOperationException("The arg `\$p[\$section]` is not neighed `string` nor `array`!!!");
+        }
+    };
+    $inf = array();
+    foreach($p as $key => $value) {
+        $l = "$key";
+        $v = "";
+        $s = "basic";
+        $convert_labels = array(
+                "is_male" => "gender",
+                "intro" => "introduction",
+                "occu" => "occupation",
+                "edu" => "education",
+                
+        );
+        $convert_section = array(
+           "phone" => "contact",
+           "site" => "contact",
+           "public_email" => "contact",
+            "intro" => "bio",
+            "occu" => "bio",
+            "edu" => "bio",
+        );
+        if(in_array($key, array("user_id", "last_name", "first_name", "full_name", "created_at", "updated_at")))
+                continue;
+        if(key_exists($key, $convert_labels))
+                $l = $convert_labels[$key];
+        if(key_exists($key, $convert_section))
+                $s = $convert_section[$key];
+        switch($key) {
+            case "birth_day":
+            case "birth_month":
+                $l = "Birth Date";
+                 if($should_render($p, "birth_month"))
+                     $v = date('F ', mktime(0, 0, 0, $p["birth_month"]));
+                 if($should_render($p, "birth_day"))
+                     $v .= $p["birth_day"];
+                 $key = "birth_date";
+                 break;
+            case "country":
+            case "city":
+                $l = "Location";
+                if($should_render($p, "country"))
+                    $v = $p["country"];
+                if($should_render($p, "city"))
+                    $v .= (($should_render($p, "country") ? ", ": " ") . $p["city"]);
+                $key = "location";
+                break;
+            default:
+__DEFAULT_OPS:
+                 $l =ucwords(str_replace("_", " ", $l));
+                 if($should_render($p, $key))
+                         $v = $value;
+        }
+        if(!strlen($v) && $is_profile_owner) {
+            $eu = "/profile/edit/step/";
+            $step = 1;
+            switch($key) {
+            }
+            $eu .= $step;
+            $v = 'Not specified <span class="small"><a href="'.$eu.'">(Edit)</a></span>';
+        }
+        if(strlen($v)) {
+            $k = "";
+            // the UI span row#
+            $span = 1;
+            switch($s) {
+                case "basic": $k = "Basic Information"; break;
+                case "bio": $k = "Bio."; $span = 2;break;
+                case "contact": $k = "Contact Information"; break;
+                default: throw new zinux\kernel\exceptions\invalidArgumentException("Undefined `section` value: $s");
+            } 
+            $inf[$s]["label"] = $k;
+            $inf[$s]["span"] = $span;
+            $inf[$s]["values"][$key]["label"] = $l;
+            $inf[$s]["values"][$key]["value"] = $v;
+        }
+    }
+    \zinux\kernel\utilities\debug::_var($inf);
 ?>
 <script type="text/javascript">
     $(document).ready(function() {
@@ -57,6 +155,12 @@
             .col-md-6{width: 100%!important}
         }
     </style>
+<script type='text/javascript'>
+    $(document).ready(function() {
+        var info = JSON.parse('<?php echo addslashes(json_encode($inf)); ?>');
+        console.log(info);
+    });
+</script>
     <div class='clearfix hidden'></div>
     <div class="pull-left col-md-9 col-sm-8 col-xm-8">
         <div id="about" class=''>
@@ -71,14 +175,36 @@
                             </tr>
                         </thead>
                         <tbody>
+<?php if($should_render($p, "birth_month")): ?>
+                            <tr>
+                                <td>Birth Date</td>
+                                <td><?php 
+                                    if($should_render($p, "birth_month"))
+                                        echo date('F ', mktime(0, 0, 0, $p["birth_month"]));
+                                    if($should_render($p, "birth_day"))
+                                        echo $p["birth_day"];
+                                ?></td>
+                            </tr>
+<?php endif; ?>
+<?php if($should_render($p, "birth_year")): ?>
+                            <tr>
+                                <td>Birth Year</td>
+                                <td><?php echo $p["birth_year"] ?></td>
+                            </tr>
+<?php endif; ?>
+<?php if($should_render($p, "is_male")): ?>
                             <tr>
                                 <td>Gender</td>
-                                <td>Male</td>
+                                <td><?php echo $p["is_male"] ? "Male" : "Female" ?></td>
                             </tr>
+<?php elseif($is_profile_owner): ?>
                             <tr>
                                 <td>Gender</td>
-                                <td>Male</td>
+                                <td class='text-muted'>
+                                    Not specified <spall><a href='/profile/edit/step/1'>(Edit)</a></spall>
+                                </td>
                             </tr>
+<?php endif; ?>
                         </tbody>
                     </table>
                 </div>
