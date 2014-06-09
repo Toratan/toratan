@@ -19,11 +19,20 @@
     }
     .navbar-static-top{border-left: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; margin-top:-10px;}
 </style>
+<link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
 <div class="container" style='padding: 0'>
     <div id="cover-photo">
-        <img src="<?php echo '/access/img/upload/cover/bc164218f758cd3a59cd5f1cb98fd0563a327f69_2.jpg'; ?>" class="image imageblock img-responsive img-thumbnail" style=""/>
+        <div class='mosaic-block bottom-bar icenter-block'>
+        <?php if($is_profile_owner) : ?>
+            <a href="/profile/cover"  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -45px;">
+                <div class="details text-center" style="margin-top: 0;">
+                    <h1><span class="glyphicon glyphicon-picture"></span><br /><b>Change Cover</b></h1>
+                </div>
+            </a>
+        <?php endif ; ?>
+            <img src="<?php echo '/access/img/upload/cover/bc164218f758cd3a59cd5f1cb98fd0563a327f69_2.jpg'; ?>" class="image imageblock img-responsive img-thumbnail" style=""/>
+        </div>
     </div>
-    <link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
     <nav class="navbar navbar-default navbar-static-top" role="navigation" >
         <div class="container-fluid">
             <ul class="nav navbar-nav">
