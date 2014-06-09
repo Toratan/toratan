@@ -4,24 +4,6 @@
         case "about": case "posts": break;
         default: $active_type = "about";
     }
-    $render_avatar = function(zinux\kernel\view\baseView $view) {
-         list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link($view->profile->user_id);
-        $is_profile_owner = (@\core\db\models\user::GetInstance()->user_id == $view->profile->user_id); 
-?>
-        <div class="mosaic-block bottom-bar img-thumbnail" style="background-color: transparent">
-        <?php if($is_profile_owner) : ?>
-            <a href="/profile/avatar"  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -45px;">
-                <div class="details text-center ">
-                    <h1><span class="glyphicon glyphicon-picture"></span><br /><b>Change Avatar</b></h1>
-                </div>
-            </a>
-        <?php endif ; ?>
-            <a href="/profile/avatar/view/<?php echo $view->profile->user_id, "?", \zinux\kernel\security\security::GetHashString(array($view->profile->user_id)) ?>" target="__blank">
-                <img id="thumbnail" width="200" height="200" class='col-lg-12 img-responsive img-thumbnail' src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>';"  />
-            </a>
-        </div>
-<?php
-    }
 ?>
 <?php $glayout = new \modules\defaultModule\views\layout\genLayoutHeader($this); ?>
 <?php $glayout->render_header(); ?>
@@ -33,7 +15,7 @@
         border-bottom-left-radius: 0;
         border-bottom: 0;
     }
-    .navbar-static-top{border-left: 1px solid rgba(0,0,0,.075); border-right: 1px solid rgba(0,0,0,.075); }
+    .navbar-static-top{border-left: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; margin-top:-10px;}
 </style>
 <div class="container" style="width: 65%">
     <div id="cover-photo">
@@ -50,7 +32,7 @@
                 </li>
                 <li class="<?php echo $active_type === "posts" ? "active" : "" ?>">
                     <a href="/profile/posts">
-                        <span class="glyphicon glyphicon-pencil"></span> <b>Posts</b>
+                        <span class="glyphicon glyphicon-book"></span> <b>Posts</b>
                     </a>
                 </li>
             </ul>
@@ -69,16 +51,8 @@
     </style>
     <div class="container">
         <div class="row">
-            <?php if($active_type === "about") : ?>
-            <div class="pull-left col-md-3">
-                <?php $render_avatar($this->view); ?>
-            </div>
-            <?php endif; ?>
-            <div class="pull-left col-md-9">
-                <?php echo $this->content?>
-            </div>
+            <?php echo $this->content?>
         </div>
     </div>
 </div> <!-- /container -->
 <?php $glayout->render_footer(); ?>
-<?php unset($render_avatar); ?>
