@@ -20,11 +20,19 @@
     .navbar-static-top{border-left: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; margin-top:-10px;}
 </style>
 <link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
+<style type="text/css">
+    .icenter-block { float: none; display: -moz-inline-stack; display:inline-block; vertical-align:top; *display:inline; background-color:transparent; }
+    .cover-ajax-wait {
+        background-color: #FFF;
+        margin-left: 10%
+    }
+</style>
 <div class="container" style='padding: 0'>
     <div id="cover-photo">
         <div class='mosaic-block bottom-bar icenter-block'>
         <?php if($is_profile_owner) : ?>
-            <a href="/profile/cover"  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -45px;">
+            <a href="/profile/cover"  class="mosaic-overlay" id="change-cover" style="display: inline; left: 0px; bottom: -45px;">
+                <div style="height: 3px;" class="cover-ajax-wait"></div>
                 <div class="details text-center" style="margin-top: 0;">
                     <h1><span class="glyphicon glyphicon-picture"></span><br /><b>Change Cover</b></h1>
                 </div>
@@ -75,4 +83,18 @@
         <?php echo $this->content?>
     </div>
 </div> <!-- /container -->
+<script type="text/javascript">
+    (function(){
+        $("a#change-cover").click(function(e){
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('href'),
+                data: "ajax=1",
+                success: function(data) {
+                    console.log(data);
+                }
+            });
+        });
+    })(jQuery);
+</script>
 <?php $glayout->render_footer(); ?>

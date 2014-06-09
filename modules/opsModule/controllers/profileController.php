@@ -589,6 +589,8 @@ __RELOCATE:
     */
     public function coverAction()
     {
-        
+        if(array_key_exists("ajax", $this->request->params))
+                $this->layout->SuppressLayout();
+        sleep(3);
     }
 }
