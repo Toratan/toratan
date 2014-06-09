@@ -45,7 +45,7 @@ class profileController extends \zinux\kernel\controller\baseController
                 throw new \zinux\kernel\exceptions\notFoundException("The profile not found.");
 __FETCH_PROFILE:
         # fetch a profile by the provided user instance
-        $this->view->profile = \core\db\models\profile::getInstance($user->user_id);
+        $this->view->profile = \core\db\models\profile::getInstance($user->user_id, 0, 0);
         # set the related user
         $this->view->user = $user;
     }
