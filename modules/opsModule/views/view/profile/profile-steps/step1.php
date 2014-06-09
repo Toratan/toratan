@@ -47,7 +47,8 @@
         <label class="control-label"><strong class="">Gender</strong></label>
         <div class="">
             <select name="is_male" class="form-control" required>
-                <option <?php echo $this->profile->is_male?'selected="selected"':''?> value="1">Male</option>
+                <option <?php echo $this->profile->is_male == -1?'selected="selected"':''?> value="-1">Unknown</option>
+                <option <?php echo $this->profile->is_male ==  1?'selected="selected"':''?> value="1">Male</option>
                 <option <?php echo !$this->profile->is_male?'selected="selected"':''?> value="0">Female</option>
             </select>
         </div>
