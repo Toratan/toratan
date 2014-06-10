@@ -7,6 +7,7 @@
         default: $active_type = "about";
     }
 ?>
+<?php $cover_img =\core\db\models\profile::getInstance($this->view->profile->user_id)->getSetting("/profile/cover/image"); ?>
 <?php $glayout = new \modules\defaultModule\views\layout\genLayoutHeader($this); ?>
 <?php $glayout->render_header(); ?>
 <style type="text/css">
@@ -35,7 +36,7 @@
                 </div>
             </a>
         <?php endif ; ?>
-            <img src="<?php echo '/access/img/upload/cover/bc164218f758cd3a59cd5f1cb98fd0563a327f69_2.jpg'; ?>" class="image imageblock img-responsive img-thumbnail" style=""/>
+            <img src="<?php echo $cover_img; ?>" class="image imageblock img-responsive img-thumbnail" style=""/>
         </div>
     </div>
     <nav class="navbar navbar-default navbar-static-top" role="navigation" >
@@ -80,7 +81,7 @@
         <?php echo $this->content?>
     </div>
 </div> <!-- /container -->
-<form name="cover" class="hidden" action="/profile/cover" method="POST" enctype="multipart/form-data">
+<form name="cover" class="hidden" action="/profile/cover/?<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>" method="POST" enctype="multipart/form-data">
     <input type="file" name="upload-cover" accept="image/*"/>
 </form>
 <script type="text/javascript">

@@ -591,6 +591,51 @@ __RELOCATE:
     {
         if(array_key_exists("ajax", $this->request->params))
                 $this->layout->SuppressLayout();
-        sleep(3);
+        if(!$this->request->IsPOST())
+            throw new \zinux\kernel\exceptions\accessDeniedException;
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(session_id()));
+        \zinux\kernel\security\security::IsSecure($_FILES, array("upload-cover"));
+        \zinux\kernel\utilities\debug::_var(array($this->request->params, $_FILES));
+        $F = $_FILES["upload-cover"];
+        if($F["error"] != UPLOAD_ERR_OK)
+            throw new \core\exceptions\uploadException($F["error"]);
+        # fetch upload location for uploaded image 
+        $upload_path = \zinux\kernel\application\config::GetConfig("upload.cover.image_path");
+        # if we have a miss configured project
+        if(!$upload_path)
+            # indecate it
+            throw new \zinux\kernel\exceptions\notImplementedException("No configuration found for `upload.cover`!!");
+        # define supported format
+        $image_support_types = array('png' => 'image/png',
+            'jpe' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg');
+        # check format
+        if(!in_array($F["type"], $image_support_types))
+                throw new \zinux\kernel\exceptions\appException("Only the following file types are supported `".implode(", ", array_keys($image_support_types))."`.");
+        # fetch the file's name
+        $fname = $F["name"];
+        # fetch file's extention
+        $ext = end(\array_filter(explode(".", $fname)));
+        # fetch user's profile
+        $profile = \core\db\models\profile::getInstance(NULL, 0, 0);
+        # unlink any possible perviously profile picture
+        @\shell_exec("rm -f .".$profile->getSetting("/profile/cover/image"));
+        # define a counter for naming
+        $counter = 0;
+        # while original image file already exists, increase the counters
+        while(\file_exists($upload_path.sha1($fname.(++$counter)).".$ext")) ;
+        # generate a new name for original image
+        $fname = sha1($fname.$counter);
+        # generate the original image's paths
+        $upload_path .= "$fname.$ext";
+        # move uplaoded file to its proper location and name
+        if(!@\move_uploaded_file($F["tmp_name"], $upload_path))
+            throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
+        # setting the profile settings for original image path
+        $profile->setSetting("/profile/cover/image", "/$upload_path", 1);
+        # redirect to user's profile
+        header("location: /profile");
+        
     }
 }
