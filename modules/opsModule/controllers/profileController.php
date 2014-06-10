@@ -291,6 +291,56 @@ __DEPLOY:
     */
     public function avatarAction()
     {
+        if(!$this->request->IsPOST())
+            throw new \zinux\kernel\exceptions\accessDeniedException;
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, session_id()));
+        \zinux\kernel\security\security::IsSecure($_FILES, array("upload-avatar"));
+        $F = $_FILES["upload-avatar"];
+        \zinux\kernel\utilities\debug::_var(\core\db\models\profile::getInstance()->settings);
+        \zinux\kernel\utilities\debug::_var($F);
+        if($F["error"] != UPLOAD_ERR_OK)
+            throw new \core\exceptions\uploadException($F["error"]);
+        # fetch upload location for uploaded image 
+        $upload_path = \zinux\kernel\application\config::GetConfig("upload.avatar.thumbnail_image_path");
+        # if we have a miss configured project
+        if(!$upload_path)
+            # indecate it
+            throw new \zinux\kernel\exceptions\notImplementedException("No configuration found for `upload.avatar.thumbnail_image_path`!!");
+        # define supported format
+        $image_support_types = array('png' => 'image/png',
+            'jpe' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg');
+        # check format
+        if(!in_array($F["type"], $image_support_types))
+                throw new \zinux\kernel\exceptions\appException("Only the following file types are supported `".implode(", ", array_keys($image_support_types))."`.");
+        # fetch the file's name
+        $fname = $F["name"];
+        # fetch file's extention
+        $ext = end(\array_filter(explode(".", $fname)));
+        # fetch user's profile
+        $profile = \core\db\models\profile::getInstance(NULL, 0, 0);
+        # unlink any possible perviously profile picture
+        @\shell_exec("rm -f .".$profile->getSetting("/profile/avatar/image"));
+        # define a counter for naming
+        $counter = 0;
+        # while original image file already exists, increase the counters
+        while(\file_exists($upload_path.sha1($fname.(++$counter)).".$ext")) ;
+        # generate a new name for original image
+        $fname = sha1($fname.$counter);
+        # generate the original image's paths
+        $upload_path .= "$fname.$ext";
+        # create a thumbnail for original image
+        if(!@\core\ui\html\avatar::make_thumbnail($F["tmp_name"], $upload_path))
+            throw new \zinux\kernel\exceptions\invalidOperationException("File uploaded but unable to create thumbnail!");
+        # setting the profile settings for original image path
+        $profile->setSetting("/profile/avatar/image", "/$upload_path", 1);
+        \zinux\kernel\utilities\debug::_var($profile->settings);
+        die;
+        # redirect to user's profile
+        header("location: /profile"); 
+    }
+    public function old_avatarAction() {
         # invoke a new instance of profile
         $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
         # pass any info we have on the user's profile's avatar to view
@@ -601,7 +651,7 @@ __RELOCATE:
         # if we have a miss configured project
         if(!$upload_path)
             # indecate it
-            throw new \zinux\kernel\exceptions\notImplementedException("No configuration found for `upload.cover`!!");
+            throw new \zinux\kernel\exceptions\notImplementedException("No configuration found for `upload.cover.image_path`!!");
         # define supported format
         $image_support_types = array('png' => 'image/png',
             'jpe' => 'image/jpeg',

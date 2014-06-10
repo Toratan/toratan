@@ -241,7 +241,7 @@ __DEFAULT_OPS:
         </div>
     </div>
 </div>
-
+<?php if($is_profile_owner): ?>
 <form name="avatar" class="hidden" action="/profile/avatar/?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, session_id())) ?>" method="POST" enctype="multipart/form-data">
     <input type="file" name="upload-avatar" accept="image/*"/>
 </form>
@@ -277,3 +277,4 @@ __DEFAULT_OPS:
         });
     })(jQuery);
 </script>
+<?php endif; ?>
