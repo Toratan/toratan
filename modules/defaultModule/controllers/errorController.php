@@ -33,6 +33,7 @@ class errorController extends \zinux\kernel\controller\baseController
          * http://tools.ietf.org/html/rfc2616
          */
         switch(true) {
+            case $last instanceof \InvalidArgumentException:
             case $last instanceof \zinux\kernel\exceptions\invalidCookieException:
             case $last instanceof \zinux\kernel\exceptions\invalidArgumentException:
             case $last instanceof \zinux\kernel\exceptions\invalidOperationException:
