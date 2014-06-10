@@ -629,9 +629,35 @@ __RELOCATE:
         $fname = sha1($fname.$counter);
         # generate the original image's paths
         $upload_path .= "$fname.$ext";
-        # move uplaoded file to its proper location and name
-        if(!@\move_uploaded_file($F["tmp_name"], $upload_path))
+        # calculate what function we will use to create image from?
+        # note that the `$F[type]` already secured with `$image_support_types`
+        # so it won't calling a method that does not exist.
+        $image_func = "imagecreatefrom".  str_replace("image/", "", $F["type"]);
+        # reate a new image from uploaded file
+        $src = $image_func($F['tmp_name']);        
+        # get uploaded image's size
+        list($width, $height) = getimagesize($F['tmp_name']); 
+        # if the image's width is not standrad
+        # for band-width reasons we will always resize images { width: 1200px }
+        if(true || $width < 1200) {
+            # we go with 1200px width
+            $newwidth = 1200;
+            # re-calc new scaled width
+            $newheight = ($height / $width) * $newwidth; 
+            # create a new true color image
+            $target_img = imagecreatetruecolor($newwidth, $newheight);
+            # copy and resize uploaded image with resampling
+            imagecopyresampled($target_img, $src, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+        } else 
+            # if the uploaded image has a standard width?
+            # just consider src image as target image
+            $target_img = $src;
+        # output image to file
+        if(!@imagejpeg($target_img, $upload_path, 100))
             throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
+        # release used resources 
+        imagedestroy($src);
+        imagedestroy($target_img);
         # setting the profile settings for original image path
         $profile->setSetting("/profile/cover/image", "/$upload_path", 1);
         # redirect to user's profile
