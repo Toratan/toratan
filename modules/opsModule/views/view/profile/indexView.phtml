@@ -34,18 +34,14 @@
         $s = "basic";
         $convert_labels = array(
                 "is_male" => "gender",
-                "intro" => "introduction",
-                "occu" => "occupation",
-                "edu" => "education",
+                "intro" => "introduction"
                 
         );
         $convert_section = array(
            "phone" => "contact",
            "site" => "contact",
            "public_email" => "contact",
-            "intro" => "bio",
-            "occu" => "bio",
-            "edu" => "bio",
+            "intro" => "bio"
         );
         if(in_array($key, array("user_id", "last_name", "first_name", "full_name", "created_at", "updated_at")))
                 continue;
@@ -145,6 +141,8 @@ __DEFAULT_OPS:
         #about .row .about-block .table tr td{  padding-bottom: 4px }
         #about .row .about-block .table tr td:first-child{ color: #89919C; }
         #about .row .about-block .table tr td.info-value {word-break: break-all;overflow: hidden;text-align: justify}
+        #about .row .about-block .table.bio tbody tr td {padding: 10px!important;}
+        #about .row .about-block .table.bio tbody tr {border-bottom: 1px solid #DDD;}
         #about .row .about-block .table.bio tr th:first-child{width: 100px!important;}
         @media screen and (min-width: 0px) and (max-width: 500px) {
             .clearfix.hidden {display: block!important}

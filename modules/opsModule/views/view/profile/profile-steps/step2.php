@@ -5,21 +5,11 @@
 <div id="step2">
     <div class="" >
         <label class="control-label"><strong>Introduction</strong></label>
-        <textarea type="text" name="intro" class="form-control input input-medium" <?php echo strlen($this->profile->intro)?"":"autofocus" ?>><?php echo $this->profile->intro ?></textarea>
+        <textarea type="text" name="intro" class="form-control input input-medium" <?php echo strlen($this->profile->intro)?"":"autofocus" ?> rows="10"><?php echo $this->profile->intro ?></textarea>
     </div>
     <div class="clearfix" ></div>
-    <hr />
-    <div class="">
-        <label class="control-label"><strong>Occupation</strong></label>
-        <textarea type="text" name="occu" class="form-control input input-medium"  ><?php echo $this->profile->occu ?></textarea>
-    </div>
-    <div class="">
-        <label class="control-label"><strong>Education</strong></label>
-        <textarea type="text" name="edu" class="form-control input input-medium" ><?php echo $this->profile->edu ?></textarea>
-    </div>
     <div class="clearfix"></div>
     <hr />
-    
     <div id="block3" class="block">
         <div class="">
             <label class="control-label"><strong>Country</strong></label>
