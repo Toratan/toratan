@@ -23,14 +23,13 @@
 <link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
 <style type="text/css">
     .icenter-block { float: none; display: -moz-inline-stack; display:inline-block; vertical-align:top; *display:inline; background-color:transparent; }
-    .cover-ajax-wait {background-color: yellowgreen;width: 0;}
+    .loading-bar {width: 0;height: 3px;display: none;}
 </style>
 <div class="container" style='padding: 0'>
     <div id="cover-photo">
         <div class='mosaic-block bottom-bar icenter-block'>
         <?php if($is_profile_owner) : ?>
             <a class="mosaic-overlay" id="change-cover" style="cursor:pointer;display: inline; left: 0px; bottom: -40px;">
-                <div style="height: 3px;" class="cover-ajax-wait"></div>
                 <div class="details text-center" style="margin-top: 0;">
                     <h1><span class="glyphicon glyphicon-picture"></span><br /><b>Change Cover</b></h1>
                 </div>
@@ -78,12 +77,14 @@
 <?php endif;  ?>
             </ul>
         </div>
+        <div class="loading-bar"></div>
     </nav>
     <div class="container">
         <?php echo $this->content?>
     </div>
 </div> <!-- /container -->
-<form name="cover" class="hidden" action="/profile/cover/?<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>" method="POST" enctype="multipart/form-data">
+<?php if($is_profile_owner): ?>
+<form name="cover" class="hidden" action="/profile/cover/?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, session_id())) ?>" method="POST" enctype="multipart/form-data">
     <input type="file" name="upload-cover" accept="image/*"/>
 </form>
 <script type="text/javascript">
@@ -113,17 +114,29 @@
             if(!window.is_check_cover_load_in_effect)
                 setTimeout(check_cover_load, 500);
         }).on("load-cover", function(){
-            window.ajax_started = 1;
-            function ajax_loader_go() {
-                $( ".cover-ajax-wait" ).css({width: 0, "margin-left": 0}).animate({ "width": "+=100%" }, 4000, function(){ setTimeout(ajax_loader_back, 100); });    
-            }
-             function ajax_loader_back(){
-                $( ".cover-ajax-wait" ).css({width: "100%", "margin-left": 0}).
-                        animate({ "margin-left": "+=100%" }, 3000, function(){  if(window.ajax_started) setTimeout(ajax_loader_go, 100); else delete window.ajax_started; }); 
-            };
-            ajax_loader_go();
+            window.load_bar();
             $("form[name='cover']").submit();
         });
+        window.load_bar = function(is_launching) {
+            if(typeof(is_launching) === "undefined") is_launching = true;
+            window.loader_started = is_launching;
+            if(!window.loader_started) return;
+            var go_time = 1000;
+            var back_time = 1000;
+            function loader_go() {
+                $( ".loading-bar" )
+                        .css({width: 0, "margin-left": 0, float: "left", "background-color": "#93af56" })
+                        .show()
+                        .animate({ "width": "+=100%" }, go_time, function(){ setTimeout(loader_back, 100); });
+            }
+             function loader_back(){
+                $( ".loading-bar" )
+                        .css({width: "100%", "margin-left": 0, float: "right", "background-color": "#93af56" })
+                        .animate({ "width": "0" }, back_time, function(){  if(window.loader_started) setTimeout(loader_go, 100); else { $( ".loading-bar" ).hide(); delete window.loader_started; } }); 
+            };
+            loader_go();
+        };
     })(jQuery);
 </script>
+<?php endif; ?>
 <?php $glayout->render_footer(); ?>
