@@ -18,10 +18,10 @@ class uploadException extends \zinux\kernel\exceptions\appException
     {
         switch ($code) {
             case UPLOAD_ERR_INI_SIZE:
-                $message = "The uploaded file size overflow.";
+                $message = "The uploaded file's size is too large.";
                 break;
             case UPLOAD_ERR_FORM_SIZE:
-                $message = "The uploaded file size overflow.";
+                $message = "The uploaded file's size is too large.";
                 break;
             case UPLOAD_ERR_PARTIAL:
                 $message = "The uploaded file was only partially uploaded.";
@@ -39,7 +39,7 @@ class uploadException extends \zinux\kernel\exceptions\appException
                 $message = "File upload stopped by extension.";
                 break;
             default:
-                $message = "Unknown upload error.";
+                $message = "";
                 break;
         }
         return $message;
