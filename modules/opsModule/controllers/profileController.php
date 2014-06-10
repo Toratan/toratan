@@ -658,7 +658,6 @@ __RELOCATE:
         # setting the profile settings for original image path
         $profile->setSetting("/profile/cover/image", "/$upload_path", 1);
         # redirect to user's profile
-        header("location: /profile");
-        
+        header("location: /profile");    
     }
 }
