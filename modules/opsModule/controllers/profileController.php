@@ -16,6 +16,8 @@ class profileController extends \zinux\kernel\controller\baseController
         parent::Initiate();
         # default title
         $this->layout->AddTitle("Toratan");
+        # browser never should cache the profile's page
+        header("Last-Modified: ".gmdate('D, d M Y H:i:s ')."GMT");
     }
     /**
      * Fetches the profile based on current request and loads it onto current view's handler
