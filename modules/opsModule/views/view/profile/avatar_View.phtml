@@ -2,7 +2,13 @@
 <?php $orig_uri = \core\ui\html\avatar::get_avatar_link($this->profile->user_id); ?>
 <?php $puser =\core\db\models\user::Fetch($this->profile->user_id); ?>
 <?php $is_profile_owner = @\core\db\models\user::GetInstance()->user_id == $this->profile->user_id; ?>
-<legend>An avatar of <a href="/profile<?php echo $is_profile_owner ? "" : "/".$this->profile->user_id ?>"><?php echo $puser->get_RealName_or_Username(); ?></a></legend>
+<?php $profile_uri = "/profile".($is_profile_owner ? "" : "/".$this->profile->user_id) ?>
+<legend>An avatar of <a href="<?php echo $profile_uri ?>"><?php echo $puser->get_RealName_or_Username(); ?></a></legend>
+<?php if($is_profile_owner): ?>
+<div class="pull-right" style="margin-top: -45px;">
+    <a href="/profile">Change</a> <span class="text-muted">.</span> <a href="/profile/avatar/crop">Crop</a>
+</div>
+<?php endif; ?>
 <center>
     <img src="<?php echo array_pop($orig_uri) ?>" class="image imageblock img-responsive img-thumbnail"/>
 </center>
