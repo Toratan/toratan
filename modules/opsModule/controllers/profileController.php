@@ -93,7 +93,7 @@ __FETCH_PROFILE:
         # we need a wide layout
         $this->layout->SetLayout("wide");
         # load intial profile
-        $this->view->profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
+        $this->view->profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id, 0, 0);
         # intial value assignments
         $current_step = $this->view->step = 1;
         # provide hash value for view
@@ -184,12 +184,12 @@ __DEPLOY:
                     # submit profile with created session cache
                     $this->submitProfile($sc);
                     # save the profile creation status
-                    \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id)->setSetting("/profile/status", $profile_status);
+                    \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id, 0, 0)->setSetting("/profile/status", $profile_status);
                 case self::PROFILE_DONE:
                     # destroy any data on session cache
                     $sc->deleteAll();
                     # relocate the browser
-                    if(\core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id)->getSetting("/profile/status"))
+                    if(\core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id, 0, 0)->getSetting("/profile/status"))
                         header("location: /profile");
                     else
                         header("location: /");
@@ -260,7 +260,7 @@ __DEPLOY:
         if(!$session_cache)
             throw new \zinux\kernel\exceptions\invalidArgumentException("NULL cache passed!!");
         # fetch the user's profile instance
-        $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
+        $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id, 0, 0);
         # foreach value stored in cache
         foreach($session_cache->fetchAll() as $value)
         {
@@ -291,163 +291,25 @@ __DEPLOY:
     */
     public function avatarAction()
     {
+        # we only response to POST requests
         if(!$this->request->IsPOST())
             throw new \zinux\kernel\exceptions\accessDeniedException;
+        # valdiate hashsum
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, session_id()));
+        # validate inputs
         \zinux\kernel\security\security::IsSecure($_FILES, array("upload-avatar"));
-        $F = $_FILES["upload-avatar"];
-        \zinux\kernel\utilities\debug::_var(\core\db\models\profile::getInstance()->settings);
-        \zinux\kernel\utilities\debug::_var($F);
-        if($F["error"] != UPLOAD_ERR_OK)
-            throw new \core\exceptions\uploadException($F["error"]);
-        # fetch upload location for uploaded image 
-        $upload_path = \zinux\kernel\application\config::GetConfig("upload.avatar.thumbnail_image_path");
-        # if we have a miss configured project
-        if(!$upload_path)
-            # indecate it
-            throw new \zinux\kernel\exceptions\notImplementedException("No configuration found for `upload.avatar.thumbnail_image_path`!!");
-        # define supported format
-        $image_support_types = array('png' => 'image/png',
-            'jpe' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'jpg' => 'image/jpeg');
-        # check format
-        if(!in_array($F["type"], $image_support_types))
-                throw new \zinux\kernel\exceptions\appException("Only the following file types are supported `".implode(", ", array_keys($image_support_types))."`.");
-        # fetch the file's name
-        $fname = $F["name"];
-        # fetch file's extention
-        $ext = end(\array_filter(explode(".", $fname)));
-        # fetch user's profile
+        # check if there is any upload error?
+        if($_FILES["upload-avatar"]["error"] != UPLOAD_ERR_OK)
+            throw new \core\exceptions\uploadException($_FILES["upload-avatar"]["error"]);
+        # fetch the profile
         $profile = \core\db\models\profile::getInstance(NULL, 0, 0);
-        # unlink any possible perviously profile picture
-        @\shell_exec("rm -f .".$profile->getSetting("/profile/avatar/image"));
-        # define a counter for naming
-        $counter = 0;
-        # while original image file already exists, increase the counters
-        while(\file_exists($upload_path.sha1($fname.(++$counter)).".$ext")) ;
-        # generate a new name for original image
-        $fname = sha1($fname.$counter);
-        # generate the original image's paths
-        $upload_path .= "$fname.$ext";
-        # create a thumbnail for original image
-        if(!@\core\ui\html\avatar::make_thumbnail($F["tmp_name"], $upload_path))
-            throw new \zinux\kernel\exceptions\invalidOperationException("File uploaded but unable to create thumbnail!");
-        # setting the profile settings for original image path
-        $profile->setSetting("/profile/avatar/image", "/$upload_path", 1);
-        \zinux\kernel\utilities\debug::_var($profile->settings);
-        die;
-        # redirect to user's profile
-        header("location: /profile"); 
-    }
-    public function old_avatarAction() {
-        # invoke a new instance of profile
-        $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
-        # pass any info we have on the user's profile's avatar to view
-        $this->view->avatar = $profile->getSetting("/profile/avatar/");
-        # if we have a GET request
-        # check if we have a custom avatar delete request?
-        if($this->request->IsGET() && isset($this->request->params["delete"]))
-        {
-            # check if we have a custom upload in user's profile
-            if(isset($this->view->avatar->custom))
-            {
-                # unlink the original image from hard drive
-                \shell_exec("rm .".$this->view->avatar->custom->origin_image);
-                # unlink the thumbnail image from hard drive
-                \shell_exec("rm .".$this->view->avatar->custom->thumb_image);
-                # unset the custom setting from database
-                $profile->unsetSetting("/profile/avatar/custom");
-            }
-            # relocate the browser
-            header("location: /profile/avatar");
-            exit;
-        }
-        # we only process POST request here
-        if(!$this->request->IsPOST()) return;
-        # validate the inputs
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, \session_id()));
-        # an error flag used during ops4
-        $this->view->errors = array();
-        # we do not support multiple uploads on avatars
-        if(isset($_FILES["custom"]) && @$_FILES['custom']['tmp_name'])
-        {
-            if(is_array($_FILES["custom"]["name"]))
-                throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
-            # check for any possible errors
-            if (isset($_FILES["custom"]) && $_FILES["custom"]["error"] && $_FILES["custom"]["error"] != UPLOAD_ERR_NO_FILE)
-                 throw new \core\exceptions\uploadException($_FILES["custom"]["error"]);
-            # validate if image's file content is essentially an image content or not?
-            if(!\getimagesize($_FILES['custom']['tmp_name']))
-            {
-                # indicate the error
-                $this->view->errors['custom'] = "Inavlid avatar image file or the file was corrupted!";
-                # logically unlink the uploaded file
-                $_FILES["custom"]['tmp_name'] = '';
-            }
-            # if we have an uploaded file
-            if(strlen($_FILES["custom"]['tmp_name']))
-                # flag the upload
-                $this->request->params["custom"] = "custom";
-        }
-        # if we have no active field
-        if(!isset($this->request->params["activated"]))
-            # indicate the error
-            return $this->view->errors[] = "No field activated or Your image size was too big!";
-        # iterate on params
-        foreach ($this->request->params as $key => $value)
-        {
-            # check for supported params
-            switch($key)
-            {
-                case \core\ui\html\avatar::INSTAGRAM:
-                case \core\ui\html\avatar::FACEBOOK:
-                case \core\ui\html\avatar::GRAVATAR:
-                case \core\ui\html\avatar::TWITTER:
-                        # if we have no input in a input, it may means that user deleted that input
-                        if(!strlen($value)) { $profile->unsetSetting ("/profile/avatar/$key"); break; }
-                        # set the settings
-                        $profile->setSetting("/profile/avatar/$key/set", 1, 0);
-                        $profile->setSetting("/profile/avatar/$key/id", $value, 0);
-                        break;
-                case "custom":
-                    # if we are going for custom upload section
-                    # check for upload locations
-                    foreach (array(PUBLIC_HTML."/access/img/upload", PUBLIC_HTML."/access/img/upload/thumbnail") as $value)
-                        if(!file_exists($value))
-                            if(!@mkdir ($value, 0777, 1))
-                                    throw new \zinux\kernel\exceptions\invalidOperationException("Unable to create directroy `$value`.");
-                    # upload the avatar
-                    $this->upload_avatar($key, $profile);
-                    break;
-                case "activated":
-                    # configure the activated section
-                    if($value == "custom")
-                        $profile->setSetting("/profile/avatar/activated", $value);
-                    elseif(strlen($this->request->params[$value]))
-                        $profile->setSetting("/profile/avatar/activated", $value, 0);
-                    else
-                        $this->view->errors[$value] = "Selected active field is empty";
-                    break;
-                default:
-                    # unset any un-ettended params
-                    unset($this->request->params[$key]);
-                    break;
-            }
-        }
-        # if we have errors?
-        if(count($this->view->errors)) return;
+        # invoke avatar's upload ops
+        $this->upload_avatar("upload-avatar", $profile);
         # save the profile
         $profile->save();
-        # relocate the browser
-        # if any image has been uploaded
-        if(isset($this->request->params["custom"]))
-            # crop the image
-            header("location: /profile/avatar/crop");
-        else
-            # otherwise relocate to /profile
-            header("location: /profile");
-        exit;
+        # crop the image
+        header("location: /profile/avatar/crop");
+        die;
     }
     /**
      * A safe avatar uploader
@@ -465,14 +327,10 @@ __DEPLOY:
         $image_support_types = array('png' => 'image/png',
             'jpe' => 'image/jpeg',
             'jpeg' => 'image/jpeg',
-            'jpg' => 'image/jpeg',
-            'gif' => 'image/gif');
+            'jpg' => 'image/jpeg');
         # check format
         if(!in_array($_FILES[$index_name]["type"], $image_support_types))
-        {
-            $this->view->errors["custom"] = "File type not supported!";
-            return;
-        }
+                throw new \zinux\kernel\exceptions\appException("Only the following file types are supported `".implode(", ", array_keys($image_support_types))."`.");
         # fetch upload location for original image 
         $orig_path = \zinux\kernel\application\config::GetConfig("upload.avatar.original_image_path");
         # fetch upload location for original image 
@@ -488,7 +346,7 @@ __DEPLOY:
         # define a counter for naming
         $counter = 0;
         # unlink any possible perviously profile picture
-        @\shell_exec("rm -f .".$profile->getSetting("/profile/avatar/custom/origin_image"));
+        @\shell_exec("rm -f .".$profile->getSetting("/profile/avatar/image"));
         # while original image file already exists, increase the counters
         while(\file_exists($orig_path.sha1($alt_name.(++$counter)).".$ext")) ;
         # generate a new name for original image
@@ -498,23 +356,21 @@ __DEPLOY:
         # define a counter for naming
         $counter = 0;
         # unlink any possible perviously profile picture
-        @\shell_exec("rm -f .".$profile->getSetting("/profile/avatar/custom/thumb_image"));
+        @\shell_exec("rm -f .".$profile->getSetting("/profile/avatar/thumbnail"));
         # while thumbnail image file already exists, increase the counters
         while(\file_exists($thum_path.sha1($alt_name.(++$counter)."-tmb").".$ext")) ;
         # generate the new name for thumbnail
         $thum_path .= sha1($alt_name.$counter."-tmb").".$ext";
         # move uplaoded file to its proper location and name
-        if(!@\move_uploaded_file($_FILES[$index_name]["tmp_name"], $orig_path))
+        if(!\move_uploaded_file($_FILES[$index_name]["tmp_name"], $orig_path))
             throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
-        # setting the profile settings for avatar custom upload
-        $profile->setSetting("/profile/avatar/custom/set",1, 0);
         # setting the profile settings for original image path
-        $profile->setSetting("/profile/avatar/custom/origin_image", "/$orig_path", 0);
+        $profile->setSetting("/profile/avatar/image", "/$orig_path", 0);
         # create a thumbnail for original image
         if(!@\core\ui\html\avatar::make_thumbnail($orig_path, $thum_path))
             throw new \zinux\kernel\exceptions\invalidOperationException("File uploaded but unable to create thumbnail!");
         # setting the profile settings for thumbnail image path
-        $profile->setSetting("/profile/avatar/custom/thumb_image", "/$thum_path", 0);
+        $profile->setSetting("/profile/avatar/thumbnail", "/$thum_path", 0);
     }
     
 
@@ -525,40 +381,28 @@ __DEPLOY:
     public function avatar_cropAction()
     {
         # invoke a new instance of profile
-        $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id);
+        $profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id, 0, 0);
         # pass any info we have on the user's profile's avatar to view
         $this->view->avatar = $profile->getSetting("/profile/avatar/");
         # if user does not have any custom avatar
-        if(!isset($this->view->avatar->custom) || !\file_exists(".".$this->view->avatar->custom->origin_image))
-        {
-            # unset any possible mis-configured setting
-            $profile->unsetSetting("/profile/avatar/custom");
-            # flag the error used in {self::avatarAction()}
-            $this->view->errors["custom"] = "No avatar exists!";
-            # promt the {self::avatarAction()}'s view
-            $this->view->setView("avatar");
-            # do not proceed
-            return;
-        }
-        # shift the avatar link to its custom property
-        $this->view->avatar = $this->view->avatar->custom;
+        if(!isset($this->view->avatar->image) || !\file_exists(".".$this->view->avatar->image))
+            throw new \zinux\kernel\exceptions\notFoundException("No avatar found");
         # we don't process GET request here
         if($this->request->IsGET()) return;
         # make sure that inputs are secure
         \zinux\kernel\security\security::IsSecure($this->request->params, array('x', 'y', 'w', 'h'));
         # validate the inputs
         foreach (array('x','y','w','h') as $value)
-        {
-            if(!\is_numeric($_POST[$value])) 
-            {
-                $pipe = new \core\utiles\messagePipe;
-                $pipe->write("No <b>crop</b> processed!!!");
-                goto __RELOCATE;
-            }
-        }
+            if(!\is_numeric($_POST[$value]))
+                throw new \zinux\kernel\exceptions\invalidArgumentException;
         # make a crop based on inputs
-        \core\ui\html\avatar::make_crop(".".$this->view->avatar->origin_image, ".".$this->view->avatar->thumb_image, $this->request->params['x'],$this->request->params['y'], $this->request->params['w'], $this->request->params['h']);
-__RELOCATE:
+        \core\ui\html\avatar::make_crop(
+                ".".$this->view->avatar->image,
+                ".".$this->view->avatar->thumbnail,
+                $this->request->params['x'],
+                $this->request->params['y'],
+                $this->request->params['w'],
+                $this->request->params['h']);
         # relocate the browser
         header("location: /profile");
         exit;
@@ -575,7 +419,7 @@ __RELOCATE:
         if($this->request->CountIndexedParam() < 1)
             throw new \zinux\kernel\exceptions\invalidOperationException;
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->GetIndexedParam(0)));
-        $this->view->profile = \core\db\models\profile::getInstance($this->request->GetIndexedParam(0));
+        $this->view->profile = \core\db\models\profile::getInstance($this->request->GetIndexedParam(0), 0, 0);
         if(!$this->view->profile)
             throw new \zinux\kernel\exceptions\notFoundException("Profile not found!");
     }
@@ -584,10 +428,7 @@ __RELOCATE:
     * The \modules\opsModule\controllers\profileController::aboutAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function aboutAction()
-    {
-        $this->IndexAction();
-    }
+    public function aboutAction() { $this->IndexAction(); }
 
     /**
     * The \modules\opsModule\controllers\profileController::postsAction()

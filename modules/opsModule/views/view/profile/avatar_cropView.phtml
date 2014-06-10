@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="/access/js/Jcrop/css/jquery.Jcrop.min.css" type="text/css" />
 <script type="text/javascript">
     <?php 
-    list($width, $height) = \getimagesize(".".$this->avatar->origin_image); 
+    list($width, $height) = \getimagesize(".".$this->avatar->image); 
     echo 
     "$(document).ready(function(){
         $('#cropbox').Jcrop({
@@ -24,26 +24,28 @@
     ?>
     function updateCropCoords(c) { $('#x').val(c.x); $('#y').val(c.y); $('#w').val(c.w); $('#h').val(c.h); }
 </script>
-<legend class="text-muted">Crop your custom avatar</legend>
-<!-- This is the form that our event handler fills -->
-<form action="/profile/avatar/crop" class="form" method="POST" style="margin-bottom: 0">
-    <input type="hidden" size="4" id="x" name="x" />
-    <input type="hidden" size="4" id="y" name="y" />
-    <input type="hidden" size="4" id="w" name="w" />
-    <input type="hidden" size="4" id="h" name="h" />
-    <div class="form-actions" >
-        <blockquote class="pull-left">Make your avatar crop then hit the <label>Crop</label> button or press <label>Back to profile</label> button to return back.</blockquote>
-        <style> @media screen and (min-width: 612px) { .div-breaker{display:none;} } </style>
-        <div class="hidden-lg hidden-md clearfix div-breaker"></div>
-        <div class="">
-            <input type="submit" value="Crop" class="btn btn-primary pull-right"  style="margin-left: 1.4%"/>
-            <a href="/profile" class="btn btn-default pull-right" >Back to profile</a>
+<div class="container">
+    <legend class="text-muted">Crop your custom avatar</legend>
+    <!-- This is the form that our event handler fills -->
+    <form action="/profile/avatar/crop" class="form" method="POST" style="margin-bottom: 0">
+        <input type="hidden" size="4" id="x" name="x" />
+        <input type="hidden" size="4" id="y" name="y" />
+        <input type="hidden" size="4" id="w" name="w" />
+        <input type="hidden" size="4" id="h" name="h" />
+        <div class="form-actions" >
+            <blockquote class="pull-left">Make your avatar crop then hit the <label>Crop</label> button or press <label>Back to profile</label> button to return back.</blockquote>
+            <style> @media screen and (min-width: 612px) { .div-breaker{display:none;} } </style>
+            <div class="hidden-lg hidden-md clearfix div-breaker"></div>
+            <div class="">
+                <input type="submit" value="Crop" class="btn btn-primary pull-right"  style="margin-left: 1.4%"/>
+                <a href="/profile" class="btn btn-default pull-right" >Back to profile</a>
+            </div>
         </div>
-    </div>
-</form>
-<div class="clearfix" style="margin: -2%" ></div>
-<hr />
-<center class="">
-    <!-- This is the image we're attaching Jcrop to -->
-    <img src="<?php echo $this->avatar->origin_image ?>" id="cropbox" height="800" width="800" class="img-responsive" style="border: 1px solid #000;" />
-</center>
+    </form>
+    <div class="clearfix" style="margin: -2%" ></div>
+    <hr />
+    <center>
+        <!-- This is the image we're attaching Jcrop to -->
+        <img src="<?php echo $this->avatar->image ?>" id="cropbox" height="800" width="800" class="img-responsive" style="border: 1px solid #000;" />
+    </center>
+</div>
