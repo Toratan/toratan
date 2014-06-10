@@ -96,8 +96,8 @@ class avatar
         imagecopyresampled($virtual_image, $source_image, 0, 0, $crop_start_x, $crop_start_y, $desired_width, $desired_height, $crop_width, $crop_height);
         
         /* check permission */
-        if(!is_writable($dest))
-            throw new \zinux\kernel\exceptions\accessDeniedException;
+        if(!is_writable(dirname($dest)))
+            throw new \zinux\kernel\exceptions\accessDeniedException("Permission denied to `".dirname($dest)."`");
         
 	/* create the physical thumbnail image to its destination */
         imagejpeg($virtual_image, $dest);
@@ -122,35 +122,13 @@ class avatar
         if(!$profile)
             throw new \zinux\kernel\exceptions\notFoundException("The profile not found!");
         # default avatar
-        $def_avatar = $avatar_uri = $orig_avatar = "/access/img/anonymous-".($profile->is_male?"":"fe")."male.jpg";
+        $def_avatar = $avatar_uri = "/access/img/anonymous-".($profile->is_male?"":"fe")."male.jpg";
         # fetch profile's avatar settings
         $avatar = $profile->getSetting("/profile/avatar/");
-        # if we any setting on profile's avatar
-        if($avatar)
-        {
-            # if we have any active section
-            if(@isset($avatar->{$avatar->activated}))
-            {
-                # for any supported active section
-                # fetch the proper profile's avatar URI
-                switch($avatar->activated)
-                {
-                    case \core\ui\html\avatar::INSTAGRAM:
-                    case \core\ui\html\avatar::FACEBOOK:
-                    case \core\ui\html\avatar::GRAVATAR:
-                    case \core\ui\html\avatar::TWITTER:
-                        $orig_avatar = $avatar_uri = self::fetch_uri($avatar->activated, $avatar->{$avatar->activated}->id, \core\ui\html\avatar::LARGE_SIZE, 0);
-                        break;
-                    case "custom":
-                        $avatar_uri = $avatar->{$avatar->activated}->thumb_image;
-                        $orig_avatar =  $avatar->{$avatar->activated}->origin_image;
-                        break;
-                }
-                # otherwise just go with default avatar image
-            }
-            # otherwise just go with default avatar image
-        }
-        # otherwise just go with default avatar image
-        return array($avatar_uri, $def_avatar, $orig_avatar);
+        # validate if any avatar has been set?
+        if(isset($avatar->image) && strlen($avatar->image))
+            $avatar_uri = $avatar->image;
+        # return the avatars
+        return array($avatar_uri, $def_avatar);
     }
 }
