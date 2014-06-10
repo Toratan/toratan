@@ -589,13 +589,10 @@ __RELOCATE:
     */
     public function coverAction()
     {
-        if(array_key_exists("ajax", $this->request->params))
-                $this->layout->SuppressLayout();
         if(!$this->request->IsPOST())
             throw new \zinux\kernel\exceptions\accessDeniedException;
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(session_id()));
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, session_id()));
         \zinux\kernel\security\security::IsSecure($_FILES, array("upload-cover"));
-        \zinux\kernel\utilities\debug::_var(array($this->request->params, $_FILES));
         $F = $_FILES["upload-cover"];
         if($F["error"] != UPLOAD_ERR_OK)
             throw new \core\exceptions\uploadException($F["error"]);
@@ -661,7 +658,6 @@ __RELOCATE:
         # setting the profile settings for original image path
         $profile->setSetting("/profile/cover/image", "/$upload_path", 1);
         # redirect to user's profile
-        header("location: /profile");
-        
+        header("location: /profile");    
     }
 }
