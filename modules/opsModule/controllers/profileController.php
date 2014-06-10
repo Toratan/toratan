@@ -11,14 +11,18 @@ class profileController extends \zinux\kernel\controller\baseController
     const PROFILE_SKIPPED = 1;
     const PROFILE_CREATED = 2;
     const PROFILE_DONE = 3;
+    
+    public function Initiate() {
+        parent::Initiate();
+        # default title
+        $this->layout->AddTitle("Toratan");
+    }
     /**
      * Fetches the profile based on current request and loads it onto current view's handler
      * @throws \zinux\kernel\exceptions\invalidOperationException if any invalid request
      * @throws \zinux\kernel\exceptions\notFoundException If profile not found
      */
     protected function fetchProfile() {
-        # default title
-        $this->layout->AddTitle("Profile viewing....");
         # if user not signed in?
         if(!\core\db\models\user::IsSignedin())
         {
@@ -34,8 +38,6 @@ class profileController extends \zinux\kernel\controller\baseController
         }
         # default user for profile viewing, is current user
         $user = \core\db\models\user::GetInstance();
-        # update the title with user's name
-        $this->layout->AddTitle($user->get_RealName_or_Username()." on Toratan");
         # load intial profile
         # if any profile ID is demaned
         if($this->request->CountIndexedParam())
@@ -44,6 +46,8 @@ class profileController extends \zinux\kernel\controller\baseController
                 # otherwise indicate profile not found
                 throw new \zinux\kernel\exceptions\notFoundException("The profile not found.");
 __FETCH_PROFILE:
+        # update the title with user's name
+        $this->layout->AddTitle($user->get_RealName_or_Username()." on Toratan");
         # fetch a profile by the provided user instance
         $this->view->profile = \core\db\models\profile::getInstance($user->user_id, 0, 0);
         # set the related user

@@ -1,5 +1,8 @@
 <?php if(!@$this->profile) throw new \zinux\kernel\exceptions\invalidArgumentException; ?>
 <?php $orig_uri = \core\ui\html\avatar::get_avatar_link($this->profile->user_id); ?>
+<?php $puser =\core\db\models\user::Fetch($this->profile->user_id); ?>
+<?php $is_profile_owner = @\core\db\models\user::GetInstance()->user_id == $this->profile->user_id; ?>
+<legend>An avatar of <a href="/profile<?php echo $is_profile_owner ? "" : "/".$this->profile->user_id ?>"><?php echo $puser->get_RealName_or_Username(); ?></a></legend>
 <center>
     <img src="<?php echo array_pop($orig_uri) ?>" class="image imageblock img-responsive img-thumbnail"/>
 </center>

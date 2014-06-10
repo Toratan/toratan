@@ -121,7 +121,7 @@ __DEFAULT_OPS:
                         </div>
                     </a>
                 <?php endif ; ?>
-                    <a href="/profile/avatar/view/<?php echo $this->profile->user_id, "?", \zinux\kernel\security\security::GetHashString(array($this->profile->user_id)) ?>" target="__blank">
+                    <a href="/profile/avatar/view/<?php echo $this->profile->user_id, "?", \zinux\kernel\security\security::GetHashString(array($this->profile->user_id)) ?>">
                         <img id="thumbnail" class='image img-thumbnail img-responsive 'src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>';"  />
                     </a>
                 </div>
