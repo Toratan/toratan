@@ -8,8 +8,8 @@
         $('#cropbox').Jcrop({
             onChange: updateCropCoords,
             onSelect: updateCropCoords,
-            boxWidth: 800, 
-            boxHeight: 800,
+            boxWidth: '100%', 
+            boxHeight: '100%',
             trueSize: [$width, $height],
             minSize: [200, 200],
             setSelect: [ 
@@ -25,27 +25,23 @@
     function updateCropCoords(c) { $('#x').val(c.x); $('#y').val(c.y); $('#w').val(c.w); $('#h').val(c.h); }
 </script>
 <div class="container">
-    <legend class="text-muted">Crop your custom avatar</legend>
+    <legend class="text-muted">Crop avatar</legend>
     <!-- This is the form that our event handler fills -->
-    <form action="/profile/avatar/crop" class="form" method="POST" style="margin-bottom: 0">
+    <form action="/profile/avatar/crop" class="form" method="POST" style="margin-bottom: 0;margin-top: -10px">
         <input type="hidden" size="4" id="x" name="x" />
         <input type="hidden" size="4" id="y" name="y" />
         <input type="hidden" size="4" id="w" name="w" />
         <input type="hidden" size="4" id="h" name="h" />
         <div class="form-actions" >
-            <blockquote class="pull-left">Make your avatar crop then hit the <label>Crop</label> button or press <label>Back to profile</label> button to return back.</blockquote>
-            <style> @media screen and (min-width: 612px) { .div-breaker{display:none;} } </style>
-            <div class="hidden-lg hidden-md clearfix div-breaker"></div>
             <div class="">
-                <input type="submit" value="Crop" class="btn btn-primary pull-right"  style="margin-left: 1.4%"/>
-                <a href="/profile" class="btn btn-default pull-right" >Back to profile</a>
+                <button type="submit" class="btn btn-primary pull-right"  style="margin-left: 10px"><span class='glyphicon glyphicon-compressed'></span> Crop</button>
+                <a href="/profile" class="btn btn-default pull-right" ><span class='glyphicon glyphicon-map-marker'></span>  Back to Profile</a>
             </div>
         </div>
     </form>
-    <div class="clearfix" style="margin: -2%" ></div>
-    <hr />
-    <center>
+    <div class="clearfix"></div>
+    <center style="border-top: 1px solid #DDD;margin-top: 10px;padding-top: 10px;">
         <!-- This is the image we're attaching Jcrop to -->
-        <img src="<?php echo $this->avatar->image ?>" id="cropbox" height="800" width="800" class="img-responsive" style="border: 1px solid #000;" />
+        <img src="<?php echo $this->avatar->image ?>" id="cropbox" class="img-responsive" style="border: 1px solid #000;" />
     </center>
 </div>
