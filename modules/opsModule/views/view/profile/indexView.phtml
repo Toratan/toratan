@@ -108,9 +108,16 @@ __DEFAULT_OPS:
             <div class=" text-center" style="background-color: transparent;width: 100%">
                 <div class='mosaic-block bottom-bar icenter-block'>
                 <?php if($is_profile_owner) : ?>
-                    <a id="change-avatar" href="/profile/avatar"  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -45px;">
+                    <a id="change-avatar" href="#"  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -45px;">
                         <div class="details text-center ">
                             <h1><span class="glyphicon glyphicon-picture"></span><br /><b>Change</b></h1>
+                        </div>
+                    </a>
+                    <a class="mosaic-overlay" href="/profile/avatar/crop"style="display: inline; left: 0px; top: -45px;height: 80px;" title="Crop the thumbnail image">
+                        <div class="details text-center">
+                            <h1>
+                                <span class="glyphicon glyphicon-compressed" style="margin-top: 50px;"></span>
+                            </h1>
                         </div>
                     </a>
                 <?php endif ; ?>
@@ -121,7 +128,7 @@ __DEFAULT_OPS:
                 <div class='clearfix'></div>
                 <div  class='' style='margin-top: 10px; overflow: hidden;word-break: break-all'>
                     <div class='text'>
-                    <strong><?php echo $p["full_name"] ?></strong>
+                        <strong><?php echo $p["full_name"] ?></strong>
                     </div>
                     <div class='text-muted block small' style='margin-top:10px;'>
                         <span class='glyphicon glyphicon-flag'></span> Joined at <?php echo date("M Y", strtotime($p["created_at"])); ?>
