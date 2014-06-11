@@ -7,7 +7,9 @@
         default: $active_type = "about";
     }
 ?>
-<?php $cover_img =\core\db\models\profile::getInstance($this->view->profile->user_id)->getSetting("/profile/cover/image"); ?>
+<?php $profile = \core\db\models\profile::getInstance($this->view->profile->user_id, 0, 0); ?>
+<?php $cover_img = $profile->getSetting("/profile/cover/image"); ?>
+<?php $cover_info = $profile->getSetting("/profile/cover/info"); ?>
 <?php $glayout = new \modules\defaultModule\views\layout\genLayoutHeader($this); ?>
 <?php $glayout->render_header(); ?>
 <style type="text/css">
@@ -55,6 +57,11 @@
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right" style="margin-right: 0px;">
+<?php if($cover_info && !$is_profile_owner): ?>
+                <li>
+                    <a style="cursor: pointer" id="about-cover"><span class="glyphicon glyphicon-info-sign"></span> About Cover</a>
+                </li>
+<?php endif; ?>
 <?php if(!$is_profile_owner): ?>
                 <li title="Send Message">
                     <a href="<?php echo $is_preview_mode?"#": "#message"?>"><span class="glyphicon glyphicon-envelope"></span> Message</a>
@@ -80,9 +87,12 @@
         <?php echo $this->content?>
     </div>
 </div> <!-- /container -->
-<?php if($is_profile_owner): ?>
 <script type="text/javascript">
     (function(){
+        $("a#about-cover").click(function(){
+            window.open_infoModal(<?php echo json_encode("<center>$cover_info</center>") ?>);
+        });
+<?php if($is_profile_owner): ?>
         window.load_bar = function(is_launching) {
             if(typeof(is_launching) === "undefined") is_launching = true;
             window.loader_started = is_launching;
@@ -102,7 +112,7 @@
             };
             loader_go();
         };
+<?php endif; ?>
     })(jQuery);
 </script>
-<?php endif; ?>
 <?php $glayout->render_footer(); ?>
