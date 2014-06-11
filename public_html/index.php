@@ -144,9 +144,18 @@ __DEFAULT:
     $load->start();
     # suppress zinux autoloading system
     \zinux\suppress_zinux_autoloader_caching();
-    
-try
-{
+    /**
+     * This is out execption handler
+     * @param Exception $exception
+     */
+    function toratan_exception_handler($exception) {
+        $mp = new \zinux\kernel\utilities\pipe("__ERRORS__");
+        $mp->write($exception);
+        header("location: /error");
+        exit;
+    }
+    # set exception handler
+    set_exception_handler('toratan_exception_handler');
     # create an application with given module directory
     $app = new \zinux\kernel\application\application(PUBLIC_HTML.'/../modules');
     # process the application instance
@@ -183,18 +192,7 @@ try
             ->Run()
             # shutdown the application
             ->Shutdown();
-}
-# catch any thing from application
-catch(Exception $e)
-{
-    /**
-     * You can redirect this exception to a controller e.g /error
-     */
-    $mp = new \zinux\kernel\utilities\pipe("__ERRORS__");
-    $mp->write($e);
-    $api = new zinux\kernel\application\api();
-    $api->call("/error");
-}
+
 $exeTime = new \core\db\models\execution;
 $load_time = $exeTime->record($load);
 //echo "<div style='clear:both'></div><hr /><center>Loaded in <b>{$load_time}</b> seconds.<br />Average load time is <b>{$exeTime->get_average_load_time()}</b> seconds.</center>";
