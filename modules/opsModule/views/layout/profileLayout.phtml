@@ -29,7 +29,7 @@
     <div id="cover-photo">
         <div class='mosaic-block bottom-bar icenter-block'>
         <?php if($is_profile_owner) : ?>
-            <a class="mosaic-overlay" id="change-cover" style="cursor:pointer;display: inline; left: 0px; bottom: -40px;" title="Change Cover">
+            <a href="/profile/cover" class="mosaic-overlay" id="change-cover" style="cursor:pointer;display: inline; left: 0px; bottom: -40px;" title="Change Cover">
                 <div class="details text-center" style="margin-top: 0;">
                     <h1><span class="glyphicon glyphicon-picture"></span><br /><b>Change Cover</b></h1>
                 </div>
@@ -87,6 +87,7 @@
 <script type="text/javascript">
     (function(){
         $("a#change-cover").click(function(e){
+            return;
             e.preventDefault();
             $("input[name='upload-cover']").click();
             if(typeof(window.is_check_cover_load_in_effect) === "undefined")

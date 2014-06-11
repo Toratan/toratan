@@ -501,6 +501,11 @@ __DEPLOY:
     */
     public function coverAction()
     {
+        if($this->request->IsGET()) {
+            $this->layout->AddTitle("Change Cover |  Toratan");
+            $this->layout->SetLayout("wide");
+            return;
+        }
         if(!$this->request->IsPOST())
             throw new \zinux\kernel\exceptions\accessDeniedException;
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, session_id()));
