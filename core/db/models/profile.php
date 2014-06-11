@@ -88,7 +88,7 @@ class profile extends baseModel
                 return $cached;
         }
         # fetch the profile
-        $profile = parent::find(array("conditions" => array("user_id = ?", $user_id)));
+        $profile = parent::find($user_id);
         # skip setting stuff?
         if($profile && !$skip_settings)
         {
