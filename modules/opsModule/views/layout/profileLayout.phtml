@@ -66,11 +66,6 @@
                     <a style="cursor: pointer" id="about-cover"><span class="glyphicon glyphicon-info-sign"></span> About Cover</a>
                 </li>
 <?php endif; ?>
-<?php if(!$cover_img && $is_profile_owner): ?>
-                <li>
-                    <a href="/profile/cover"><span class="glyphicon glyphicon-plus"></span> Cover Photo</a>
-                </li>
-<?php endif; ?>
 <?php if(!$is_profile_owner): ?>
                 <li title="Send Message">
                     <a href="<?php echo $is_preview_mode?"#": "#message"?>"><span class="glyphicon glyphicon-envelope"></span> Message</a>
@@ -79,6 +74,15 @@
                     <a href="<?php echo $is_preview_mode?"#": "#follow"?>"><span class="glyphicon glyphicon-plus"></span> Follow</a>
                 </li>
 <?php elseif($active_type === "about"): ?>
+<?php if(!$cover_img && $is_profile_owner): ?>
+                <li>
+                    <a href="/profile/cover"><span class="glyphicon glyphicon-plus"></span> Cover Photo</a>
+                </li>
+<?php elseif($is_profile_owner): ?>
+                <li>
+                    <a href="/profile/randomcover?<?php echo \zinux\kernel\security\security::GetHashString(array($profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-retweet"></span>&nbsp;&nbsp;Random Cover</a>
+                </li>
+<?php endif; ?>
                 <li title='View your public profile'>
                     <a href='/profile/preview'><span class='glyphicon glyphicon-eye-open'></span> Preview</a>
                 </li>

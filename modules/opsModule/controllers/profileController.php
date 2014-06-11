@@ -303,27 +303,43 @@ __DEPLOY:
             }
         }
         # set random cover image from cover-sample
-        $this->set_random_cover($profile);
+        $this->randomCoverAction($profile);
         # save the profiles
         $profile->save();
     }
     /**
      * Sets random cover from cover's samples; Note that it only will set the profile's setting, it will not save them,
      * you have to save the profilefrom outside of method.
+     * @access /profile/randomcover
+     * @hash-sum array($profile->user_id, session_id())
      * @param \core\db\models\profile $profile The target profile to change its cover
      * @return boolean Returns TRUE on successfull setting; otheriwse FALSE
      */
-    protected function set_random_cover(\core\db\models\profile &$profile) {
-        if(!$profile)
-            throw new \zinux\kernel\exceptions\invalidArgumentException("Arg `\$profile` cannot be null");
+    public function randomCoverAction(\core\db\models\profile &$profile = NULL) {
+        # flag that if this method is called from inside of current class?
+        $inline_invoked = $profile ? TRUE : FALSE;
+        # if this is outside request?
+        if(!$profile) {
+            # assume current profile as passed profile
+            $profile =\core\db\models\profile::getInstance(NULL, 0, 0);
+            # since this is an outside request, we need to validate it
+            \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($profile->user_id, session_id()));
+        }
+        # malloc an error-tag container
+        $error_tag = -1;
+        # fetch the samples's path from config file
         $samples_path = "/".\zinux\kernel\application\config::GetConfig("upload.cover.sample_path");
-        if(!$samples_path) return false;
+        # if no config set?
+        if(!$samples_path) { $error_tag = -1; goto __ERROR; }
+        # fetch the info file on samples
         $sample_info = PUBLIC_HTML."$samples_path/info.json";
-        foreach(array($sample_info) as $file)
-            if(!file_exists($file) || !is_readable($file))
-                return false;
+        # validate the file
+        if(!file_exists($sample_info) || !is_readable($sample_info)) { $error_tag = 0; goto __ERROR; }
+        # this file in JSON format, decode it
         $info = json_decode(file_get_contents($sample_info));
-        if(!$info) return false;
+        # if there is problem with JSON decode?
+        if(!$info) { $error_tag = 1; goto __ERROR; }
+        # seed the rand
         srand(str_replace(array(" ", "0."), array("", ""), microtime()));
         # Don't knwow why? but sometimes $cover won't set right!!
         for($i = 0; $i<10; $i++) {
@@ -335,11 +351,30 @@ __DEPLOY:
             time_nanosleep(0, 1000);
             # continue with loop
         }
-        if($i >= 10) return false;
-        \zinux\kernel\utilities\debug::_var($cover);
+        # if the re-tries overflow?
+        if($i >= 10) { $error_tag = 2; goto __ERROR; }
+        # set randomized cover
         $profile->setSetting("/profile/cover/image", "{$samples_path}{$cover->file_name}", 0);
         $profile->setSetting("/profile/cover/info", "&COPY; <a href='{$cover->origin_link}' target='__blank'>`{$cover->title}` @{$cover->by}</a> <span class='glyphicon glyphicon-share-alt small'>", 0);
-        return true;
+        # if we reach here it mean we have succeed to set cover
+        # if this is an internal call
+        if($inline_invoked)
+            # indicate the success
+            return true;
+        # otherwise save the profile
+        $profile->save();
+        # redirect to the profile
+        header("location: /profile");
+        # exit
+        exit;
+        # if there is any error? this section will handle
+__ERROR:
+        # if this is an internal call
+        if($inline_invoked)
+            # indicate the failure
+            return false;
+        # otherwise just throw an exception
+        throw new \RuntimeException("While randomizing the cover photo, an error raised with error-tag `$error_tag`.");
     }
     /**
     * The \modules\opsModule\controllers\profileController::avatarAction()
