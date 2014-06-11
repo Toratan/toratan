@@ -95,11 +95,12 @@ __FETCH_PROFILE:
     */
     public function editAction()
     {
-        $this->layout->AddTitle("Profile editing....");
         # we need a wide layout
         $this->layout->SetLayout("wide");
         # load intial profile
         $this->view->profile = \core\db\models\profile::getInstance(\core\db\models\user::GetInstance()->user_id, 0, 0);
+        # set specific title
+        $this->layout->AddTitle(\core\db\models\user::GetInstance()->get_RealName_or_Username(). " - Editing profile");
         # intial value assignments
         $current_step = $this->view->step = 1;
         # provide hash value for view

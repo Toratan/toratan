@@ -62,10 +62,10 @@
                 <div id="submit" class=" form-actions " style="clear:both;margin: auto -10px auto -10px;">
                     <input type="submit" name="<?php echo $this->step==$max_step?'finish':'next'?>"  value="<?php echo $this->step==$max_step?'Finish':'Next'?>" class="pull-right btn  btn-primary" />
                     <?php if($this->step>1): ?>
-                    <input type="submit" name="back"  value="Back" class="pull-right btn btn-info" style="margin-right:10px;" formnovalidate/>
+                    <input type="submit" name="back"  value="Back" class="pull-right btn btn-default" style="margin-right:10px;" formnovalidate/>
                     <?php endif; ?>
                     <?php if ($this->step > 1) : ?>
-                    <input type="submit" name="cancel"  value="Cancel" class="pull-left btn btn-danger" formnovalidate/>
+                    <input type="submit" name="cancel"  value="Cancel" class="pull-left btn btn-danger" formnovalidate onclick="return confirm('Are you sure to cancel?\nAll modified data will lost!');"/>
                     <?php endif; ?>
                     <input type="submit" name="skip"  value="Save & Skip " class="pull-left btn btn-warning" style="margin-left: 1%"/>
                 </div>
@@ -73,4 +73,3 @@
         </form>
     </div>
 </div>
-<?php //$this->body = ob_get_contents(); ob_end_clean(); ?>
