@@ -23,7 +23,9 @@
         /* Good browsers */
         opacity: 1!important;
     }
-    body{background-color: #404040;}
+    body{background-color: #101010;}
+    .top-blue {border-top: 3px solid #013a54;}
+    .bottom-blue {border-bottom: 3px solid #013a54;}
     #cover-selection {
         position: fixed;
         width: 100%;
@@ -31,41 +33,134 @@
         background-color: #000;
         padding: 20px;
         bottom: 0px;
-        border-top: 3px solid #013a54;
     }
-    #cover-selection #placeholder img{
+    #cover-selection #placeholder .img{
         border: 3px solid #FFF;
         display: inline;
         cursor: pointer;
+        width: 200px!important;
+        height: 100px!important;
         margin-right: 10px;
+        margin-bottom: 10px;
     }
-    #cover-selection #placeholder img:last-child {margin-right: 0}
+    #cover-selection #placeholder .img.selected { border: 3px solid #0088cc}
+    #cover-selection #placeholder .img:last-child {margin-right: 0}
     .container#outline-image img {width: 1200px!important;max-height: 410px!important;}
 </style>
+<div class="loading-bar" style="margin: 0 -15px!important"></div>
 <div style="margin: auto -15px;padding-top: 10%;">
     <div style="" class="">
         <div class="container" id="outline-image">
-            <div class="row">
+            <div class="row" id="placeholder">
+                <div id='outline-image-container' class='pull-right'></div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <button type='submit' class="btn btn-primary pull-right" href="#"><span class="glyphicon glyphicon-ok"></span> Make As Cover</button>
+                <div id='outline-image-info' class='pull-right' style='color: #FFF;cursor: pointer;margin-right: 10px;margin-top: 7px;' data-container="body" data-toggle="popover" data-placement="left" data-content="See Copyright"><span class='glyphicon glyphicon-info-sign'></span></div>
+                <a class="btn btn-success pull-left" href="/profile"><span class="glyphicon glyphicon-arrow-left"></span> Back to profile</a>
             </div>
         </div>
     </div>
     <div class="clearfix"></div>
-    <div class="transparent" id="cover-selection">
-        <div class="transparent-clear" id="placeholder" style="overflow-x: scroll;white-space: nowrap;padding-bottom: 10px; padding-top: 10px">
+    <div class="transparent top-blue" id="cover-selection">
+        <div class="" id="placeholder" style="overflow-x: auto;white-space: nowrap;padding-bottom: 10px; padding-top: 10px">
+            <img class="img image plus_new" src="/access/img/cover_plus_new.jpg" data-container="body" data-toggle="popover" data-placement="top" data-html='true' data-content="<span class='glyphicon glyphicon-cloud-upload'></span> Upload your own cover"/>
         </div>
     </div>
 </div>
+<?php new core\ui\html\dialogs; ?>
+<script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
 <script>
     (function(){ 
-        var images = (JSON.parse('<?php echo str_replace("\n", "", addslashes(file_get_contents("./access/img/upload/cover/samples/info.json"))); ?>'));
+        var meta_data = '<?php echo @str_replace("\n", "", addslashes(file_get_contents("./access/img/upload/cover/samples/info.json"))); ?>';
+        if(meta_data.length === 0) return;
+        var images = JSON.parse(meta_data);
         var basedir = '/access/img/upload/cover/samples';
         for(var i in images) {
-            $("#cover-selection #placeholder").append("<img src='"+basedir + "/" + images[i].file_name+"' class='cover-"+images[i].file_name+"' width='200' height='100' class='image'/>");
+            $("#cover-selection #placeholder").append(
+                    "<img src='"+basedir + "/" + images[i].file_name+"' class='img sample-cover cover-"+images[i].file_name+" image' data-copyright='&COPY; <a href=\""+images[i].origin_link+"\" target=\"__blank\">"+images[i].by+"</a> <span class=\"glyphicon glyphicon-share-alt small\"></span>' />");
         }
-        $("#cover-selection #placeholder img").click(function() {
+        $("#cover-selection #placeholder img:not(.plus_new)").click(function() {
+            $(this).addClass("selected").siblings().removeClass("selected");
             var $this = $(this).clone();
-            $(".container#outline-image .row").html($this.removeAttr('width').removeAttr('height').addClass('img-responsive img-thumbnail'));
+            $(".container#outline-image #placeholder #outline-image-container")
+                    .html($this.removeAttr('width').removeAttr('height').addClass('img-responsive img-thumbnail'));
         });
-        $("#cover-selection #placeholder img:first").click();
+        $("#outline-image-info").click(function() {
+            window.open_infoModal("<center>"+$(".container#outline-image #placeholder #outline-image-container img").attr('data-copyright')+"</center>");
+        });
+        $("#cover-selection #placeholder img:not(.plus_new):first").click();
+    })(jQuery);
+</script>
+<script src="/access/js/shortcut.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        // add left navigator
+        shortcut.add("Left", function() { $("#cover-selection #placeholder img.selected").prev(".img:not(.plus_new)").click(); });
+        // add right navigator
+        shortcut.add("Right", function() { $("#cover-selection #placeholder img.selected").next(".img:not(.plus_new)").click(); });
+    });
+</script>
+<form name="cover" class="hidden" action="/profile/cover/?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, session_id())) ?>" method="POST" enctype="multipart/form-data">
+    <input type="file" name="upload-cover" accept="image/*"/>
+</form>
+
+<script type="text/javascript">
+    (function(){
+        $("img.plus_new").click(function(e){
+            e.preventDefault();
+            $("input[name='upload-cover']").click();
+            if(typeof(window.is_check_cover_load_in_effect) === "undefined")
+                window.is_check_cover_load_in_effect = 0;
+            $("input[name='upload-cover']").val('');
+            function check_cover_load(){
+                window.is_check_cover_load_in_effect = 1;
+                if($("input[name='upload-cover']").val().length) {
+                    // time to load the selected image
+                    // no need for further change-cover click event
+                    // which can be bug-prone
+                    $("a#change-cover").unbind('click');
+                    // NOT any more `check_cover_load` is in effect
+                    delete(window.is_check_cover_load_in_effect);
+                    // invoke cover-load event
+                   $("img.plus_new").trigger('load-cover');
+                    // do not proceed to next interval call
+                    return;
+                }
+                setTimeout(check_cover_load, 750);
+            };
+            if(!window.is_check_cover_load_in_effect)
+                setTimeout(check_cover_load, 500);
+        }).on("load-cover", function(){
+            window.load_bar();
+            $("form[name='cover']").submit();
+        });
+        window.load_bar = function(is_launching) {
+            if(typeof(is_launching) === "undefined") is_launching = true;
+            window.loader_started = is_launching;
+            if(!window.loader_started) return;
+            var go_time = 1000;
+            var back_time = 1000;
+            var go_color = "#f22626";
+            var back_color = go_color;
+            $(".loading-bar").css({width: 0, height: "5px", display: "none"});
+            function loader_go() {
+                $( ".loading-bar" )
+                        .css({width: 0, "margin-left": 0, float: "left", "background-color": go_color })
+                        .show()
+                        .animate({ "width": "+=100%" }, go_time, function(){ setTimeout(loader_back, 100); });
+            }
+             function loader_back(){
+                $( ".loading-bar" )
+                        .css({width: "100%", "margin-left": 0, float: "right", "background-color": back_color })
+                        .animate({ "width": "0" }, back_time, function(){  if(window.loader_started) setTimeout(loader_go, 100); else { $( ".loading-bar" ).hide(); delete window.loader_started; } }); 
+            };
+            loader_go();
+        };
+        $("*[data-toggle='popover']").hover(function(){
+            $(this).popover('show');
+        }, function(){
+            $(this).popover('hide');
+        });
     })(jQuery);
 </script>
