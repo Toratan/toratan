@@ -87,8 +87,17 @@ class profile extends baseModel
             if($cached !== false)
                 return $cached;
         }
-        # fetch the profile
-        $profile = parent::find($user_id);
+        try{
+            # fetch the profile
+            $profile = parent::find($user_id);
+        } catch(\zinux\kernel\exceptions\notFoundException $nfe) {
+            # we cannot find current user's profile??
+            # it must be deleted!!
+            # user need to be signout for security reasons
+            if($user_id == user::GetInstance()->user_id)
+                user::Signout();
+            throw $nfe;
+        }
         # skip setting stuff?
         if($profile && !$skip_settings)
         {

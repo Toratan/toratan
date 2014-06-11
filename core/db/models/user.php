@@ -192,6 +192,10 @@ class user extends baseModel
      * @return string
      */
     public function get_RealName_or_Username($full_name = 1, $restrict = 1) {
+        if(!@$this->profile) {
+            $this->Signout();
+            throw new \zinux\kernel\exceptions\securityException("The user's profile with ID `{$this->user_id}` were not accessable.");
+        }
         $fn = $this->profile->first_name;
         if($full_name)
             $fn = "$fn {$this->profile->last_name}";
