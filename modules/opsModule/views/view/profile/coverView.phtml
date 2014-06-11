@@ -58,7 +58,7 @@
             <div class="row" style="margin-top:10px;">
                 <button type='submit' class="btn btn-primary pull-right" action-href="/profile/cover" id="make_as_cover"><span class="glyphicon glyphicon-ok"></span> Make As Cover</button>
                 <div id='outline-image-info' class='pull-right' style='color: #FFF;cursor: pointer;margin-right: 10px;margin-top: 7px;' data-container="body" data-toggle="popover" data-placement="left" data-content="See Copyright"><span class='glyphicon glyphicon-info-sign'></span></div>
-                <a class="btn btn-success pull-left" href="/profile"><span class="glyphicon glyphicon-arrow-left"></span> Back to profile</a>
+                <a class="btn btn-success pull-left" id="back_to_profile_lnk" href="/profile"><span class="glyphicon glyphicon-arrow-left"></span> Back to profile</a>
             </div>
         </div>
     </div>
@@ -73,8 +73,14 @@
 <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
 <script>
     (function(){ 
-        var meta_data = '<?php echo @str_replace("\n", "", addslashes(file_get_contents("./{$this->samples_path}/info.json"))); ?>';
-        if(meta_data.length === 0) return;
+        var meta_data = '<?php echo @str_replace("\n", "", addslashes(file_get_contents(PUBLIC_HTML."/{$this->samples_path}/info.json"))); ?>';
+        if(meta_data.length === 0) {
+            $("#make_as_cover").hide();
+            $("#outline-image-info").hide();
+            $("#back_to_profile_lnk").css({position: "fixed", bottom: "180px", left: "20px"});
+            window.open_infoModal("<span class='glyphicon glyphicon-remove'></span> No sample cover found right now! But you can upload your own cover photo below.")
+            return;
+        }
         var images = JSON.parse(meta_data);
         var basedir = '/<?php echo $this->samples_path ?>';
         for(var i in images) {

@@ -302,10 +302,45 @@ __DEPLOY:
                     $profile->$key = \implode(";", \array_filter($_value, "strlen"));
             }
         }
+        # set random cover image from cover-sample
+        $this->set_random_cover($profile);
         # save the profiles
         $profile->save();
     }
-
+    /**
+     * Sets random cover from cover's samples; Note that it only will set the profile's setting, it will not save them,
+     * you have to save the profilefrom outside of method.
+     * @param \core\db\models\profile $profile The target profile to change its cover
+     * @return boolean Returns TRUE on successfull setting; otheriwse FALSE
+     */
+    protected function set_random_cover(\core\db\models\profile &$profile) {
+        if(!$profile)
+            throw new \zinux\kernel\exceptions\invalidArgumentException("Arg `\$profile` cannot be null");
+        $samples_path = "/".\zinux\kernel\application\config::GetConfig("upload.cover.sample_path");
+        if(!$samples_path) return false;
+        $sample_info = PUBLIC_HTML."$samples_path/info.json";
+        foreach(array($sample_info) as $file)
+            if(!file_exists($file) || !is_readable($file))
+                return false;
+        $info = json_decode(file_get_contents($sample_info));
+        if(!$info) return false;
+        srand(str_replace(array(" ", "0."), array("", ""), microtime()));
+        # Don't knwow why? but sometimes $cover won't set right!!
+        for($i = 0; $i<10; $i++) {
+            # pick a random cover from info
+            $cover = @$info[rand(0, count($info))];
+            # if setted? we are ok break the loop
+            if($cover) break;
+            # sleep for 1000ns
+            time_nanosleep(0, 1000);
+            # continue with loop
+        }
+        if($i >= 10) return false;
+        \zinux\kernel\utilities\debug::_var($cover);
+        $profile->setSetting("/profile/cover/image", "{$samples_path}{$cover->file_name}", 0);
+        $profile->setSetting("/profile/cover/info", "&COPY; <a href='{$cover->origin_link}' target='__blank'>`{$cover->title}` @{$cover->by}</a> <span class='glyphicon glyphicon-share-alt small'>", 0);
+        return true;
+    }
     /**
     * The \modules\opsModule\controllers\profileController::avatarAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
