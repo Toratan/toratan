@@ -29,12 +29,12 @@
     };
     $inf = array();
     foreach($p as $key => $value) {
-        $l = "$key";
+        $l = ucwords(str_replace("_", " ", $key));
         $v = "";
         $s = "basic";
         $convert_labels = array(
                 "is_male" => "gender",
-                "intro" => "introduction"
+                "intro" => ""
                 
         );
         $convert_section = array(
@@ -68,9 +68,32 @@
                     $v .= (($should_render($p, "country") ? ", ": " ") . $p["city"]);
                 $key = "location";
                 break;
+            case "phone":
+            case "public_email":
+            case "site": 
+                $arr =explode(";", $p[$key]);
+                if(!count($arr) || !@strlen(trim($arr[0]))) break;
+                $v .= '<ul class="list-unstyled">';
+                foreach($arr as $partial) {
+                    $v .= '<li>';
+                    if($key == "site") {
+                        // if no schema provided by default choose HTTP schema
+                        if(!parse_url($partial, PHP_URL_SCHEME))
+                                $partial = "http://$partial";
+                        $host =explode(".", parse_url($partial, PHP_URL_HOST));
+                        if(count($host) > 2)
+                            $host = $host[count($host) - 2];
+                        else $host =array_shift($host);
+                        $host = ucfirst($host);
+                        $v .= "<a href='$partial'>$host</a>";
+                    }
+                    else $v .= $partial;
+                    $v .= '</li>';
+                }
+                $v .= '</ul>';
+                break;
             default:
 __DEFAULT_OPS:
-                 $l =ucwords(str_replace("_", " ", $l));
                  if($should_render($p, $key))
                          $v = $value;
         }
@@ -80,11 +103,11 @@ __DEFAULT_OPS:
             $k = "";
             $step = 1;
             // the UI span row#
-            $span = 1;
+            $span = 6;
             switch($s) {
-                case "basic": $k = "Basic Information"; break;
-                case "bio": $k = "Biography "; $step = $span = 2;break;
-                case "contact": $k = "Contact Information"; $step = 3; break;
+                case "basic": $k = "Basic Information"; $span = 12; break;
+                case "bio": $k = "Biography "; $step = 2; $span = 8;  break;
+                case "contact": $k = "Contact Information"; $step = 3; $span = 4; break;
                 default: throw new zinux\kernel\exceptions\invalidArgumentException("Undefined `section` value: $s");
             } 
             $inf[$s]["label"] = $k;
@@ -95,7 +118,17 @@ __DEFAULT_OPS:
             $inf[$s]["values"][$key]["value"] = $v;
         }
     }
-    $info = array(@$inf["basic"], @$inf["contact"], @$inf["bio"]);
+    if(!@$inf["bio"]) {
+        if(@$inf["basic"]) {
+            $inf["basic"]["span"] = 6;
+            if(@$inf["contact"])
+                $inf["contact"]["span"]  = 6;
+        }
+        elseif(@$inf["contact"])
+            @$inf["contact"]["span"] = 12;
+        
+    }
+    $info = array(@$inf["basic"], @$inf["bio"], @$inf["contact"]);
     unset($inf);
 ?>
 <div class='row'>
@@ -109,7 +142,7 @@ __DEFAULT_OPS:
                             <h1><span class="glyphicon glyphicon-picture"></span><br /><b>Change Avatar</b></h1>
                         </div>
                     </a>
-                    <a class="mosaic-overlay" href="/profile/avatar/crop"style="display: inline; left: 0px; top: -45px;height: 80px;" title="Crop the thumbnail image">
+                    <a class="mosaic-overlay crop" href="/profile/avatar/crop"style="display: inline; left: 0px; top: -45px;height: 80px;" title="Crop the thumbnail image">
                         <div class="details text-center">
                             <h1>
                                 <span class="glyphicon glyphicon-compressed" style="margin-top: 50px;"></span>
@@ -134,15 +167,15 @@ __DEFAULT_OPS:
         </div>
     </div>
     <style type='text/css'>
-        #about .row .about-block{ min-height: 200px}
+        #about .row .about-block{ min-height: 150px}
         #about .row .about-block table{ margin:10px; width: 100%}
         #about .row .about-block .table tr th, 
         #about .row .about-block .table tr td{ border: 0!important; padding: 0;}
         #about .row .about-block .table tr td{  padding-bottom: 4px }
-        #about .row .about-block .table tr td:first-child{ color: #89919C; }
-        #about .row .about-block .table tr td.info-value {word-break: break-all;overflow: hidden;text-align: justify}
+        #about .row .about-block .table tr td.info-label{ color: #89919C; }
+        #about .row .about-block .table tr td.info-value {word-break: break-all;overflow: hidden;text-align: justify;white-space: pre-wrap}
         #about .row .about-block .table.bio tbody tr td {padding: 10px!important;}
-        #about .row .about-block .table.bio tbody tr {border-bottom: 1px solid #DDD;}
+        #about .row .about-block .table.bio tbody tr.intro td {padding-top: 0!important;}
         #about .row .about-block .table.bio tr th:first-child{width: 100px!important;}
         @media screen and (min-width: 0px) and (max-width: 500px) {
             .clearfix.hidden {display: block!important}
@@ -182,9 +215,10 @@ __DEFAULT_OPS:
                         "<tbody>";
             for(var v in values) {
                 html += "<tr class='"+v+"'>"+
-                        "<td class='info-label'>"+
-                            values[v].label+
-                        "</td>"+
+                        (values[v].label.length ? 
+                            "<td class='info-label'>"+
+                                values[v].label+
+                            "</td>" : "")+
                         "<td class='info-value'><b>"+
                             values[v].value+
                         "</b></td>";
@@ -197,13 +231,13 @@ __DEFAULT_OPS:
                 var b = info[block];
                 index_processed++;
                 if(info.length === 1)
-                    b.span = 2;
+                    b.span = 12;
                 if(    
                     index_processed && 
                     index_processed % 2 === 0 || 
                     prev === null || 
-                    prev.span * 6 === 12 || 
-                    b.span * 6 === 12) {
+                    prev.span === 12 || 
+                    b.span === 12) {
                         if(html.length) {
                             this.addInfo(html);
                             prev = null;
@@ -214,14 +248,14 @@ __DEFAULT_OPS:
                         html = "<div class='row'>";
                 }
                 html += 
-                        "<div class='col-md-"+(6 * b.span).toString()+" col-sm-12 col-xs-12 about-block'>"+
+                        "<div class='col-md-"+(b.span).toString()+" col-sm-12 col-xs-12 about-block'>"+
                             "<legend><span class='glyphicon glyphicon-map-marker'></span> "+b.label+"</legend>"+
                             "<div class='pull-right' style='margin-top:-42px;'>"+b.options+"</div>"+
                             this.getValues(b.values, b.class)+
                         "</div>";
                 if(prev === null)
                     prev = b;
-                else if(prev.span * 6  === 6 || prev.span * 6 === 12) {
+                else if(prev.span  === 6 || prev.span === 12) {
                     this.addInfo(html);
                     prev = null;
                     html = "";
