@@ -11,6 +11,8 @@ class profileController extends \zinux\kernel\controller\baseController
     const PROFILE_SKIPPED = 1;
     const PROFILE_CREATED = 2;
     const PROFILE_DONE = 3;
+    const PROFILE_BACKWARD = 4;
+    const PROFILE_FORWARD = 4;
     
     public function Initiate() {
         parent::Initiate();
@@ -139,6 +141,8 @@ __FETCH_PROFILE:
                         $this->view->step = 2;
                     # decreasing step count
                     $this->view->step--;
+                    #   indicate that profile backwarded
+                    $profile_status = self::PROFILE_BACKWARD;
                     # purging un-necessary indexes
                     unset($this->request->POST['back']);
                     break;
@@ -146,6 +150,8 @@ __FETCH_PROFILE:
                 case isset($this->request->params['next']):
                     # increasing step count
                     $this->view->step++;
+                    #   indicate that profile forwarded
+                    $profile_status = self::PROFILE_FORWARD;
                     # purging un-necessary indexes
                     unset($this->request->POST['next']);
                     break;
@@ -186,6 +192,14 @@ __SAVE_OPS:
 __DEPLOY:
             # if we are on submit mession?
             switch(@$profile_status) {
+                case self::PROFILE_FORWARD:
+                case self::PROFILE_BACKWARD:
+                    if($sc->isCached("step#{$this->view->step}"))
+                        foreach($sc->fetch("step#{$this->view->step}") as $index => $value) {
+                            if(is_array($value)) $value =implode(";", $value);
+                            $this->view->profile->$index = $value;
+                        }
+                    break;
                 case self::PROFILE_CREATED:
                 case self::PROFILE_SKIPPED:
                     # submit profile with created session cache
