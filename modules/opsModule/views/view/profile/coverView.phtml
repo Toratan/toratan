@@ -1,3 +1,4 @@
+<?php if(!isset($this->samples_path)) throw new zinux\kernel\exceptions\invalidArgumentException("No `sample_path` has been provided"); ?>
 <style type="text/css">
     .transparent {
         /* IE 8 */
@@ -55,7 +56,7 @@
                 <div id='outline-image-container' class='pull-right'></div>
             </div>
             <div class="row" style="margin-top:10px;">
-                <button type='submit' class="btn btn-primary pull-right" href="#"><span class="glyphicon glyphicon-ok"></span> Make As Cover</button>
+                <button type='submit' class="btn btn-primary pull-right" action-href="/profile/cover" id="make_as_cover"><span class="glyphicon glyphicon-ok"></span> Make As Cover</button>
                 <div id='outline-image-info' class='pull-right' style='color: #FFF;cursor: pointer;margin-right: 10px;margin-top: 7px;' data-container="body" data-toggle="popover" data-placement="left" data-content="See Copyright"><span class='glyphicon glyphicon-info-sign'></span></div>
                 <a class="btn btn-success pull-left" href="/profile"><span class="glyphicon glyphicon-arrow-left"></span> Back to profile</a>
             </div>
@@ -72,13 +73,13 @@
 <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
 <script>
     (function(){ 
-        var meta_data = '<?php echo @str_replace("\n", "", addslashes(file_get_contents("./access/img/upload/cover/samples/info.json"))); ?>';
+        var meta_data = '<?php echo @str_replace("\n", "", addslashes(file_get_contents("./{$this->samples_path}/info.json"))); ?>';
         if(meta_data.length === 0) return;
         var images = JSON.parse(meta_data);
-        var basedir = '/access/img/upload/cover/samples';
+        var basedir = '/<?php echo $this->samples_path ?>';
         for(var i in images) {
             $("#cover-selection #placeholder").append(
-                    "<img src='"+basedir + "/" + images[i].file_name+"' class='img sample-cover cover-"+images[i].file_name+" image' data-copyright='&COPY; <a href=\""+images[i].origin_link+"\" target=\"__blank\">"+images[i].by+"</a> <span class=\"glyphicon glyphicon-share-alt small\"></span>' />");
+                    "<img src='"+basedir + "/" + images[i].file_name+"' class='img sample-cover cover-"+images[i].file_name+" image' data-id='"+images[i].file_name+"' data-copyright='&COPY; <a href=\""+images[i].origin_link+"\" target=\"__blank\">`"+images[i].title+"` @"+images[i].by+"</a> <span class=\"glyphicon glyphicon-share-alt small\"></span>' />");
         }
         $("#cover-selection #placeholder img:not(.plus_new)").click(function() {
             $(this).addClass("selected").siblings().removeClass("selected");
@@ -90,6 +91,31 @@
             window.open_infoModal("<center>"+$(".container#outline-image #placeholder #outline-image-container img").attr('data-copyright')+"</center>");
         });
         $("#cover-selection #placeholder img:not(.plus_new):first").click();
+        $("button#make_as_cover").click(function(){
+            window.load_bar();
+            $.ajax({
+                url: $(this).attr('action-href'),
+                type: "POST",
+                dataType: 'json',
+                data: "ajax=1&sample=1&id="+
+                        $(".container#outline-image #placeholder #outline-image-container img").attr('data-id')+
+                        "&info="+ $(".container#outline-image #placeholder #outline-image-container img").attr('data-copyright')+
+                        "<?php echo zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, session_id()))?>",
+                success: function(data) {
+                    if(typeof(data.success) === "undefined" || !data.success)
+                        window.open_errorModal("Something happen please try later!");
+                    else 
+                        if(typeof(data.redirect) !== "undefined" && data.redirect)
+                            if(typeof(data.location) !== "undefined")
+                                window.location = data.location;
+                },
+                error: function(data) {
+                    window.open_errorModal(data.responseText, -1, true);
+                }
+            }).always(function(){
+                window.load_bar(0);
+            });
+        });
     })(jQuery);
 </script>
 <script src="/access/js/shortcut.js"></script>
@@ -104,7 +130,6 @@
 <form name="cover" class="hidden" action="/profile/cover/?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, session_id())) ?>" method="POST" enctype="multipart/form-data">
     <input type="file" name="upload-cover" accept="image/*"/>
 </form>
-
 <script type="text/javascript">
     (function(){
         $("img.plus_new").click(function(e){

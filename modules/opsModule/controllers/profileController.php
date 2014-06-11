@@ -501,6 +501,9 @@ __DEPLOY:
     */
     public function coverAction()
     {
+        $this->view->samples_path =\zinux\kernel\application\config::GetConfig("upload.cover.sample_path");
+        if(!$this->view->samples_path)
+            throw new \zinux\kernel\exceptions\notFoundException("No configuartion found for `upload.cover.sample_path`.");
         if($this->request->IsGET()) {
             $this->layout->AddTitle("Change Cover |  Toratan");
             $this->layout->SetLayout("wide");
@@ -508,8 +511,25 @@ __DEPLOY:
         }
         if(!$this->request->IsPOST())
             throw new \zinux\kernel\exceptions\accessDeniedException;
+        # validate the request
         \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, session_id()));
-        \zinux\kernel\security\security::IsSecure($_FILES, array("upload-cover"));
+        # validate if we are uploading a cover image?
+        if(!array_key_exists("upload-cover", $_FILES)) {
+            # otherwise are we using sample cover images?
+            # we only accept ajax requests for sampling!!
+            \zinux\kernel\security\security::IsSecure($this->request->params, array("sample", "id", "info", "ajax"));
+            # if we reach here it means we are going to use sample cover images
+            $profile = \core\db\models\profile::getInstance(NULL, 0, 0);
+            # unlink any possible perviously profile picture
+            @\shell_exec("rm -f .".$profile->getSetting("/profile/cover/image"));
+            # set the cover image path, in this part treat the sample cover as a normal cover photo
+            $profile->setSetting("/profile/cover/image", "/{$this->view->samples_path}".$this->request->params["id"], 0);
+            # we save the sample-cover information as well
+            $profile->setSetting("/profile/cover/info", $this->request->params["info"]);
+            # response with json format
+            die('{"success":1,"redirect":1,"location":"/profile"}');
+        }
+        # if we reach here it mean we are uploading image!!
         $F = $_FILES["upload-cover"];
         if($F["error"] != UPLOAD_ERR_OK)
             throw new \core\exceptions\uploadException($F["error"]);
@@ -574,6 +594,8 @@ __DEPLOY:
         imagedestroy($target_img);
         # setting the profile settings for original image path
         $profile->setSetting("/profile/cover/image", "/$upload_path", 1);
+        # dispose any previously saved info in sample cover
+        $profile->unsetSetting("/profile/cover/info");
         # redirect to user's profile
         header("location: /profile");    
     }
