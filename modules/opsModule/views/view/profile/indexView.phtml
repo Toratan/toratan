@@ -87,8 +87,9 @@
                         $host = ucfirst($host);
                         $v .= "<a href='$partial'>$host</a>";
                     }
+                    elseif($key == "public_email") $v .= "<a href='mailto:$partial'>$partial</a>";
                     else $v .= $partial;
-                    $v .= '</li>';
+                    $v .= '</li><li class="divider"></li>';
                 }
                 $v .= '</ul>';
                 break;
@@ -167,6 +168,7 @@ __DEFAULT_OPS:
         </div>
     </div>
     <style type='text/css'>
+        .divider{ height: 1px; margin: 9px 0; overflow: hidden; background-color: #e5e5e5; }
         #about .row .about-block{ min-height: 150px}
         #about .row .about-block table{ margin:10px; width: 100%}
         #about .row .about-block .table tr th, 
