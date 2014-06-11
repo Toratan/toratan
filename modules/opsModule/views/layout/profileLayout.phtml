@@ -36,11 +36,11 @@
             </a>
         <?php endif ; ?>
             <div class="cover-img">
-                <img src="<?php echo $cover_img; ?>" class="image imageblock img-responsive img-thumbnail" style=""/>
+                <img src="<?php echo $cover_img; ?>" class="image imageblock img-responsive img-thumbnail"/>
             </div>
         </div>
     </div>
-    <nav class="navbar navbar-default navbar-static-top" role="navigation" >
+    <nav class="navbar navbar-default navbar-static-top" role="navigation">
         <div class="container-fluid">
             <ul class="nav navbar-nav">
                 <li class="<?php echo $active_type === "about" ? "active" : "" ?>">
@@ -125,13 +125,13 @@
             var back_time = 1000;
             function loader_go() {
                 $( ".loading-bar" )
-                        .css({width: 0, "margin-left": 0, float: "left", "background-color": "#93af56" })
+                        .css({width: 0, "margin-left": 0, float: "left", "background-color": "#5ea5c9" })
                         .show()
                         .animate({ "width": "+=100%" }, go_time, function(){ setTimeout(loader_back, 100); });
             }
              function loader_back(){
                 $( ".loading-bar" )
-                        .css({width: "100%", "margin-left": 0, float: "right", "background-color": "#93af56" })
+                        .css({width: "100%", "margin-left": 0, float: "right", "background-color": "#5ea5c9" })
                         .animate({ "width": "0" }, back_time, function(){  if(window.loader_started) setTimeout(loader_go, 100); else { $( ".loading-bar" ).hide(); delete window.loader_started; } }); 
             };
             loader_go();

@@ -155,7 +155,7 @@
                 <a href="<?php echo $this->edit && $note_id ? "/view/note/$note_id" : "/#!/d/{$this->pid}.notes" ?>" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;"><span class="glyphicon glyphicon-trash"></span></a>
             </span>
             <div class="pull-right">
-                <div class="input-group inline" style="">
+                <div class="input-group inline">
                     <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1">
                           <span class="glyphicon glyphicon-cog"></span>  <span class="caret"></span>
@@ -175,7 +175,7 @@
             </div>
         </div>
         <div class="clearfix"></div>
-        <div id="editor" class="" style="display: none;"><?php echo htmlspecialchars($body) ?></div>
+        <div id="editor" style="display: none;"><?php echo htmlspecialchars($body) ?></div>
     </div>
 </div>
 <script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -185,7 +185,7 @@
         <input type="hidden" name="note_id" value="<?php echo $note_id ?>" />
     <?php endif; ?>
     <input type="text" name="note_title" maxlength="250" value="<?php echo $title ?>" required="required"/><br />
-    <textarea rows="10" cols="80" name="note_body" ><?php echo $body ?></textarea>
+    <textarea rows="10" cols="80" name="note_body"><?php echo $body ?></textarea>
     <input type="submit" value="Create" />
 </form>
 <script>

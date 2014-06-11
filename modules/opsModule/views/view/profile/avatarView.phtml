@@ -6,7 +6,7 @@
 <form action='/profile/avatar?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, \session_id())); ?>' method="POST" enctype="multipart/form-data"> 
     <legend class="text-muted" style="margin-bottom: 1%">Avatar Manager</legend>
 <?php if(isset($this->errors)): ?>
-    <legend class="text-danger" >Errors</legend>
+    <legend class="text-danger">Errors</legend>
     <blockquote class="text-danger" style="margin: 0;">
         <ol>
             <?php foreach ($this->errors as $error): ?>
@@ -97,21 +97,21 @@
                         <label class='control-label pull-left'><span class="glyphicon glyphicon-cloud-upload"></span><span class="glyphicon glyphicon-chevron-right"></span> Or custum upload</label>
                         <div class='clearfix'></div>
                         <input type="hidden" name="MAX_FILE_SIZE" value="<?php /* 2MB */ ?>2097152" />
-                        <input type='file' class='form-control' style="" name="custom" />
+                        <input type='file' class='form-control' name="custom" />
                         <small class='text-info' style='text-align: justify;'><span class="glyphicon glyphicon-exclamation-sign"></span> Your avatar's file's size should be <b>less than 2MB</b>, and also the size of avatar <b>larger than 200&times;200 pixels</b> is recommanded.</small>
                     </div>
                 </td>
                 <td>
                     <?php if(@$this->avatar->custom): ?>
                         <?php if(@file_exists(".".$this->avatar->custom->thumb_image)) : ?>
-                        <div class="radio pull-right" >
+                        <div class="radio pull-right">
                             <label>
                                 <input type="radio" name="activated"  value="custom" tabindex="-1" <?php echo @$this->avatar->activated == "custom" ? "checked" : "" ?>>
                                 Activate
                             </label>
                         </div>
                     <div class="form-group">
-                        <a href="/profile/avatar/delete/1" style="margin-right: 10px" class="pull-left text-warning"><span class="glyphicon glyphicon-trash" ></span> Delete the custom avatar</a>
+                        <a href="/profile/avatar/delete/1" style="margin-right: 10px" class="pull-left text-warning"><span class="glyphicon glyphicon-trash"></span> Delete the custom avatar</a>
                     </div>
                     <link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
                     <style>
@@ -137,7 +137,7 @@
                     <blockquote class='text-danger' style='margin-top:5%'>It seems your privious avatar has been deleted!</blockquote>
                         <?php endif; ?>
                     <?php else: ?>
-                        <div class="radio pull-right" >
+                        <div class="radio pull-right">
                             <label>
                                 <input type="radio" name="activated"  value="custom" tabindex="-1" <?php echo @$this->avatar->activated == "custom" ? "checked" : "" ?>>
                                 Activate

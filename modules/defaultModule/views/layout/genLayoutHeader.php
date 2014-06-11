@@ -72,7 +72,7 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
                     <li><a href="/signup">Signup</a></li>
                 <?php endif; ?>
             </ul>
-            <a href="/" style="font-size: x-large;" class="navbar-brand text-muted" >Toratan</a>
+            <a href="/" style="font-size: x-large;" class="navbar-brand text-muted">Toratan</a>
             <div class="clearfix"></div>
         </div>
         <script type="text/javascript">

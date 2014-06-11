@@ -145,19 +145,19 @@ class noteViewModel
                         &angmsd;
                         <?php $dt = $n->updated_at ?>
                         <abbr title="<?php echo $dt; ?>" class="initialism timeago" style='cursor: pointer!important'>
-                            <time datetime="<?php echo $dt; ?>" >
+                            <time datetime="<?php echo $dt; ?>">
                                 <?php echo $dt; ?>
                             </time>
                         </abbr>
                         <?php unset($dt); ?>
-                    </topic-meta >
+                    </topic-meta>
                 </td>
                 <td class="pull-right">
                 <?php if($is_owner) : ?>
                     <div class="pull-right" id='owner-options'>
-                        <div class="input-group inline" >
+                        <div class="input-group inline">
                             <div class="btn-group">
-                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1" >
+                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1">
                                     <span class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu pull-right" role="menu">
@@ -169,19 +169,19 @@ class noteViewModel
                                     <?php if($this->view->is_trash): ?>
                                     <li class='divider'></li>
                                     <li>
-                                        <a href="<?php echo $get_options_links($n, 'restore', $cURL) ?>" style="">
+                                        <a href="<?php echo $get_options_links($n, 'restore', $cURL) ?>">
                                             <span class='glyphicon glyphicon-cloud-upload'></span> Restore
                                         </a>
                                     </li>
                                     <?php else: ?>
                                     <li class='divider'></li>
                                     <li>
-                                        <a href="<?php echo $get_options_links($n, 'share', $cURL) ?>" style="">
+                                        <a href="<?php echo $get_options_links($n, 'share', $cURL) ?>">
                                             <span class='glyphicon glyphicon-share-alt'></span> <?php echo $n->is_public?"Un-":""?>Share
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="<?php echo $get_options_links($n, 'archive', $cURL) ?>" style="">
+                                        <a href="<?php echo $get_options_links($n, 'archive', $cURL) ?>">
                                             <span class='glyphicon glyphicon-save'></span> <?php echo $this->view->is_archive?"Un-":""?>Archive
                                         </a>
                                     </li>
