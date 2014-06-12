@@ -132,62 +132,26 @@ __DEFAULT_OPS:
     $info = array(@$inf["basic"], @$inf["bio"], @$inf["contact"]);
     unset($inf);
 ?>
-<div class='row'>
-    <div class="pull-left col-md-3 col-sm-4 col-xs-4 avatar">
-        <div class="row" style="margin:10px;width: 100%">
-            <div class=" text-center" style="background-color: transparent;width: 100%">
-                <div class='mosaic-block bottom-bar icenter-block'>
-                <?php if($is_profile_owner) : ?>
-                    <a id="change-avatar" href="#"  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -45px;" title="Change Avatar">
-                        <div class="details text-center ">
-                            <h1><span class="glyphicon glyphicon-picture"></span><br /><b>Change Avatar</b></h1>
-                        </div>
-                    </a>
-                    <a class="mosaic-overlay crop" href="/profile/avatar/crop"style="display: inline; left: 0px; top: -45px;height: 80px;" title="Crop the thumbnail image">
-                        <div class="details text-center">
-                            <h1>
-                                <span class="glyphicon glyphicon-compressed" style="margin-top: 50px;"></span>
-                            </h1>
-                        </div>
-                    </a>
-                <?php endif ; ?>
-                    <a href="/profile/avatar/view/<?php echo $this->profile->user_id, "?", \zinux\kernel\security\security::GetHashString(array($this->profile->user_id)) ?>" title="Click to view the original avatar">
-                        <img id="thumbnail" class='image img-thumbnail img-responsive 'src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>';"  />
-                    </a>
-                </div>
-                <div class='clearfix'></div>
-                <div style='margin-top: 10px; overflow: hidden;word-break: break-all'>
-                    <div class='text'>
-                        <strong><?php echo $p["full_name"] ?></strong>
-                    </div>
-                    <div class='text-muted block small' style='margin-top:10px;'>
-                        <span class='glyphicon glyphicon-flag'></span> Joined at <?php echo date("M Y", strtotime($p["created_at"])); ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <style type='text/css'>
-        .divider{ height: 1px; margin: 9px 0; overflow: hidden; background-color: #e5e5e5; }
-        #about .row .about-block{ min-height: 150px}
-        #about .row .about-block table{ margin:10px; width: 100%}
-        #about .row .about-block .table tr th, 
-        #about .row .about-block .table tr td{ border: 0!important; padding: 0;}
-        #about .row .about-block .table tr td{  padding-bottom: 4px }
-        #about .row .about-block .table tr td.info-label{ color: #89919C; }
-        #about .row .about-block .table tr td.info-value {word-break: break-all;overflow: hidden;text-align: justify;white-space: pre-wrap}
-        #about .row .about-block .table.bio tbody tr td {padding: 10px!important;}
-        #about .row .about-block .table.bio tbody tr.intro td {padding-top: 0!important;}
-        #about .row .about-block .table.bio tr th:first-child{width: 100px!important;}
-        @media screen and (min-width: 0px) and (max-width: 500px) {
-            .clearfix.hidden {display: block!important}
-            .avatar {width:100%!important}
-            .col-md-6{width: 110%!important}
-        }
-        @media screen and (min-width: 520px) and (max-width: 990px) {
-            .col-md-6{width: 100%!important}
-        }
-    </style>
+<style type='text/css'>
+    .divider{ height: 1px; margin: 9px 0; overflow: hidden; background-color: #e5e5e5; }
+    #about .row .about-block{ min-height: 150px}
+    #about .row .about-block table{ margin:10px; width: 100%}
+    #about .row .about-block .table tr th, 
+    #about .row .about-block .table tr td{ border: 0!important; padding: 0;}
+    #about .row .about-block .table tr td{  padding-bottom: 4px }
+    #about .row .about-block .table tr td.info-label{ color: #89919C; }
+    #about .row .about-block .table tr td.info-value {word-break: break-all;overflow: hidden;text-align: justify;white-space: pre-wrap}
+    #about .row .about-block .table.bio tbody tr td {padding: 10px!important;}
+    #about .row .about-block .table.bio tbody tr.intro td {padding-top: 0!important;}
+    #about .row .about-block .table.bio tr th:first-child{width: 100px!important;}
+    @media screen and (min-width: 0px) and (max-width: 500px) {
+        .clearfix.hidden {display: block!important}
+        .col-md-6{width: 110%!important}
+    }
+    @media screen and (min-width: 520px) and (max-width: 990px) {
+        .col-md-6{width: 100%!important}
+    }
+</style>
 <script type='text/javascript'>
     $(document).ready(function() {
         var info = JSON.parse('<?php echo addslashes(json_encode($info)); ?>');
@@ -276,10 +240,9 @@ __DEFAULT_OPS:
         this.__render(info.filter(function(n){ return n !== undefined && n !== null; }));
     });
 </script>
-    <div class='clearfix hidden'></div>
-    <div class="pull-left col-md-9 col-sm-8 col-xm-8">
-        <div id="about">
-        </div>
+<div class='clearfix hidden'></div>
+<div class="pull-left col-md-9 col-sm-8 col-xm-8">
+    <div id="about">
     </div>
 </div>
 <?php if($is_profile_owner): ?>

@@ -8,6 +8,7 @@
     }
 ?>
 <?php $profile = \core\db\models\profile::getInstance($this->view->profile->user_id, 0, 0); ?>
+<?php list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link($profile->user_id); ?>
 <?php $cover_img = $profile->getSetting("/profile/cover/image"); ?>
 <?php $cover_info = $profile->getSetting("/profile/cover/info"); ?>
 <?php $glayout = new \modules\defaultModule\views\layout\genLayoutHeader($this); ?>
@@ -21,6 +22,9 @@
         border-bottom: 0;
     }
     .navbar-static-top{border-left: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD; margin-top:-10px;}
+    @media screen and (min-width: 0px) and (max-width: 500px) {
+        .avatar {width:100%!important}
+    }
 </style>
 <link rel="stylesheet" href="/access/css/mosaic.css" type="text/css" media="screen">
 <style type="text/css">
@@ -97,7 +101,43 @@
         <div class="loading-bar"></div>
     </nav>
     <div class="container">
-        <?php echo $this->content?>
+        <div class='row'>
+            <div class="pull-left col-md-3 col-sm-4 col-xs-4 avatar">
+                <div class="row" style="margin:10px;width: 100%">
+                    <div class=" text-center" style="background-color: transparent;width: 100%">
+                        <div class='mosaic-block bottom-bar icenter-block'>
+                        <?php if($is_profile_owner) : ?>
+                            <a id="change-avatar" href="#"  class="mosaic-overlay" style="display: inline; left: 0px; bottom: -45px;" title="Change Avatar">
+                                <div class="details text-center ">
+                                    <h1><span class="glyphicon glyphicon-picture"></span><br /><b>Change Avatar</b></h1>
+                                </div>
+                            </a>
+                            <a class="mosaic-overlay crop" href="/profile/avatar/crop"style="display: inline; left: 0px; top: -45px;height: 80px;" title="Crop the thumbnail image">
+                                <div class="details text-center">
+                                    <h1>
+                                        <span class="glyphicon glyphicon-compressed" style="margin-top: 50px;"></span>
+                                    </h1>
+                                </div>
+                            </a>
+                        <?php endif ; ?>
+                            <a href="/profile/avatar/view/<?php echo $this->profile->user_id, "?", \zinux\kernel\security\security::GetHashString(array($profile->user_id)) ?>" title="Click to view the original avatar">
+                                <img id="thumbnail" class='image img-thumbnail img-responsive 'src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>';"  />
+                            </a>
+                        </div>
+                        <div class='clearfix'></div>
+                        <div style='margin-top: 10px; overflow: hidden;word-break: break-all'>
+                            <div class='text'>
+                                <strong><?php echo  $this->view->user->get_RealName_or_Username() ?></strong>
+                            </div>
+                            <div class='text-muted block small' style='margin-top:10px;'>
+                                <span class='glyphicon glyphicon-flag'></span> Joined at <?php echo date("M Y", strtotime( $this->view->user->created_at)); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php echo $this->content?>
+        </div>
     </div>
 </div> <!-- /container -->
 <script type="text/javascript">
