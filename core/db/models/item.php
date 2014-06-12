@@ -505,9 +505,11 @@ __RETURN:
      */
     protected function getStatusBits() {
         $flag = 0b0001;
-        if($this->is_public)
+        # is_public never selected
+        if(isset($this->is_public) && $this->is_public)
             $flag = $flag | 0b1001;
-        if($this->is_trash)
+        # is_trash never selected
+        if(isset($this->is_trash) && $this->is_trash)
             $flag = $flag | 0b0101;
         return $flag;
     }
