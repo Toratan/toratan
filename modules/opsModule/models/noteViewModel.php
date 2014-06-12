@@ -203,19 +203,7 @@ class noteViewModel
         </tbody>
     </table>
     <hr style='margin: 0'/>
-    <div id="note-body" style="width: 100%" class="links-enabled">
-    <?php
-        (new \vendor\markdown\Ciconia\CiconiaInitializer())->Execute();
-        $ciconia = new \Ciconia\Ciconia();
-        $ciconia->addExtension(new \Ciconia\Extension\Gfm\FencedCodeBlockExtension());
-        $ciconia->addExtension(new \Ciconia\Extension\Gfm\TaskListExtension());
-        $ciconia->addExtension(new \Ciconia\Extension\Gfm\InlineStyleExtension());
-        $ciconia->addExtension(new \Ciconia\Extension\Gfm\WhiteSpaceExtension());
-        $ciconia->addExtension(new \Ciconia\Extension\Gfm\TableExtension());
-        $ciconia->addExtension(new \Ciconia\Extension\Gfm\UrlAutoLinkExtension());
-        echo $ciconia->render($n->note_body);
-    ?>
-    </div>
+    <div id="note-body" style="width: 100%" class="links-enabled"><?php echo self::__renderText($n->note_body); ?></div>
     <script src="/access/js/moment.min.js"></script>
     <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
     <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
@@ -265,5 +253,16 @@ class noteViewModel
 </div>
 <?php unset($get_options_links); ?>
 <?php
+    }
+    public static function __renderText($text) {
+        (new \vendor\markdown\Ciconia\CiconiaInitializer())->Execute();
+        $ciconia = new \Ciconia\Ciconia();
+        $ciconia->addExtension(new \Ciconia\Extension\Gfm\FencedCodeBlockExtension());
+        $ciconia->addExtension(new \Ciconia\Extension\Gfm\TaskListExtension());
+        $ciconia->addExtension(new \Ciconia\Extension\Gfm\InlineStyleExtension());
+        $ciconia->addExtension(new \Ciconia\Extension\Gfm\WhiteSpaceExtension());
+        $ciconia->addExtension(new \Ciconia\Extension\Gfm\TableExtension());
+        $ciconia->addExtension(new \Ciconia\Extension\Gfm\UrlAutoLinkExtension());
+        echo $ciconia->render($text);
     }
 }
