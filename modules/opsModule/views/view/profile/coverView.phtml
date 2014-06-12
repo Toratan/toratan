@@ -70,7 +70,6 @@
     </div>
 </div>
 <?php new core\ui\html\dialogs; ?>
-<script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
 <script>
     (function(){ 
         var meta_data = '<?php echo @str_replace("\n", "", addslashes(file_get_contents(PUBLIC_HTML."/{$this->samples_path}/info.json"))); ?>';
@@ -136,6 +135,7 @@
 <form name="cover" class="hidden" action="/profile/cover/?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, session_id())) ?>" method="POST" enctype="multipart/form-data">
     <input type="file" name="upload-cover" accept="image/*"/>
 </form>
+<script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
 <script type="text/javascript">
     (function(){
         $("img.plus_new").click(function(e){
