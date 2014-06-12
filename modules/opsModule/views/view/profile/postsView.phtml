@@ -1,8 +1,12 @@
-<!--
- The \modules\opsModule\views\view\profile\postsView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for '<b>\modules\opsModule\controllers\profileController::postsAction()</b>'<br />
-    Location: '<b>/var/www/toratan/modules/opsModule/views/view/profile/postsView.phtml</b>'
-</p>
+<?php if(!isset($this->posts)) throw new zinux\kernel\exceptions\invalidArgumentException("No `\$posts` arg. supplied"); ?>
+<?php foreach($this->posts as $post): ?>
+    <a href="/note/view/<?php $post->note_id ?>" style="display: table"><?php echo $post->note_title ?></a>
+    <small class="text-muted">&mdash;&mdash; Written by <?php echo \core\db\models\user::Fetch($this->profile->user_id)->get_RealName_or_Username();?> &angmsd; <?php echo $post->updated_at ?></small>
+    <?php 
+        $bs = substr($post->note_body, 0, strrpos($post->note_body, ' '));
+        if(!strlen($bs))
+            $bs = "{$post->note_body}[...]";
+        else $bs = "$bs...";
+        echo $bs;
+    ?>
+<?php endforeach; ?>
