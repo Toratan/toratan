@@ -529,6 +529,18 @@ __ERROR:
     {
         # fetch the profile
         $this->fetchProfile();
+        $n = new \core\db\models\note;
+        # fetch public notes
+        $this->view->posts = 
+                $n->fetchItems($this->view->profile->user_id, NULL,
+                    # public
+                    \core\db\models\note::FLAG_SET, 
+                    # not trash
+                    \core\db\models\note::FLAG_UNSET,
+                    # don't care if archived
+                    \core\db\models\note::WHATEVER,
+                    # only select the below columns and for note body only select first 1000 char.
+                    array("select" => "note_id, note_title, LEFT(note_body, 1000) as note_body"));
         # change the layout
         $this->layout->SetLayout("profile");
         # fail-safe for pre-view mode
