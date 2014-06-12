@@ -21,6 +21,8 @@ class opsBootstrap
             array("index", "goto"),
             array("index", "explorer"),
             array("profile", "index"),
+            array("profile", "about"),
+            array("profile", "posts"),
             array("profile", "avatar_view"),
         );
         # the normalized currently requested {conttroller => action} 
