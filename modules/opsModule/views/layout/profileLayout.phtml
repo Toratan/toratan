@@ -50,12 +50,12 @@
         <div class="container-fluid">
             <ul class="nav navbar-nav">
                 <li class="<?php echo $active_type === "about" ? "active" : "" ?>">
-                    <a href="/profile/<?php echo $is_preview_mode?"preview/":""?>about">
+                    <a href="/profile/<?php echo $is_preview_mode?"preview/":""?>about<?php echo $is_profile_owner?"": "/{$profile->user_id}" ?>">
                         <span class="glyphicon glyphicon-map-marker"></span> <b>About</b>
                     </a>
                 </li>
                 <li class="<?php echo $active_type === "posts" ? "active" : "" ?>">
-                    <a href="/profile/<?php echo $is_preview_mode?"preview/":""?>posts">
+                    <a href="/profile/<?php echo $is_preview_mode?"preview/":""?>posts<?php echo $is_profile_owner?"": "/{$profile->user_id}" ?>">
                         <span class="glyphicon glyphicon-book"></span> <b>Posts</b>
                     </a>
                 </li>
