@@ -65,7 +65,7 @@
                     $.ajax({
                         type: "POST",
                         url: "/editor/preview",
-                        data: "t=" + window.getNoteTitle() + "&b="+window.getNoteContext()+"&p=<?php echo $this->pid ?>",
+                        data: "t=" + encodeURIComponent(window.getNoteTitle()) + "&b="+encodeURIComponent(window.getNoteContext())+"&p=<?php echo $this->pid ?>",
                         global: false,
                         success: function(data) {
                             $("#editor-container").slideUp();
