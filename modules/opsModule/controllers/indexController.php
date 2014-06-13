@@ -231,49 +231,8 @@ __OP_FUNC:
         $item_ins = new $item_class;
         $item_value = NULL;
         # try adding the item to db
-        try
-        {
-			switch($item) {
-                case "folder":
-                    # we don't need to pass the fake body generated above, so we deal with it differently
-                    $item_value = $item_ins->newItem(
-                            $this->request->params["{$item}_title"],
-                            $this->view->pid,
-                            $uid);
-                    break;
-                case "note":
-                    # we need to pass the edito verion too
-                    $item_value = $item_ins->newItem(
-                            $this->request->params["{$item}_title"],
-                            $this->request->params["{$item}_body"],
-                            $this->view->pid,
-                            $uid,
-                            $editor_version_id);
-                    break;
-                case "link":
-                    # otherwise we use the same interface for it
-                    $item_value = $item_ins->newItem($this->request->params["{$item}_title"], $this->request->params["{$item}_body"], $this->view->pid, $uid);
-                    break;
-                default: throw new \zinux\kernel\exceptions\invalidOperationException;
-            }
-        }
-        # catch any exception raised
-        catch(\zinux\kernel\exceptions\appException $e)
-        {
-            # if it was a collection of exceptions
-            if($e instanceof \core\exceptions\exceptionCollection)
-                # fetch each of exceptions messages
-                foreach($e->getCollection() as $exception)
-                    $this->view->errors[] = $exception->getMessage();
-            else
-                # fetch the message
-                $this->view->errors[] = $e->getMessage();
-            # resore back the values to views
-            $this->view->values["{$item}_title"] = $this->request->params["{$item}_title"];
-            $this->view->values["{$item}_body"] = $this->request->params["{$item}_body"];
-            # return
+        if(!($item_value = $this->save_item($item, TRUE, $item_ins, $editor_version_id)))
             return;
-        }
         if(isset($this->request->params["ajax"])) {
             $dt = new \modules\frameModule\models\directoryTree($this->request);
             echo $dt->plotTableRow($item_value, strtolower($this->request->GetIndexedParam(0)), $item_value->parent_id, 1);
@@ -422,56 +381,9 @@ __OP_FUNC:
         }
         # checkpoint for item body and title existance
         \zinux\kernel\security\security::IsSecure($this->request->params, array("{$item}_title", "{$item}_body"));
-        # try to save the item
-        try
-        {
-            switch($item) {
-                case "folder":
-                    # we don't need to pass the fake body generated above, so we deal with it differently
-                    $item_value = $item_ins->edit(
-                            $this->request->GetIndexedParam(1),
-                            \core\db\models\user::GetInstance()->user_id,
-                            $this->request->params["{$item}_title"]);
-                    break;
-                case "note":
-                    $nc = \core\db\models\item::NOCHANGE;
-                    # we need to pass the editor type as well
-                    $item_value = $item_ins->edit(
-                            $this->request->GetIndexedParam(1),
-                            \core\db\models\user::GetInstance()->user_id,
-                            $this->request->params["{$item}_title"],
-                            $this->request->params["{$item}_body"],
-                            $nc, $nc, $nc,
-                            $editor_version_id);
-                    break;
-                case "link":
-                    # routine link edit
-                    $item_value = $item_ins->edit(
-                            $this->request->GetIndexedParam(1),
-                            \core\db\models\user::GetInstance()->user_id,
-                            $this->request->params["{$item}_title"],
-                            $this->request->params["{$item}_body"]);
-                    break;
-                default: throw new \zinux\kernel\exceptions\invalidOperationException;
-            }
-        }
-        # catch any exception raised
-        catch(\zinux\kernel\exceptions\appException $e)
-        {
-            # if it was a collection of exceptions
-            if($e instanceof \core\exceptions\exceptionCollection)
-                # fetch each of exceptions messages
-                foreach($e->getCollection() as $exception)
-                    $this->view->errors[] = $exception->getMessage();
-            else
-                # fetch the message
-                $this->view->errors[] = $e->getMessage();
-            # resore back the values to views
-            $this->view->values["{$item}_title"] = $this->request->params["{$item}_title"];
-            $this->view->values["{$item}_body"] = $this->request->params["{$item}_body"];
-            # return
+        # try to save into db
+        if(!($item_value = $this->save_item($item, FALSE, $item_ins, $editor_version_id)))
             return;
-        }
         # otherwise relocate properly
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
@@ -501,6 +413,93 @@ __OP_FUNC:
                 throw new \zinux\kernel\exceptions\invalidOperationException;
         }
         if(!$this->ops_index_interface) exit;
+    }
+    /**
+     * Saves an item into database
+     * @param string $item The item type
+     * @param boolean $is_new TRUE if we are adding a NEW item to database; otherwise if we are EDITING pass FALSE
+     * @param \core\db\models\item $item_ins The item instance to save
+     * @param integer $editor_version_id If target item is a NOTE pass the editor version ID
+     * @return mixed if the submission was successfull returns the saved item; otherwise false with errors in {$this->view->errors} container
+     */
+    protected function save_item($item, $is_new, \core\db\models\item &$item_ins, $editor_version_id) {
+        # try to save the item
+        try
+        {
+            $item_value = NULL;
+            $uid = \core\db\models\user::GetInstance()->user_id;
+            switch($item) {
+                case "folder":
+                    if($is_new) {
+                        $item_value = $item_ins->newItem(
+                                $this->request->params["{$item}_title"],
+                                $this->view->pid,
+                                $uid);
+                    } else {
+                        $item_value = $item_ins->edit(
+                                $this->request->GetIndexedParam(1),
+                                $uid,
+                                $this->request->params["{$item}_title"]);
+                    }
+                    break;
+                case "note":
+                    if($is_new) {
+                        # we need to pass the edito verion too
+                        $item_value = $item_ins->newItem(
+                                $this->request->params["{$item}_title"],
+                                $this->request->params["{$item}_body"],
+                                $this->view->pid,
+                                $uid,
+                                $editor_version_id);
+                    } else  {
+                        $nc = \core\db\models\item::NOCHANGE;
+                        # we need to pass the editor type as well
+                        $item_value = $item_ins->edit(
+                                $this->request->GetIndexedParam(1),
+                                $uid,
+                                $this->request->params["{$item}_title"],
+                                $this->request->params["{$item}_body"],
+                                $nc, $nc, $nc,
+                                $editor_version_id);
+                    }
+                    break;
+                case "link":
+                    # routine link edit
+                    if($is_new) {
+                        $item_value = $item_ins->newItem(
+                                $this->request->params["{$item}_title"],
+                                $this->request->params["{$item}_body"],
+                                $this->view->pid,
+                                $uid);
+                    } else {
+                        $item_value = $item_ins->edit(
+                                $this->request->GetIndexedParam(1),
+                                $uid,
+                                $this->request->params["{$item}_title"],
+                                $this->request->params["{$item}_body"]);
+                    }
+                    break;
+                default: throw new \zinux\kernel\exceptions\invalidOperationException("Undefined item `$item`");
+            }
+            return $item_value;
+        }
+        # catch any exception raised
+        catch(\zinux\kernel\exceptions\appException $e)
+        {
+            # if it was a collection of exceptions
+            if($e instanceof \core\exceptions\exceptionCollection)
+                # fetch each of exceptions messages
+                foreach($e->getCollection() as $exception)
+                    $this->view->errors[] = $exception->getMessage();
+            else
+                # fetch the message
+                $this->view->errors[] = $e->getMessage();
+            # resore back the values to views
+            $this->view->values["{$item}_title"] = $this->request->params["{$item}_title"];
+            $this->view->values["{$item}_body"] = $this->request->params["{$item}_body"];
+            # return
+            return false;
+        }
     }
     /**
     * @access via /ops/view/note/(ID)
