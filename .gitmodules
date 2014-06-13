@@ -11,3 +11,6 @@
 [submodule "vendor/activeRecord/lib"]
 	path = vendor/activeRecord/lib
 	url = git@github.com:jpfuentes2/php-activerecord.git
+[submodule "public_html/access/js/jscroll"]
+	path = public_html/access/js/jscroll
+	url = git@github.com:pklauzinski/jscroll.git
