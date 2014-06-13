@@ -92,4 +92,16 @@ class note extends item
                                 ), $body);
         return array($title, $body);
     }
+    /**
+     * Applies summary to current note
+     * @param string $summary 
+     * @return \core\db\models\note
+     */
+    public function apply_summary($summary) {
+        if(strlen($summary) && false)
+            $summary =substr($summary, 0, 600);
+        $this->note_summary = $summary;
+        $this->save();
+        return $this;
+    }
 }
