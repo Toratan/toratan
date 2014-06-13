@@ -1,5 +1,5 @@
 <?php if(!isset($this->posts)) throw new zinux\kernel\exceptions\invalidArgumentException("No `\$posts` arg. supplied"); ?>
-<style type='text/css'>.blog-preview{position:relative;padding-left:120px;margin:60px 0}.blog-preview:first-child{margin-top:0}.blog-preview .blog-preview-excerpt{margin:1em 0;text-align:justify}.blog-preview .blog-preview-meta{position:absolute;top:0;left:0;width:100px;text-align:right;color:#a2aab1}.blog-preview .blog-preview-meta .day{font-size:140%;display:block}.blog-preview .blog-preview-meta .year{font-size:110%;color:#ccd0d4;display:block;margin-top:-8px}@media screen and (max-width:767px){.blog-preview{padding-left:0;margin:50px 0}.blog-preview .blog-preview-meta{position:static;text-align:left}.blog-preview .blog-preview-meta .day,.blog-preview .blog-preview-meta .year{color:#a2aab1;font-size:100%;margin:0;display:inline}.blog-preview .blog-preview-meta .day:after{content:', '}}</style>
+<style type='text/css'>.blog-preview{position:relative;padding-left:120px;margin:60px 0}.blog-preview:first-child{margin-top:0}.blog-preview .blog-preview-excerpt{margin:1em 0;text-align:justify}.blog-preview .blog-preview-meta{position:absolute;top:0;left:0;width:100px;text-align:right;color:#a2aab1}.blog-preview .blog-preview-meta .day{font-size:140%;display:block}.blog-preview .blog-preview-meta .year{font-size:110%;color:#ccd0d4;display:block;margin-top:-8px}@media screen and (max-width:767px){.blog-preview{padding-left:0;margin:50px 0}.blog-preview .blog-preview-meta{position:static;text-align:left}.blog-preview .blog-preview-meta .day,.blog-preview .blog-preview-meta .year{color:#a2aab1;font-size:100%;margin:0;display:inline}.blog-preview .blog-preview-meta .day:after{content:', '}} .blog-preview .blog-preview-excerpt .view-article{text-transform: uppercase;padding:10px;font-weight: bold;}</style>
 <div class="container col-lg-9  col-md-9  col-sm-8 col-xm-12">
 <?php foreach($this->posts as $post): $udate = strtotime($post->updated_at); ?>
     <div class="row">
@@ -26,13 +26,18 @@
                     ?>
                 </div>
                 <p>
-                    <a class="btn btn-sm btn-primary" href="/view/note/<?php echo $post->note_id ?>">View article</a>
+                    <a class="btn btn-sm btn-primary view-article" href="/view/note/<?php echo $post->note_id ?>">View article</a>
                 </p>
                 <div class='clearfix'></div>
             </div>
 	</article>
     </div>
 <?php endforeach; ?>
+    <div class='form-actions' style='border-top:1px solid #DDD;padding-top:40px;padding-bottom: 40px;'>
+        <a class='btn btn-link pull-left' style=''><span class='glyphicon glyphicon-arrow-left'></span> Previous Page</a>
+        <a class='btn btn-link pull-right'>Next Page <span class='glyphicon glyphicon-arrow-right'></span></a>
+        <div class='clearfix'></div>
+    </div>
 </div>
 <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
 <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
