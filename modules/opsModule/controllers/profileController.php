@@ -596,8 +596,17 @@ __ERROR:
         }
         if(!method_exists($this, "{$action}Action"))
             throw new \zinux\kernel\exceptions\invalidOperationException("Undefined method `".__CLASS__."::{$action}Action()`");
+        # remove the action name from params
+        array_shift($this->request->indexed_param);
         # re-init the request params
         $this->request->params = array();
+        # re-gen. `params` array from `indexed_param`
+        while(count($this->request->indexed_param)) {
+            $key = array_shift($this->request->indexed_param);
+            $value = @array_shift($this->request->indexed_param);
+            $this->request->params[$key] = $value; 
+        }
+        # re-gen. `indexed_param`
         $this->request->GenerateIndexedParams();
         # call the target action
         $this->{"{$action}Action"}();

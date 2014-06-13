@@ -1,4 +1,6 @@
 <?php if(!isset($this->posts)) throw new zinux\kernel\exceptions\invalidArgumentException("No `\$posts` arg. supplied"); ?>
+<?php $is_profile_owner = @$this->is_owner;  ?>
+<?php $is_preview_mode = @$this->preview_mode;  ?>
 <div class="container col-lg-9  col-md-9  col-sm-8 col-xm-12 posts">
 <?php if(count($this->posts)): ?>
     <?php if(!isset($this->request->params["infscroll"])): ?>
@@ -52,10 +54,10 @@
 <?php endif; ?>
     <div class='form-actions next-prev-link article' style='border-top:1px solid #DDD;padding-top:40px;padding-bottom: 40px;'>
 <?php if($this->request->params["page"] > 1): ?>
-        <a class='btn btn-link pull-left prev-page' rel="previous" href="/profile/posts/page/<?php echo count($this->posts) ? $this->request->params["page"] - 1:  ceil($this->total_count / $this->fetch_limit) ?>"><span class='glyphicon glyphicon-arrow-left'></span> Previous Page</a>
+        <a class='btn btn-link pull-left prev-page' rel="previous" href="/profile/<?php echo $is_preview_mode ? "preview/" : "" ?>posts/<?php echo $is_profile_owner ? "" : $this->profile->user_id."/0/" /* The `0` is for don't get params like {USER_ID => PAGE} in server side */?>page/<?php echo count($this->posts) ? $this->request->params["page"] - 1:  ceil($this->total_count / $this->fetch_limit) ?>"><span class='glyphicon glyphicon-arrow-left'></span> Previous Page</a>
 <?php endif; ?>
 <?php if($this->is_more_note): ?>
-        <a class='btn btn-link pull-right next-page' rel="next" href="/profile/posts/page/<?php echo $this->request->params["page"] + 1 ?>">Next Page <span class='glyphicon glyphicon-arrow-right'></span></a>
+        <a class='btn btn-link pull-right next-page' rel="next" href="/profile/<?php echo $is_preview_mode ? "preview/" : "" ?>posts/<?php echo $is_profile_owner ? "" : $this->profile->user_id."/0/" /* The `0` is for don't get params like {USER_ID => PAGE} in server side */?>page/<?php echo $this->request->params["page"] + 1 ?>">Next Page <span class='glyphicon glyphicon-arrow-right'></span></a>
 <?php endif; ?>
         <div class='clearfix'></div>
     </div>
