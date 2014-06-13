@@ -1,15 +1,15 @@
 <?php $this->edit = isset($this->edit)?$this->edit:0; ?>
-<?php if(count($this->errors)): ?>
-<ol class='text-danger' style="list-style-image: url('/access/img/bullet.png');padding:0;margin:10px 35px 0;font-weight: bold">
-<?php foreach ($this->errors as $error) : ?>
-    <li><?php echo $error ?></li>
-<?php endforeach; ?>
-</ol>
-<?php endif; ?>
 <style type="text/css">
     .note-container { width: 80%!important} 
 </style>
 <div class="note-container container-fluid">
+<?php if(count($this->errors)): ?>
+    <ol class='text-danger' style="list-style-image: url('/access/img/bullet.png');padding:0;margin:0 35px 10px 15px;font-weight: bold">
+    <?php foreach ($this->errors as $error) : ?>
+        <li><?php echo $error ?></li>
+    <?php endforeach; ?>
+    </ol>
+<?php endif; ?>
     <ul class="nav nav-tabs" id="preview-tab">
         <li class="active"><a href="#" pref="context" title="Shortcut: F1"><b>Context</b></a></li>
         <li><a href="#" pref="preview" title="Shortcut: F2"><b>Preview</b></a></li>
