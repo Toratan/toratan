@@ -549,7 +549,7 @@ __ERROR:
                     # don't care if archived
                     \core\db\models\note::WHATEVER,
                     # only select the below columns and for note body only select first 1000 char.
-                    array("select" => "note_id, note_title, LEFT(note_body, 1000) as note_body, updated_at", "offset" => $offset, "limit" => $limit, "order" => "updated_at desc"));
+                    array("select" => "note_id, note_title, note_summary, updated_at", "offset" => $offset, "limit" => $limit, "order" => "updated_at desc"));
         # fetch total public notes
         $this->view->total_count = 
                 $n->count(

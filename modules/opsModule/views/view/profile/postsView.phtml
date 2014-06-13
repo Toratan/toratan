@@ -17,26 +17,25 @@
                 <div class="blog-preview-excerpt" style='padding-right: 10px;padding-left: 10px'>
                     <div class='blog-preview-context'>
                         <?php 
-                            $bs = substr($post->note_body, 0, strrpos($post->note_body, ' '));
-                            if(!strlen($bs))
-                                $bs = "{$post->note_body}[...]";
-                            else $bs = "$bs...";
-                            $doc = new DOMDocument();
-                            # [```] for any possible code breaks
-                            @$doc->loadHTML(\preg_replace("#<p[^>]*>(\s|&nbsp;|\n|`)*</p>#i", "", \modules\opsModule\models\noteViewModel::__renderText("$bs\n\n```", 0)));     
-                            $xpath = new DOMXPath($doc);
-                            $body = $xpath->query('/html/body/p');
-                            $index = 0;
-                            $purified_note = "";
-                            while($index < $body->length) {
-                                $purified_note = @($doc->saveXml($body->item($index++)));
-                                if($purified_note !== "<p/>")
-                                    break;
-                                else $purified_note = "";
-                            }
-                            if(!strlen($purified_note))
-                                $purified_note = "<p class='unbalanced-note'><span class='glyphicon glyphicon-warning-sign'></span> No summary found.</p>";
-                            echo $purified_note;
+                            echo $post->note_summary;
+                            
+//                            $bs = "{$post->note_body}";
+//                            $doc = new DOMDocument();
+//                            # [```] for any possible code breaks
+//                            @$doc->loadHTML(\preg_replace("#<p[^>]*>(\s|&nbsp;|\n|`)*</p>#i", "", \modules\opsModule\models\noteViewModel::__renderText("$bs\n\n```", 0)));     
+//                            $xpath = new DOMXPath($doc);
+//                            $body = $xpath->query('/html/body/p');
+//                            $index = 0;
+//                            $purified_note = "";
+//                            while($index < $body->length) {
+//                                $purified_note = @($doc->saveXml($body->item($index++)));
+//                                if($purified_note !== "<p/>")
+//                                    break;
+//                                else $purified_note = "";
+//                            }
+//                            if(!strlen($purified_note))
+//                                $purified_note = "<p class='unbalanced-note'><span class='glyphicon glyphicon-warning-sign'></span> No summary pattern detected.</p>";
+//                            echo $purified_note;
                         ?>
                     </div>
                     <p>
