@@ -477,27 +477,23 @@ __OP_FUNC:
                         $index = 0;
                         $purified_note = "";
                         while($index < $p->length) {
-                            $purified_note = @($doc->saveXml($p->item($index++)));
+                            $purified_note = @($p->item($index++)->textContent);
+                            # only accept a note if it satisfy the 100 min char
                             if(strlen($purified_note) > 100)
                                 break;
-                            else $purified_note = "";
+                            # if the above cond. fails and the $index exceed from $p->length $purified_note 
+                            # will contain latest failed $purified_note, it will get currected in next section by 
+                            # {$doc->loadHTML($purified_note)} 
                         }
                         $summary = "";
                         if(strlen($purified_note)) {
                             /**
                              * Prepare the purified note to get saved as note's summary
                              */
-                            $purified_note_len =strlen($purified_note);
-                            # make a valid length of purified note according to database
-                            $trim_len = 597;
-                            $purified_note = trim(substr($purified_note, 0, $trim_len), " .,\t\n\r\0\x0B" );
-                            if($purified_note_len > $trim_len)
-                                # append to be continued marks
-                                $purified_note .= "...";
                             # try to normalize the purified note
-                            if(@$doc->loadHTML($purified_note))
+                            if(@$doc->loadHTML(trim(substr($purified_note, 0, 597), " .,\t\n\r\0\x0B") . "..."))
                                 # fetch the first valid summary
-                                $summary = @$doc->getElementsByTagName("p")->item(0)->nodeValue;
+                                $summary = @$doc->getElementsByTagName("p")->item(0)->textContent;
                         }
                         # save the summary into database
                         $item_value->apply_summary($summary);
