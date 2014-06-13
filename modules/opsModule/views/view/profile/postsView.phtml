@@ -23,10 +23,17 @@
                             else $bs = "$bs...";
                             $doc = new DOMDocument();
                             # [```] for any possible code breaks
-                            @$doc->loadHTML(\modules\opsModule\models\noteViewModel::__renderText("$bs\n\n```", 0));     
+                            @$doc->loadHTML(\preg_replace("#<p[^>]*>(\s|&nbsp;|\n|`)*</p>#i", "", \modules\opsModule\models\noteViewModel::__renderText("$bs\n\n```", 0)));     
                             $xpath = new DOMXPath($doc);
                             $body = $xpath->query('/html/body/p');
-                            $purified_note = @($doc->saveXml($body->item(0)));
+                            $index = 0;
+                            $purified_note = "";
+                            while($index < $body->length) {
+                                $purified_note = @($doc->saveXml($body->item($index++)));
+                                if($purified_note !== "<p/>")
+                                    break;
+                                else $purified_note = "";
+                            }
                             echo $purified_note;
                         ?>
                     </div>
