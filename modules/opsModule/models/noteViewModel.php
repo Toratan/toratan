@@ -254,7 +254,7 @@ class noteViewModel
 <?php unset($get_options_links); ?>
 <?php
     }
-    public static function __renderText($text) {
+    public static function __renderText($text, $echo = 1) {
         (new \vendor\markdown\Ciconia\CiconiaInitializer())->Execute();
         $ciconia = new \Ciconia\Ciconia();
         $ciconia->addExtension(new \Ciconia\Extension\Gfm\FencedCodeBlockExtension());
@@ -263,6 +263,9 @@ class noteViewModel
         $ciconia->addExtension(new \Ciconia\Extension\Gfm\WhiteSpaceExtension());
         $ciconia->addExtension(new \Ciconia\Extension\Gfm\TableExtension());
         $ciconia->addExtension(new \Ciconia\Extension\Gfm\UrlAutoLinkExtension());
-        echo $ciconia->render($text);
+        $text = $ciconia->render($text);
+        if($echo)
+            echo $text;
+        else return $text;
     }
 }

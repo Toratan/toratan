@@ -1,6 +1,7 @@
 <?php if(!isset($this->posts)) throw new zinux\kernel\exceptions\invalidArgumentException("No `\$posts` arg. supplied"); ?>
 <style type='text/css'>.blog-preview{position:relative;padding-left:120px;margin:100px 0}.blog-preview:first-child{margin-top:0}.blog-preview .blog-preview-excerpt{margin:1em 0;text-align:justify}.blog-preview .blog-preview-meta{position:absolute;top:0;left:0;width:100px;text-align:right;color:#a2aab1}.blog-preview .blog-preview-meta .day{font-size:140%;display:block}.blog-preview .blog-preview-meta .year{font-size:110%;color:#ccd0d4;display:block;margin-top:-8px}@media screen and (max-width:767px){.blog-preview{padding-left:0;margin:50px 0}.blog-preview .blog-preview-meta{position:static;text-align:left}.blog-preview .blog-preview-meta .day,.blog-preview .blog-preview-meta .year{color:#a2aab1;font-size:100%;margin:0;display:inline}.blog-preview .blog-preview-meta .day:after{content:', '}}</style>
 <div class="container col-lg-9  col-md-9  col-sm-12">
+    <?php // \core\ui\html\markupFixer::__run_tests(); return; ?>
 <?php foreach($this->posts as $post): $udate = strtotime($post->updated_at); ?>
     <div class="row">
         <article class="blog-preview">
@@ -9,19 +10,55 @@
                 <span class="day"><?php echo date("M d", $udate) ?></span>
                 <span class="year"><?php echo date("Y", $udate) ?></span>
             </div>
-            <div class="blog-preview-excerpt"><?php 
+            <div class="blog-preview-excerpt" style='padding-right: 10px;padding-left: 10px'>
+                <div class='blog-preview-context'>
+                    <?php 
                         $bs = substr($post->note_body, 0, strrpos($post->note_body, ' '));
                         if(!strlen($bs))
                             $bs = "{$post->note_body}[...]";
                         else $bs = "$bs...";
                         $doc = new DOMDocument();
-                        @$doc->loadHTML("$bs<pFUC K");
-                        \modules\opsModule\models\noteViewModel::__renderText($doc->saveHTML());
-            ?></div>
-            <p>
-                <a class="btn btn-sm btn-primary" href="/view/note/<?php echo $post->note_id ?>">View article</a>
-            </p>
+                        # [```] for any possible code breaks
+                        @$doc->loadHTML(\modules\opsModule\models\noteViewModel::__renderText("$bs\n\n```", 0));     
+                        $xpath = new DOMXPath($doc);
+                        $body = $xpath->query('/html/body/*');
+                        $bs = ($doc->saveXml($body->item(0)));
+                        \zinux\kernel\utilities\debug::_var(htmlspecialchars($bs));
+                        if (preg_match('%<(\w+)[^>]*>(.*?)</\1>%i', $bs, $regs)) {
+                            $result = $regs[1];
+                            \zinux\kernel\utilities\debug::_var($regs);
+                        } else {
+                            $result = \modules\opsModule\models\noteViewModel::__renderText($doc->saveHTML(), 0);
+                        }
+                        echo $result;
+                    ?>
+                </div>
+                <p>
+                    <a class="btn btn-sm btn-primary" href="/view/note/<?php echo $post->note_id ?>">View article</a>
+                </p>
+            </div>
 	</article>
     </div>
 <?php endforeach; ?>
 </div>
+<link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
+<script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
+<script type="text/javascript">
+    (function(){
+        prettyPrint();
+        function __normalize_previews(){
+            //ucpa = unwanted character pattern array
+            //var ucpa = [/{/g,/}/g,/--/g,/---/g,/-/g,/^.\s/];
+            var ucpa = ["[`]+(((?!`).)+)?", "[~_\\\*#>\\\s]+((?!.)+)?\\\s*$", "(\\\[.*\\\])?[\\\[]+(((?!\\\]).)+)?$", "\\\[.*\\\][\\\(]+(((?!\\\)).)+)?$"];
+            var $target = $(".blog-preview-context");
+            $target.filter(function(){console.log($.trim($(this).text()));});///*.length===0;}).remove();
+            return;
+            for (var i = 0; i < ucpa.length; i++){ 
+                //does not work
+                var pattern = new RegExp(ucpa[i],"g");
+                $target.html(String($target.html()).replace(pattern, ""));
+            }
+        }
+        __normalize_previews();
+    })(jQuery);
+</script>
