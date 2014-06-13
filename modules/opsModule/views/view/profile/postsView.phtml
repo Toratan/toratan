@@ -17,31 +17,15 @@
                 <div class="blog-preview-excerpt" style='padding-right: 10px;padding-left: 10px'>
                     <div class='blog-preview-context'>
                         <?php 
-                            echo $post->note_summary;
-                            
-//                            $bs = "{$post->note_body}";
-//                            $doc = new DOMDocument();
-//                            # [```] for any possible code breaks
-//                            @$doc->loadHTML(\preg_replace("#<p[^>]*>(\s|&nbsp;|\n|`)*</p>#i", "", \modules\opsModule\models\noteViewModel::__renderText("$bs\n\n```", 0)));     
-//                            $xpath = new DOMXPath($doc);
-//                            $body = $xpath->query('/html/body/p');
-//                            $index = 0;
-//                            $purified_note = "";
-//                            while($index < $body->length) {
-//                                $purified_note = @($doc->saveXml($body->item($index++)));
-//                                if($purified_note !== "<p/>")
-//                                    break;
-//                                else $purified_note = "";
-//                            }
-//                            if(!strlen($purified_note))
-//                                $purified_note = "<p class='unbalanced-note'><span class='glyphicon glyphicon-warning-sign'></span> No summary pattern detected.</p>";
-//                            echo $purified_note;
+                            $summary = $post->note_summary;
+                            if(!strlen($summary))
+                                $summary = "<p class='unbalanced-note'><span class='glyphicon glyphicon-warning-sign'></span> No summary pattern detected.</p>";
+                            echo $summary;
                         ?>
                     </div>
-                    <p>
+                    <p style="margin-top: 30px;">
                         <a class="btn btn-sm btn-primary view-article" href="/view/note/<?php echo $post->note_id ?>">View article</a>
                     </p>
-                    <div class='clearfix'></div>
                 </div>
         </article>
         </div>

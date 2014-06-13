@@ -426,6 +426,9 @@ __OP_FUNC:
         # try to save the item
         try
         {
+            /**
+             * @var \core\db\models\item
+             */
             $item_value = NULL;
             $uid = \core\db\models\user::GetInstance()->user_id;
             switch($item) {
@@ -463,9 +466,42 @@ __OP_FUNC:
                                 $editor_version_id);
                     }
                     # generating note's summary
-                    $summary = "";
-                    
-                    $item_value->apply_summary($summary);
+                    $doc = new \DOMDocument();
+                    # load a HTML markdown parsed text
+                    if(@$doc->loadHTML(\modules\opsModule\models\noteViewModel::__renderText($item_value->getItemBody(), 0))) {
+                        # find paragraph tags
+                        $p = $doc->getElementsByTagName("p");
+                        /**
+                         * Try to locate a good paragraph
+                         */
+                        $index = 0;
+                        $purified_note = "";
+                        while($index < $p->length) {
+                            $purified_note = @($doc->saveXml($p->item($index++)));
+                            if(strlen($purified_note) > 100)
+                                break;
+                            else $purified_note = "";
+                        }
+                        $summary = "";
+                        if(strlen($purified_note)) {
+                            /**
+                             * Prepare the purified note to get saved as note's summary
+                             */
+                            $purified_note_len =strlen($purified_note);
+                            # make a valid length of purified note according to database
+                            $trim_len = 597;
+                            $purified_note = trim(substr($purified_note, 0, $trim_len), " .,\t\n\r\0\x0B" );
+                            if($purified_note_len > $trim_len)
+                                # append to be continued marks
+                                $purified_note .= "...";
+                            # try to normalize the purified note
+                            if(@$doc->loadHTML($purified_note))
+                                # fetch the first valid summary
+                                $summary = @$doc->getElementsByTagName("p")->item(0)->nodeValue;
+                        }
+                        # save the summary into database
+                        $item_value->apply_summary($summary);
+                    }
                     break;
                 case "link":
                     # routine link edit
