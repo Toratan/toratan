@@ -462,6 +462,10 @@ __OP_FUNC:
                                 $nc, $nc, $nc,
                                 $editor_version_id);
                     }
+                    # generating note's summary
+                    $summary = "";
+                    
+                    $item_value->apply_summary($summary);
                     break;
                 case "link":
                     # routine link edit
