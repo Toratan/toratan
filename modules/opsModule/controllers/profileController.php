@@ -530,7 +530,7 @@ __ERROR:
         # fetch the profile
         $this->fetchProfile();
         # if no page param. passed assume it is page 1
-        if(!isset($this->request->params["page"]))
+        if(!isset($this->request->params["page"]) || $this->request->params["page"] < 1)
             $this->request->params["page"] = 1;
         # define limit
         $limit = 10;
