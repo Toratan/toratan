@@ -532,6 +532,8 @@ __ERROR:
         # if no page param. passed assume it is page 1
         if(!isset($this->request->params["page"]) || $this->request->params["page"] < 1)
             $this->request->params["page"] = 1;
+        if(isset($this->request->params['infscroll']))
+            $this->layout->SuppressLayout();
         # define limit
         $limit = 10;
         # define starting offset
@@ -549,7 +551,7 @@ __ERROR:
                     # only select the below columns and for note body only select first 1000 char.
                     array("select" => "note_id, note_title, LEFT(note_body, 1000) as note_body, updated_at", "offset" => $offset, "limit" => $limit));
         # fetch total public notes
-        $this->view->totall_count = 
+        $this->view->total_count = 
                 $n->count(
                     array(
                             "conditions" => array(
@@ -567,7 +569,7 @@ __ERROR:
         # pass the fetch limit value
         $this->view->fetch_limit = $limit;
         # calc if there is more note?
-        $this->view->is_more_note = (ceil($this->request->params["page"] + 1) <= ceil($this->view->totall_count / $limit));
+        $this->view->is_more_note = (ceil($this->request->params["page"] + 1) <= ceil($this->view->total_count / $limit));
         # change the layout
         $this->layout->SetLayout("profile");
         # fail-safe for pre-view mode
