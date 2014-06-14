@@ -47,7 +47,7 @@ class eController extends \zinux\kernel\controller\baseController
         $this->view->is_owner = ($uid == \core\db\models\user::GetInstance()->user_id); 
         $this->executeQuery("fetchItems",  
                 \modules\frameModule\models\directoryTree::REGULAR,
-                array($uid, $this->view->pid, item::FLAG_UNSET, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
+                array($uid, $this->view->pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
         $folder = new \core\db\models\folder;
         $this->view->route = $folder->fetchRouteToRoot($this->view->pid, $uid);
     }
@@ -75,6 +75,8 @@ class eController extends \zinux\kernel\controller\baseController
             default:
                 throw new \zinux\kernel\exceptions\invalidArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
         }
+        $type = $instance->WhoAmI();
+        $select = "{$type}_id, parent_id, owner_id, {$type}_title, is_public, is_trash, is_archive, created_at, updated_at";
         $sort_base = "{$instance->WhoAmI()}_title";
         if(isset($this->request->params["sort"])) {
             switch($this->request->params["sort"]) {
@@ -115,7 +117,12 @@ class eController extends \zinux\kernel\controller\baseController
             default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `$dtmode`");
         }
         $this->view->total_count = $instance->count($count_arg);
-        $args[] = array("order" => "$sort_base $order", 'limit' => $this->request->params["l"], 'offset' => $this->request->params["o"]);
+        $args[] = 
+                array(
+                    "select" => $select,
+                    "order" => "$sort_base $order",
+                    "limit" => $this->request->params["l"],
+                    "offset" => $this->request->params["o"]);
         $this->view->items = call_user_func_array(array($instance, $func), $args);
         if(isset($this->request->params["fetch"])) {
             \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(session_id()));
