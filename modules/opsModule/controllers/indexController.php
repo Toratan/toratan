@@ -812,6 +812,8 @@ __OP_FUNC:
     */
     public function unsubscribeAction()
     {
+        if(!$this->request->CountIndexedParam())
+            throw new \zinux\kernel\exceptions\accessDeniedException("Empty param passed.");
         # validate the inputs
         @\zinux\kernel\security\security::ArrayHashCheck($this->request->params,
             array(\core\db\models\user::GetInstance()->user_id, $this->request->GetIndexedParam(0), session_id()."subscribe"));
@@ -832,10 +834,8 @@ __OP_FUNC:
     */
     public function gotoAction()
     {
-        if($this->request->CountIndexedParam() !== 3) throw new \zinux\kernel\exceptions\invalidArgumentException;
         \zinux\kernel\security\security::IsSecure($this->request->params, array("link"));
-        if(\zinux\kernel\security\hash::Generate($this->request->params["link"]) != $this->request->GetIndexedParam(2))
-                throw new \zinux\kernel\exceptions\invalidArgumentException;
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params["link"]));
         $link = new \core\db\models\link;
         $this->view->link = $link->fetch($this->request->params["link"]);
         $this->layout->SuppressLayout();
