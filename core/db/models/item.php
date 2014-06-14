@@ -263,7 +263,7 @@ abstract class item extends baseModel
                 array("is_public" => $is_public, "is_trash"=>$is_trash, "is_archive" => $is_archive)
                 as $name => $value) {
             # if is public revoked
-            if($value>-1 && $value<2) {
+            if($value != self::WHATEVER) {
                 # flag it
                 $cond[0] .= "AND $name =  ? ";
                 $cond[] = $value;
