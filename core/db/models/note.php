@@ -94,14 +94,26 @@ class note extends item
     }
     /**
      * Applies summary to current note
-     * @param string $summary 
-     * @return \core\db\models\note
+     * @param string $summary
+     * @param boolean $auto_save Shoud the method attempt to autosave after the assignment?
+     * @return \core\db\models\note $this
      */
-    public function apply_summary($summary) {
-        if(strlen($summary) && false)
-            $summary =substr($summary, 0, 600);
+    public function apply_summary($summary, $auto_save = 1) {
         $this->note_summary = $summary;
-        $this->save();
+        if($auto_save)
+            $this->save();
+        return $this;
+    }
+    /**
+     * Applies note pre-processed html body to current note
+     * @param string $html
+     * @param boolean $auto_save Shoud the method attempt to autosave after the assignment?
+     * @return \core\db\models\note $this
+     */
+    public function apply_note_html_body($html, $auto_save = 1) {
+        $this->note_html_body = $html;
+        if($auto_save)
+            $this->save();
         return $this;
     }
 }

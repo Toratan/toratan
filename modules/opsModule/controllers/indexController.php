@@ -469,6 +469,13 @@ __OP_FUNC:
                     $doc = new \DOMDocument();
                     # load a HTML markdown parsed text
                     if(@$doc->loadHTML(\modules\opsModule\models\noteViewModel::__renderText($item_value->getItemBody(), 0))) {
+                        # save the processed normalized html body of note
+                        $item_value->apply_note_html_body(
+                                preg_replace('/^<!DOCTYPE.+?>\\n?/', '', 
+                                        str_replace(
+                                                array('<html>', '</html>', '<body>', '</body>'), '', $doc->saveHTML()
+                                        )
+                                ), FALSE);
                         # find paragraph tags
                         $p = $doc->getElementsByTagName("p");
                         /**

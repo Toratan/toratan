@@ -203,7 +203,12 @@ class noteViewModel
         </tbody>
     </table>
     <hr style='margin: 0'/>
-    <div id="note-body" style="width: 100%" class="links-enabled"><?php echo self::__renderText($n->note_body); ?></div>
+    <div id="note-body" style="width: 100%" class="links-enabled"><?php 
+        # if note's pre-processed html body exists and not empty?
+        # don't render the origin body, just echo the pre-processed one!
+        # otherwise render the note's origin body.
+        echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
+    ?></div>
     <script src="/access/js/moment.min.js"></script>
     <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
     <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
