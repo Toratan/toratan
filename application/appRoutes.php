@@ -24,6 +24,13 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          */
         $this->addRoute("^/(archives|shared|trashes|d/)$2", "/frame/e/$1$2");
         /**
+         * Routes
+         *      {/posts} to {/profile/posts}
+         * Note:
+         *      This route need to be before {$this->addRoute("^/(profile)$2", "/ops/$1$2");}
+         */
+        $this->addRoute("^/posts$1", "/profile/posts$1");
+        /**
          * Routes 
          *      {/new} to {/ops/new}
          *      {/edit} to {/ops/edit} 
