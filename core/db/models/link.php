@@ -4,17 +4,31 @@ namespace core\db\models;
 class link extends item
 {
     /**
+     * Save the link
+     * @param boolean $validate should validate
+     */
+    public function save($validate=true)
+    {
+        # validate the links_body
+        $this->validateBody($this->link_body);
+        # since the body is valid now, save this link
+        parent::save($validate);
+    }
+    /**
      * Validates link's body
      * @param string $body
      * @throws \zinux\kernel\exceptions\invalidArgumentException if The body is not valid URL
      */
     protected function validateBody(&$body) {
-        // any URL should start with a letter
+        # if the body is empty?
+        if(!strlen($body))
+            throw new \zinux\kernel\exceptions\invalidArgumentException("The link's URL cannot be empty.");
+        # any URL should start with a letter
         $body = preg_replace("#^[^a-z]*#i", "", $body);
-        // if no schema provided by default choose HTTP schema
+        # if no schema provided by default choose HTTP schema
         if(!parse_url($body, PHP_URL_SCHEME))
                 $body = "http://$body";
-        // final validation for URL
+        # final validation for URL
         if(!filter_var($body, FILTER_VALIDATE_URL))
                 throw new \zinux\kernel\exceptions\invalidArgumentException("The `<b>$body</b>` is not a valid URL.");  
     }
