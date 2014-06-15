@@ -67,7 +67,12 @@
         <script type="text/javascript">
             (function(){
                 var jscroll_callback = function() {
-                    $('.next-prev-link').hide();
+                    $('.next-prev-link')
+                            .hide()
+                            .children(".next-page")
+                                .each(function(index, elem) {
+                                    $(elem).attr('href', $(elem).attr('href') + "?infscroll=1");
+                                });
                     if($('.error-404').length !== 0)
                         // destroy jscroll, the procedure fecthed from internal `_destroy()` function in `jquery.jscroll.js` file
                         $('.posts')
