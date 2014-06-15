@@ -151,7 +151,9 @@ __DEFAULT:
     function toratan_exception_handler($exception) {
         $mp = new \zinux\kernel\utilities\pipe("__ERRORS__");
         $mp->write($exception);
-        header("location: /error");
+        # we need to use api because httpRequest will contain error(/error will set error header)
+        # cannot user `header()` we because of the URI change!! we want the error URI remain same.
+        @\zinux\kernel\application\api::call("/error");
         exit;
     }
     # set exception handler
