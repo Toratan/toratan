@@ -1,2 +1,9 @@
 <?php
+    # invoke a message pipe line
+    $mp = new \core\utiles\messagePipe;
+    $m = "";
+    if($mp->hasFlow())
+        $m .= "{$mp->read()}<br />";
+    if(strlen($m))
+        \core\ui\html\alert::Tout($m, \core\ui\html\alert::PIPE_INFO);
     (new \modules\opsModule\models\noteViewModel($this))->__render();
