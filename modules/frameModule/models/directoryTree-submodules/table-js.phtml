@@ -142,6 +142,8 @@
                         window.update_times();
                         // re-sort table
                         window.sort_table();
+                        // re-init links
+                        window.init_links();
                     } else {
                         $(window).unbind("scroll");
                         window.plot_if_no_item_found();
@@ -157,12 +159,19 @@
                 $(".ajax-loader-img-inf-scroll").addClass("hidden");
             });
         };
-<?php if($active_type === 'link' || $active_type === "note"): ?>
-    $(".item-row .item-name a").click(function($e){
-        $e.preventDefault();
-        window.top.open($(this).attr('href').split("#!")[1]);
-    });
-<?php endif; ?>
+   /**
+    * init's table's links 
+    */
+    window.init_links = function() {
+    <?php if($active_type === 'link' || $active_type === "note"): ?>
+        $(".item-row .item-name a:not(.link_inited)")
+                .addClass('link_inited')
+                .click(function($e){
+                    $e.preventDefault();
+                    window.top.<?php echo $active_type === "note" ? "location = " : "open" ?> ($(this).attr('href').split("#!")[1]);
+                });
+    <?php endif; ?>
+    };
 <?php if($this->tree_type === self::REGULAR): ?>
         window.fetching_more = false;
         $(window).scroll(function() {
@@ -187,6 +196,7 @@
             window.reset_ajax_placeholder(is_init);
             window.sort_table();
             window.trim_rows();
+            window.init_links();
         };
         // init the table as page's init call
         window.init_table(true);
