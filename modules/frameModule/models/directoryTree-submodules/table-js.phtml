@@ -112,6 +112,7 @@
         };
         window.$l = <?php echo FETCH_LIMIT; ?>;
         window.$o = <?php echo FETCH_LIMIT; ?>;
+        window.fetching_more = false;
         window.fetch_more = function() {
             window.fetching_more = true;
             $(".ajax-loader-img-inf-scroll").removeClass("hidden");
@@ -131,14 +132,22 @@
                 type: "GET",
                 global: false,
                 url: "<?php echo $this->request->getURI() ?>",
-                data: "o="+$o+"&l="+$l+"&sort="+sort_base+"&order="+order+"&fetch=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
+                data: "o="+$o+"&l="+$l+"&sort="+sort_base+"&order="+order+"&infscroll=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
+                dataType: "JSON",
                 success: function(data) {
-                    window.$o += <?php echo FETCH_LIMIT; ?>
+                    if(typeof(data.count) === "undefined" || typeof(data.content) === "undefined") {
+                        if(typeof(window.fetch_more_fatal_data_error) !== "undefined") return;
+                        window.fetch_more_fatal_data_error = true;
+                        alert("Couldn't receive a proper data from server, if this problem continued please contact with us!");
+                        setTimeout(function(){ $(window).unbind("scroll"); window.location = window.location.pathname; }, 100);
+                        return;
+                    }
+                    window.$o += data.count;
                     // unbind the success method to ignore the general result output
                     $(window).unbind('ajaxSuccess');
-                    if(data.length) {
+                    if(data.count) {
                         // append data
-                        $("#explorer-table table.table").append(data);
+                        $("#explorer-table table.table").append(data.content);
                         // re-init table
                         window.init_table();
                     } else {
@@ -149,7 +158,7 @@
                     setTimeout(function() { $(window).ajaxSuccess(window.ajax_success); }, 50);
                 },
                 error: function(xhr) {
-                    window.top.open_errorModal(xhr.responseText);
+                    window.top.open_errorModal(xhr.responseText, -1, true);
                 }
             }).always(function(){
                 window.fetching_more = false;

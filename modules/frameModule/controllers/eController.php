@@ -124,15 +124,31 @@ class eController extends \zinux\kernel\controller\baseController
                     "limit" => $this->request->params["l"],
                     "offset" => $this->request->params["o"]);
         $this->view->items = call_user_func_array(array($instance, $func), $args);
-        if(isset($this->request->params["fetch"])) {
+        # are we fetching for infscroll
+        if(isset($this->request->params["infscroll"])) {
+            # validate the request
             \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(session_id()));
-            $dt = new \modules\frameModule\models\directoryTree($this->request, $dtmode);
-            $index = 0;
-            $all_count = count($this->view->items);
-            foreach ($this->view->items as $item)
-            {
-                $dt->plotTableRow($item, $item->WhoAmI(), $item->parent_id, $this->view->is_owner, (++$index)/$all_count);
-            }
+            /**
+             * We will send json format data to client
+             */
+            # buffer output
+            ob_start();
+                $dt = new \modules\frameModule\models\directoryTree($this->request, $dtmode);
+                $index = 0;
+                $all_count = count($this->view->items);
+                foreach ($this->view->items as $item)
+                    # this will echo the output automatically
+                    $dt->plotTableRow($item, $item->WhoAmI(), $item->parent_id, $this->view->is_owner, (++$index)/$all_count);
+            # get buffer
+            $rows = ob_get_clean();
+            # make a new object
+            $o = new \stdClass;
+            # assign the rendered rows
+            $o->content = $rows;
+            # assign how many rows we are outputing
+            $o->count = $all_count;
+            # encode the data in json format
+            echo json_encode($o);
             exit;
         }
     }
