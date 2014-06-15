@@ -302,7 +302,7 @@
         if($check) $msgs = "<ol class='text-info' style='list-style-image: url(\"/access/img/bullet.png\");padding:0;margin-left:15px;'>";
         while(($msg = $mp->read())) $msgs .= "<li>$msg</li>";
         if($check) $msg = "</ol>";
-        if($check) :
+        if($check && strlen($msgs)) :
 ?>
         setTimeout(function() {
             window.top.open_infoModal('<?php echo addslashes($msgs) ?>', 2700);
