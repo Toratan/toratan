@@ -3,6 +3,9 @@
     $(document).ready(function(){
         window.setInterval(window.update_times, 500);
         window.sort_table = function() {
+            // if no item exists?
+            if(!$('.item-row').length)
+                return;
             var defaultHeadIndex = 2;
             var defaultHeadOrder = 0;
             var $activeHead = 'table thead tr th.headerSortDown, table thead tr th.headerSortUp';
