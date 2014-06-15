@@ -136,14 +136,8 @@
                     if(data.length) {
                         // append data
                         $("#explorer-table table.table").append(data);
-                        // init checkboxes
-                        window.init_checkboxes();
-                        // update dates
-                        window.update_times();
-                        // re-sort table
-                        window.sort_table();
-                        // re-init links
-                        window.init_links();
+                        // re-init table
+                        window.init_table();
                     } else {
                         $(window).unbind("scroll");
                         window.plot_if_no_item_found();
