@@ -81,9 +81,7 @@ class alert
                 <style class='.error-container' type='text/css'>
                     .pipe-msg {width: 100%;padding: 20px;margin: 10px auto;border: 1px solid #cccccc; font-weight:bold;text-align:center}
                 </style>
-                <div class='pipe-msg text-$pipe_type text-center '>
-                    <span class='glyphicon glyphicon-chevron-right'></span> $data
-                </div>
+                <div class='pipe-msg text-$pipe_type text-center '>$data</div>
             </div>
             ", $id, $auto_dispose, $immediate_echo, $show_time);
     }
