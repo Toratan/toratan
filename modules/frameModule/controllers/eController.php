@@ -52,12 +52,10 @@ class eController extends \zinux\kernel\controller\baseController
         $this->view->route = $folder->fetchRouteToRoot($this->view->pid, $uid);
     }
     /**
-     * Executes query
-     * @param string $func to call
-     * @param ineteger $dtmode the directory there mode
-     * @param array $args
+     * get proper instance depends on current request
+     * @return item the intance
      */
-    protected function executeQuery($func, $dtmode, array $args) {
+    protected function getRequestInstance() {
         $instance = NULL;
         switch(strtoupper($this->request->type))
         {
@@ -75,6 +73,16 @@ class eController extends \zinux\kernel\controller\baseController
             default:
                 throw new \zinux\kernel\exceptions\invalidArgumentException("Extention `{$this->request->type}` does not supported by explorer....");
         }
+        return $instance;
+    }
+    /**
+     * Executes query
+     * @param string $func to call
+     * @param ineteger $dtmode the directory there mode
+     * @param array $args
+     */
+    protected function executeQuery($func, $dtmode, array $args) {
+        $instance = $this->getRequestInstance();
         $type = $instance->WhoAmI();
         $select = "{$type}_id, parent_id, owner_id, {$type}_title, is_public, is_trash, is_archive, created_at, updated_at";
         $sort_base = "{$instance->WhoAmI()}_title";
@@ -168,7 +176,16 @@ class eController extends \zinux\kernel\controller\baseController
     * The \modules\frameModule\controllers\eController::trashesAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function trashesAction() { $this->fetchCategory(\modules\frameModule\models\directoryTree::TRASH); }
+    public function trashesAction() { 
+        switch(strtolower(@$this->request->params["do"])) {
+            case "empty":
+                $instance = $this->getRequestInstance();
+                $instance->delete_all(array("conditions" => array('owner_id = ? AND is_trash = 1', \core\db\models\user::GetInstance()->user_id)));
+                header("location: /trashes");
+                exit;
+        }
+        $this->fetchCategory(\modules\frameModule\models\directoryTree::TRASH);
+    }
     /**
      * Fetches category items
      * @param integer $category the category types 

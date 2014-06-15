@@ -40,7 +40,7 @@
                 window.setTitle($("#explorer-template ol.breadcrumb li.active").text().trim());
                 window.updateHash(window.getLinkHash('<?php echo $this->request->getURI(); ?>'));
                 $("a").click(function(e){
-                    if($(this).attr("href").length && $(this).attr("href")[0] !== "#") {
+                    if($(this).is("[href]") && $(this).attr("href").length && $(this).attr("href")[0] !== "#") {
                         e.preventDefault();
                         window.location = $(this).attr('href');
                         window.updateHash(window.getLinkHash($(this).attr("href")));
