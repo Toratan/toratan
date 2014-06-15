@@ -117,10 +117,12 @@ class dialogs
                 parse_html = false;
             if(parse_html) {
                 var $body = $('<div>').append($(info)).find("#error-layout").wrap("<div>");
-                $body.find(".container").removeClass("container").css("margin", "-10px").html();
-                info = $body.html();
+                if($body.length !== 0) {
+                    $body.find(".container").removeClass("container").css("margin", "-10px").html();
+                    info = $body.html();
+                }
             }
-            open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-remove-sign"></span> Oops!', close_timeout);
+            open_modal("div#dialog-modal", info, '<span class="glyphicon glyphicon-warning-sign"></span> Oops!', close_timeout);
         };
         /**
          * open a wait modal
