@@ -3,6 +3,9 @@
 <script type="text/javascript">
     $(document).ready(function(){
     <?php if($is_owner): ?>
+        /**
+         * Updates menu's checkbox check status
+         */
         window.update_menu_checkbox = function() {
             var all_checked = ($("input[type='checkbox'].item-checkbox:checked").length === $("input[type='checkbox'].item-checkbox").length);
             if($("input[type='checkbox'].item-checkbox:checked").length === 0) {
@@ -10,6 +13,7 @@
                 $("input[type='checkbox'].check-all").prop("checked", false);
                 $(".checked-opt").addClass("hidden");
                 $(".unchecked-opt").removeClass("hidden");
+                currect_select("none");
             } else {
                 $("input[type='checkbox'].check-all").prop("indeterminate", !all_checked);
                 $("input[type='checkbox'].check-all").prop("checked", all_checked);
@@ -20,6 +24,14 @@
                 else
                     $(".checked-opt.checked-opt-unique").addClass("hidden");
             }
+        };
+        /**
+         * Applies the attributes of menu checked box to items
+         */
+        window.apply_menu_checkbox_to_items = function() {
+            if(typeof($("input.check-all").attr('select-type')) === "undefined") return;
+            var target_check = ".check-"+ $("input.check-all").attr('select-type');
+            $(target_check).click();
         };
         /**
          * Init page table and ajax placeholder
@@ -122,23 +134,37 @@
               return ret;
             }
         };
+        /**
+         * Flag current selected check type
+         * @param String __type the check type
+         */
+        function currect_select(__type) {
+            if(typeof(__type) === "undefined")
+                $("input.check-all").removeAttr('select-type');
+            else
+                $("input.check-all").attr('select-type', __type);
+        };
         $(".check-all").click(function() {
-            $("input[type='checkbox'].item-checkbox").prop("checked", !$("input[type='checkbox'].item-checkbox").prop("checked"));
+            $("input[type='checkbox'].item-checkbox").prop("checked", $(this).is("a") || !$("input[type='checkbox'].item-checkbox").prop("checked"));
             window.update_menu_checkbox();
+            currect_select($(this).attr('check-type'));
         });
         $(".check-none").click(function() {
             $("input[type='checkbox'].item-checkbox").prop("checked", false);
             window.update_menu_checkbox();
+            currect_select($(this).attr('check-type'));
         });
         $(".check-public").click(function() {
             $("input[type='checkbox'].public-item").prop("checked", true);
             $("input[type='checkbox'].private-item").prop("checked", false);
             window.update_menu_checkbox();
+            currect_select($(this).attr('check-type'));
         });
         $(".check-private").click(function() {
             $("input[type='checkbox'].public-item").prop("checked", false);
             $("input[type='checkbox'].private-item").prop("checked", true);
             window.update_menu_checkbox();
+            currect_select($(this).attr('check-type'));
         });
         $("a.new-item").click(function(e){
             switch($(this).attr("data-tag")) {

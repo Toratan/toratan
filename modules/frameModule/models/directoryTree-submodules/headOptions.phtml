@@ -12,17 +12,17 @@
     </div>-->
     <!-- Split button -->
     <div class="btn-group">
-        <div type="button" class="btn btn-default" style="height: 34px;"><input type="checkbox" class="input check-all"/></div>
+        <div type="button" class="btn btn-default" style="height: 34px;"><input type="checkbox" class="input check-tool  check-all" check-type='all'/></div>
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px">
             <span class="caret"></span>
             <span class="sr-only">Toggle Dropdown</span>
         </button>
       <ul class="dropdown-menu" role="menu">
-          <li><a href="#" class="check-all" onclick="return false;">All</a></li>
-        <li><a href="#" class="check-none" onclick="return false;">None</a></li>
+          <li><a href="#" class="check-tool check-all" onclick="return false;" check-type='all'>All</a></li>
+        <li><a href="#" class="check-tool  check-none" onclick="return false;" check-type='none'>None</a></li>
         <li class="divider"></li>
-        <li><a href="#" class="check-public" onclick="return false;">Public</a></li>
-        <li><a href="#" class="check-private" onclick="return false;">Private</a></li>
+        <li><a href="#" class="check-tool check-public" onclick="return false;" check-type='public'>Public</a></li>
+        <li><a href="#" class="check-tool check-private" onclick="return false;" check-type='private'>Private</a></li>
       </ul>
     </div>
     <div class="btn-group">
