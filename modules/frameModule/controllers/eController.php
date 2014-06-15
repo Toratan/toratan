@@ -30,9 +30,9 @@ class eController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
-        if(!\core\db\models\user::IsSignedin()) { trigger_error("UNREGISTERED USERS SHOULD BE ABLE TO VIEW PUBLIC ITESM", E_USER_ERROR); return; }
+//        if(!\core\db\models\user::IsSignedin()) { trigger_error("UNREGISTERED USERS SHOULD BE ABLE TO VIEW PUBLIC ITESM", E_USER_ERROR); return; }
         $this->layout->AddTitle("Home");
-        $uid = \core\db\models\user::GetInstance()->user_id;
+        $uid = @\core\db\models\user::GetInstance()->user_id;
         if(isset($this->request->params["u"]) && $this->request->params["u"] != $uid)
         {
             $target_user = \core\db\models\user::Fetch($this->request->params["u"]);
@@ -44,7 +44,7 @@ class eController extends \zinux\kernel\controller\baseController
             if(!$parent->is_public)
                 throw new \zinux\kernel\exceptions\permissionDeniedException("You don't have permission to view this folder.");
         }
-        $this->view->is_owner = ($uid == \core\db\models\user::GetInstance()->user_id); 
+        $this->view->is_owner = ($uid == @\core\db\models\user::GetInstance()->user_id); 
         $this->executeQuery("fetchItems",  
                 \modules\frameModule\models\directoryTree::REGULAR,
                 array($uid, $this->view->pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
