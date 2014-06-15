@@ -121,6 +121,14 @@ abstract class item extends baseModel
      */
     public function getItemBody() { return $this->{"{$this->WhoAmI()}_body"}; }
     /**
+     * Set the item's TItle
+     */
+    public function setItemTitle($title) { $this->{"{$this->WhoAmI()}_title"} = $title; }
+    /**
+     * Set the item's body
+     */
+    public function setItemBody($body) { $this->{"{$this->WhoAmI()}_body"} = $body; }
+    /**
      * Creates a new item in { title | body } datastructure
      * @param string $title the item's title
      * @param string $body the item's body
@@ -472,10 +480,14 @@ abstract class item extends baseModel
         array_push($route, $item);
         while($item->{"parent_id"}!=0) {
             $item = $this->fetch($item->parent_id, $owner_id);
+            $item->readonly(TRUE);
             array_push($route, $item);
         }
 __RETURN:
-        array_push($route, $this->fetch(0));
+        $root = $this->fetch(0);
+        $root->readonly(TRUE);
+        $root->setItemTitle(ucfirst(strtolower($root->getItemTitle())));
+        array_push($route, $root);
         return array_reverse($route);
     }
     /**

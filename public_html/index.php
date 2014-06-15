@@ -193,6 +193,6 @@ __DEFAULT:
             # shutdown the application
             ->Shutdown();
 
-$exeTime = new \core\db\models\execution;
-$load_time = $exeTime->record($load);
+//$exeTime = new \core\db\models\execution;
+//$load_time = $exeTime->record($load);
 //echo "<div style='clear:both'></div><hr /><center>Loaded in <b>{$load_time}</b> seconds.<br />Average load time is <b>{$exeTime->get_average_load_time()}</b> seconds.</center>";
