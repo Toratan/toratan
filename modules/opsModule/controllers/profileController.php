@@ -588,8 +588,31 @@ __ERROR:
                     \core\db\models\note::FLAG_UNSET,
                     # don't care if archived
                     \core\db\models\note::WHATEVER,
-                    # only select the below columns and for note body only select first 1000 char.
+                    # only select the below columns.
                     array("select" => "note_id, note_title, note_summary, updated_at", "offset" => $offset, "limit" => $limit, "order" => "updated_at desc"));
+        # if we are not in infinit-scrolling mode and there are at least a post
+        if(!isset($this->request->params['infscroll']) && count($this->view->posts)) {
+            # fetch the last public post's update date
+            $last_post =array_shift(
+                    $n->fetchItems($this->view->profile->user_id, NULL,
+                        # public
+                        \core\db\models\note::FLAG_SET,
+                        # not trash
+                        \core\db\models\note::FLAG_UNSET,
+                        # don't care if archived
+                        \core\db\models\note::WHATEVER,
+                        # only select the below columns.
+                        array("select" => "updated_at", "limit" => 1, "order" => "updated_at desc")));
+            # get the year of latest posts
+            $cd = Date("Y", strtotime($last_post->updated_at));
+            # get the year of account creation date
+            $ed = Date("Y", strtotime($this->view->user->created_at));
+            # malloc an array
+            $this->view->timeline = array();
+            # collect the differences
+            for(; $ed <= $cd; $ed++)
+                $this->view->timeline[] = $ed;
+        }
         # fetch total public notes
         $this->view->total_count = 
                 $n->count(

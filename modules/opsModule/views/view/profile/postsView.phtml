@@ -1,12 +1,12 @@
 <?php if(!isset($this->posts)) throw new zinux\kernel\exceptions\invalidArgumentException("No `\$posts` arg. supplied"); ?>
 <?php $is_profile_owner = @$this->is_owner;  ?>
-<?php $is_preview_mode = @$this->preview_mode;  ?>
+<?php $is_preview_mode = @$this->preview_mode; ?>
 <div class="container col-lg-9  col-md-9  col-sm-8 col-xm-12 posts">
 <?php if(count($this->posts)): ?>
     <?php if(!isset($this->request->params["infscroll"])): ?>
         <style type='text/css'>.blog-preview{position:relative;padding-left:120px;margin:60px 0}.blog-preview:first-child{margin-top:0}.blog-preview .blog-preview-excerpt{margin:1em 0;text-align:justify}.blog-preview .blog-preview-meta{position:absolute;top:0;left:0;width:100px;text-align:right;color:#a2aab1}.blog-preview .blog-preview-meta .day{font-size:140%;display:block}.blog-preview .blog-preview-meta .year{font-size:110%;color:#ccd0d4;display:block;margin-top:-8px}@media screen and (max-width:767px){.blog-preview{padding-left:0;margin:50px 0}.blog-preview .blog-preview-meta{position:static;text-align:left}.blog-preview .blog-preview-meta .day,.blog-preview .blog-preview-meta .year{color:#a2aab1;font-size:100%;margin:0;display:inline}.blog-preview .blog-preview-meta .day:after{content:', '}} .blog-preview .blog-preview-excerpt .view-article{text-transform: uppercase;padding:10px;font-weight: bold;}.blog-preview .blog-preview-title, .blog-preview .blog-preview-excerpt .blog-preview-context{word-break: break-all}.unbalanced-note {padding:10px; border: 1px solid #DDD;text-align: center;font-weight: bold}</style>
     <?php endif; ?>
-    <?php foreach($this->posts as $post): $udate = strtotime($post->updated_at);// \zinux\kernel\utilities\debug::_var($post);?>
+    <?php foreach($this->posts as $post): $udate = strtotime($post->updated_at); ?>
         <div class="row article">
             <article class="blog-preview">
                 <h3 class="text-justify blog-preview-title" ><?php echo $post->note_title ?></h3>
