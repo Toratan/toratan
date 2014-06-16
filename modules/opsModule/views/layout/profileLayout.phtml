@@ -34,7 +34,7 @@
 <div class="container" style='padding: 0'>
 <?php if($cover_img): ?>
     <div id="cover-photo">
-        <div class='mosaic-block bottom-bar icenter-block'>
+        <div class='mosaic-block bottom-bar icenter-block' style="width: 100%;">
         <?php if($is_profile_owner) : ?>
             <a href="/profile/cover" class="mosaic-overlay" id="change-cover" style="cursor:pointer;display: inline; left: 0px; bottom: -40px;" title="Change Cover">
                 <div class="details text-center" style="margin-top: 0;">
@@ -127,6 +127,7 @@
                                     <h1><span class="glyphicon glyphicon-picture"></span><br /><b>Change Avatar</b></h1>
                                 </div>
                             </a>
+                            <?php if($def_avatar != $avatar_uri) : ?>
                             <a class="mosaic-overlay crop" href="/profile/avatar/crop"style="display: inline; left: 0px; top: -45px;height: 80px;" title="Crop the thumbnail image">
                                 <div class="details text-center">
                                     <h1>
@@ -134,7 +135,7 @@
                                     </h1>
                                 </div>
                             </a>
-                        <?php endif ; ?>
+                        <?php endif;endif ; ?>
                             <a href="/profile/avatar/view/<?php echo $profile->user_id, "?", \zinux\kernel\security\security::GetHashString(array($profile->user_id)) ?>" title="Click to view the original avatar">
                                 <img id="thumbnail" class='image img-thumbnail img-responsive 'src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>';"  />
                             </a>
