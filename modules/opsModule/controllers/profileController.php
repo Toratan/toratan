@@ -46,7 +46,7 @@ class profileController extends \zinux\kernel\controller\baseController
         # if any profile ID is demaned
         if($this->request->CountIndexedParam())
             # if the profile id has found, we cool to proceed
-            if(strtolower($this->request->GetIndexedParam(0)) !== "page" && !($user = \core\db\models\user::find(array("conditions"=> array("user_id = ?", $this->request->GetIndexedParam(0))))))
+            if(!in_array(strtolower($this->request->GetIndexedParam(0)), array("page", "timeline")) && !($user = \core\db\models\user::find(array("conditions"=> array("user_id = ?", $this->request->GetIndexedParam(0))))))
                 # otherwise indicate profile not found
                 throw new \zinux\kernel\exceptions\notFoundException("The profile not found.");
 __FETCH_PROFILE:
@@ -579,6 +579,10 @@ __ERROR:
         # define starting offset
         $offset = ($this->request->params["page"] - 1) * $limit;
         $n = new \core\db\models\note;
+        # malloc condition
+        $cond = array();
+        if(isset($this->request->params["timeline"]))
+            $cond = array("EXTRACT(YEAR FROM updated_at) <= ?", $this->request->params["timeline"]);
         # fetch public notes
         $this->view->posts = 
                 $n->fetchItems($this->view->profile->user_id, NULL,
@@ -589,43 +593,37 @@ __ERROR:
                     # don't care if archived
                     \core\db\models\note::WHATEVER,
                     # only select the below columns.
-                    array("select" => "note_id, note_title, note_summary, updated_at", "offset" => $offset, "limit" => $limit, "order" => "updated_at desc"));
+                    array("select" => "note_id, note_title, note_summary, updated_at", "offset" => $offset, "limit" => $limit, "order" => "updated_at desc", "conditions" => $cond));
         # if we are not in infinit-scrolling mode and there are at least a post
-        if(!isset($this->request->params['infscroll']) && count($this->view->posts)) {
-            # fetch the last public post's update date
-            $last_post =array_shift(
-                    $n->fetchItems($this->view->profile->user_id, NULL,
-                        # public
-                        \core\db\models\note::FLAG_SET,
-                        # not trash
-                        \core\db\models\note::FLAG_UNSET,
-                        # don't care if archived
-                        \core\db\models\note::WHATEVER,
-                        # only select the below columns.
-                        array("select" => "updated_at", "limit" => 1, "order" => "updated_at desc")));
-            # get the year of latest posts
-            $cd = Date("Y", strtotime($last_post->updated_at));
+        if(!isset($this->request->params['infscroll'])) {
+            # get the year of NOW
+            $cd = Date("Y");
             # get the year of account creation date
-            $ed = Date("Y", strtotime($this->view->user->created_at));
+            $ed = Date("Y", strtotime($this->view->profile->created_at));
             # malloc an array
             $this->view->timeline = array();
             # collect the differences
             for(; $ed <= $cd; $cd--)
                 $this->view->timeline[] = $cd;
+            # init the timeline param
+            if(!isset($this->request->params["timeline"]))
+                $this->request->params["timeline"] = $this->view->timeline[0];
         }
         # fetch total public notes
         $this->view->total_count = 
                 $n->count(
                     array(
                             "conditions" => array(
-                                # cond. on owner_id | is_public | is_trash
-                                "owner_id = ? AND is_public = ? AND is_trash = ?",
+                                # cond. on owner_id | is_public | is_trash and previously generated cond.
+                                "owner_id = ? AND is_public = ? AND is_trash = ? AND ".(count($cond) ? "{$cond[0]}" : "?"),
                                 # pass the profile's user ID
                                 $this->view->profile->user_id,
                                 # we onlyt want public items
                                 \core\db\models\note::FLAG_SET,
                                 # don't count those which are trash
-                                \core\db\models\note::FLAG_UNSET
+                                \core\db\models\note::FLAG_UNSET,
+                                # merging condition values
+                                (count($cond) ? $cond[1] : 1)
                         )
                     )
                 );
