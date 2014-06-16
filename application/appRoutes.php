@@ -50,8 +50,16 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          *      {/ops/profile/avatar/crop} to {/ops/profile/avatar_crop}
          *      {/ops/profile/avatar/view} to {/ops/profile/avatar_view}
          * Note:
-         *      This route need to be after {$this->addRoute("^/(profile)$2", "/ops/$1$2");}
+         *      This route needs to be after {$this->addRoute("^/(profile)$2", "/ops/$1$2");}
          */
         $this->addRoute("^/(ops/profile/avatar)/(crop|view)$3", "$1_$2$3");
+        /**
+         * Routes
+         *      {/ops/profile/cover/random} to {/ops/profile/randomcover}
+         *      {/ops/profile/cover/remove} to {/ops/profile/removecover}
+         * Note:
+         *      This route needs to be after {$this->addRoute("^/(profile)$2", "/ops/$1$2");}
+         */
+        $this->addRoute("^/(ops/profile)/(cover)/(random|remove)$4", "$1/$3$2$4");
     }
 }

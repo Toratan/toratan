@@ -377,6 +377,46 @@ __ERROR:
         throw new \RuntimeException("While randomizing the cover photo, an error raised with error-tag `$error_tag`.");
     }
     /**
+     * Removes cover; Note that it only will set the profile's setting, it will not save them, you have to save the profilefrom outside of method.
+     * @access /profile/removecover
+     * @hash-sum array($profile->user_id, session_id())
+     * @param \core\db\models\profile $profile The target profile to change its cover
+     * @return boolean Returns TRUE on successfull setting; otheriwse FALSE
+     */
+    public function removeCoverAction(\core\db\models\profile &$profile = NULL) {
+        # flag that if this method is called from inside of current class?
+        $inline_invoked = $profile ? TRUE : FALSE;
+        # if this is outside request?
+        if(!$profile) {
+            # assume current profile as passed profile
+            $profile =\core\db\models\profile::getInstance(NULL, 0, 0);
+            # since this is an outside request, we need to validate it
+            \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($profile->user_id, session_id()));
+        }
+        # fetch cover details
+        $image = $profile->getSetting("/profile/cover/image");
+        $info = $profile->getSetting("/profile/cover/info");
+        # if this is a custom cover?
+        if(!$info)
+            # unlink the profile cover
+            @\shell_exec("rm -f .$image");
+        # unset the settings
+        $profile->unsetSetting("/profile/cover/image", 0);
+        $profile->unsetSetting("/profile/cover/info", 0);
+        # if we reach here it mean we have succeed to remove cover
+        # if this is an internal call
+        if($inline_invoked)
+            # indicate the success
+            return true;
+        # otherwise save the profile
+        $profile->save();
+        # redirect to the profile
+        header("location: /profile");
+        # exit
+        exit;
+        
+    }
+    /**
     * The \modules\opsModule\controllers\profileController::avatarAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */

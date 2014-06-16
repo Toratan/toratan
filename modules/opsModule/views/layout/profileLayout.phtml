@@ -84,16 +84,33 @@
                 </li>
 <?php elseif($is_profile_owner): ?>
                 <li>
-                    <a href="/profile/randomcover?<?php echo \zinux\kernel\security\security::GetHashString(array($profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-retweet"></span>&nbsp;&nbsp;Random Cover</a>
+<!--                    <a href="/profile/randomcover?<?php echo \zinux\kernel\security\security::GetHashString(array($profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-retweet"></span>&nbsp;&nbsp;Random Cover</a>-->
+                    <!-- Split button -->
+                    <div style="margin-top: 5px;" class="hidden-xs"></div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href="/profile/cover/random?<?php echo \zinux\kernel\security\security::GetHashString(array($profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-retweet"></span>&nbsp;&nbsp;Random Cover</a>
+                            </li>
+    <?php if(!$is_preview_mode && $is_profile_owner): ?>
+                            <li title='View your public profile'>
+                                <a href='/profile/preview'><span class='glyphicon glyphicon-eye-open'></span> Preview</a>
+                            </li>
+    <?php endif; ?>
+                            <li class="divider"></li>
+                            <li>
+                                <a href="/profile/cover/remove?<?php echo \zinux\kernel\security\security::GetHashString(array($profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-minus"></span> Remove Cover</a>
+                            </li>
+                          </ul>
+                    </div>
                 </li>
 <?php endif; ?>
 <?php if($is_preview_mode): ?>
                 <li title='Go back to your profile' class="active">
                     <a href='/profile' target=""><span class='glyphicon glyphicon-eye-close'></span> Exit Preview</a>
-                </li>
-<?php elseif($is_profile_owner): ?>
-                <li title='View your public profile'>
-                    <a href='/profile/preview'><span class='glyphicon glyphicon-eye-open'></span> Preview</a>
                 </li>
 <?php endif; ?>
             </ul>
