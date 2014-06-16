@@ -610,8 +610,8 @@ __ERROR:
             # malloc an array
             $this->view->timeline = array();
             # collect the differences
-            for(; $ed <= $cd; $ed++)
-                $this->view->timeline[] = $ed;
+            for(; $ed <= $cd; $cd--)
+                $this->view->timeline[] = $cd;
         }
         # fetch total public notes
         $this->view->total_count = 
