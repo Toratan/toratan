@@ -27,6 +27,8 @@ class profileController extends \zinux\kernel\controller\baseController
      * @throws \zinux\kernel\exceptions\notFoundException If profile not found
      */
     protected function fetchProfile() {
+        # fetch possible profile ID
+        $profile_id = $this->request->GetIndexedParam(0); 
         # if user not signed in?
         if(!\core\db\models\user::IsSignedin())
         {
@@ -35,7 +37,7 @@ class profileController extends \zinux\kernel\controller\baseController
                 # this would be an invalid operations
                 throw new \zinux\kernel\exceptions\invalidOperationException("Empty profile ID!");
             # otherwise user the first argument as profile ID
-            if(!($user = \core\db\models\user::find(array("conditions"=> array("user_id = ?", $this->request->GetIndexedParam(0))))))
+            if(!($user = \core\db\models\user::find(array("conditions"=> array("user_id = ? OR username = ?", $profile_id, $profile_id)))))
                 # if not found, indicate it
                 throw new \zinux\kernel\exceptions\notFoundException("The profile not found.");
             goto __FETCH_PROFILE;
@@ -44,9 +46,9 @@ class profileController extends \zinux\kernel\controller\baseController
         $user = \core\db\models\user::GetInstance();
         # load intial profile
         # if any profile ID is demaned
-        if($this->request->CountIndexedParam())
+        if($profile_id)
             # if the profile id has found, we cool to proceed
-            if(!in_array(strtolower($this->request->GetIndexedParam(0)), array("page", "timeline")) && !($user = \core\db\models\user::find(array("conditions"=> array("user_id = ?", $this->request->GetIndexedParam(0))))))
+            if(!in_array(strtolower($profile_id), array("page", "timeline")) && !($user = \core\db\models\user::find(array("conditions"=> array("user_id = ? OR username = ?", $profile_id, $profile_id)))))
                 # otherwise indicate profile not found
                 throw new \zinux\kernel\exceptions\notFoundException("The profile not found.");
 __FETCH_PROFILE:
@@ -653,7 +655,7 @@ __ERROR:
             case "posts":
             case "about":
                 break;
-            default: throw new \zinux\kernel\exceptions\invalidOperationException("Undefined index `{$this->request->GetIndexedParam(0)}` for preview");
+            default: $action = "index";
         }
         if(!method_exists($this, "{$action}Action"))
             throw new \zinux\kernel\exceptions\invalidOperationException("Undefined method `".__CLASS__."::{$action}Action()`");

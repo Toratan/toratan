@@ -806,7 +806,7 @@ __OP_FUNC:
         # indicate the unsubscription
         $pipe->write("You have successfully <b>subscribed</b>.");
         # relocate the browser
-        header("location: /profile/{$this->request->params['u']}");
+        header("location: /@".\core\db\models\user::Fetch($this->request->params['u'])->username);
         exit;
     }
     /**
@@ -828,7 +828,7 @@ __OP_FUNC:
         # indicate the unsubscription
         $pipe->write("You have successfully <b>unsubscribed</b>.");
         # relocate the browser
-        header("location: /profile/{$this->request->params["u"]}");
+        header("location: /@".\core\db\models\user::Fetch($this->request->params['u'])->username);
         exit;
     }
     /**
