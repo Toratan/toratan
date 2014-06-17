@@ -65,7 +65,7 @@
                 if($should_render($p, "country"))
                     $v = $p["country"];
                 if($should_render($p, "city"))
-                    $v .= (($should_render($p, "country") ? ", ": " ") . $p["city"]);
+                    $v .= (($should_render($p, "country") ? ", ": "") . $p["city"]);
                 $key = "location";
                 break;
             case "phone":
@@ -139,7 +139,7 @@ __DEFAULT_OPS:
     #about .row .about-block .table tr th, 
     #about .row .about-block .table tr td{ border: 0!important; padding: 0;}
     #about .row .about-block .table tr td{  padding-bottom: 4px }
-    #about .row .about-block .table tr td.info-label{ color: #89919C; }
+    #about .row .about-block .table tr td.info-label{ color: #89919C; width: 33.33%}
     #about .row .about-block .table tr td.info-value {word-break: break-all;overflow: hidden;text-align: justify;white-space: pre-wrap}
     #about .row .about-block .table.bio tbody tr td {padding: 10px!important;}
     #about .row .about-block .table.bio tbody tr.intro td {padding-top: 0!important;}
@@ -171,14 +171,7 @@ __DEFAULT_OPS:
             if(typeof(table_class) === "undefined")
                 table_class = "";
             table_class += " table";
-            var html = "<table class='"+table_class+"' style='width: 100%'>"+
-                        "<thead>"+
-                            "<tr>"+
-                                "<th class='col-md-4'></th>"+
-                                "<th></th>"+
-                            "</tr>"+
-                        "</thead>"+
-                        "<tbody>";
+            var html = "<table class='"+table_class+"' style='width: 100%'><tbody>";
             for(var v in values) {
                 html += "<tr class='"+v+"'>"+
                         (values[v].label.length ? 
