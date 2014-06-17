@@ -2,12 +2,12 @@
 namespace core\db\models;
 
 /**
- * Profile Entity
+ * Message Entity
  */
 class message extends baseModel
 {
     static $validates_presence_of = array(
-        array("message")
+        array("conversation_id", "sender_id", "receiver_id", "message_data")
     );
     /**
      * sends a message
