@@ -782,18 +782,21 @@ __OP_FUNC:
         if(!$this->ops_index_interface) exit;
     }
     /**
-    * The \modules\opsModule\controllers\indexController::subscribeAction()
+    * Subscribe a user to a profile 
+    * @access via /ops/follow/u/(ID)/?hash_sum
+    * @hash-sum (ID).session_id()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function subscribeAction()
+    public function followAction()
     {
+        # we need to have the target user ID
+        \zinux\kernel\security\security::IsSecure($this->request->params, array('u'));
         # validate the inputs
-        @\zinux\kernel\security\security::ArrayHashCheck($this->request->params,
-            array(\core\db\models\user::GetInstance()->user_id, $this->request->GetIndexedParam(0), session_id()."subscribe"));
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params['u'], session_id()));
         try
         {
             # subscribe the current user to target  user
-            \core\db\models\subscribe::subscribe($this->request->GetIndexedParam(0), \core\db\models\user::GetInstance()->user_id);
+            \core\db\models\subscribe::subscribe($this->request->params['u'], \core\db\models\user::GetInstance()->user_id);
         }
         # if already connected?
         # ignore the fact!!!
@@ -803,28 +806,29 @@ __OP_FUNC:
         # indicate the unsubscription
         $pipe->write("You have successfully <b>subscribed</b>.");
         # relocate the browser
-        header("location: /profile/{$this->request->GetIndexedParam(0)}");
+        header("location: /profile/{$this->request->params['u']}");
         exit;
     }
     /**
-    * The \modules\opsModule\controllers\indexController::unscribeAction()
+    * Unsubscribe a user to a profile 
+    * @access via /ops/unfollow/u/(ID)/?hash_sum
+    * @hash-sum (ID).session_id()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function unsubscribeAction()
+    public function unfollowAction()
     {
-        if(!$this->request->CountIndexedParam())
-            throw new \zinux\kernel\exceptions\accessDeniedException("Empty param passed.");
+        # we need to have the target user ID
+        \zinux\kernel\security\security::IsSecure($this->request->params, array('u'));
         # validate the inputs
-        @\zinux\kernel\security\security::ArrayHashCheck($this->request->params,
-            array(\core\db\models\user::GetInstance()->user_id, $this->request->GetIndexedParam(0), session_id()."subscribe"));
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params['u'], session_id()));
         # unsubscribe the current user from target user
-        \core\db\models\subscribe::unsubscribe($this->request->GetIndexedParam(0), \core\db\models\user::GetInstance()->user_id);
+        \core\db\models\subscribe::unsubscribe($this->request->params["u"], \core\db\models\user::GetInstance()->user_id);
         # open up a message pipe socket
         $pipe = new \core\utiles\messagePipe;
         # indicate the unsubscription
         $pipe->write("You have successfully <b>unsubscribed</b>.");
         # relocate the browser
-        header("location: /profile/{$this->request->GetIndexedParam(0)}");
+        header("location: /profile/{$this->request->params["u"]}");
         exit;
     }
     /**

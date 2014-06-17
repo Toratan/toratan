@@ -71,11 +71,12 @@
                 </li>
 <?php endif; ?>
 <?php if(!$is_profile_owner): ?>
+<?php $is_profile_followed =\core\db\models\user::IsSignedin() ? core\db\models\subscribe::has_subscribed($this->view->profile->user_id,  \core\db\models\user::GetInstance()->user_id): FALSE?>
                 <li title="Send Message">
                     <a href="<?php echo $is_preview_mode?"#": "#message"?>"><span class="glyphicon glyphicon-envelope"></span> Message</a>
                 </li>
                 <li title="Follow">
-                    <a href="<?php echo $is_preview_mode?"#": "#follow"?>"><span class="glyphicon glyphicon-plus"></span> Follow</a>
+                    <a href="<?php echo $is_preview_mode?"#": "/".($is_profile_followed ? "un" : "")."follow/u/{$this->view->profile->user_id}?" . \zinux\kernel\security\security::GetHashString(array($this->view->profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-<?php echo $is_profile_followed ? "minus" : "plus" ?>"></span> <?php echo $is_profile_followed ? "Unf" : "F" ?>ollow</a>
                 </li>
 <?php endif; ?>
 <?php if(!$cover_img && $is_profile_owner): ?>
@@ -157,7 +158,7 @@
     </div>
 </div> <!-- /container -->
 <script type="text/javascript">
-    (function(){
+    $(document).ready(function(){
         $("a#about-cover").click(function(){
             window.open_infoModal(<?php echo json_encode("<center>$cover_info</center>") ?>);
         });
@@ -182,6 +183,15 @@
             loader_go();
         };
 <?php endif; ?>
-    })(jQuery);
+<?php
+    $mp = new \core\utiles\messagePipe;
+    $msg = '';
+    while($mp->hasFlow())
+        $msg = $mp->read();
+    if(strlen($msg)) :
+?>
+        window.open_infoModal('<?php echo $msg ?>', 1500);
+<?php endif; ?>
+    });
 </script>
 <?php $glayout->render_footer(); ?>
