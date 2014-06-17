@@ -14,14 +14,17 @@ class message extends baseModel
      * @param string $sender_id the sender user id
      * @param string $reciever_id the reciever user id
      * @param string $message the content
-     * @return boolean
+     * @return $this
      */
     public function send($sender_id, $reciever_id, $message)
     {
+        $c = conversation::open($sender_id, $reciever_id);
+        $this->conversation_id = $c->conversation_id;
         $this->sender_id = $sender_id;
-        $this->reciever_id = $reciever_id;
-        $this->message = $message;
+        $this->receiver_id = $reciever_id;
+        $this->message_data = $message;
         $this->save();
-        return TRUE;
+        $c->update2date($this->created_at);
+        return $this;
     }
 }

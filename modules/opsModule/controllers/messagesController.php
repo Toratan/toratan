@@ -21,6 +21,12 @@ class messagesController extends \zinux\kernel\controller\baseController
     */
     public function sendAction()
     {
-        
+        /**
+         * TODO: craete facebook like message/conversation page
+         */
+        if(!$this->request->IsPOST())
+            return;
+        \zinux\kernel\security\security::IsSecure($this->request->params, array('u'));
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params['u'], session_id()));
     }
 }
