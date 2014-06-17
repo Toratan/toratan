@@ -57,33 +57,35 @@
 <?php if(isset($this->timeline) && count($this->timeline)) : ?>
 <div class="pull-right row hidden-sm hidden-xs  hidden-print" >
     <style type="text/css">ul.timeline li {border-right: 7px #88ccff solid;margin-bottom: 7px;height: 30px;padding:3px;padding-left: 10px;}ul.timeline li.active {border-right: 7px #004488 solid;}ul.timeline li.active a{color:#004488;font-weight: bolder;}</style>
-    <div style="z-index: 1000;margin-top:10px;margin-left: -70px;height: 1000px">
-        <ul class="list-unstyled timeline">
-<?php
-            $tl_found = false;
-            $ctl = $this->request->params["timeline"];
-            if(($tl_found = $ctl > $this->timeline[0])) :
-?>
-            <li class="active">
-                <a href="/@<?php echo $this->user->username ?><?php echo $is_preview_mode ? "/preview/" : "" ?>/posts/~/timeline/<?php echo $ctl ?>"><?php echo $ctl; ?></a>
-            </li>
-            <li class="text-center" style="padding-right: 20px;">
-                <a style="cursor: pointer">...</a>
-            </li>
-            <?php endif; foreach($this->timeline as $time) : $tl_found |= ($ctl == $time); ?>
-            <li <?php echo $ctl == $time ? "class='active'": "" ?>>
-                <a href="/@<?php echo $this->user->username ?><?php echo $is_preview_mode ? "/preview/" : "" ?>/posts/~/timeline/<?php echo $time ?>"><?php echo $time; ?></a>
-            </li>
-            <?php endforeach; ?>
-            <?php if(!$tl_found) : ?>
-            <li class="text-center" style="padding-right: 20px;">
-                <a style="cursor: pointer">...</a>
-            </li>
-            <li class="active">
-                <a href="/@<?php echo $this->user->username ?><?php echo $is_preview_mode ? "/preview/" : "" ?>/posts/~/timeline/<?php echo $ctl ?>"><?php echo $ctl; ?></a>
-            </li>
-            <?php endif; ?>
-        </ul>
+    <div class="sticky">
+        <div style="z-index: 1000;margin-top:10px;margin-left: -70px;">
+            <ul class="list-unstyled timeline">
+    <?php
+                $tl_found = false;
+                $ctl = $this->request->params["timeline"];
+                if(($tl_found = $ctl > $this->timeline[0])) :
+    ?>
+                <li class="active">
+                    <a href="/@<?php echo $this->user->username ?><?php echo $is_preview_mode ? "/preview/" : "" ?>/posts/~/timeline/<?php echo $ctl ?>"><?php echo $ctl; ?></a>
+                </li>
+                <li class="text-center" style="padding-right: 20px;">
+                    <a style="cursor: pointer">...</a>
+                </li>
+                <?php endif; foreach($this->timeline as $time) : $tl_found |= ($ctl == $time); ?>
+                <li <?php echo $ctl == $time ? "class='active'": "" ?>>
+                    <a href="/@<?php echo $this->user->username ?><?php echo $is_preview_mode ? "/preview/" : "" ?>/posts/~/timeline/<?php echo $time ?>"><?php echo $time; ?></a>
+                </li>
+                <?php endforeach; ?>
+                <?php if(!$tl_found) : ?>
+                <li class="text-center" style="padding-right: 20px;">
+                    <a style="cursor: pointer">...</a>
+                </li>
+                <li class="active">
+                    <a href="/@<?php echo $this->user->username ?><?php echo $is_preview_mode ? "/preview/" : "" ?>/posts/~/timeline/<?php echo $ctl ?>"><?php echo $ctl; ?></a>
+                </li>
+                <?php endif; ?>
+            </ul>
+        </div>
     </div>
 </div>
 <?php endif; ?>
@@ -125,3 +127,9 @@
         </script>
     <?php endif; ?>
 <?php endif; ?>
+<script type="text/javascript" src="/access/js/sticky/jquery.sticky.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".sticky").sticky();
+    });
+</script>        
