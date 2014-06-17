@@ -27,9 +27,16 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          * Routes
          *      {/posts} to {/profile/posts}
          * Note:
-         *      This route need to be before {$this->addRoute("^/(profile)$2", "/ops/$1$2");}
+         *      This route needs to be before {$this->addRoute("^/(profile)$2", "/ops/$1$2");}
          */
         $this->addRoute("^/posts$1", "/profile/posts$1");
+        /**
+         * Routes
+         *      {/send/message} to {/messages/send}
+         * Note:
+         *      This route needs to be before {$this->addRoute("^/(messages)$2", "/ops/$1$2");}
+         */
+        $this->addRoute("^/send/message$1", "/messages/send$1");
         /**
          * Routes 
          *      {/new} to {/ops/new}
@@ -44,7 +51,7 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          *      {/unsubscribe} to {/ops/unsubscribe}
          *      {/goto} to {/ops/goto}
          */
-        $this->addRoute("^/(new|edit|view|delete|archive|share|profile|notifications|follow|unfollow|goto)$2", "/ops/$1$2");
+        $this->addRoute("^/(new|edit|view|delete|archive|share|profile|notifications|follow|unfollow|goto|messages)$2", "/ops/$1$2");
         /**
          * Routes
          *      {/ops/profile/avatar/crop} to {/ops/profile/avatar_crop}

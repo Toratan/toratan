@@ -73,7 +73,7 @@
 <?php if(!$is_profile_owner): ?>
 <?php $is_profile_followed =\core\db\models\user::IsSignedin() ? core\db\models\subscribe::has_subscribed($this->view->profile->user_id,  \core\db\models\user::GetInstance()->user_id): FALSE?>
                 <li title="Send Message">
-                    <a href="<?php echo $is_preview_mode?"#": "#message"?>"><span class="glyphicon glyphicon-envelope"></span> Message</a>
+                    <a href="<?php echo $is_preview_mode?"#": "/send/message/{$this->view->profile->user_id}" . \zinux\kernel\security\security::GetHashString(array($this->view->profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-envelope"></span> Message</a>
                 </li>
                 <li title="Follow">
                     <a href="<?php echo $is_preview_mode?"#": "/".($is_profile_followed ? "un" : "")."follow/u/{$this->view->profile->user_id}?" . \zinux\kernel\security\security::GetHashString(array($this->view->profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-<?php echo $is_profile_followed ? "minus" : "plus" ?>"></span> <?php echo $is_profile_followed ? "Unf" : "F" ?>ollow</a>
