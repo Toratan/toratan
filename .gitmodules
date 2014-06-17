@@ -17,6 +17,3 @@
 [submodule "public_html/access/js/sticky"]
 	path = public_html/access/js/sticky
 	url = git@github.com:noise2/sticky.git
-[submodule "public_html/access/js/waypoints"]
-	path = public_html/access/js/waypoints
-	url = git@github.com:imakewebthings/jquery-waypoints.git
