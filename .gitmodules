@@ -14,3 +14,6 @@
 [submodule "public_html/access/js/jscroll"]
 	path = public_html/access/js/jscroll
 	url = git@github.com:pklauzinski/jscroll.git
+[submodule "public_html/access/js/sticky"]
+	path = public_html/access/js/sticky
+	url = git@github.com:noise2/sticky.git
