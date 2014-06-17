@@ -99,6 +99,7 @@
     </script>
     <?php if($this->is_more_note): ?>
         <script type="text/javascript" src="/access/js/jscroll/jquery.jscroll.min.js"></script>
+        <script type="text/javascript" src="/access/js/sticky/jquery.sticky.min.js"></script>
         <script type="text/javascript">
             (function(){
                 var jscroll_callback = function() {
@@ -123,13 +124,25 @@
                     contentSelector: '.article',
                     callback: jscroll_callback
                 });
+                $(".sticky").sticky();
+                $(window).scroll(function() {
+                    var h = [];
+                    $(".row.article").each(function() {
+                        var ts = $(window).scrollTop() / $(this).offset().top;
+                        if(ts > 0.99 && ts < 1.0) {
+                            h.push($(this).find('.year').text());
+                        }
+                    });
+                    if(h.length) {
+                        h.sort();
+                        h = h[Math.floor((h.length - 1) / 2)];
+                        $(".timeline li.year-"+h)
+                            .addClass("active")
+                            .siblings()
+                                .removeClass("active");
+                    }
+                });
             })(jQuery);
-        </script>
+        </script>        
     <?php endif; ?>
 <?php endif; ?>
-<script type="text/javascript" src="/access/js/sticky/jquery.sticky.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        $(".sticky").sticky();
-    });
-</script>        
