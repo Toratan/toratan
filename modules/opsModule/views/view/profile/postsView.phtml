@@ -62,7 +62,7 @@
             <li style="border: 0;margin-left: -15px;font-weight: bolder;color:#0055aa!important">Timeline</li>
             <?php foreach($this->timeline as $time) :?>
             <li <?php echo $this->request->params["timeline"] == $time ? "class='active'" : "" ?>>
-                <a href="/profile/<?php echo $is_preview_mode ? "preview/" : "" ?>posts/<?php echo $is_profile_owner ? "" : $this->profile->user_id."/0/" ?>timeline/<?php echo $time ?>"><?php echo $time; ?></a>
+                <a href="/@<?php echo $this->user->username ?><?php echo $is_preview_mode ? "/preview/" : "" ?>/posts/~/timeline/<?php echo $time ?>"><?php echo $time; ?></a>
             </li>
             <?php endforeach; ?>
         </ul>
