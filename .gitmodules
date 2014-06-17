@@ -14,6 +14,3 @@
 [submodule "public_html/access/js/jscroll"]
 	path = public_html/access/js/jscroll
 	url = git@github.com:pklauzinski/jscroll.git
-[submodule "public_html/access/js/fixedscroll"]
-	path = public_html/access/js/fixedscroll
-	url = git@github.com:noise2/jquery.fixedscroll.git
