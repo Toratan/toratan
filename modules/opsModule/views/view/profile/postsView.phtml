@@ -92,14 +92,15 @@
 <?php if(!isset($this->request->params["infscroll"])): ?>
     <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
     <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
+    <script type="text/javascript" src="/access/js/sticky/jquery.sticky.min.js"></script>
     <script type='text/javascript'>
         (function(){
             prettyPrint();
+            $(".sticky").sticky();
         })();
     </script>
     <?php if($this->is_more_note): ?>
         <script type="text/javascript" src="/access/js/jscroll/jquery.jscroll.min.js"></script>
-        <script type="text/javascript" src="/access/js/sticky/jquery.sticky.min.js"></script>
         <script type="text/javascript">
             (function(){
                 var jscroll_callback = function() {
@@ -124,7 +125,6 @@
                     contentSelector: '.article',
                     callback: jscroll_callback
                 });
-                $(".sticky").sticky();
                 $(window).scroll(function() {
                     var h = [];
                     $(".row.article").each(function() {
