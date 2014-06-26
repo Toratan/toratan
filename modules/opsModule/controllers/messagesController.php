@@ -13,6 +13,8 @@ class messagesController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
+        $c = \core\db\models\conversation::fetchAll(\core\db\models\user::GetInstance()->user_id);
+        \zinux\kernel\utilities\debug::_var(\core\db\models\profile::getBasicInformation($c[0]->user1, 0));
     }
 
     /**

@@ -117,6 +117,13 @@ class profile extends baseModel
         return $profile;
     }
     /**
+     * Get basic information from user's profile
+     * @param $user_id The user's ID
+     */
+    public static function getBasicInformation($user_id) {
+        return parent::find($user_id, array('select' => 'first_name, nick_name, last_name, birth_day, birth_month, birth_year, is_male'));
+    }
+    /**
      * Set a setting
      * @param string $address the setting's address with "/" separator
      * @param mixed $value

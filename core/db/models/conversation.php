@@ -6,6 +6,9 @@ namespace core\db\models;
  */
 class conversation extends baseModel
 {
+    static $belongs_to = array(
+      array('profile', 'readonly' => true ,'select' => 'user_id, first_name, last_name')
+    );
     /**
      * Opens a conversation between users; Or create a new one if not exists
      * @param $user_id1 User1's ID
@@ -41,6 +44,14 @@ class conversation extends baseModel
      */
     public static function fetch($user_id1, $user_id2) {
         return parent::find(array('conditions' => array('(user1 = ? AND user2 = ?) OR (user2 = ? AND user1 = ?)', $user_id1, $user_id2, $user_id1, $user_id2)));
+    }
+    /**
+     * Fetch a user's all conversation
+     * @param $user_id The user's ID
+     * @return array of conversation instances
+     */
+    public static function fetchAll($user_id) {
+        return parent::all(array('conditions' => array('(user1 = ? OR user2 = ?)', $user_id, $user_id)));
     }
     /**
      * Updates the current conversation's date
