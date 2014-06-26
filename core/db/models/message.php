@@ -27,4 +27,15 @@ class message extends baseModel
         $c->update2date($this->created_at);
         return $this;
     }
+    /**
+     * Find last message between two users
+     * @param $user_id1 The user ID
+     * @param $user_id2 The user ID
+     */
+    public static function last($user_id1, $user_id2)
+    {
+        $c =conversation::fetch($user_id1, $user_id2);
+        if(!$c)
+            throw new \zinux\kernel\exceptions\notFoundException("No conversation between `$user_id1` and `$user_id2` found.");
+    }
 }
