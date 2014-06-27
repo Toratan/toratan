@@ -51,7 +51,7 @@ class conversation extends baseModel
      * @return array of conversation instances
      */
     public static function fetchAll($user_id) {
-        return parent::all(array('conditions' => array('(user1 = ? OR user2 = ?)', $user_id, $user_id)));
+        return parent::all(array('conditions' => array('(user1 = ? OR user2 = ?)', $user_id, $user_id), 'order' => 'last_conversation_at desc'));
     }
     /**
      * Updates the current conversation's date
