@@ -7,6 +7,12 @@ namespace modules\opsModule\controllers;
  */
 class messagesController extends \zinux\kernel\controller\baseController
 {
+    public function Initiate()
+    {
+        parent::Initiate();
+        if(key_exists("suppress_layout", $this->request->params))
+            $this->layout->SuppressLayout();
+    }
     /**
     * The modules\opsModule\controllers\messagesController::IndexAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -41,12 +47,22 @@ class messagesController extends \zinux\kernel\controller\baseController
     */
     public function sendAction()
     {
-        /**
-         * TODO: craete facebook like message/conversation page
-         */
+        # we should always have a reciever
+        \zinux\kernel\security\security::IsSecure($this->request->params, array('to'));
+        # fetch the reciever user
+        $reciever_user =\core\db\models\user::Fetch($this->request->params["to"]);
+        # if no user found
+        if(!$reciever_user)
+            throw new \zinux\kernel\exceptions\notFoundException("The user-name `{$this->request->params["to"]}` does not exist!");
+        # validate the hash-sum
+        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($reciever_user->user_id));
+        # pass reciever user-info to view
+        $this->view->rcv_user = $reciever_user;
+        # pass sender user-info to view, which is current user
+        $this->view->sender_user = \core\db\models\user::GetInstance();
+        # if not a POST req. do not proceed
         if(!$this->request->IsPOST())
             return;
-        \zinux\kernel\security\security::IsSecure($this->request->params, array('u'));
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params['u'], session_id()));
+        
     }
 }
