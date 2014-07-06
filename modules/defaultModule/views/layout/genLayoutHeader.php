@@ -28,7 +28,7 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
         <link rel="stylesheet" href="/access/css/bootstrap.min.css">
         <link rel="stylesheet" href="/access/css/bootstrap-theme.min.css">
         <!-- jQuery -->
-        <script type="text/javascript" src="/access/js/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="/access/js/jquery-1.11.1.min.js"></script>
         <link rel="shortcut icon" href="/favicon.ico">
         <?php $this->layout->RenderTitle();?>
         <?php $this->layout->RenderImports(); ?>
