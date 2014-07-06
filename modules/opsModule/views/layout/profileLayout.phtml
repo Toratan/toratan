@@ -162,7 +162,8 @@
         $("a#about-cover").click(function(){
             window.open_infoModal(<?php echo json_encode("<center>$cover_info</center>") ?>);
         });
-        $("a#send-message").click(function(){
+        $("a#send-message").click(function(e){
+            e.preventDefault();
             var href = String($(this).attr('href')).split('#!')[1];
             $.ajax({
                 type: "GET",

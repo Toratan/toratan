@@ -1,8 +1,27 @@
-<!--
- The \modules\opsModule\views\view\messages\sendView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for '<b>\modules\opsModule\controllers\messagesController::sendAction()</b>'<br />
-    Location: '<b>/var/www/toratan//modules/opsModule/views/view/messages/sendView.phtml</b>'
-</p>
+<div id="send-msg">
+    <form action="/send/message/to<?php echo $this->rcv_user->username ?>" method="POST">
+        <div class="col-md-12">
+            <div name="to" class="form-control input input-medium" value="<?php echo $this->rcv_user->username ?>">
+                <span class="text-info" style="padding: 7px;">
+                    @<?php echo $this->rcv_user->username ?>
+                </span>
+            </div>
+        </div>
+        <div class="col-md-12" style="margin-top:10px;">
+            <div style="max-width: 100%">
+                <textarea class="form-control input input-medium" style="resize: none" rows="10" placeholder="Compose your message..." name="msg"></textarea>
+            </div>
+        </div>
+        <div class="form-actions pull-right" style="margin: 10px 15px 0;">
+            <button type="submit" class="btn btn-primary">
+                <span class="glyphicon glyphicon-send"></span> Send
+            </button>
+        </div>
+    </form>
+    <div class="clearfix"></div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        setTimeout(function() { $("textarea[name='msg']").focus(); }, 500);
+    });
+</script>
