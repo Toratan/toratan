@@ -1,21 +1,27 @@
 <div id="send-msg">
-    <form action="/send/message/to<?php echo $this->rcv_user->username ?>" method="POST">
+    <form action="/send/message/to/<?php echo $this->rcv_user->username ?>?<?php echo \zinux\kernel\security\security::GetHashString(array($this->rcv_user->user_id)) ?>" method="POST" name="send-message">
         <div class="col-md-12">
-            <div name="to" class="form-control input input-medium" value="<?php echo $this->rcv_user->username ?>">
-                <span class="text-info" style="padding: 7px;">
+            <div class="form-control input input-medium">
+                <span class="text-info">
                     @<?php echo $this->rcv_user->username ?>
                 </span>
             </div>
         </div>
         <div class="col-md-12" style="margin-top:10px;">
             <div style="max-width: 100%">
-                <textarea class="form-control input input-medium" style="resize: none" rows="10" placeholder="Compose your message..." name="msg"></textarea>
+                <textarea class="form-control input input-medium" style="resize: none" rows="10" placeholder="Compose your message..." name="msg" required></textarea>
             </div>
         </div>
-        <div class="form-actions pull-right" style="margin: 10px 15px 0;">
-            <button type="submit" class="btn btn-primary">
-                <span class="glyphicon glyphicon-send"></span> Send
-            </button>
+        <div style="padding: 15px;">
+            <div class="form-actions pull-right" style="margin-top: 10px;">
+                <button type="submit" class="btn btn-primary ">
+                    <span class="glyphicon glyphicon-send"></span> Send
+                </button>
+            </div>
+            <small class="text-muted pull-left" style="margin-top: 15px;">
+                <span class="glyphicon glyphicon-hand-right"></span> Press <code>CTRL+Enter</code> to send.
+            </small>
+            <div class="clearfix"></div>
         </div>
     </form>
     <div class="clearfix"></div>
@@ -23,5 +29,35 @@
 <script type="text/javascript">
     $(document).ready(function(){
         setTimeout(function() { $("textarea[name='msg']").focus(); }, 500);
+        $("textarea[name='msg']").keypress(function(e){
+            // if `CTRL + ENTER` send the message
+            if(e.charCode === 10 && e.ctrlKey)
+                $('form[name="send-message"]').submit();
+            else;
+        });
+        $('form[name="send-message"]').submit(function(e) {
+            e.preventDefault();
+            window.close_modal();
+            window.open_waitModal();
+            $.ajax({
+                global: false,
+                url: $(this).attr('action') + "&ajax=1",
+                method: $(this).attr('method'),
+                data: $(this).serialize(),
+                success: function(data) {
+                    var has_input = data.length;
+                    if(!data.length)
+                        data = "<strong><span class='glyphicon glyphicon-ok'></span> Your message sent successfully.</strong>";
+                    // make a delay to close ajax modals the show the results
+                    setTimeout(function() { 
+                        window.open_infoModal(data, has_input ? -1 : 2000);
+                    }, 500);
+                }
+            }).fail(function(xhr) {
+                setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
+            }).always(function() {
+                window.open_waitModal(true);
+            });
+        });
     });
 </script>

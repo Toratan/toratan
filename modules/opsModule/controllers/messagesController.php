@@ -63,6 +63,21 @@ class messagesController extends \zinux\kernel\controller\baseController
         # if not a POST req. do not proceed
         if(!$this->request->IsPOST())
             return;
-        
+        # in POST we expect to have a message as input
+        \zinux\kernel\security\security::IsSecure($this->request->params, array('msg'));
+        # escape html chars.
+        $msg = htmlspecialchars($this->request->params["msg"]);
+        # if message is empty
+        if(!strlen($msg))
+            throw new \zinux\kernel\exceptions\invalidArgumentException("Message cannot be empty!");
+        # invoke a new message instance
+        $m = new \core\db\models\message;
+        # send the message
+        $m->send($this->view->sender_user->user_id, $this->view->rcv_user->user_id, $msg);
+        # if this is not a ajax call
+        if(!isset($this->request->params["ajax"]))
+            # redirect the use browser
+            header("location: /@{$this->view->rcv_user->username}");
+        exit;
     }
 }
