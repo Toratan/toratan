@@ -57,6 +57,7 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
                         <li><a href="#">Some other stuff</a></li>
                     </ul>
                 </li>
+                <li><a href='/messages'><span class='glyphicon glyphicon-inbox'></span> Inbox</a></li>
                 <li class="dropdown">
                     <?php list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link(\core\db\models\user::GetInstance()->user_id); ?>
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src='<?php echo $avatar_uri ?>' height="20" width="20" class='imageblock img-rounded' onerror="this.src='<?php echo $def_avatar ?>'"/> Account <b class="caret"></b></a>
