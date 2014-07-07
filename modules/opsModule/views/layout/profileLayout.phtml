@@ -167,7 +167,7 @@
             var href = String($(this).attr('href')).split('#!')[1];
             $.ajax({
                 type: "GET",
-                url: href+"&suppress_layout=1",
+                url: href+"&suppress_layout=1&ajax=1",
                 success:function(data) {
                     window.open_dialogModal(data);
                 }

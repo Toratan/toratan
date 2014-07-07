@@ -10,6 +10,8 @@ class messagesController extends \zinux\kernel\controller\baseController
     public function Initiate()
     {
         parent::Initiate();
+        if(isset($this->request->params["ajax"]))
+            $this->request->params["suppress_layout"] = 1;
         if(key_exists("suppress_layout", $this->request->params))
             $this->layout->SuppressLayout();
     }
@@ -47,6 +49,7 @@ class messagesController extends \zinux\kernel\controller\baseController
     */
     public function sendAction()
     {
+        $this->layout->AddTitle("Send Message");
         # we should always have a reciever
         \zinux\kernel\security\security::IsSecure($this->request->params, array('to'));
         # fetch the reciever user
@@ -60,18 +63,31 @@ class messagesController extends \zinux\kernel\controller\baseController
         $this->view->rcv_user = $reciever_user;
         # pass sender user-info to view, which is current user
         $this->view->sender_user = \core\db\models\user::GetInstance();
+        # invoke a new message instance
+        $m = new \core\db\models\message;
+        # get the count of messages sent today till-now
+        $todays_count = $m->count(array('conditions' => array('DATE(created_at) = DATE(NOW())')));
+        # every 10 message per-day, confirm a captcha
+        $this->view->use_recaptcha = ($todays_count && $todays_count % 10 === 0) ;
         # if not a POST req. do not proceed
         if(!$this->request->IsPOST())
             return;
         # in POST we expect to have a message as input
         \zinux\kernel\security\security::IsSecure($this->request->params, array('msg'));
+        # open up a captcha handler
+        $r = new \vendor\recaptcha\recaptcha;
+        # if we are supposed to use captcha confermation?
+        # validate the captcha
+        if($this->view->use_recaptcha && !$r->is_recaptcha_valid()) {
+            # if not valid do not proceed
+            $this->view->error = "Invalid CAPTCHA";
+            return;
+        }
         # escape html chars.
         $msg = htmlspecialchars($this->request->params["msg"]);
         # if message is empty
         if(!strlen($msg))
             throw new \zinux\kernel\exceptions\invalidArgumentException("Message cannot be empty!");
-        # invoke a new message instance
-        $m = new \core\db\models\message;
         # send the message
         $m->send($this->view->sender_user->user_id, $this->view->rcv_user->user_id, $msg);
         # if this is not a ajax call

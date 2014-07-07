@@ -1,5 +1,8 @@
 <div id="send-msg">
     <form action="/send/message/to/<?php echo $this->rcv_user->username ?>?<?php echo \zinux\kernel\security\security::GetHashString(array($this->rcv_user->user_id)) ?>" method="POST" name="send-message">
+<?php if(@$this->error): ?>
+        <div class="text-danger" style="font-variant: small-caps;padding:10px;">» <?php echo $this->error ?></div>
+<?php endif; ?>
         <div class="col-md-12">
             <div class="form-control input input-medium">
                 <span class="text-info">
@@ -9,17 +12,24 @@
         </div>
         <div class="col-md-12" style="margin-top:10px;">
             <div style="max-width: 100%">
-                <textarea class="form-control input input-medium" style="resize: none" rows="10" placeholder="Compose your message..." name="msg" required maxlength="500"></textarea>
+                <textarea class="form-control input input-medium" style="resize: none" rows="10" placeholder="Compose your message..." name="msg" required maxlength="500"><?php 
+                    echo @$this->request->params["msg"] 
+                ?></textarea>
             </div>
         </div>
         <div style="padding: 15px;">
             <div class="form-actions pull-right" style="margin-top: 10px;">
                 <span id="remaining-text-length"></span> <span class="glyphicon glyphicon-pencil"></span>
-                <button type="submit" class="btn btn-primary ">
+                <button type="submit" class="btn btn-primary">
                     <span class="glyphicon glyphicon-send"></span> Send
                 </button>
             </div>
             <div class="clearfix"></div>
+            <div class="pull-left">
+<?php if($this->use_recaptcha): ?>
+            <?php (new \vendor\recaptcha\recaptcha())->__render_JS(); ?>
+<?php endif; ?>
+            </div>
         </div>
     </form>
     <div class="clearfix"></div>
@@ -52,6 +62,7 @@
             else
                 $promt.addClass("text-danger");
         }).blur();
+<?php if(isset($this->request->params["ajax"])) : ?>
         $('form[name="send-message"]').submit(function(e) {
             e.preventDefault();
             window.close_modal();
@@ -67,7 +78,7 @@
                         data = "<strong><span class='glyphicon glyphicon-ok'></span> Your message sent successfully.</strong>";
                     // make a delay to close ajax modals the show the results
                     setTimeout(function() { 
-                        window.open_infoModal(data, has_input ? -1 : 2000);
+                        window.open_dialogModal(data, has_input ? -1 : 2000);
                     }, 500);
                 }
             }).fail(function(xhr) {
@@ -76,5 +87,6 @@
                 window.open_waitModal(true);
             });
         });
+<?php endif; ?>
     });
 </script>
