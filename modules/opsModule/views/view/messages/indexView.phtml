@@ -5,8 +5,10 @@
         #conversations .row .col-xs-9 { width: 100%!important; display:  block!important /* expand last message */}
     }
     #conversations .conversation *{max-height: 100px}
-    #conversations .conversation .image.avatar {height: 80px!important; width: 80px!important}
+    #conversations .conversation.active {font-weight: bold;color:#FFF}
+    #conversations .conversation .image.avatar {max-height: 80px!important; max-width: 80px!important}
 </style>
+<?php // $this->conv_users = array(); ?>
 <div class="row">
     <div class="col-md-5 col-sm-6 col-xs-12" id='conversations'>
         <legend>Conversations</legend>
@@ -14,15 +16,15 @@
             <?php foreach($this->conv_users as $index => $user): ?>
             <a href="#" class="list-group-item conversation">
                 <div class="row">
-                    <div class="col-md-3 col-sm-3 col-xs-3">
+                    <div class="col-md-3 col-sm-3 col-xs-3" style="max-width: 100px!important;padding-left: 5px">
                         <?php list($avatar, $def_avatar) = \core\ui\html\avatar::get_avatar_link($user->user_id); ?>
                         <img src="<?php echo $avatar ?>" class="image img-thumbnail img-responsive img avatar" onerror="this.src='<?php echo $def_avatar ?>'"/>
                     </div>
 
-                    <div class="col-md-9 col-sm-9 col-xs-9">
+                    <div class="col-md-9 col-sm-9 col-xs-9" style="">
                                 <h4 class="list-group-item-heading" style="word-break: break-all;padding-bottom: 3px">
                                     <?php echo ucwords($user->first_name . " " . $user->last_name) ?>
-                                    <span class="pull-right small text-muted datetime">
+                                    <span class=" list-group-item-text  pull-right small text-muted datetime">
                                         <?php echo @$this->conv_ids[$index]->last_conversation_at ?>
                                     </span>
                                     <div class="clearfix"></div>
@@ -45,7 +47,7 @@
         </div>
     </div>
 <?php if(count($this->conv_users)) : ?>
-    <div class="col-md-7 col-sm-6 col-xs-12" id="conversation-data"style="display: none;border: 1px solid #000;min-height: 500px" onclick='$(this).fadeOut("fast", function(){$("#conversations").animate({"width": "100%"});});'>
+    <div class="col-md-7 col-sm-6 col-xs-12" id="conversation-data" style="display: none;border: 1px solid #000;min-height: 500px">
         <div class="text-center" style="margin-top: 20px;">No conversation selected</div>        
     </div>
 <?php endif; ?>
@@ -68,8 +70,19 @@
             );
         });
         $(".conversation").click(function(){
+            $(this)
+                .addClass("active")
+                .siblings()
+                    .removeClass("active");
             $("#conversations").animate({"width": $("#conversations").data('width')}, function(){
                 $("#conversation-data").fadeIn('slow');
+            });
+        });
+        $("#conversation-data").click(function(){
+            $(this).fadeOut("fast", function(){
+                $("#conversations").animate({"width": "100%"}, function(){ 
+                    $(".conversation").removeClass("active"); 
+                });
             });
         });
     });
