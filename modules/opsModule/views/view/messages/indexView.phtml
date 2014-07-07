@@ -4,34 +4,61 @@
         #conversations .row .col-xs-3 { display: none /* hide avatars */}
         #conversations .row .col-xs-9 { width: 100%!important; display:  block!important /* expand last message */}
     }
+    #conversations .conversation *{max-height: 100px}
+    #conversations .conversation .image.avatar {height: 80px!important; width: 80px!important}
 </style>
-<div class="col-md-5 col-sm-6 col-xs-12" id='conversations'>
-    <div class="list-group">
-        <?php foreach($this->conv_users as $index => $user): ?>
-        <a href="#" class="list-group-item">
-            <div class="row">
-                <div class="col-md-3 col-sm-3 col-xs-3">
-                    <?php list($avatar, $def_avatar) = \core\ui\html\avatar::get_avatar_link($user->user_id); ?>
-                    <img src="<?php echo $avatar ?>" class="image img-thumbnail img-responsive img" onerror="this.src='<?php echo $def_avatar ?>'"/>
+<div class="row">
+    <div class="col-md-5 col-sm-6 col-xs-12" id='conversations'>
+        <legend>Conversations</legend>
+        <div class="list-group">
+            <?php foreach($this->conv_users as $index => $user): ?>
+            <a href="#" class="list-group-item conversation">
+                <div class="row">
+                    <div class="col-md-3 col-sm-3 col-xs-3">
+                        <?php list($avatar, $def_avatar) = \core\ui\html\avatar::get_avatar_link($user->user_id); ?>
+                        <img src="<?php echo $avatar ?>" class="image img-thumbnail img-responsive img avatar" onerror="this.src='<?php echo $def_avatar ?>'"/>
+                    </div>
+
+                    <div class="col-md-9 col-sm-9 col-xs-9">
+                                <h4 class="list-group-item-heading" style="word-break: break-all;padding-bottom: 3px">
+                                    <?php echo ucwords($user->first_name . " " . $user->last_name) ?>
+                                    <span class="pull-right small text-muted datetime">
+                                        <?php echo @$this->conv_ids[$index]->last_conversation_at ?>
+                                    </span>
+                                    <div class="clearfix"></div>
+                                </h4>
+                                <p class="list-group-item-text small text-muted" style="height: 40px;overflow: hidden;word-break: break-all;">
+                                    <?php echo @$this->conv_last_message[$index]->message_data ?>
+                                </p>
+                    </div>
                 </div>
-                
-                <div class="col-md-9 col-sm-9 col-xs-9">
-                            <h4 class="list-group-item-heading" style="word-break: break-all;padding-bottom: 3px">
-                                <?php echo ucwords($user->first_name . " " . $user->last_name) ?>
-                                <span class="pull-right small text-muted datetime">
-                                    <?php echo @$this->conv_ids[$index]->last_conversation_at ?>
-                                </span>
-                                <div class="clearfix"></div>
-                            </h4>
-                            <p class="list-group-item-text small text-muted" style="height: 40px;overflow: hidden;word-break: break-all;">
-                                <?php echo @$this->conv_last_message[$index]->message_data ?>
-                            </p>
+            </a>
+            <?php endforeach; ?>
+            <?php if(!count($this->conv_users)) : ?>
+            <div class="list-group-item">
+                <div class="list-group-item-heading text-center" style="font-variant: small-caps;font-weight: bolder">
+                    <span class='glyphicon glyphicon-warning-sign'></span> No Conversation Found!
                 </div>
             </div>
-        </a>
-        <?php endforeach; ?>
+            <?php endif; ?>
+            <div class="clearfix"></div>
+        </div>
     </div>
+<?php if(count($this->conv_users)) : ?>
+    <div class="col-md-7 col-sm-6 col-xs-12" id="conversation-data"style="display: none;border: 1px solid #000;min-height: 500px" onclick='$(this).fadeOut("fast", function(){$("#conversations").animate({"width": "100%"});});'>
+        <div class="text-center" style="margin-top: 20px;">No conversation selected</div>        
+    </div>
+<?php endif; ?>
 </div>
+<script type='text/javascript'>
+    $(function(){
+        $("#conversations")
+                .data('width', $("#conversations").width())
+                .removeAttr("Class")
+                .addClass("col-md-12 col-sm-12 col-xs-12");
+    });
+</script>
+<?php if(count($this->conv_users)) : ?>
 <script src="/access/js/moment.min.js"></script>
 <script type="text/javascript">
     $(function(){
@@ -40,5 +67,11 @@
                     moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').fromNow("lll") + " ago"
             );
         });
+        $(".conversation").click(function(){
+            $("#conversations").animate({"width": $("#conversations").data('width')}, function(){
+                $("#conversation-data").fadeIn('slow');
+            });
+        });
     });
 </script>
+<?php endif; ?>
