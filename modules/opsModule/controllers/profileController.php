@@ -320,6 +320,10 @@ __DEPLOY:
     public function randomCoverAction(\core\db\models\profile &$profile = NULL) {
         # flag that if this method is called from inside of current class?
         $inline_invoked = $profile ? TRUE : FALSE;
+        # if the user just editing its profile info and proviously a profile cover image selected?
+        if($inline_invoked && $profile->getSetting("/profile/cover/image"))
+            # do not proceed
+            return;
         # if this is outside request?
         if(!$profile) {
             # assume current profile as passed profile
