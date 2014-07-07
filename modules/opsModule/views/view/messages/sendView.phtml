@@ -9,18 +9,16 @@
         </div>
         <div class="col-md-12" style="margin-top:10px;">
             <div style="max-width: 100%">
-                <textarea class="form-control input input-medium" style="resize: none" rows="10" placeholder="Compose your message..." name="msg" required></textarea>
+                <textarea class="form-control input input-medium" style="resize: none" rows="10" placeholder="Compose your message..." name="msg" required maxlength="500"></textarea>
             </div>
         </div>
         <div style="padding: 15px;">
             <div class="form-actions pull-right" style="margin-top: 10px;">
+                <span id="remaining-text-length"></span> <span class="glyphicon glyphicon-pencil"></span>
                 <button type="submit" class="btn btn-primary ">
                     <span class="glyphicon glyphicon-send"></span> Send
                 </button>
             </div>
-            <small class="text-muted pull-left" style="margin-top: 15px;">
-                <span class="glyphicon glyphicon-hand-right"></span> Press <code>CTRL+Enter</code> to send.
-            </small>
             <div class="clearfix"></div>
         </div>
     </form>
@@ -29,12 +27,31 @@
 <script type="text/javascript">
     $(document).ready(function(){
         setTimeout(function() { $("textarea[name='msg']").focus(); }, 500);
-        $("textarea[name='msg']").keypress(function(e){
-            // if `CTRL + ENTER` send the message
-            if(e.charCode === 10 && e.ctrlKey)
-                $('form[name="send-message"]').submit();
-            else;
-        });
+        // bind to update on text change
+        $("textarea[name='msg']").on('keyup blur', function() {
+            // Store the maxlength and value of the field.
+            var maxlength = $(this).attr('maxlength');
+            var val = $(this).val();
+            // Trim the field if it has content over the maxlength.
+            if (val.length > maxlength)
+                $(this).val(val.slice(0, maxlength));
+            // calc diff
+            var diff = maxlength -  val.length;
+            var $promt = $("#remaining-text-length");
+            // promt diff
+            $promt.html(diff).removeAttr('class');
+            // top 25%
+            if(diff > 3 * maxlength / 4)
+                $promt.addClass("text-success");
+            // 75% - 50%
+            else if (diff > 2 * maxlength / 4)
+                $promt.addClass("text-info");
+            // 
+            else if (diff > 1 * maxlength / 4)
+                $promt.addClass("text-warning");
+            else
+                $promt.addClass("text-danger");
+        }).blur();
         $('form[name="send-message"]').submit(function(e) {
             e.preventDefault();
             window.close_modal();
