@@ -19,7 +19,7 @@
                             <h4 class="list-group-item-heading" style="word-break: break-all;padding-bottom: 3px">
                                 <?php echo ucwords($user->first_name . " " . $user->last_name) ?>
                                 <span class="pull-right small text-muted datetime">
-                                    <?php echo @$this->conv_last_message[$index]->created_at ?>
+                                    <?php echo @$this->conv_ids[$index]->last_conversation_at ?>
                                 </span>
                                 <div class="clearfix"></div>
                             </h4>
