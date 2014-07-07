@@ -1,1 +1,44 @@
-<?php zinux\kernel\utilities\debug::_var($this->conv_ids); 
+<style type="text/css">
+    @media screen and (min-width: 0px) and (max-width: 400px) {
+        /* on very small widths: */
+        #conversations .row .col-xs-3 { display: none /* hide avatars */}
+        #conversations .row .col-xs-9 { width: 100%!important; display:  block!important /* expand last message */}
+    }
+</style>
+<div class="col-md-5 col-sm-6 col-xs-12" id='conversations'>
+    <div class="list-group">
+        <?php foreach($this->conv_users as $index => $user): ?>
+        <a href="#" class="list-group-item">
+            <div class="row">
+                <div class="col-md-3 col-sm-3 col-xs-3">
+                    <?php list($avatar, $def_avatar) = \core\ui\html\avatar::get_avatar_link($user->user_id); ?>
+                    <img src="<?php echo $avatar ?>" class="image img-thumbnail img-responsive img" onerror="this.src='<?php echo $def_avatar ?>'"/>
+                </div>
+                
+                <div class="col-md-9 col-sm-9 col-xs-9">
+                            <h4 class="list-group-item-heading" style="word-break: break-all;padding-bottom: 3px">
+                                <?php echo ucwords($user->first_name . " " . $user->last_name) ?>
+                                <span class="pull-right small text-muted datetime">
+                                    <?php echo @$this->conv_last_message[$index]->created_at ?>
+                                </span>
+                                <div class="clearfix"></div>
+                            </h4>
+                            <p class="list-group-item-text small text-muted" style="height: 40px;overflow: hidden;word-break: break-all;">
+                                <?php echo @$this->conv_last_message[$index]->message_data ?>
+                            </p>
+                </div>
+            </div>
+        </a>
+        <?php endforeach; ?>
+    </div>
+</div>
+<script src="/access/js/moment.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $(".datetime").each(function(){
+            $(this).html(
+                    moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').fromNow("lll") + " ago"
+            );
+        });
+    });
+</script>

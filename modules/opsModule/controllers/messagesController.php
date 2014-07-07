@@ -21,6 +21,7 @@ class messagesController extends \zinux\kernel\controller\baseController
     */
     public function IndexAction()
     {
+        $this->layout->AddTitle("Inbox @ Toratan");
         $uid = \core\db\models\user::GetInstance()->user_id;
         $c = \core\db\models\conversation::fetchAll($uid);
         if(!is_array($c))
@@ -30,8 +31,14 @@ class messagesController extends \zinux\kernel\controller\baseController
         foreach($c as $index => $value) {
             $lm = new \stdClass;
             $m = \core\db\models\message::last($value->user1, $value->user2);
-            $lm->message_data = $m->message_data;
-            $lm->created_at = $m->created_at;
+            # if any last message?
+            if($m) {
+                $lm->message_data = $m->message_data;
+                $lm->created_at = $m->created_at;
+            } else {
+                $lm->message_data = "NO MESSAGE";
+                $lm->created_at = NULL;
+            }
             $last_messages[$index] = $lm;
             if($value->user1 != $uid)
                 $users[$index] =  \core\db\models\profile::getBasicInformation($value->user1);
