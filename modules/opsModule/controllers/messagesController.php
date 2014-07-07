@@ -63,12 +63,39 @@ class messagesController extends \zinux\kernel\controller\baseController
         $this->view->rcv_user = $reciever_user;
         # pass sender user-info to view, which is current user
         $this->view->sender_user = \core\db\models\user::GetInstance();
+        # by default there are no need for recaptcha
+        $this->view->use_recaptcha = FALSE;
         # invoke a new message instance
         $m = new \core\db\models\message;
-        # get the count of messages sent today till-now
-        $todays_count = $m->count(array('conditions' => array('DATE(created_at) = DATE(NOW())')));
-        # every 10 message per-day, confirm a captcha
-        $this->view->use_recaptcha = ($todays_count && $todays_count % 10 === 0) ;
+        /**
+         * VALIDATING RECAPTCHA RENDERING
+         */
+        # fetch sender's profile
+        $profile = \core\db\models\profile::getInstance($this->view->sender_user->user_id);
+        # fetch last date that any message sent by sender
+        $lsd = $profile->getSetting("/message/last_send_date");
+        # fetch today's datetime
+        $today = new \ActiveRecord\DateTime;
+        # last send date count
+        $lsdc = 0;
+        # if there are any last message send data exists?
+        if($lsd) {
+            # if last message send is more than one day ago? 
+            if($today->diff($lsd)->format('%a'))
+                # reset last send date count
+                $profile->setSetting("/message/last_send_date_count", 0, 0);
+            else {
+                # fetch the count since last send date
+                $lsdc = $profile->getSetting("/message/last_send_date_count");
+                # between every 10 message in each day
+                if($lsdc && $lsdc % 10 === 0)
+                    # we need recaptcha to be in effect
+                    $this->view->use_recaptcha = TRUE;
+            }
+        }
+        /**
+         * /ENDOF VALIDATING RECAPTCHA RENDERING
+         */
         # if not a POST req. do not proceed
         if(!$this->request->IsPOST())
             return;
@@ -90,6 +117,10 @@ class messagesController extends \zinux\kernel\controller\baseController
             throw new \zinux\kernel\exceptions\invalidArgumentException("Message cannot be empty!");
         # send the message
         $m->send($this->view->sender_user->user_id, $this->view->rcv_user->user_id, $msg);
+        # set last send date to TODAY
+        $profile->setSetting("/message/last_send_date", $today);
+        # increment last send date count
+        $profile->setSetting("/message/last_send_date_count", $lsdc + 1);
         # if this is not a ajax call
         if(!isset($this->request->params["ajax"]))
             # redirect the use browser
