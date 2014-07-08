@@ -8,9 +8,18 @@
     #conversations .conversation.active {font-weight: bold;color:#FFF}
     #conversations .conversation .image.avatar {max-height: 80px!important; max-width: 80px!important}
 </style>
-<?php // $this->conv_users = array(); ?>
 <div class="row">
     <div class="col-md-5 col-sm-6 col-xs-12" id='conversations'>
+        <script type='text/javascript'>
+            $(function(){
+                // important this codes be right bellow under #conversations
+                // start tag for UI performance purposes
+                $("#conversations")
+                        .data('width', $("#conversations").width())
+                        .removeAttr("Class")
+                        .addClass("col-md-12 col-sm-12 col-xs-12");
+            });
+        </script>
         <legend>Conversations</legend>
         <div class="list-group">
             <?php foreach($this->conv_users as $index => $user): ?>
@@ -29,7 +38,7 @@
                                     </span>
                                     <div class="clearfix"></div>
                                 </h4>
-                                <p class="list-group-item-text small text-muted" style="height: 40px;overflow: hidden;word-break: break-all;">
+                                <p class="list-group-item-text small text-muted" style="height: 45px;overflow: hidden;word-break: break-all;">
                                     <?php echo @$this->conv_last_message[$index]->message_data ?>
                                 </p>
                     </div>
@@ -52,14 +61,6 @@
     </div>
 <?php endif; ?>
 </div>
-<script type='text/javascript'>
-    $(function(){
-        $("#conversations")
-                .data('width', $("#conversations").width())
-                .removeAttr("Class")
-                .addClass("col-md-12 col-sm-12 col-xs-12");
-    });
-</script>
 <?php if(count($this->conv_users)) : ?>
 <script src="/access/js/moment.min.js"></script>
 <script type="text/javascript">
