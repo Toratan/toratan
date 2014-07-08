@@ -144,6 +144,6 @@ class messagesController extends \zinux\kernel\controller\baseController
         $c =\core\db\models\conversation::open(\core\db\models\user::GetInstance()->user_id, $this->request->params["u"], 0);
         if(!$c)
             throw new \zinux\kernel\exceptions\notFoundException;
-        \zinux\kernel\utilities\debug::_var($c->fetch_messages(1),1);
+        $this->view->messages = $c->fetch_messages();
     }
 }

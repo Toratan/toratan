@@ -58,14 +58,30 @@
 <?php if(count($this->conv_users)) : ?>
     <div class="col-md-7 col-sm-6 col-xs-12" id="conversation-data" style="display: none;">
         <legend>&nbsp;</legend>
-        <div style="border: 1px solid #000;min-height: 500px">
+        <div style="min-height: 500px;overflow: auto;" id="conversation-data-inner">
             <div id="conv-load-ui" class="text-center">
                 <img src="/access/img/ajax-loader.gif" />
             </div>
+            <div id="conv-messages-placeholder"></div>
         </div>
     </div>
 <?php endif; ?>
 </div>
+<script type="text/javascript">
+    $(function(){
+        // modify frames' size on window resize event
+        $(window).resize(function() {
+            var $frames = $('#conversation-data-inner');
+            if($(window).height() >= 420)
+                // re-size the frames
+                $frames.css('height', ($(window).height() - 110)+'px');
+            else
+                $frames.css('height', '768px');
+        });
+        // init frames' size to window's size
+        $(window).resize();
+    });
+</script>
 <?php if(count($this->conv_users)) : ?>
 <script src="/access/js/moment.min.js"></script>
 <script type="text/javascript">
@@ -83,11 +99,13 @@
             $("#conversations").animate({"width": $("#conversations").data('width')}, function(){
                 $("#conversation-data").fadeIn('slow');
             });
+            $("#conv-load-ui").show();
             $.ajax({
                 type: "POST",
                 url: $(this).attr("target-href"),
                 success: function(data) {
-                    console.log(data);
+                    $("#conv-load-ui").hide();
+                    $("#conv-messages-placeholder").prepend(data);
                 }
             }).fail(function(xhr) {
                 setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
