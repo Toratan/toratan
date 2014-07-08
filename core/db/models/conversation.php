@@ -63,4 +63,34 @@ class conversation extends baseModel
         $this->save();
         return $this;
     }
+    /**
+     * Fetch messages based on current conversation
+     * @param string $sort The sort of result(default: desc)
+     * @param integer $offset (optional) The offset# for pagination
+     * @param integer $limit (optional) The limit# for pagination
+     * @return array Of messages or NULL if no message found
+     */
+    public function fetch_messages($offset = -1, $limit = -1, $order = NULL) {
+        # init args with a basic condition
+        $args = array("conditions" => array("conversation_id  = ?", $this->conversation_id));
+        # if any positive offset arg passed
+        if($offset >= 0)
+            $args["offset"] = $offset;
+        # if any positive limit arg passed
+        if($limit >= 0)
+            $args["limit"] = $limit;
+        elseif($offset >= 0)
+            throw new \zinux\kernel\exceptions\invalidOperationException("When \$offset is set expecting \$limit to be set too; but didn't!");
+        # any specific order passed
+        if($order)
+            $args["order"] = $order;
+        # fetch all messages based on given arguments
+        $m = message::all($args);
+        # if no message found
+        if(!count($m))
+            # set messages instance to NULL
+            $m = NULL;
+        # return messages
+        return $m;
+    }
 }
