@@ -297,7 +297,7 @@ __DEPLOY:
                 # if its subvalue is a pure value(i.e not mixed)
                 if(!\is_array($_value))
                     # just add the value directly into profile
-                    $profile->$key = $_value;
+                    $profile->$key = htmlspecialchars($_value);
                 # else if it is an array
                 else
                     # make a string from subvalue's implosion
