@@ -1,6 +1,6 @@
 <?php
 namespace modules\opsModule\controllers;
-    
+
 /**
  * The modules\opsModule\controllers\messagesController
  * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -94,8 +94,8 @@ class messagesController extends \zinux\kernel\controller\baseController
             else {
                 # fetch the count since last send date
                 $lsdc = $profile->getSetting("/message/last_send_date_count");
-                # between every 10 message in each day
-                if($lsdc && $lsdc % 10 === 0)
+                # between every 40 message in each day
+                if($lsdc && $lsdc % 40 === 0)
                     # we need recaptcha to be in effect
                     $this->view->use_recaptcha = TRUE;
             }
