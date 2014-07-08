@@ -23,7 +23,7 @@
         <legend>Conversations</legend>
         <div class="list-group">
             <?php foreach($this->conv_users as $index => $user): ?>
-            <a href="#" class="list-group-item conversation">
+            <a href="#" class="list-group-item conversation" conv-id="<?php echo $this->conv_ids[$index]->conversation_id ?>" target-href="/messages/fetch_conversation/c/<?php echo $this->conv_ids[$index]->conversation_id ?>/u/<?php echo $user->user_id ?>?<?php echo zinux\kernel\security\security::GetHashString(array($this->conv_ids[$index]->conversation_id, $user->user_id, session_id())) ?>">
                 <div class="row">
                     <div class="col-md-3 col-sm-3 col-xs-3" style="max-width: 100px!important;padding-left: 5px">
                         <?php list($avatar, $def_avatar) = \core\ui\html\avatar::get_avatar_link($user->user_id); ?>
@@ -56,8 +56,13 @@
         </div>
     </div>
 <?php if(count($this->conv_users)) : ?>
-    <div class="col-md-7 col-sm-6 col-xs-12" id="conversation-data" style="display: none;border: 1px solid #000;min-height: 500px">
-        <div class="text-center" style="margin-top: 20px;">No conversation selected</div>        
+    <div class="col-md-7 col-sm-6 col-xs-12" id="conversation-data" style="display: none;">
+        <legend>&nbsp;</legend>
+        <div style="border: 1px solid #000;min-height: 500px">
+            <div id="conv-load-ui" class="text-center">
+                <img src="/access/img/ajax-loader.gif" />
+            </div>
+        </div>
     </div>
 <?php endif; ?>
 </div>
@@ -78,7 +83,17 @@
             $("#conversations").animate({"width": $("#conversations").data('width')}, function(){
                 $("#conversation-data").fadeIn('slow');
             });
-        });
+            $.ajax({
+                type: "POST",
+                url: $(this).attr("target-href"),
+                success: function(data) {
+                    console.log(data);
+                }
+            }).fail(function(xhr) {
+                setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
+            });
+        })
+            .first().click();
         $("#conversation-data").click(function(){
             $(this).fadeOut("fast", function(){
                 $("#conversations").animate({"width": "100%"}, function(){ 

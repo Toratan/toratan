@@ -40,4 +40,14 @@ class message extends baseModel
             throw new \zinux\kernel\exceptions\notFoundException("No conversation between `$user_id1` and `$user_id2` found.");
         return parent::last(array('conditions' => array('conversation_id = ?', $c->conversation_id)));
     }
+    /**
+     * Fetch messages based on a conversation
+     * @param \core\db\models\conversation $c The target conversation instace
+     * @param string $sort The sort of result(default: desc)
+     * @param integer $offset (optional) The offset# for pagination
+     * @param integer $limit (optional) The limit# for pagination
+     * @return array Of messages
+     */
+    public static function fetch_by_conversation(conversation $c, $sort = "desc", $offset = -1, $limit = -1) {
+    }
 }
