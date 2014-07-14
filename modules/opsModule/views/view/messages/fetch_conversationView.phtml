@@ -1,2 +1,51 @@
-<?php // \zinux\kernel\utilities\debug::_var($this->messages); ?>
-<?php for($i=0;$i<100;$i++) echo "<div class='block'>[ $i ]</div>";
+<?php $view = $this; ?>
+<?php 
+$is_me_sending = function(core\db\models\message $message) use($view) {
+    return ($message->sender_id == $view->current_user->user_id);
+};
+$get_sender_name = function(core\db\models\message $message) use($view, $is_me_sending) {
+    if($is_me_sending($message))
+        return $view->current_user->get_RealName_or_Username();
+    return $view->target_user->get_RealName_or_Username();
+};
+$get_sender_avatar = function(core\db\models\message $message) use($view, $is_me_sending) {
+    $avatar = array();
+    if($is_me_sending($message))
+        $avatar = core\ui\html\avatar::get_avatar_link($this->current_user->user_id);
+    else
+        $avatar = core\ui\html\avatar::get_avatar_link($this->target_user->user_id);
+    return $avatar[0];
+}
+?>
+<?php foreach($this->messages as $index => $message): ?>
+<message class='pull-<?php echo $is_me_sending($message) ? "right" : "left" ?>'>
+    <message-head>
+        <div class='sender-info pull-left'>
+            <?php if(!$index || $get_sender_name($this->messages[$index - 1]) != $get_sender_name($message)): ?>
+                <img src='<?php echo $get_sender_avatar($message) ?>'  width="50" height="50" class='image img-thumbnail img-responsive' style='margin-right: 10px;'/><?php echo $get_sender_name($message); ?>
+            <?php endif; ?>
+        </div>
+        <div class='send-date pull-right'>
+            <?php echo $message->created_at; ?>
+        </div>
+    </message-head>
+    <div class='clearfix'></div>
+    <message-body >
+        <?php echo $message->message_data; ?>
+    </message-body>
+</message>
+<?php endforeach; ?>
+<style type='text/css'>
+    message{
+        display: block;
+        width: 80%;
+        border-bottom: 2px solid #DDD;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    message message-body {
+        display: block;
+        margin-top: 10px
+    }
+    message message-head{display: inline; }
+</style>

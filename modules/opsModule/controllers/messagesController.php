@@ -145,5 +145,7 @@ class messagesController extends \zinux\kernel\controller\baseController
         if(!$c)
             throw new \zinux\kernel\exceptions\notFoundException;
         $this->view->messages = $c->fetch_messages();
+        $this->view->target_user = \core\db\models\user::Fetch($this->request->params["u"]);
+        $this->view->current_user = \core\db\models\user::GetInstance();
     }
 }

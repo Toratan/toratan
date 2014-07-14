@@ -48,7 +48,8 @@
             <?php if(!count($this->conv_users)) : ?>
             <div class="list-group-item">
                 <div class="list-group-item-heading text-center" style="font-variant: small-caps;font-weight: bolder">
-                    <span class='glyphicon glyphicon-warning-sign'></span> No Conversation Found!
+                    <span class='glyphicon glyphicon-warning-sign'></span> No Conversation Found!<br />
+                    <small class="text-muted" style='font-size: small'>You can only start a conversation directly from users' profile page.</small>
                 </div>
             </div>
             <?php endif; ?>
@@ -105,7 +106,7 @@
                 url: $(this).attr("target-href"),
                 success: function(data) {
                     $("#conv-load-ui").hide();
-                    $("#conv-messages-placeholder").prepend(data);
+                    $("#conv-messages-placeholder").html('').prepend(data);
                 }
             }).fail(function(xhr) {
                 setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
