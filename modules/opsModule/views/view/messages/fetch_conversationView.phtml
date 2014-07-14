@@ -17,6 +17,19 @@ $get_sender_avatar = function(core\db\models\message $message) use($view, $is_me
     return $avatar[0];
 }
 ?>
+<div class='pull-right'>
+    <div class="input-group-btn">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
+        <ul class="dropdown-menu pull-right">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+        </ul>
+    </div><!-- /btn-group -->
+</div>
+<?php $this->messages =array_reverse($this->messages); ?>
 <?php foreach($this->messages as $index => $message): ?>
 <message class='pull-<?php echo $is_me_sending($message) ? "right" : "left" ?>'>
     <message-head>
@@ -49,3 +62,13 @@ $get_sender_avatar = function(core\db\models\message $message) use($view, $is_me
     }
     message message-head{display: inline; }
 </style>
+<script src="/access/js/moment.min.js"></script>
+<script type='text/javascript'>
+    $(document).ready(function(){
+        $(".send-date").each(function(){
+            $(this).html(
+                moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').format("lll")
+            );
+        });
+    });
+</script>

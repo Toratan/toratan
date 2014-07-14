@@ -100,13 +100,14 @@
             $("#conversations").animate({"width": $("#conversations").data('width')}, function(){
                 $("#conversation-data").fadeIn('slow');
             });
+            $("#conv-messages-placeholder").html('');
             $("#conv-load-ui").show();
             $.ajax({
                 type: "POST",
                 url: $(this).attr("target-href"),
                 success: function(data) {
                     $("#conv-load-ui").hide();
-                    $("#conv-messages-placeholder").html('').prepend(data);
+                    $("#conv-messages-placeholder").prepend(data);
                 }
             }).fail(function(xhr) {
                 setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
