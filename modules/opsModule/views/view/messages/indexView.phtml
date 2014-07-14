@@ -115,6 +115,7 @@
         })
             .first().click();
         $("#conversation-data").click(function(){
+            return;
             $(this).fadeOut("fast", function(){
                 $("#conversations").animate({"width": "100%"}, function(){ 
                     $(".conversation").removeClass("active"); 

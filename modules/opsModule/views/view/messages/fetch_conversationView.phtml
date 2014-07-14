@@ -1,74 +1,99 @@
-<?php $view = $this; ?>
-<?php 
-$is_me_sending = function(core\db\models\message $message) use($view) {
-    return ($message->sender_id == $view->current_user->user_id);
-};
-$get_sender_name = function(core\db\models\message $message) use($view, $is_me_sending) {
-    if($is_me_sending($message))
-        return $view->current_user->get_RealName_or_Username();
-    return $view->target_user->get_RealName_or_Username();
-};
-$get_sender_avatar = function(core\db\models\message $message) use($view, $is_me_sending) {
-    $avatar = array();
-    if($is_me_sending($message))
-        $avatar = core\ui\html\avatar::get_avatar_link($this->current_user->user_id);
-    else
-        $avatar = core\ui\html\avatar::get_avatar_link($this->target_user->user_id);
-    return $avatar[0];
-}
-?>
-<div class='pull-right'>
-    <div class="input-group-btn">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
-        <ul class="dropdown-menu pull-right">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-        </ul>
-    </div><!-- /btn-group -->
-</div>
-<?php $this->messages =array_reverse($this->messages); ?>
-<?php foreach($this->messages as $index => $message): ?>
-<message class='pull-<?php echo $is_me_sending($message) ? "right" : "left" ?>'>
-    <message-head>
-        <div class='sender-info pull-left'>
-            <?php if(!$index || $get_sender_name($this->messages[$index - 1]) != $get_sender_name($message)): ?>
-                <img src='<?php echo $get_sender_avatar($message) ?>'  width="50" height="50" class='image img-thumbnail img-responsive' style='margin-right: 10px;'/><?php echo $get_sender_name($message); ?>
-            <?php endif; ?>
+<?php if(count($this->messages)) : ?>
+    <?php $view = $this; ?>
+    <?php 
+    $is_me_sending = function(core\db\models\message $message) use($view) {
+        return ($message->sender_id == $view->current_user->user_id);
+    };
+    $get_sender_name = function(core\db\models\message $message) use($view, $is_me_sending) {
+        if($is_me_sending($message))
+            return $view->current_user->get_RealName_or_Username();
+        return $view->target_user->get_RealName_or_Username();
+    };
+    $get_sender_username = function(core\db\models\message $message) use($view, $is_me_sending) {
+        if($is_me_sending($message))
+            return $view->current_user->username;
+        return $view->target_user->username;
+    };
+    $get_sender_avatar = function(core\db\models\message $message) use($is_me_sending) {
+        $avatar = array();
+        if($is_me_sending($message))
+            $avatar = core\ui\html\avatar::get_avatar_link($this->current_user->user_id);
+        else
+            $avatar = core\ui\html\avatar::get_avatar_link($this->target_user->user_id);
+        return $avatar[0];
+    };
+    ?>
+    <div class='pull-right conversation-options'>  
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span class='glyphicon glyphicon-cog'></span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu pull-right">
+                <li><a href="#">Delete Messages</a></li>
+                <li><a href="#">Mark Conversation</a></li>
+                <li class='divider'></li>
+                <li><a href="#">Delete Conversation</a></li>
+            </ul>
         </div>
-        <div class='send-date pull-right'>
-            <?php echo $message->created_at; ?>
-        </div>
-    </message-head>
-    <div class='clearfix'></div>
-    <message-body >
-        <?php echo $message->message_data; ?>
-    </message-body>
-</message>
-<?php endforeach; ?>
-<style type='text/css'>
-    message{
-        display: block;
-        width: 80%;
-        border-bottom: 2px solid #DDD;
-        padding: 10px;
-        margin-bottom: 10px;
-    }
-    message message-body {
-        display: block;
-        margin-top: 10px
-    }
-    message message-head{display: inline; }
-</style>
-<script src="/access/js/moment.min.js"></script>
-<script type='text/javascript'>
-    $(document).ready(function(){
-        $(".send-date").each(function(){
-            $(this).html(
-                moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').format("lll")
-            );
+    </div>
+    <div class="clearfix"></div>
+    <?php $this->messages =array_reverse($this->messages); ?>
+    <?php foreach($this->messages as $index => $message): ?>
+    <message class='pull-<?php echo $is_me_sending($message) ? "right" : "left" ?>'>
+        <message-head>
+            <div class='sender-info pull-left'>
+                <?php if(!$index || $get_sender_name($this->messages[$index - 1]) != $get_sender_name($message)): ?>
+                    <img src='<?php echo $get_sender_avatar($message) ?>'  width="50" height="50" class='image img-thumbnail img-responsive' style='margin-right: 3px;'/>
+                    <strong>
+                        <a href='/@<?php echo $get_sender_username($message) ?>'>
+                            <?php echo $get_sender_name($message); ?>
+                        </a>
+                    </strong>
+                <?php endif; ?>
+            </div>
+            <div class='send-date pull-right'>
+                <?php echo $message->created_at; ?>
+            </div>
+        </message-head>
+        <div class='clearfix'></div>
+        <message-body >
+            <?php echo $message->message_data; ?>
+        </message-body>
+    </message>
+    <?php endforeach; ?>
+    <style type='text/css'>
+        message{
+            display: block;
+            width: 80%;
+            border-bottom: 2px solid #DDD;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        message message-body {
+            display: block;
+            margin-top: 10px
+        }
+        message message-head{display: inline; }
+    </style>
+    <script src="/access/js/moment.min.js"></script>
+    <script type='text/javascript'>
+        $(document).ready(function(){
+            $(".send-date").each(function(){
+                $(this).html(
+                    moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').format("lll")
+                );
+            });
+            $(".conversation-options a").click(function(){
+                alert("!!NO IMPLEMENTED!!");
+            });
         });
-    });
-</script>
+    </script>
+<?php else: ?>
+    <div class="list-group-item">
+        <div class="list-group-item-heading text-center" style="font-variant: small-caps;font-weight: bolder">
+            <span class='glyphicon glyphicon-warning-sign'></span> No Conversation Found!<br />
+            <small class="text-muted" style='font-size: small'>You can only start a conversation directly from users' profile page.</small>
+        </div>
+    </div>
+<?php endif; ?>
