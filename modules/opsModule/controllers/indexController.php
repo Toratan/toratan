@@ -169,7 +169,7 @@ __OP_FUNC:
         $this->view->pid = $this->request->params["pid"];
         # generate new hash for the view
         $this->view->hash =
-                \zinux\kernel\security\security::GetHashString(
+                \zinux\kernel\security\security::__get_uri_hash_string(
                         array(
                             $this->request->GetIndexedParam(0),
                             $this->view->pid,

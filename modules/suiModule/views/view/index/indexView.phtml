@@ -16,13 +16,13 @@
         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-plus-sign"></span> Create <b class="caret"></b></a>
         <ul class="dropdown-menu">
             <li>                
-                <a href="/new/folder/?pid=<?php echo $this->pid.\zinux\kernel\security\security::GetHashString(array("folder", $this->pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>"><span class="inline glyphicon glyphicon-folder-close"></span> Folder</a>
+                <a href="/new/folder/?pid=<?php echo $this->pid.\zinux\kernel\security\security::__get_uri_hash_string(array("folder", $this->pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>"><span class="inline glyphicon glyphicon-folder-close"></span> Folder</a>
             </li>
             <li>
-                <a href="/new/note/?pid=<?php echo $this->pid.\zinux\kernel\security\security::GetHashString(array("note", $this->pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>"><span class="glyphicon glyphicon-file"></span> Note</a>
+                <a href="/new/note/?pid=<?php echo $this->pid.\zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>"><span class="glyphicon glyphicon-file"></span> Note</a>
             </li>
             <li>
-                <a href="/new/link/?pid=<?php echo $this->pid.\zinux\kernel\security\security::GetHashString(array("link", $this->pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>"><span class="glyphicon glyphicon-link"></span> Link</a>
+                <a href="/new/link/?pid=<?php echo $this->pid.\zinux\kernel\security\security::__get_uri_hash_string(array("link", $this->pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>"><span class="glyphicon glyphicon-link"></span> Link</a>
             </li>
         </ul>
     </li>

@@ -23,7 +23,7 @@
         <legend>Conversations</legend>
         <div class="list-group">
             <?php foreach($this->conv_users as $index => $user): ?>
-            <a href="#" class="list-group-item conversation" conv-id="<?php echo $this->conv_ids[$index]->conversation_id ?>" target-href="/messages/fetch_conversation/c/<?php echo $this->conv_ids[$index]->conversation_id ?>/u/<?php echo $user->user_id ?>?<?php echo zinux\kernel\security\security::GetHashString(array($this->conv_ids[$index]->conversation_id, $user->user_id, session_id())) ?>">
+            <a href="#" class="list-group-item conversation" conv-id="<?php echo $this->conv_ids[$index]->conversation_id ?>" target-href="/messages/fetch_conversation/c/<?php echo $this->conv_ids[$index]->conversation_id ?>/u/<?php echo $user->user_id ?>?<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($this->conv_ids[$index]->conversation_id, $user->user_id, session_id())) ?>">
                 <div class="row">
                     <div class="col-md-3 col-sm-3 col-xs-3" style="max-width: 100px!important;padding-left: 5px">
                         <?php list($avatar, $def_avatar) = \core\ui\html\avatar::get_avatar_link($user->user_id); ?>

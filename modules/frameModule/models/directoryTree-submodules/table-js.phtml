@@ -67,11 +67,11 @@
             e.preventDefault();
             if($("input[type='checkbox'].item-checkbox:checked").first() === 0) return;
             <?php if($active_type == "note"): ?>
-            window.top.open("/ops/editAPI?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"<?php echo zinux\kernel\security\security::GetHashString(array($active_type, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo $this->request->GetURI(); ?>");
+            window.top.open("/ops/editAPI?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($active_type, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo $this->request->GetURI(); ?>");
             <?php else: ?>
                 $.ajax({
                     type: "GET",
-                    url: "/ops/editAPI?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&suppress_layout=1<?php echo zinux\kernel\security\security::GetHashString(array($active_type, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo $this->request->GetURI(); ?>"
+                    url: "/ops/editAPI?<?php echo $active_type ?>="+$("input[type='checkbox'].item-checkbox:checked").first().val()+"&suppress_layout=1<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($active_type, session_id(), \core\db\models\user::GetInstance()->user_id))?>&continue=<?php echo $this->request->GetURI(); ?>"
                 });
             <?php endif; ?>
         });
@@ -132,7 +132,7 @@
                 type: "GET",
                 global: false,
                 url: "<?php echo $this->request->getURI() ?>",
-                data: "o="+$o+"&l="+$l+"&sort="+sort_base+"&order="+order+"&infscroll=1<?php echo \zinux\kernel\security\security::GetHashString(array(session_id())) ?>",
+                data: "o="+$o+"&l="+$l+"&sort="+sort_base+"&order="+order+"&infscroll=1<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(session_id())) ?>",
                 dataType: "JSON",
                 success: function(data) {
                     if(typeof(data.count) === "undefined" || typeof(data.content) === "undefined") {

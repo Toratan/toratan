@@ -239,7 +239,7 @@ __DEFAULT_OPS:
     </div>
 </div>
 <?php if($is_profile_owner): ?>
-<form name="avatar" class="hidden" action="/profile/avatar/?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, session_id())) ?>" method="POST" enctype="multipart/form-data">
+<form name="avatar" class="hidden" action="/profile/avatar/?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(\core\db\models\user::GetInstance()->user_id, session_id())) ?>" method="POST" enctype="multipart/form-data">
     <input type="file" name="upload-avatar" accept="image/*"/>
 </form>
 <script type="text/javascript">

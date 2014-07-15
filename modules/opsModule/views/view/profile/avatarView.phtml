@@ -3,7 +3,7 @@
     .form-group[checked]{background-color: #eee}
     table.table tr td{width: 50%}
 </style>
-<form action='/profile/avatar?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, \session_id())); ?>' method="POST" enctype="multipart/form-data"> 
+<form action='/profile/avatar?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(\core\db\models\user::GetInstance()->user_id, \session_id())); ?>' method="POST" enctype="multipart/form-data"> 
     <legend class="text-muted" style="margin-bottom: 1%">Avatar Manager</legend>
 <?php if(isset($this->errors)): ?>
     <legend class="text-danger">Errors</legend>

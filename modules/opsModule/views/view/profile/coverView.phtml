@@ -105,7 +105,7 @@
                 data: "ajax=1&sample=1&id="+
                         $(".container#outline-image #placeholder #outline-image-container img").attr('data-id')+
                         "&info="+ $(".container#outline-image #placeholder #outline-image-container img").attr('data-copyright')+
-                        "<?php echo zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, session_id()))?>",
+                        "<?php echo zinux\kernel\security\security::__get_uri_hash_string(array(\core\db\models\user::GetInstance()->user_id, session_id()))?>",
                 success: function(data) {
                     if(typeof(data.success) === "undefined" || !data.success)
                         window.open_errorModal("Something happen please try later!");
@@ -132,7 +132,7 @@
         shortcut.add("Right", function() { $("#cover-selection #placeholder img.selected").next(".img:not(.plus_new)").click(); });
     });
 </script>
-<form name="cover" class="hidden" action="/profile/cover/?<?php echo \zinux\kernel\security\security::GetHashString(array(\core\db\models\user::GetInstance()->user_id, session_id())) ?>" method="POST" enctype="multipart/form-data">
+<form name="cover" class="hidden" action="/profile/cover/?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(\core\db\models\user::GetInstance()->user_id, session_id())) ?>" method="POST" enctype="multipart/form-data">
     <input type="file" name="upload-cover" accept="image/*"/>
 </form>
 <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>

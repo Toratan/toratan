@@ -50,34 +50,34 @@ class noteViewModel
                     "/delete/".
                     $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
                     "/trash/".($note->is_trash ? \core\db\models\item::DELETE_PERIOD: \core\db\models\item::DELETE_PUT_TARSH).
-                    "?".  \zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
+                    "?".  \zinux\kernel\security\security::__get_uri_hash_string(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
                     break;
             case "restore":
                 $uri =
                     "/delete/".
                     $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
                     "/trash/".(\core\db\models\item::DELETE_RESTORE).
-                    "?".  \zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
+                    "?".  \zinux\kernel\security\security::__get_uri_hash_string(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
                     break;
             case "edit":
                 $uri = 
                     "/edit/".
                     $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
-                    "?".  \zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
+                    "?".  \zinux\kernel\security\security::__get_uri_hash_string(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
                     break;
             case "archive":
                 $uri = 
                     "/archive/".
                     $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
                     "/archive/".($this->view->is_archive ? 0 : 1).
-                    "?".  \zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
+                    "?".  \zinux\kernel\security\security::__get_uri_hash_string(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
                     break;
             case "share":
                 $uri = 
                     "/share/".
                     $note->WhoAmI()."/".$note->{"{$note->WhoAmI()}_id"}.
                     "/share/".($note->is_public ? 0 : 1).
-                    "?".  \zinux\kernel\security\security::GetHashString(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
+                    "?".  \zinux\kernel\security\security::__get_uri_hash_string(array($note->WhoAmI(), $note->{"{$note->WhoAmI()}_id"}, session_id(), \core\db\models\user::GetInstance()->user_id));
                     break;
             default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined type `$type`.");
         }

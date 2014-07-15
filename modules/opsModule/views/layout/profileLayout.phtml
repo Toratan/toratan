@@ -73,10 +73,10 @@
 <?php if(!$is_profile_owner): ?>
 <?php $is_profile_followed =\core\db\models\user::IsSignedin() ? core\db\models\subscribe::has_subscribed($this->view->profile->user_id,  \core\db\models\user::GetInstance()->user_id): FALSE?>
                 <li title="Send Message">
-                    <a href="#<?php echo $is_preview_mode?"": "!/send/message/to/{$this->view->user->username}?".\zinux\kernel\security\security::GetHashString(array($this->view->user->user_id))?>" id="send-message"><span class="glyphicon glyphicon-envelope"></span> Message</a>
+                    <a href="#<?php echo $is_preview_mode?"": "!/send/message/to/{$this->view->user->username}?".\zinux\kernel\security\security::__get_uri_hash_string(array($this->view->user->user_id))?>" id="send-message"><span class="glyphicon glyphicon-envelope"></span> Message</a>
                 </li>
                 <li title="Follow">
-                    <a href="<?php echo $is_preview_mode?"#": "/".($is_profile_followed ? "un" : "")."follow/u/{$this->view->profile->user_id}?" . \zinux\kernel\security\security::GetHashString(array($this->view->profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-<?php echo $is_profile_followed ? "minus" : "plus" ?>"></span> <?php echo $is_profile_followed ? "Unf" : "F" ?>ollow</a>
+                    <a href="<?php echo $is_preview_mode?"#": "/".($is_profile_followed ? "un" : "")."follow/u/{$this->view->profile->user_id}?" . \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-<?php echo $is_profile_followed ? "minus" : "plus" ?>"></span> <?php echo $is_profile_followed ? "Unf" : "F" ?>ollow</a>
                 </li>
 <?php endif; ?>
 <?php if(!$cover_img && $is_profile_owner): ?>
@@ -92,7 +92,7 @@
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <li>
-                                <a href="/profile/cover/random?<?php echo \zinux\kernel\security\security::GetHashString(array($profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-retweet"></span>&nbsp;&nbsp;Random Cover</a>
+                                <a href="/profile/cover/random?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-retweet"></span>&nbsp;&nbsp;Random Cover</a>
                             </li>
     <?php if(!$is_preview_mode && $is_profile_owner): ?>
                             <li title='View your public profile'>
@@ -101,7 +101,7 @@
     <?php endif; ?>
                             <li class="divider"></li>
                             <li>
-                                <a href="/profile/cover/remove?<?php echo \zinux\kernel\security\security::GetHashString(array($profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-minus"></span> Remove Cover</a>
+                                <a href="/profile/cover/remove?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-minus"></span> Remove Cover</a>
                             </li>
                           </ul>
                     </div>
@@ -137,7 +137,7 @@
                                 </div>
                             </a>
                         <?php endif;endif ; ?>
-                            <a href="/profile/avatar/view/<?php echo $profile->user_id, "?", \zinux\kernel\security\security::GetHashString(array($profile->user_id)) ?>" title="Click to view the original avatar">
+                            <a href="/profile/avatar/view/<?php echo $profile->user_id, "?", \zinux\kernel\security\security::__get_uri_hash_string(array($profile->user_id)) ?>" title="Click to view the original avatar">
                                 <img id="thumbnail" class='image img-thumbnail img-responsive 'src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>';"  />
                             </a>
                         </div>

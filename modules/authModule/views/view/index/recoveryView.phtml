@@ -8,7 +8,7 @@
     <?php if(count(@$this->errors)) : ?>
     <?php foreach($this->errors as $error) \core\ui\html\alert::Tout($error, \core\ui\html\alert::PIPE_DANGER); ?>
     <?php endif; ?>
-    <form class="form-signin" action="/auth/recovery?<?php echo \zinux\kernel\security\security::GetHashString(array(session_id(), "r3c0veRI"))?>" method="post"  role="form" style="padding-top: 10px;">
+    <form class="form-signin" action="/auth/recovery?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(session_id(), "r3c0veRI"))?>" method="post"  role="form" style="padding-top: 10px;">
         <input type="text" class="form-control" placeholder="Email address" name="email"  style="margin-bottom: 10px;" required autofocus>
         <input type="submit" class="btn btn-lg btn-primary pull-right" id="submit-btn" value="Send recovery link" />
         <div class="clearfix" />

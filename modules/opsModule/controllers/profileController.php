@@ -108,7 +108,7 @@ __FETCH_PROFILE:
         # intial value assignments
         $current_step = $this->view->step = 1;
         # provide hash value for view
-        $this->view->hash = \zinux\kernel\security\security::GetHashString(array(session_id()));
+        $this->view->hash = \zinux\kernel\security\security::__get_uri_hash_string(array(session_id()));
         # init error container
         $this->view->errors = array();
         /** open up a session cache socket **/
