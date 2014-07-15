@@ -126,7 +126,7 @@
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <li class="divider hidden"></li>
-                                <li title="Change to Ace editor"><a href="#/editor/change/to/ace?continue=<?php echo urlencode($this->request->action->name."/note/".($this->edit ? "$note_id?": "?pid=$this->pid").zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit ? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id))); ?>" id="switch-editor"><span class="glyphicon glyphicon-credit-card"></span> Ace editor</a></li>
+                                <li title="Change to Ace editor"><a href="#/editor/change/to/ace?continue=<?php echo urlencode("/".$this->request->action->name."/note/".($this->edit ? "$note_id?": "?pid=$this->pid").zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit ? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id))); ?>" id="switch-editor"><span class="glyphicon glyphicon-credit-card"></span> Ace editor</a></li>
                             </ul>
                         </div>
                     </div>
