@@ -329,7 +329,7 @@ __DEPLOY:
             # assume current profile as passed profile
             $profile =\core\db\models\profile::getInstance(NULL, 0, 0);
             # since this is an outside request, we need to validate it
-            \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($profile->user_id, session_id()));
+            \zinux\kernel\security\security::__validate_request($this->request->params, array($profile->user_id, session_id()));
         }
         # malloc an error-tag container
         $error_tag = -1;
@@ -397,7 +397,7 @@ __ERROR:
             # assume current profile as passed profile
             $profile =\core\db\models\profile::getInstance(NULL, 0, 0);
             # since this is an outside request, we need to validate it
-            \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($profile->user_id, session_id()));
+            \zinux\kernel\security\security::__validate_request($this->request->params, array($profile->user_id, session_id()));
         }
         # fetch cover details
         $image = $profile->getSetting("/profile/cover/image");
@@ -432,7 +432,7 @@ __ERROR:
         if(!$this->request->IsPOST())
             throw new \zinux\kernel\exceptions\accessDeniedException;
         # valdiate hashsum
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, session_id()));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array(\core\db\models\user::GetInstance()->user_id, session_id()));
         # validate inputs
         \zinux\kernel\security\security::IsSecure($_FILES, array("upload-avatar"));
         # check if there is any upload error?
@@ -555,7 +555,7 @@ __ERROR:
     {
         if($this->request->CountIndexedParam() < 1)
             throw new \zinux\kernel\exceptions\invalidOperationException;
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->GetIndexedParam(0)));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->GetIndexedParam(0)));
         $this->view->profile = \core\db\models\profile::getInstance($this->request->GetIndexedParam(0), 0, 0);
         if(!$this->view->profile)
             throw new \zinux\kernel\exceptions\notFoundException("Profile not found!");
@@ -699,7 +699,7 @@ __ERROR:
         if(!$this->request->IsPOST())
             throw new \zinux\kernel\exceptions\accessDeniedException;
         # validate the request
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(\core\db\models\user::GetInstance()->user_id, session_id()));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array(\core\db\models\user::GetInstance()->user_id, session_id()));
         # validate if we are uploading a cover image?
         if(!array_key_exists("upload-cover", $_FILES)) {
             # otherwise are we using sample cover images?

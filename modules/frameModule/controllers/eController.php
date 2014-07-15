@@ -135,7 +135,7 @@ class eController extends \zinux\kernel\controller\baseController
         # are we fetching for infscroll
         if(isset($this->request->params["infscroll"])) {
             # validate the request
-            \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(session_id()));
+            \zinux\kernel\security\security::__validate_request($this->request->params, array(session_id()));
             /**
              * We will send json format data to client
              */

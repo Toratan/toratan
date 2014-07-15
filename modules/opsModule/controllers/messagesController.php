@@ -65,7 +65,7 @@ class messagesController extends \zinux\kernel\controller\baseController
         if(!$reciever_user)
             throw new \zinux\kernel\exceptions\notFoundException("The user-name `{$this->request->params["to"]}` does not exist!");
         # validate the hash-sum
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($reciever_user->user_id));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($reciever_user->user_id));
         # pass reciever user-info to view
         $this->view->rcv_user = $reciever_user;
         # pass sender user-info to view, which is current user
@@ -140,7 +140,7 @@ class messagesController extends \zinux\kernel\controller\baseController
             throw new \zinux\kernel\exceptions\accessDeniedException;
         $this->layout->SuppressLayout();
         \zinux\kernel\security\security::IsSecure($this->request->params, array("c", "u"));
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params["c"], $this->request->params["u"], session_id()));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["c"], $this->request->params["u"], session_id()));
         $c =\core\db\models\conversation::open(\core\db\models\user::GetInstance()->user_id, $this->request->params["u"], 0);
         if(!$c)
             throw new \zinux\kernel\exceptions\notFoundException;

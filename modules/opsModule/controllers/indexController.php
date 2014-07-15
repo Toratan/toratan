@@ -48,7 +48,7 @@ class indexController extends \zinux\kernel\controller\baseController
         \zinux\kernel\security\security::IsSecure($this->request->params,
                 array("type", "op", "items", "continue"),
                 array('is_array' => $this->request->params["items"]));
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params,
+        \zinux\kernel\security\security::__validate_request($this->request->params,
                 array($this->request->params["type"], $this->request->params["continue"], session_id()));
         if(!in_array($this->request->params["type"], array("folder", "note", "link")))
                 throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `{$this->request->params["type"]}`");
@@ -146,7 +146,7 @@ __OP_FUNC:
                 array("pid")
         );
         # checking hash-sum with {folder|note|link}.(PID).session_id().user_id
-        \zinux\kernel\security\security::ArrayHashCheck(
+        \zinux\kernel\security\security::__validate_request(
                 $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->params["pid"], session_id(), \core\db\models\user::GetInstance()->user_id));
         if($this->request->params["pid"])
@@ -282,7 +282,7 @@ __OP_FUNC:
      */
     public function editAPIAction() {
         if($this->request->CountIndexedParam() < 2) throw new \zinux\kernel\exceptions\invalidOperationException;
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params,
+        \zinux\kernel\security\security::__validate_request($this->request->params,
                 array($this->request->GetIndexedParam(0), session_id(), \core\db\models\user::GetInstance()->user_id));
         $item = \modules\opsModule\models\itemInfo::decode($this->request->GetIndexedParam(1));
         $this->request->params[$this->request->GetIndexedParam(0)] = $item->i;
@@ -307,7 +307,7 @@ __OP_FUNC:
         if($this->request->CountIndexedParam()<2)
             throw new \zinux\kernel\exceptions\invalidOperationException;
         # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
-        \zinux\kernel\security\security::ArrayHashCheck(
+        \zinux\kernel\security\security::__validate_request(
                 $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
         $note_version = "html";
@@ -606,7 +606,7 @@ __OP_FUNC:
         if($this->request->CountIndexedParam()<2)
             throw new \zinux\kernel\exceptions\invalidOperationException;
         # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
-        \zinux\kernel\security\security::ArrayHashCheck(
+        \zinux\kernel\security\security::__validate_request(
                 $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
         # if reach here we are OK to proceed the opt
@@ -670,7 +670,7 @@ __OP_FUNC:
         if($this->request->CountIndexedParam()<2)
             throw new \zinux\kernel\exceptions\invalidOperationException;
         # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
-        \zinux\kernel\security\security::ArrayHashCheck(
+        \zinux\kernel\security\security::__validate_request(
                 $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
         # if reach here we are OK to proceed the opt
@@ -731,7 +731,7 @@ __OP_FUNC:
         if($this->request->CountIndexedParam()<2)
             throw new \zinux\kernel\exceptions\invalidOperationException;
         # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
-        \zinux\kernel\security\security::ArrayHashCheck(
+        \zinux\kernel\security\security::__validate_request(
                 $this->request->params,
                 array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
         # if reach here we are OK to proceed the opt
@@ -792,7 +792,7 @@ __OP_FUNC:
         # we need to have the target user ID
         \zinux\kernel\security\security::IsSecure($this->request->params, array('u'));
         # validate the inputs
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params['u'], session_id()));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params['u'], session_id()));
         try
         {
             # subscribe the current user to target  user
@@ -820,7 +820,7 @@ __OP_FUNC:
         # we need to have the target user ID
         \zinux\kernel\security\security::IsSecure($this->request->params, array('u'));
         # validate the inputs
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params['u'], session_id()));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params['u'], session_id()));
         # unsubscribe the current user from target user
         \core\db\models\subscribe::unsubscribe($this->request->params["u"], \core\db\models\user::GetInstance()->user_id);
         # open up a message pipe socket
@@ -839,7 +839,7 @@ __OP_FUNC:
     public function gotoAction()
     {
         \zinux\kernel\security\security::IsSecure($this->request->params, array("link"));
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array($this->request->params["link"]));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["link"]));
         $link = new \core\db\models\link;
         $this->view->link = $link->fetch($this->request->params["link"]);
         $this->layout->SuppressLayout();

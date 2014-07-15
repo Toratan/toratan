@@ -159,7 +159,7 @@ class indexController extends authController
         if(!$this->request->IsPOST())
             return;
         \zinux\kernel\security\security::IsSecure($this->request->params, array("email"));
-        \zinux\kernel\security\security::ArrayHashCheck($this->request->params, array(session_id(), "r3c0veRI"));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array(session_id(), "r3c0veRI"));
         # we are all good
         $user = new \core\db\models\user;
         $fetched_user = $user->Fetch($this->request->params["email"]);
