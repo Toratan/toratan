@@ -287,7 +287,7 @@ __OP_FUNC:
         $item = \modules\opsModule\models\itemInfo::decode($this->request->GetIndexedParam(1));
         $this->request->params[$this->request->GetIndexedParam(0)] = $item->i;
         $this->request->params = array_merge($this->request->params,
-                \zinux\kernel\security\security::GetHashArray(
+                \zinux\kernel\security\security::__get_uri_hash_array(
                         array(
                                 $this->request->GetIndexedParam(0),
                                 $item->i,
