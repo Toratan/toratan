@@ -18,6 +18,8 @@ class editorController extends \zinux\kernel\controller\baseController
             return false;
         if(isset($params["continue"]))
         {
+            if($params["continue"][0] != "/")
+                $params["continue"] = "/{$params["continue"]}";
             header("location: {$params["continue"]}");
             exit;
         }

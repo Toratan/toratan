@@ -165,7 +165,7 @@
                             <li><a href='#' onclick="openOptions();"><span class="glyphicon glyphicon-th-list"></span> Editor's options</a></li>
                             <li class="divider"></li>
                             <li title="Change to classic editor">
-                                <a href="#/editor/change/to/classic?continue=<?php echo urlencode($this->request->getURI()); ?>" id="switch-editor">
+                                <a href="#/editor/change/to/classic?continue=<?php echo urlencode("/".$this->request->action->name."/note/".($this->edit ? "$note_id?": "?pid=$this->pid").zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit ? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id))); ?>" id="switch-editor">
                                     <span class="glyphicon glyphicon-credit-card"></span> Classic editor
                                 </a>
                             </li>
