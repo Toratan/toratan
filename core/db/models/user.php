@@ -3,6 +3,18 @@ namespace core\db\models;
 
 class user extends baseModel
 {
+    /**
+     * Normal user type flag
+     */
+    const USER_TYPE_NORMAL = 0x0;
+    /**
+     * Administrator user type flag
+     */
+    const USER_TYPE_ADMINISTRATOR = 0x1;
+    /**
+     * Developer user type flag
+     */
+    const USER_TYPE_DEVELOPER = 0x2;
     static $has_one = array(
         array("profile", "select" => "user_id, first_name, nick_name, last_name")
     );
