@@ -14,6 +14,11 @@
             return $view->current_user->username;
         return $view->target_user->username;
     };
+    $get_sender_link = function(core\db\models\message $message) use($get_sender_name, $get_sender_username) {
+?>
+        <a href='/@<?php echo $get_sender_username($message) ?>'><strong><?php echo $get_sender_name($message); ?></strong></a>
+<?php
+    };
     $get_sender_avatar = function(core\db\models\message $message) use($is_me_sending) {
         $avatar = array();
         if($is_me_sending($message))
@@ -24,21 +29,35 @@
     };
     ?>
 <div class="conversations">
-    <div class='pull-right conversation-options' style="margin-bottom: 10px;">  
-        <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                <span class='glyphicon glyphicon-cog'></span>
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu pull-right">
-                <li><a href="#">Delete Messages</a></li>
-                <li><a href="#">Mark Conversation</a></li>
-                <li class='divider'></li>
-                <li><a href="#">Delete Conversation</a></li>
-            </ul>
+    <div class="topbar">
+        <div class="pull-left">
+            <a class="btn btn-default" href="<?php echo "#!/send/message/to/{$this->target_user->username}?".\zinux\kernel\security\security::__get_uri_hash_string(array($this->target_user->user_id), @$_SERVER["HTTP_REFERER"])?>" id="send-message">
+                <span class="glyphicon glyphicon-retweet"></span> Reply
+            </a>
+        </div>
+        <div class='pull-right conversation-options' style="margin-bottom: 10px;">
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <span class='glyphicon glyphicon-cog'></span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu pull-right">
+                    <li><a href="#" id="delete-messages-prompt" onclick="$('.message-check').fadeToggle();">Delete Messages</a></li>
+                    <li><a href="#">Mark Conversation</a></li>
+                    <li class='divider'></li>
+                    <li><a href="#">Delete Conversation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="topbar message-check" style="padding-bottom: 10px;">
+        <label class="pull-left" style="margin-top: 10px">Select messages to delete</label>
+        <div class="pull-right">
+            <button class="btn btn-default" onclick='$("a#delete-messages-prompt").click();'>Cancel</button>
+            <button class="btn btn-primary">Delete</button>
         </div>
     </div>
-    <div class="clearfix"></div>
     <?php $this->messages =array_reverse($this->messages); ?>
     <?php $mgroups = array(); ?>
     <?php
@@ -49,14 +68,15 @@
                 $mgroups[count($mgroups) - 1][] = $message;
         endforeach;
     ?>
+    <div style="padding-top: 55px;"></div>
     <?php foreach($mgroups as $group): $message = @$group[0];?>
     <div class="message-group">
         <div class="arrow arrow-<?php echo $is_me_sending($message) ? "right me-sending" : "left you-sending" ?>"></div>
         <mgroup class='<?php echo $is_me_sending($message) ? "me-sending" : "you-sending" ?>'>
             <div class='sender-info <?php echo $is_me_sending($message) ? "me-sending" : "you-sending" ?>'>
-                <a href='/@<?php echo $get_sender_username($message) ?>'>
-                    <img src='<?php echo $get_sender_avatar($message) ?>'  width="50" height="50" class='image img-thumbnail img-responsive' style='margin-right: 3px;'/>
-                </a>
+                <?php if($is_me_sending($message)) echo $get_sender_link($message); ?>
+                <img src='<?php echo $get_sender_avatar($message) ?>'  width="50" height="50" class='image img-thumbnail img-responsive' style='margin-right: 3px;margin-left: 3px'/>
+                <?php if(!$is_me_sending($message)) echo $get_sender_link($message); ?>
             </div>
             <div class="clearfix"></div>
             <div class="separator"></div>
@@ -68,6 +88,7 @@
                         </div>
                     </mhead>
                     <mbody  class="pull-left text-justify" style="word-break: break-all">
+                        <input type="checkbox" class="message-check input" name="messages[]"/>
                         <?php echo $message->message_data; ?>
                     </mbody>
                 </message>
@@ -78,25 +99,28 @@
     </div>
     <?php endforeach; ?>
     <style type='text/css'>
+        .conversations .topbar{position: absolute;z-index: 1000;background-color: #FFF;border-bottom: 1px solid #e6e6e6;width: 92%}
+        .message-check{display: none}
         mgroup{
             display: block;
-            width: 80%;
+            width: 68%;
             border: 1px solid #DDD;
-            padding: 10px;
+            padding: 5px;
             margin-bottom: 10px;
         }
-        mgroup .separator{border-bottom: 2px solid #ccc;margin: 10px;padding:0;display: block;}
+        mgroup .separator{border-bottom: 1px solid #ccc;margin: 10px;padding:0;display: block;}
         message{
             display: block;
-            margin: 10px 0 10px 0; 
+            margin: 10px 15px 10px 15px; 
         }
         message mbody {
             display: block;
             margin-top: 10px;
+            font-size: small
         }
         message.send-date{}
-        message mhead{display: inline; color: #AAA;font-size: small}
-        .conversations{margin-right: 10px}
+        message mhead{display: inline; color: #AAA;font-size: smaller}
+        .conversations{margin-right: 10px;width: 100%}
         .media > .me-sending,
         .media > .you-sending {
             margin-right: 10px;
@@ -108,7 +132,6 @@
             height: 0px;
             width: 0px;
         }
-
         .arrow-right {
             border-color: transparent #DDD;
             border-style: solid;
@@ -116,15 +139,11 @@
             height: 0px;
             width: 0px;
         }
-
         .message-group.arrow-right{
             border-left: 0px;
         }
         .me-sending{
             float: right!important;
-        }
-        mgroup.me-sending{
-            /*background-color: #ccddee;*/
         }
         .you-sending{
             float: left!important;
@@ -139,8 +158,22 @@
                 );
             });
             $(".conversation-options a").click(function(){
-                alert("!!NO IMPLEMENTED!!");
+                console.error("!!NO IMPLEMENTED!!");
             });
+            $("a#send-message").click(function(e){
+                e.preventDefault();
+                var href = String($(this).attr('href')).split('#!')[1];
+                if(typeof(href) === "undefined") return false;
+                $.ajax({
+                    type: "GET",
+                    url: href+"&suppress_layout=1&ajax=1&inbox=1",
+                    success:function(data) {
+                        window.open_dialogModal(data);
+                    }
+                });
+            });
+            $(document).ajaxStart(function(){ window.open_waitModal(); });
+            $(document).ajaxStop(function(){ window.open_waitModal(true); });
         });
     </script>
 </div>

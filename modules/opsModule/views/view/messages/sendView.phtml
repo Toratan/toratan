@@ -80,6 +80,8 @@
                     // make a delay to close ajax modals the show the results
                     setTimeout(function() { 
                         window.open_dialogModal(data, has_input ? -1 : 2000);
+                        if(<?php echo isset($this->request->params["inbox"]) ? "true" : "false"?> && !has_input)
+                            setTimeout(function(){window.location = "/messages";}, 2000);
                     }, 500);
                 }
             }).fail(function(xhr) {
