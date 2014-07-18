@@ -57,10 +57,14 @@ class dialogs
                 }
                 var btn_id = "modal-btn-"+(String(modal_tag).replace(/(\.|#)/ig, "", modal_tag))+"-"+index.toString();
                 var t = '<button id="'+btn_id+'" type="button" class="btn ';
+                var is_btn_primary = false;
                 for(var cssclass = 0; cssclass <  b.cssClass.length; cssclass++) {
                     t += " "+b.cssClass[cssclass];
+                    is_btn_primary = String(b.cssClass[cssclass]).toLowerCase() === "btn-primary";
                 }
                 t += '"'; // for classes
+                if(is_btn_primary)
+                    ;//t += " tabindex='0'";
                 for(var attribIndex = 0; attribIndex <  b.attrib.length, typeof(b.attrib[attribIndex]) !== "undefined"; attribIndex++) {
                    t += " " + b.attrib[attribIndex].key + "='" + b.attrib[attribIndex].value+"'";
                }
@@ -194,7 +198,7 @@ class dialogs
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" tabindex="-1">&times;</button>
         <h4 class="modal-title"></h4>
       </div>
       <div class="modal-body"></div>
