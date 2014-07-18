@@ -92,7 +92,7 @@
                     moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').fromNow("lll") + " ago"
             );
         });
-        $(".conversation").click(function(){
+        $(".conversation").click(function(e){
             $(this)
                 .addClass("active")
                 .siblings()
@@ -112,6 +112,7 @@
             }).fail(function(xhr) {
                 setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
             });
+            e.preventDefault();
         })
             .first().click();
         $("#conversation-data").click(function(){
