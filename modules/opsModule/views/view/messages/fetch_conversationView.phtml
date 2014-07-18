@@ -42,7 +42,7 @@
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu pull-right">
-                    <li><a href="#" id="delete-messages-prompt" onclick="$('.message-check').fadeToggle();">Delete Messages</a></li>
+                    <li><a href="#" id="delete-messages-view" onclick="$('.message-check').fadeToggle();">Delete Messages</a></li>
                     <li><a href="#">Mark Conversation</a></li>
                     <li class='divider'></li>
                     <li><a href="#">Delete Conversation</a></li>
@@ -54,8 +54,8 @@
     <div class="topbar message-check" style="padding-bottom: 10px;">
         <label class="pull-left" style="margin-top: 10px">Select messages to delete</label>
         <div class="pull-right">
-            <button class="btn btn-default" onclick='$("a#delete-messages-prompt").click();'>Cancel</button>
-            <button class="btn btn-primary">Delete</button>
+            <button class="btn btn-default" onclick='$("a#delete-messages-view").click();'>Cancel</button>
+            <button class="btn btn-primary" id="delete-messages-action">Delete</button>
         </div>
     </div>
     <?php $this->messages =array_reverse($this->messages); ?>
@@ -81,14 +81,14 @@
             <div class="clearfix"></div>
             <div class="separator"></div>
             <?php foreach($group as $message): ?>
-                <message>
+                <message id='message-<?php echo $message->message_id ?>'>
                     <mhead>
                         <div class='send-date pull-right'>
                             <?php echo $message->created_at; ?>
                         </div>
                     </mhead>
                     <mbody  class="pull-left text-justify" style="word-break: break-all">
-                        <input type="checkbox" class="message-check input" name="messages[]"/>
+                        <input type="checkbox" class="message-check input" mid='<?php echo $message->message_id ?>'/>
                         <?php echo $message->message_data; ?>
                     </mbody>
                 </message>
@@ -170,6 +170,19 @@
                     success:function(data) {
                         window.open_dialogModal(data);
                     }
+                });
+            });
+            $("#delete-messages-action").click(function(){
+                window.open_yesnoModal("Once you delete your copy of this message, it cannot be undone.<br />Are you sure?", function(){
+                    $(".message-check:checked").each(function(){
+                        var $msg = $("message#message-"+$(this).attr('mid'));
+                        $msg.addClass("deleted");
+                        var $msgp = $msg.parent();
+                        if($msgp.children("message:not(.deleted)").length < 1)
+                            $msgp.parent(".message-group").slideUp('fast', function(){ $(this).remove(); });
+                        else
+                            $msg.fadeOut('slow', function(){ $(this).remove(); });
+                    });
                 });
             });
             $(document).ajaxStart(function(){ window.open_waitModal(); });
