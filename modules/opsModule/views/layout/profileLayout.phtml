@@ -76,7 +76,7 @@
                     <a href="#<?php echo $is_preview_mode?"": "!/send/message/to/{$this->view->user->username}?".\zinux\kernel\security\security::__get_uri_hash_string(array($this->view->user->user_id))?>" id="send-message"><span class="glyphicon glyphicon-envelope"></span> Message</a>
                 </li>
                 <li title="Follow">
-                    <a href="<?php echo $is_preview_mode?"#": "/".($is_profile_followed ? "un" : "")."follow/u/{$this->view->profile->user_id}?" . \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->profile->user_id, session_id())); ?>"><span class="glyphicon glyphicon-<?php echo $is_profile_followed ? "minus" : "plus" ?>"></span> <?php echo $is_profile_followed ? "Unf" : "F" ?>ollow</a>
+                    <a href="<?php echo $is_preview_mode?"#": "/".($is_profile_followed ? "un" : "")."follow/u/{$this->view->profile->user_id}?" . \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->profile->user_id, session_id())); ?>" id="follow"><span class="glyphicon glyphicon-<?php echo $is_profile_followed ? "minus" : "plus" ?>"></span> <?php echo $is_profile_followed ? "Unf" : "F" ?>ollow</a>
                 </li>
 <?php endif; ?>
 <?php if(!$cover_img && $is_profile_owner): ?>
@@ -162,9 +162,14 @@
         $("a#about-cover").click(function(){
             window.open_infoModal(<?php echo json_encode("<center>$cover_info</center>") ?>);
         });
+        $("a#send-message[href='#'], a#follow[href='#']").click(function(e){
+            window.open_infoModal("The link is disabled!", 1400);
+            e.preventDefault();
+        });
         $("a#send-message").click(function(e){
             e.preventDefault();
             var href = String($(this).attr('href')).split('#!')[1];
+            if(typeof(href) === "undefined") return false;
             $.ajax({
                 type: "GET",
                 url: href+"&suppress_layout=1&ajax=1",

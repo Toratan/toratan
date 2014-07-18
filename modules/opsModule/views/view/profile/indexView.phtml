@@ -93,6 +93,11 @@
                 }
                 $v .= '</ul>';
                 break;
+            case "is_male":
+                if($value == 1)
+                    $value = "Male";
+                elseif($value == 0)
+                    $value = "Female";
             default:
 __DEFAULT_OPS:
                  if($should_render($p, $key))
@@ -110,12 +115,12 @@ __DEFAULT_OPS:
                 case "bio": $k = "Biography "; $step = 2; $span = 8;  break;
                 case "contact": $k = "Contact Information"; $step = 3; $span = 4; break;
                 default: throw new zinux\kernel\exceptions\invalidArgumentException("Undefined `section` value: $s");
-            } 
-            $inf[$s]["label"] = $k;
+            }
+            $inf[$s]["label"] = ucwords($k);
             $inf[$s]["span"] = $span;
             $inf[$s]["class"] = $s;
             $inf[$s]["options"] = $is_profile_owner ? "<span class='small pull-right'><a href='/profile/edit/step/$step'>Edit</a></span>" : "";
-            $inf[$s]["values"][$key]["label"] = $l;
+            $inf[$s]["values"][$key]["label"] = ucwords($l);
             $inf[$s]["values"][$key]["value"] = $v;
         }
     }
