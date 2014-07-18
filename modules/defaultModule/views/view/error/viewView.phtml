@@ -70,5 +70,6 @@
         $($(".user_id").children("td")[0]).text("User ID");
         $("table tbody").prepend("<tr>"+$(".e-message").html()+"</tr>");
         $(".e-message").remove();
+        $("a[href='#']").click(function(e){e.preventDefault();});
     });
 </script>
