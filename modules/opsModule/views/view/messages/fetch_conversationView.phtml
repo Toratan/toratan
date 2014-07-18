@@ -23,7 +23,8 @@
         return $avatar[0];
     };
     ?>
-    <div class='pull-right conversation-options'>  
+<div class="conversations">
+    <div class='pull-right conversation-options' style="margin-bottom: 10px;">  
         <div class="btn-group">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                 <span class='glyphicon glyphicon-cog'></span>
@@ -39,42 +40,95 @@
     </div>
     <div class="clearfix"></div>
     <?php $this->messages =array_reverse($this->messages); ?>
-    <?php foreach($this->messages as $index => $message): ?>
-    <message class='pull-<?php echo $is_me_sending($message) ? "right" : "left" ?>'>
-        <message-head>
-            <div class='sender-info pull-left'>
-                <?php if(!$index || $get_sender_name($this->messages[$index - 1]) != $get_sender_name($message)): ?>
+    <?php $mgroups = array(); ?>
+    <?php
+        foreach($this->messages as $index => $message): 
+            if(!$index || $get_sender_name($this->messages[$index - 1]) != $get_sender_name($message))
+                $mgroups[count($mgroups)][] = $message;
+            else
+                $mgroups[count($mgroups) - 1][] = $message;
+        endforeach;
+    ?>
+    <?php foreach($mgroups as $group): $message = @$group[0];?>
+    <div class="message-group">
+        <div class="arrow arrow-<?php echo $is_me_sending($message) ? "right me-sending" : "left you-sending" ?>"></div>
+        <mgroup class='<?php echo $is_me_sending($message) ? "me-sending" : "you-sending" ?>'>
+            <div class='sender-info <?php echo $is_me_sending($message) ? "me-sending" : "you-sending" ?>'>
+                <a href='/@<?php echo $get_sender_username($message) ?>'>
                     <img src='<?php echo $get_sender_avatar($message) ?>'  width="50" height="50" class='image img-thumbnail img-responsive' style='margin-right: 3px;'/>
-                    <strong>
-                        <a href='/@<?php echo $get_sender_username($message) ?>'>
-                            <?php echo $get_sender_name($message); ?>
-                        </a>
-                    </strong>
-                <?php endif; ?>
+                </a>
             </div>
-            <div class='send-date pull-right'>
-                <?php echo $message->created_at; ?>
-            </div>
-        </message-head>
-        <div class='clearfix'></div>
-        <message-body >
-            <?php echo $message->message_data; ?>
-        </message-body>
-    </message>
+            <div class="clearfix"></div>
+            <div class="separator"></div>
+            <?php foreach($group as $message): ?>
+                <message>
+                    <mhead>
+                        <div class='send-date pull-right'>
+                            <?php echo $message->created_at; ?>
+                        </div>
+                    </mhead>
+                    <mbody  class="pull-left text-justify" style="word-break: break-all">
+                        <?php echo $message->message_data; ?>
+                    </mbody>
+                </message>
+                <div class="clearfix"></div>
+            <?php endforeach; ?>
+        </mgroup>
+        <div class="clearfix"></div>
+    </div>
     <?php endforeach; ?>
     <style type='text/css'>
-        message{
+        mgroup{
             display: block;
             width: 80%;
-            border-bottom: 2px solid #DDD;
+            border: 1px solid #DDD;
             padding: 10px;
             margin-bottom: 10px;
         }
-        message message-body {
+        mgroup .separator{border-bottom: 2px solid #ccc;margin: 10px;padding:0;display: block;}
+        message{
             display: block;
-            margin-top: 10px
+            margin: 10px 0 10px 0; 
         }
-        message message-head{display: inline; }
+        message mbody {
+            display: block;
+            margin-top: 10px;
+        }
+        message.send-date{}
+        message mhead{display: inline; color: #AAA;font-size: small}
+        .conversations{margin-right: 10px}
+        .media > .me-sending,
+        .media > .you-sending {
+            margin-right: 10px;
+        }
+        .arrow-left {
+            border-color: transparent #DDD;
+            border-style: solid;
+            border-width: 10px 10px 10px 0px;
+            height: 0px;
+            width: 0px;
+        }
+
+        .arrow-right {
+            border-color: transparent #DDD;
+            border-style: solid;
+            border-width: 10px 0px 10px 10px;
+            height: 0px;
+            width: 0px;
+        }
+
+        .message-group.arrow-right{
+            border-left: 0px;
+        }
+        .me-sending{
+            float: right!important;
+        }
+        mgroup.me-sending{
+            /*background-color: #ccddee;*/
+        }
+        .you-sending{
+            float: left!important;
+        }
     </style>
     <script src="/access/js/moment.min.js"></script>
     <script type='text/javascript'>
@@ -89,6 +143,7 @@
             });
         });
     </script>
+</div>
 <?php else: ?>
     <div class="list-group-item">
         <div class="list-group-item-heading text-center" style="font-variant: small-caps;font-weight: bolder">
