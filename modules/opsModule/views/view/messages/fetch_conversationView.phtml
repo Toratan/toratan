@@ -173,7 +173,7 @@
                 });
             });
             $("#delete-messages-action").click(function(){
-                window.open_yesnoModal("Once you delete your copy of this message, it cannot be undone.<br />Are you sure?", function(){
+                window.open_yesnoModal("Once you delete your copy of selected message(s), it cannot be undone.<br />Are you sure?", function(){
                     $(".message-check:checked").each(function(){
                         var $msg = $("message#message-"+$(this).attr('mid'));
                         $msg.addClass("deleted");
