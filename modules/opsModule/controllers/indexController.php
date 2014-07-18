@@ -838,8 +838,12 @@ __OP_FUNC:
     */
     public function gotoAction()
     {
-        \zinux\kernel\security\security::IsSecure($this->request->params, array("link"));
-        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["link"]));
+        \zinux\kernel\security\security::IsSecure(
+                $this->request->params, 
+                array("link"), 
+                array(), 
+                array("h" => sha1($this->request->params["link"]."LINK")));
+        
         $link = new \core\db\models\link;
         $this->view->link = $link->fetch($this->request->params["link"]);
         $this->layout->SuppressLayout();
