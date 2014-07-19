@@ -161,6 +161,6 @@ class messagesController extends \zinux\kernel\controller\baseController
     public function delete_messagesAction()
     {
         if(!$this->request->IsPOST())
-            throw new \zinux\kernel\exceptions\accessDeniedException("Unexpected request method `${$_SERVER["REQUEST_METHOD"]}`, only `POST` requests are accepted!");
+            throw new \zinux\kernel\exceptions\accessDeniedException("Unexpected request method `{$_SERVER["REQUEST_METHOD"]}`, only `POST` requests are accepted!");
     }
 }
