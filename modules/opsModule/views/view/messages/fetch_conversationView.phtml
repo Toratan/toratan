@@ -42,7 +42,7 @@
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu pull-right">
-                    <li><a href="#" id="delete-messages-view" onclick="$('.conversation-options').parents('.topbar').hide();$('.message-check').fadeToggle();">Delete Messages</a></li>
+                    <li><a href="#" id="delete-messages-view" onclick="$('.message-check').fadeToggle();$('.conversation-options').parents('.topbar').hide();">Delete Messages</a></li>
                     <li><a href="#">Mark Conversation</a></li>
                     <li class='divider'></li>
                     <li><a href="#">Delete Conversation</a></li>
@@ -54,7 +54,7 @@
     <div class="topbar message-check" style="padding-bottom: 10px;">
         <label class="pull-left" style="margin-top: 10px">Select messages to delete</label>
         <div class="pull-right">
-            <button class="btn btn-default" onclick="$('.message-check').fadeToggle(function(){$('.conversation-options').parents('.topbar').show();});">Cancel</button>
+            <button class="btn btn-default" onclick="$('.conversation-options').parents('.topbar').show();$('.message-check').fadeToggle(function(){});">Cancel</button>
             <button class="btn btn-primary" id="delete-messages-action">Delete</button>
         </div>
         <div class="clearfix"></div>
@@ -105,8 +105,8 @@
     <?php endforeach; ?>
     <style type='text/css'>
         .conversations{width: 100%}
-        .conversations #topbar-sep {padding-top: 10px;}
-        .conversations .topbar{background-color: #FFF!important;border-bottom: 1px solid #e6e6e6;}
+        .conversations #topbar-sep {padding-top: 55px;}
+        .conversations .topbar{position: absolute;background-color: #FFF!important;border-bottom: 1px solid #e6e6e6; width: 92%;top: 50px}
         .message-check{display: none}
         mgroup{
             display: block;
