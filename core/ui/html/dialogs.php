@@ -63,8 +63,7 @@ class dialogs
                     is_btn_primary = String(b.cssClass[cssclass]).toLowerCase() === "btn-primary";
                 }
                 t += '"'; // for classes
-                if(is_btn_primary)
-                    ;//t += " tabindex='0'";
+                t += " tabindex='"+(__buttons.length - (index + 1))+"'";
                 for(var attribIndex = 0; attribIndex <  b.attrib.length, typeof(b.attrib[attribIndex]) !== "undefined"; attribIndex++) {
                    t += " " + b.attrib[attribIndex].key + "='" + b.attrib[attribIndex].value+"'";
                }
@@ -86,7 +85,11 @@ class dialogs
                 }
             }
             window.close_modal();
-            $(modal_tag).modal('show');
+            $(modal_tag)
+                .on("shown.bs.modal", function(){
+                    $(modal_tag+" .modal-footer button"+(__buttons.length > 1 ? ".btn-primary" : ":first")).focus();
+                })
+                .modal('show');
             if(close_timeout > 0) {
                 setTimeout(function(tag){
                     $(tag).modal('hide');
