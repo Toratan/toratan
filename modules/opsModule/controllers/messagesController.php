@@ -134,6 +134,11 @@ class messagesController extends \zinux\kernel\controller\baseController
             header("location: /@{$this->view->rcv_user->username}");
         exit;
     }
+
+    /**
+    * The \modules\opsModule\controllers\messagesController::fetch_conversationAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
     public function fetch_conversationAction(){
         # we only response to POST requests
         if(!$this->request->IsPOST())
@@ -147,5 +152,15 @@ class messagesController extends \zinux\kernel\controller\baseController
         $this->view->messages = $c->fetch_messages();
         $this->view->target_user = \core\db\models\user::Fetch($this->request->params["u"]);
         $this->view->current_user = \core\db\models\user::GetInstance();
+    }
+
+    /**
+    * The \modules\opsModule\controllers\messagesController::deleteAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function delete_messagesAction()
+    {
+        if(!$this->request->IsPOST())
+            throw new \zinux\kernel\exceptions\accessDeniedException("Unexpected request method `${$_SERVER["REQUEST_METHOD"]}`, only `POST` requests are accepted!");
     }
 }
