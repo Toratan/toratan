@@ -42,7 +42,7 @@
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu pull-right">
-                    <li><a href="#" id="delete-messages-view" onclick="$('.message-check').fadeToggle();">Delete Messages</a></li>
+                    <li><a href="#" id="delete-messages-view" onclick="$('.conversation-options').parents('.topbar').hide();$('.message-check').fadeToggle();">Delete Messages</a></li>
                     <li><a href="#">Mark Conversation</a></li>
                     <li class='divider'></li>
                     <li><a href="#">Delete Conversation</a></li>
@@ -54,9 +54,10 @@
     <div class="topbar message-check" style="padding-bottom: 10px;">
         <label class="pull-left" style="margin-top: 10px">Select messages to delete</label>
         <div class="pull-right">
-            <button class="btn btn-default" onclick='$("a#delete-messages-view").click();'>Cancel</button>
+            <button class="btn btn-default" onclick="$('.message-check').fadeToggle(function(){$('.conversation-options').parents('.topbar').show();});">Cancel</button>
             <button class="btn btn-primary" id="delete-messages-action">Delete</button>
         </div>
+        <div class="clearfix"></div>
     </div>
     <?php $this->messages =array_reverse($this->messages); ?>
     <?php $mgroups = array(); ?>
@@ -84,13 +85,15 @@
                 <message id='message-<?php echo $message->message_id ?>'>
                     <mcontainer>
                         <mhead>
+                            <div class="pull-left">
+                                <input type="checkbox" class="message-check input" mid='<?php echo $message->message_id ?>'/>
+                            </div>
                             <div class='send-date pull-right'>
                                 <?php echo $message->created_at; ?>
                             </div>
                         </mhead>
-                        <mbody  class="pull-left text-justify" style="word-break: break-all">
-                            <input type="checkbox" class="message-check input" mid='<?php echo $message->message_id ?>'/>
-                            <p><?php echo $message->message_data; ?></p>
+                        <mbody  class="pull-left text-justify">
+                            <p class="inline"><?php echo $message->message_data; ?></p>
                         </mbody>
                         <div class="clearfix"></div>
                     </mcontainer>
@@ -101,8 +104,9 @@
     </div>
     <?php endforeach; ?>
     <style type='text/css'>
-        .conversations .topbar{position: absolute;z-index: 1000;background-color: #FFF;border-bottom: 1px solid #e6e6e6;width: 92%}
-        .conversations #topbar-sep {padding-top: 55px;}
+        .conversations{width: 100%}
+        .conversations #topbar-sep {padding-top: 10px;}
+        .conversations .topbar{background-color: #FFF!important;border-bottom: 1px solid #e6e6e6;}
         .message-check{display: none}
         mgroup{
             display: block;
@@ -121,11 +125,12 @@
         message mbody {
             display: block;
             margin-top: 10px;
-            font-size: small
+            width: 100%;
+            font-size: small;
+            word-break: break-all!important
         }
         message.send-date{}
         message mhead{display: inline; color: #AAA;font-size: smaller}
-        .conversations{margin-right: 10px;width: 100%}
         .media > .me-sending,
         .media > .you-sending {
             margin-right: 10px;
