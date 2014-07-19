@@ -195,6 +195,7 @@
                 $('.message-check').fadeToggle();
                 $("message mbody").css("cursor", "default");
                 delete document.deleting_message;
+                $(".message-check:checked").prop("checked", false);
             });
             $("message mbody").click(function(){
                 if(is_deleting_messages()) 
