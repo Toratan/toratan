@@ -189,7 +189,7 @@
                 $('.message-check').fadeToggle();$('.conversation-options').parents('.topbar').hide();
                 document.deleting_message = true;
                 $("message mbody").css("cursor", "pointer");
-            });
+            }).click();
             $("#delete-messages-cancel").click(function(){
                 $('.conversation-options').parents('.topbar').show();
                 $('.message-check').fadeToggle();
@@ -234,6 +234,17 @@
                     return;
                 }
                 window.open_yesnoModal("<b>Once you delete your copy of selected message(s), it cannot be undone.<br />Are you sure?</b>", function(){
+                    var ids = [];
+                    $(".message-check:checked").each(function(){
+                        ids.push($(this).attr("mid"));
+                    });
+                    var delete_messages_action = function(array){
+                        if(typeof(array) === "undefined")
+                            throw "expecting a list of IDs";
+                        if(array.length === 0) return;
+                        console.log(array);
+                    };
+                    delete_messages_action(ids);
                     $(".message-check:checked").each(function(){
                         var $msg = $("message#message-"+$(this).attr('mid'));
                         $msg.addClass("deleted");
