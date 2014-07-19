@@ -15,7 +15,17 @@ class exception extends \core\db\models\baseModel
     {
         $this->exception_code = $id;
         $this->exception_type = get_class($e);
-        $this->exception_data =serialize($e);
+        try{
+            $this->exception_data = serialize($e);
+        }catch(\Exception $_e){
+            $oe = new \core\exceptions\openException($e->getMessage());
+            $oe->code = $e->getCode();
+            $oe->trace = array(@$_SERVER["HTTP_REFERER"]);
+            $oe->file = $e->getFile();
+            $oe->line = $e->getLine();
+            $oe->previous = NULL;
+            $this->exception_data = serialize($oe);
+        }
         $this->occurrence_file = $e->getFile();
         $this->occurrence_line = $e->getLine();
         $this->user_id = @user::GetInstance()->user_id;

@@ -7,18 +7,24 @@ namespace modules\defaultModule\controllers;
  */
 class errorController extends \zinux\kernel\controller\baseController
 {
+    public static $__EXTERN_ERROR = NULL;
     public function Initiate()
     {
         parent::Initiate();
         $this->layout->SetLayout("error");
-        $mp = new \zinux\kernel\utilities\pipe("__ERRORS__");
-        if(!$mp->hasFlow() && strtolower($this->request->action->name) === "index") {
-            header("location: /");
-            exit;
+        if(!self::$__EXTERN_ERROR) {
+            $mp = new \zinux\kernel\utilities\pipe("__ERRORS__");
+            if(!$mp->hasFlow() && strtolower($this->request->action->name) === "index") {
+                header("location: /");
+                exit;
+            }
+            # empty the pipe and only keep the last error up
+            while($mp->hasFlow())
+                $this->view->error =$mp->read();
+        } else {
+            $this->view->error = self::$__EXTERN_ERROR;
+            self::$__EXTERN_ERROR = NULL;
         }
-        # empty the pipe and only keep the last error up
-        while($mp->hasFlow())
-            $this->view->error =$mp->read();
         $this->layout->AddTitle("Toratan");
     }
     /**
