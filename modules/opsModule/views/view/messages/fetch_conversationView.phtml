@@ -68,7 +68,7 @@
                 $mgroups[count($mgroups) - 1][] = $message;
         endforeach;
     ?>
-    <div style="padding-top: 55px;"></div>
+    <div id="topbar-sep"></div>
     <?php foreach($mgroups as $group): $message = @$group[0];?>
     <div class="message-group">
         <div class="arrow arrow-<?php echo $is_me_sending($message) ? "right me-sending" : "left you-sending" ?>"></div>
@@ -82,17 +82,19 @@
             <div class="separator"></div>
             <?php foreach($group as $message): ?>
                 <message id='message-<?php echo $message->message_id ?>'>
-                    <mhead>
-                        <div class='send-date pull-right'>
-                            <?php echo $message->created_at; ?>
-                        </div>
-                    </mhead>
-                    <mbody  class="pull-left text-justify" style="word-break: break-all">
-                        <input type="checkbox" class="message-check input" mid='<?php echo $message->message_id ?>'/>
-                        <?php echo $message->message_data; ?>
-                    </mbody>
+                    <mcontainer>
+                        <mhead>
+                            <div class='send-date pull-right'>
+                                <?php echo $message->created_at; ?>
+                            </div>
+                        </mhead>
+                        <mbody  class="pull-left text-justify" style="word-break: break-all">
+                            <input type="checkbox" class="message-check input" mid='<?php echo $message->message_id ?>'/>
+                            <p><?php echo $message->message_data; ?></p>
+                        </mbody>
+                        <div class="clearfix"></div>
+                    </mcontainer>
                 </message>
-                <div class="clearfix"></div>
             <?php endforeach; ?>
         </mgroup>
         <div class="clearfix"></div>
@@ -100,6 +102,7 @@
     <?php endforeach; ?>
     <style type='text/css'>
         .conversations .topbar{position: absolute;z-index: 1000;background-color: #FFF;border-bottom: 1px solid #e6e6e6;width: 92%}
+        .conversations #topbar-sep {padding-top: 55px;}
         .message-check{display: none}
         mgroup{
             display: block;
@@ -111,7 +114,9 @@
         mgroup .separator{border-bottom: 1px solid #ccc;margin: 10px;padding:0;display: block;}
         message{
             display: block;
-            margin: 10px 15px 10px 15px; 
+            margin: 0px 10px 5px 10px; 
+            padding: 15px;
+            padding-top: 5px;
         }
         message mbody {
             display: block;
@@ -148,6 +153,17 @@
         .you-sending{
             float: left!important;
         }
+        @media screen and (min-width:0) and (max-width: 400px) {  
+            .topbar{width: 90%!important;}
+            .topbar label{font-size: smaller}
+            .topbar button{font-size: smaller}
+        }
+        @media screen and (min-width:410px) and (max-width: 500px) {
+            .topbar{width: 88%!important}
+        }
+        @media screen and (min-width:0) and (max-width: 900px) {
+            mgroup {width: 95%!important}
+        }
     </style>
     <script src="/access/js/moment.min.js"></script>
     <script type='text/javascript'>
@@ -171,6 +187,19 @@
                         window.open_dialogModal(data);
                     }
                 });
+            });
+            $.propHooks.checked = {
+                set: function(elem, value, name) {
+                  var ret = (elem[ name ] = value);
+                  $(elem).trigger("change");
+                  return ret;
+                }
+            };
+            $(".message-check").change(function(){
+                if($(this).prop("checked"))
+                    $(this).parents("message").css({"background-color": "#F1F2F7", "border": "1px solid #CCC"});
+                else
+                    $(this).parents("message").css({"background-color": "transparent", "border": "0"});
             });
             $("#delete-messages-action").click(function(){
                 window.open_yesnoModal("Once you delete your copy of selected message(s), it cannot be undone.<br />Are you sure?", function(){
