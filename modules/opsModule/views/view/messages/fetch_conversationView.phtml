@@ -42,7 +42,7 @@
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu pull-right">
-                    <li><a href="#" id="delete-messages-view" onclick="$('.message-check').fadeToggle();$('.conversation-options').parents('.topbar').hide();">Delete Messages</a></li>
+                    <li><a href="#" id="delete-messages-view">Delete Messages</a></li>
                     <li><a href="#">Mark Conversation</a></li>
                     <li class='divider'></li>
                     <li><a href="#">Delete Conversation</a></li>
@@ -54,7 +54,7 @@
     <div class="topbar message-check" style="padding-bottom: 10px;">
         <label class="pull-left" style="margin-top: 10px">Select messages to delete</label>
         <div class="pull-right">
-            <button class="btn btn-default" onclick="$('.conversation-options').parents('.topbar').show();$('.message-check').fadeToggle(function(){});">Cancel</button>
+            <button class="btn btn-default" id="delete-messages-cancel">Cancel</button>
             <button class="btn btn-primary" id="delete-messages-action">Delete</button>
         </div>
         <div class="clearfix"></div>
@@ -181,6 +181,28 @@
             $(".conversation-options a").click(function(){
                 console.error("!!NO IMPLEMENTED!!");
             });
+            var is_deleting_messages = function() {
+                if(typeof(document.deleting_message) === "undefined") return false;
+                return document.deleting_message;
+            };
+            $("#delete-messages-view").click(function(){
+                $('.message-check').fadeToggle();$('.conversation-options').parents('.topbar').hide();
+                document.deleting_message = true;
+                $("message mbody").css("cursor", "pointer");
+            });
+            $("#delete-messages-cancel").click(function(){
+                $('.conversation-options').parents('.topbar').show();
+                $('.message-check').fadeToggle();
+                $("message mbody").css("cursor", "default");
+                delete document.deleting_message;
+            });
+            $("message mbody").click(function(){
+                if(is_deleting_messages()) 
+                    $(this)
+                        .parents("message")
+                            .find("input.message-check")
+                                .prop("checked", function() { return !$(this).prop("checked"); });
+            });
             $("a#send-message").click(function(e){
                 e.preventDefault();
                 var href = String($(this).attr('href')).split('#!')[1];
@@ -207,7 +229,11 @@
                     $(this).parents("message").css({"background-color": "transparent", "border": "0"});
             });
             $("#delete-messages-action").click(function(){
-                window.open_yesnoModal("Once you delete your copy of selected message(s), it cannot be undone.<br />Are you sure?", function(){
+                if($(".message-check:checked").length === 0) {
+                    window.open_infoModal("<b>Select some message first!</b>", 1300);
+                    return;
+                }
+                window.open_yesnoModal("<b>Once you delete your copy of selected message(s), it cannot be undone.<br />Are you sure?</b>", function(){
                     $(".message-check:checked").each(function(){
                         var $msg = $("message#message-"+$(this).attr('mid'));
                         $msg.addClass("deleted");
