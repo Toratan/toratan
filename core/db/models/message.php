@@ -40,4 +40,25 @@ class message extends baseModel
             throw new \zinux\kernel\exceptions\notFoundException("No conversation between `$user_id1` and `$user_id2` found.");
         return parent::last(array('conditions' => array('conversation_id = ?', $c->conversation_id)));
     }
+    /**
+     * Delete a collection of messsages at point of view a user id, if both the sender and the reciever of the message
+     * happen to delete the same message the message will actually get deleted from database, but if only one of them
+     * delete the message the message will be invisible to that user when using `conversation::fetch_messages()`
+     * method to fetch messages
+     * @param string $user_id The user id that messages are belong to.(i.e as sender or as reciever of the message)
+     * @param array $messages_id the array messages' IDs.
+     */
+    public static function deleteCollection($user_id, array $messages_id) {
+        # glutize the array an fetch the string format of message ids
+        $messages_id = implode(", ", $messages_id);
+        # secure(escape) the message id and re-normalize it to inject directly into QUERY 
+        $messages_id = "'".implode("', '", explode(", ", substr(self::connection()->escape($messages_id), 1, strlen($messages_id))))."'";
+        # delete messages with given ID collection which both users are deleted them 
+        self::delete_all(array('conditions' => array("(sender_id = ? OR receiver_id = ?) AND message_id in (?) AND deleted_id IS NOT NULL AND deleted_id != ?", $user_id, $user_id, $messages_id, $user_id)));
+        # QUERY a update
+        # NOTE: don't enject $message_id in format of *?* in the QUERY, PAR will get a pair of *'* around it and everything will be mess. $message_id is already secured in some line above.
+        self::query(
+                "UPDATE  `".(\ActiveRecord\Utils::pluralize(str_replace(__NAMESPACE__."\\", "", __CLASS__)))."` SET deleted_id =  ? WHERE (sender_id = ? OR receiver_id = ?) AND message_id IN ($messages_id) AND deleted_id IS NULL",
+                array($user_id, $user_id, $user_id));
+    }
 }

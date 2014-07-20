@@ -70,7 +70,7 @@ class conversation extends baseModel
      * @param integer $limit (optional) The limit# for pagination
      * @return array Of messages or NULL if no message found
      */
-    public function fetch_messages($offset = -1, $limit = -1, $order = NULL) {
+    public function fetch_messages($user_id, $offset = -1, $limit = -1, $order = NULL, $non_deleted = 1) {
         # init args with a basic condition
         $args = array("conditions" => array("conversation_id  = ?", $this->conversation_id));
         # if any positive offset arg passed
@@ -84,6 +84,11 @@ class conversation extends baseModel
         # any specific order passed
         if($order)
             $args["order"] = $order;
+        # if we are fetching messages which are not deleted by $user_id yet?
+        if($non_deleted) {
+            $args["conditions"][0] .= " AND (deleted_id IS NULL OR deleted_id NOT IN (?))";
+            $args["conditions"][] = $user_id;
+        }
         # fetch all messages based on given arguments
         $m = message::all($args);
         # if no message found
