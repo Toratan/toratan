@@ -24,8 +24,8 @@ class messagesController extends \zinux\kernel\controller\baseController
         $this->layout->AddTitle("Inbox @ Toratan");
         if(!isset($this->request->params["page"]) || $this->request->params["page"] < 1)
             $this->request->params["page"] = 1;
-        $uid = \core\db\models\user::GetInstance()->user_id;
         $fetch_limit = 10;
+        $uid = \core\db\models\user::GetInstance()->user_id;
         $c = \core\db\models\conversation::fetchAll($uid, ($this->request->params["page"] - 1) * $fetch_limit, $fetch_limit);
         $this->view->is_more =\core\db\models\conversation::countAll($uid) > $this->request->params["page"] * $fetch_limit;
         if(!is_array($c))
@@ -157,9 +157,14 @@ class messagesController extends \zinux\kernel\controller\baseController
         $c =\core\db\models\conversation::open(\core\db\models\user::GetInstance()->user_id, $this->request->params["u"], 0);
         if(!$c)
             throw new \zinux\kernel\exceptions\notFoundException;
-        $c->marked_as_read(\core\db\models\user::GetInstance()->user_id);
+        $uid = \core\db\models\user::GetInstance()->user_id;
+        $c->marked_as_read($uid);
         $this->view->cid = $c->conversation_id;
-        $this->view->messages = $c->fetch_messages(\core\db\models\user::GetInstance()->user_id);
+        if(!isset($this->request->params["page"]) || $this->request->params["page"] < 1)
+            $this->request->params["page"] = 1;
+        $fetch_limit = 20;
+        $this->view->messages = $c->fetch_messages($uid, ($this->request->params["page"] - 1) * $fetch_limit, $fetch_limit);
+        $this->view->is_more =\core\db\models\conversation::countAll($uid) > $this->request->params["page"] * $fetch_limit;
         $this->view->target_user = \core\db\models\user::Fetch($this->request->params["u"]);
         $this->view->current_user = \core\db\models\user::GetInstance();
     }

@@ -129,12 +129,12 @@ class conversation extends baseModel
      * Fetch messages based on current conversation
      * @param integer $offset (optional) The offset# for pagination
      * @param integer $limit (optional) The limit# for pagination
-     * @param string $order The sort of result(default: desc)
+     * @param string $order The sort of result(default: `created_at` DESC)
      * @return array Of messages or NULL if no message found
      */
     public function fetch_messages($user_id, $offset = -1, $limit = -1, $order = NULL, $non_deleted = 1) {
         # init args with a basic condition
-        $args = array("conditions" => array("conversation_id  = ?", $this->conversation_id));
+        $args = array("conditions" => array("conversation_id  = ?", $this->conversation_id), "order" => "`created_at` DESC");
         # if any positive offset arg passed
         if($offset >= 0)
             $args["offset"] = $offset;
