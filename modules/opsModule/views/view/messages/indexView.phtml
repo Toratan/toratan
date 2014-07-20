@@ -7,11 +7,15 @@
     #conversations .conversation *{max-height: 100px}
     #conversations .conversation.active {font-weight: bold;color:#FFF}
     #conversations .conversation .image.avatar {max-height: 80px!important; max-width: 80px!important}
+    #conversations .conversation.unseen {border: 2px solid #0088cc}
 </style>
 <div class="row">
     <div class="col-md-5 col-sm-6 col-xs-12" id='conversations'>
         <script type='text/javascript'>
             $(function(){
+            <?php if(count($this->conv_users)) : ?>
+                return;
+            <?php endif; ?>
                 // important this codes be right bellow under #conversations
                 // start tag for UI performance purposes
                 $("#conversations")
@@ -23,7 +27,7 @@
         <legend>Conversations</legend>
         <div class="list-group">
             <?php foreach($this->conv_users as $index => $user): ?>
-            <a href="#" class="list-group-item conversation" conv-id="<?php echo $this->conv_ids[$index]->conversation_id ?>" target-href="/messages/fetch_conversation/c/<?php echo $this->conv_ids[$index]->conversation_id ?>/u/<?php echo $user->user_id ?>?<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($this->conv_ids[$index]->conversation_id, $user->user_id, session_id())) ?>">
+            <a href="#" class="list-group-item conversation <?php echo @$this->conv_last_message[$index]->is_read ? "seen" : "unseen"?>" conv-id="<?php echo $this->conv_ids[$index]->conversation_id ?>" target-href="/messages/fetch_conversation/c/<?php echo $this->conv_ids[$index]->conversation_id ?>/u/<?php echo $user->user_id ?>?<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($this->conv_ids[$index]->conversation_id, $user->user_id, session_id())) ?>">
                 <div class="row">
                     <div class="col-md-3 col-sm-3 col-xs-3" style="max-width: 100px!important;padding-left: 5px">
                         <?php list($avatar, $def_avatar) = \core\ui\html\avatar::get_avatar_link($user->user_id); ?>
@@ -32,7 +36,8 @@
 
                     <div class="col-md-9 col-sm-9 col-xs-9" style="">
                                 <h4 class="list-group-item-heading" style="word-break: break-all;padding-bottom: 3px">
-                                    <?php echo ucwords($user->first_name . " " . $user->last_name) ?>
+                                    <span class='pull-left'><?php echo ucwords($user->first_name . " " . $user->last_name) ?></span>
+                                    <small style="color: #0088cc;font-size: 60%;margin-left: 5px;margin-top: 2px;font-weight: bold" class="pull-right"><?php echo @$this->conv_last_message[$index]->is_read ? "" : "New" ?></small>
                                     <span class=" list-group-item-text  pull-right small text-muted datetime">
                                         <?php echo @$this->conv_ids[$index]->last_conversation_at ?>
                                     </span>
@@ -57,13 +62,17 @@
         </div>
     </div>
 <?php if(count($this->conv_users)) : ?>
-    <div class="col-md-7 col-sm-6 col-xs-12" id="conversation-data" style="display: none;">
+    <div class="col-md-7 col-sm-6 col-xs-12" id="conversation-data">
         <legend>&nbsp;</legend>
         <div style="min-height: 500px;overflow: auto;" id="conversation-data-inner">
-            <div id="conv-load-ui" class="text-center">
+            <div id="conv-load-ui" class="text-center" style="display: none;">
                 <img src="/access/img/ajax-loader.gif" />
             </div>
-            <div id="conv-messages-placeholder"></div>
+            <div id="conv-messages-placeholder">
+                <div class="text-center text-muted" style="font-weight: bolder;font-variant: small-caps">
+                    No Conversation Selected
+                </div>
+            </div>
         </div>
     </div>
 <?php endif; ?>
@@ -113,15 +122,6 @@
                 setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
             });
             e.preventDefault();
-        })
-            .first().click();
-        $("#conversation-data").click(function(){
-            return;
-            $(this).fadeOut("fast", function(){
-                $("#conversations").animate({"width": "100%"}, function(){ 
-                    $(".conversation").removeClass("active"); 
-                });
-            });
         });
     });
 </script>

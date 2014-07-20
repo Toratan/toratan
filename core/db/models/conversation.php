@@ -50,8 +50,13 @@ class conversation extends baseModel
      * @param $user_id The user's ID
      * @return array of conversation instances
      */
-    public static function fetchAll($user_id) {
-        return parent::all(array('conditions' => array('(user1 = ? OR user2 = ?)', $user_id, $user_id), 'order' => 'last_conversation_at desc'));
+    public static function fetchAll($user_id, $non_deleted = 1) {
+        $cond = array('(user1 = ? OR user2 = ?)', $user_id, $user_id);
+        if($non_deleted) {
+            $cond[0] .= " AND (deleted_id IS NULL OR deleted_id != ?)";
+            $cond[] = $user_id;
+        }
+        return parent::all(array('conditions' => $cond, 'order' => 'last_conversation_at DESC'));
     }
     /**
      * Updates the current conversation's date
@@ -62,6 +67,32 @@ class conversation extends baseModel
         $this->last_conversation_at = $dt;
         $this->save();
         return $this;
+    }
+    /**
+     * Marks current conversation as read
+     * @param $current_user The current user ID that is marking the conversation as read
+     */
+    public function  marked_as_read($current_user) {
+        if($this->user1 != $current_user && $this->user2 != $current_user)
+            throw new \zinux\kernel\exceptions\invalidOperationException("The user#`$current_user` is not part of conversation#`$this->conversation_id`.");
+        $lm = message::find('last', array("conditions" => array("conversation_id = ? AND sender_id = ?", $this->conversation_id, $current_user)));
+        if(!$lm) return;
+        $lm->is_read = 1;
+        $lm->save();
+    }
+    /**
+     * Checks if current conversation is seen by current user?
+     * @param $current_user The current user ID
+     * @return boolean if this conversation is seen by current user returns TRUE; otherwise FALSE
+     */
+    public function is_conversation_seen($current_user) {
+        if($this->user1 != $current_user && $this->user2 != $current_user)
+            throw new \zinux\kernel\exceptions\invalidOperationException("The user#`$current_user` is not part of conversation#`$this->conversation_id`.");
+        $lm = message::find('last', array("readonly" => true, "conditions" => array("conversation_id = ? AND sender_id = ?", $this->conversation_id, $current_user)));
+        if(!$lm) return true;
+        if($lm->is_read)
+            return true;
+        return false;
     }
     /**
      * Fetch messages based on current conversation
@@ -97,5 +128,23 @@ class conversation extends baseModel
             $m = NULL;
         # return messages
         return $m;
+    }
+    /**
+     * Delete current conversation at point of view a user id, if both users of the conversation
+     * happen to delete the same conversation, the conversation will actually get deleted from database, but if only one of them
+     * delete the conversation the conversation will be invisible to that user when using `conversation::fetchAll()`
+     * @param $user_id
+     */
+    public function deleteConversation($user_id) {
+        if($this->user1 != $user_id && $this->user2 != $user_id)
+            throw new \zinux\kernel\exceptions\invalidOperationException("The user#`$user_id` is not part of conversation#`$this->conversation_id`.");
+        if(!$this->deleted_id){
+            $this->deleted_id = $user_id;
+            $this->save();
+        }
+        else {
+            $this->delete();
+            $this->readonly();
+        }
     }
 }

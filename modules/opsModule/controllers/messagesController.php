@@ -31,10 +31,12 @@ class messagesController extends \zinux\kernel\controller\baseController
         foreach($c as $index => $value) {
             $lm = new \stdClass;
             $m = \core\db\models\message::last($value->user1, $value->user2, $uid);
+            $m->readonly();
             # if any last message?
             if($m) {
                 $lm->message_data = $m->message_data;
                 $lm->created_at = $m->created_at;
+                $lm->is_read = $value->is_conversation_seen(\core\db\models\user::GetInstance()->user_id);
             } else {
                 unset($c[$index]);
                 continue;
@@ -151,6 +153,8 @@ class messagesController extends \zinux\kernel\controller\baseController
         $c =\core\db\models\conversation::open(\core\db\models\user::GetInstance()->user_id, $this->request->params["u"], 0);
         if(!$c)
             throw new \zinux\kernel\exceptions\notFoundException;
+        $c->marked_as_read(\core\db\models\user::GetInstance()->user_id);
+        $this->view->cid = $c->conversation_id;
         $this->view->messages = $c->fetch_messages(\core\db\models\user::GetInstance()->user_id);
         $this->view->target_user = \core\db\models\user::Fetch($this->request->params["u"]);
         $this->view->current_user = \core\db\models\user::GetInstance();
@@ -177,6 +181,13 @@ class messagesController extends \zinux\kernel\controller\baseController
     */
     public function delete_conversationAction()
     {
-        
+        if(!$this->request->IsPOST())
+            throw new \zinux\kernel\exceptions\accessDeniedException("Unexpected request method `{$_SERVER["REQUEST_METHOD"]}`, only `POST` requests are accepted!");
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("cid"), array("cid" => array("strlen")));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["cid"]));
+        $c =\core\db\models\conversation::find($this->request->params["cid"]);
+        $c->deleteConversation(\core\db\models\user::GetInstance()->user_id);
+        \zinux\kernel\utilities\debug::_var($c, 1);
+        exit;
     }
 }

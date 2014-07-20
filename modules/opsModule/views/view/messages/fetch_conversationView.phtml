@@ -173,6 +173,7 @@
     <script src="/access/js/moment.min.js"></script>
     <script type='text/javascript'>
         $(document).ready(function(){
+            $("a[href='#']").click(function(e){ e.preventDefault(); });
             $(".send-date").each(function(){
                 $(this).html(
                     moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').format("lll")
@@ -263,6 +264,24 @@
                     };
                     delete_messages_action(ids);
                 });
+            });
+            $("#delete-conversation-view").click(function(){
+                window.open_yesnoModal(
+                    "<b>Once you delete your copy of conversation, it cannot be undone.<br />Are you sure?</b>",
+                    function(){
+                        $.ajax({
+                            url: "/messages/delete_conversation?<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($this->cid), $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages"); ?>",
+                            method: "POST",
+                            data: "cid=<?php echo $this->cid; ?>",
+                            success: function(){
+                                window.open_dialogModal("<b>Conversation successfully deleted!");
+                                setTimeout(function(){ window.location = "/messages"; }, 1400);
+                            }
+                        }).fail(function(xhr) {
+                            setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
+                        });
+                    }
+                );
             });
             $(document).ajaxStart(function(){ window.open_waitModal(); });
             $(document).ajaxStop(function(){ window.open_waitModal(true); });
