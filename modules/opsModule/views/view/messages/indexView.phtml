@@ -8,6 +8,7 @@
     #conversations .conversation.active {font-weight: bold;color:#FFF}
     #conversations .conversation .image.avatar {max-height: 80px!important; max-width: 80px!important}
     #conversations .conversation.unseen {border: 2px solid #0088cc}
+    .window-height{min-height: 500px;overflow: auto;}
 </style>
 <div class="row">
     <div class="col-md-5 col-sm-6 col-xs-12" id='conversations'>
@@ -25,7 +26,7 @@
             });
         </script>
         <legend>Conversations</legend>
-        <div class="list-group">
+        <div class="list-group window-height">
             <?php foreach($this->conv_users as $index => $user): ?>
             <a href="#" class="list-group-item conversation <?php echo @$this->conv_last_message[$index]->is_read ? "seen" : "unseen"?>" conv-id="<?php echo $this->conv_ids[$index]->conversation_id ?>" target-href="/messages/fetch_conversation/c/<?php echo $this->conv_ids[$index]->conversation_id ?>/u/<?php echo $user->user_id ?>?<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($this->conv_ids[$index]->conversation_id, $user->user_id, session_id())) ?>">
                 <div class="row">
@@ -64,7 +65,7 @@
 <?php if(count($this->conv_users)) : ?>
     <div class="col-md-7 col-sm-6 col-xs-12" id="conversation-data">
         <legend>&nbsp;</legend>
-        <div style="min-height: 500px;overflow: auto;" id="conversation-data-inner">
+        <div class="window-height" id="conversation-data-inner">
             <div id="conv-load-ui" class="text-center" style="display: none;">
                 <img src="/access/img/ajax-loader.gif" />
             </div>
@@ -81,10 +82,10 @@
     $(function(){
         // modify frames' size on window resize event
         $(window).resize(function() {
-            var $frames = $('#conversation-data-inner');
+            var $frames = $('.window-height');
             if($(window).height() >= 420)
                 // re-size the frames
-                $frames.css('height', ($(window).height() - 110)+'px');
+                $frames.css('height', ($(window).height() - 160)+'px');
             else
                 $frames.css('height', '768px');
         });
