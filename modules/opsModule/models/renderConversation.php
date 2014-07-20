@@ -54,7 +54,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
     public function __render_conversations() {
 ?>
             <?php foreach($this->view->conv_users as $index => $user): ?>
-            <a href="#" class="list-group-item conversation <?php echo @$this->view->conv_last_message[$index]->is_read ? "seen" : "unseen"?>" conv-id="<?php echo $this->view->conv_ids[$index]->conversation_id ?>" target-href="/messages/fetch_conversation/c/<?php echo $this->view->conv_ids[$index]->conversation_id ?>/u/<?php echo $user->user_id ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->conv_ids[$index]->conversation_id, $user->user_id, session_id())) ?>">
+            <a href="#" class="list-group-item conversation <?php echo @$this->view->conv_last_message[$index]->is_read ? "seen" : "unseen"?>" conv-id="<?php echo $this->view->conv_ids[$index]->conversation_id ?>" target-href="/messages/fetch_conversation/c/<?php echo $this->view->conv_ids[$index]->conversation_id ?>/u/<?php echo $user->user_id ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->conv_ids[$index]->conversation_id, $user->user_id, session_id()), isset($this->view->request->params["ajax"]) ? ($_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages") : NULL) ?>">
                 <div class="row">
                     <div class="col-md-3 col-sm-3 col-xs-3" style="max-width: 100px!important;padding-left: 5px;<?php echo !@$this->view->conv_last_message[$index]->is_read ? "margin-top:-10px" : "" ?>">
                         <?php list($avatar, $def_avatar) = \core\ui\html\avatar::get_avatar_link($user->user_id); ?>
@@ -139,16 +139,16 @@ class renderConversation extends \zinux\kernel\model\baseModel {
 <?php if(count($this->view->conv_users)) : ?>
 <script src="/access/js/moment.min.js"></script>
 <script type="text/javascript">
-    $(function(){
+    var init_conversations_js = function() {
         var update_dates = function() {
-            $(".datetime:not(.time-inited)").each(function(){
+            $(".datetime:not(.inited)").each(function(){
                 $(this).html(
                         moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').fromNow("lll") + " ago"
-                ).addClass("time-inited");
+                ).addClass("inited");
             });
         };
         update_dates();
-        $(".conversation").click(function(e){
+        $(".conversation:not(.inited)").click(function(e){
             $(this)
                 .addClass("active")
                 .siblings()
@@ -179,15 +179,18 @@ class renderConversation extends \zinux\kernel\model\baseModel {
                 type: "POST",
                 data: "ajax=1",
                 success:function(data){
+                    console.log(data);
                     $(data).replaceAll("#load-older-conv");
-                    $("#load-older-conv").click(load_more_conv);
-                    update_dates();
+                    init_conversations_js();
                 }
             }).fail(function(xhr) {
                 setTimeout(function() { $("#load-older-conv").html($("#load-older-conv").data("initial_html"));window.open_errorModal(xhr.responseText, -1, true); }, 500);
             });
         };
-        $("#load-older-conv").click(load_more_conv);
+        $("#load-older-conv:not(.inited)").click(load_more_conv);
+    };
+    $(function(){
+        init_conversations_js();
     });
 </script>
 <?php endif; ?>

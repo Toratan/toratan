@@ -22,6 +22,12 @@ class messagesController extends \zinux\kernel\controller\baseController
     public function IndexAction()
     {
         $this->layout->AddTitle("Inbox @ Toratan");
+        # a security normalization, note that we cannot use {$this->request->GetURI()} 
+        # because of re-routing may happen, we need the origin URI.
+        if(preg_match("#/+$#i", $_SERVER["REQUEST_URI"])) {
+            header("location: /messages");
+            exit;
+        }
         if(!isset($this->request->params["page"]) || $this->request->params["page"] < 1)
             $this->request->params["page"] = 1;
         $fetch_limit = 10;
