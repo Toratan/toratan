@@ -48,7 +48,7 @@
                         </div>
                         <div class="t-<?php echo $index ?> panel-collapse collapse">
                             <div class="panel-body text-justify">
-                                <pre>[args] => <?php echo is_array($value) ? print_r($value["args"]) : "Could not serialize stack trace!!" ?></pre>
+                                <pre>[args] => <?php if(is_array($value)) print_r($value["args"]); else echo "Could not serialize stack trace!!"; ?></pre>
                             </div>
                         </div>
                       </div>
