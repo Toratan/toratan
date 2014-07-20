@@ -56,15 +56,17 @@ class renderConversation extends \zinux\kernel\model\baseModel {
             <?php foreach($this->view->conv_users as $index => $user): ?>
             <a href="#" class="list-group-item conversation <?php echo @$this->view->conv_last_message[$index]->is_read ? "seen" : "unseen"?>" conv-id="<?php echo $this->view->conv_ids[$index]->conversation_id ?>" target-href="/messages/fetch_conversation/c/<?php echo $this->view->conv_ids[$index]->conversation_id ?>/u/<?php echo $user->user_id ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->conv_ids[$index]->conversation_id, $user->user_id, session_id())) ?>">
                 <div class="row">
-                    <div class="col-md-3 col-sm-3 col-xs-3" style="max-width: 100px!important;padding-left: 5px">
+                    <div class="col-md-3 col-sm-3 col-xs-3" style="max-width: 100px!important;padding-left: 5px;<?php echo !@$this->view->conv_last_message[$index]->is_read ? "margin-top:-10px" : "" ?>">
                         <?php list($avatar, $def_avatar) = \core\ui\html\avatar::get_avatar_link($user->user_id); ?>
+                        <?php if(!@$this->view->conv_last_message[$index]->is_read): ?>
+                            <small style="color: #0088cc;font-size: 80%;margin: 0px!important;margin-bottom: -10px;margin-right: 5px;font-weight: bold;width: 100%" class="pull-left text-center">New</small>
+                        <?php endif; ?>
                         <img src="<?php echo $avatar ?>" class="image img-thumbnail img-responsive img avatar" onerror="this.src='<?php echo $def_avatar ?>'"/>
                     </div>
 
                     <div class="col-md-9 col-sm-9 col-xs-9" style="">
                                 <h4 class="list-group-item-heading" style="word-break: break-all;padding-bottom: 3px">
                                     <span class='pull-left'><?php echo ucwords($user->first_name . " " . $user->last_name) ?></span>
-                                    <small style="color: #0088cc;font-size: 60%;margin-left: 5px;margin-top: 2px;font-weight: bold" class="pull-right"><?php echo @$this->view->conv_last_message[$index]->is_read ? "" : "New" ?></small>
                                     <span class=" list-group-item-text  pull-right small text-muted datetime">
                                         <?php echo @$this->view->conv_ids[$index]->last_conversation_at ?>
                                     </span>
@@ -177,7 +179,6 @@ class renderConversation extends \zinux\kernel\model\baseModel {
                 type: "POST",
                 data: "ajax=1",
                 success:function(data){
-                    console.log("FETCHED");
                     $(data).replaceAll("#load-older-conv");
                     $("#load-older-conv").click(load_more_conv);
                     update_dates();
