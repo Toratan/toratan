@@ -178,9 +178,6 @@
                     moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').format("lll")
                 );
             });
-            $(".conversation-options a").click(function(){
-                console.error("!!NO IMPLEMENTED!!");
-            });
             var is_deleting_messages = function() {
                 if(typeof(document.deleting_message) === "undefined") return false;
                 return document.deleting_message;
@@ -243,18 +240,28 @@
                         if(typeof(array) === "undefined")
                             throw "expecting a list of IDs";
                         if(array.length === 0) return;
-                        console.log(array);
+                        $.ajax({
+                            url: "/messages/delete_messages/?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(), $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages") ?>",
+                            type: "POST",
+                            data: {"messages[]":array},
+                            success: function(data) {
+                                if(data.length)
+                                    window.open_infoModal(data);
+                                $(".message-check:checked").each(function(){
+                                    var $msg = $("message#message-"+$(this).attr('mid'));
+                                    $msg.addClass("deleted");
+                                    var $msgp = $msg.parent();
+                                    if($msgp.children("message:not(.deleted)").length < 1)
+                                        $msgp.parent(".message-group").slideUp('fast', function(){ $(this).remove(); });
+                                    else
+                                        $msg.fadeOut('slow', function(){ $(this).remove(); });
+                                });
+                            }
+                        }).fail(function(xhr) {
+                            setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
+                        });
                     };
                     delete_messages_action(ids);
-                    $(".message-check:checked").each(function(){
-                        var $msg = $("message#message-"+$(this).attr('mid'));
-                        $msg.addClass("deleted");
-                        var $msgp = $msg.parent();
-                        if($msgp.children("message:not(.deleted)").length < 1)
-                            $msgp.parent(".message-group").slideUp('fast', function(){ $(this).remove(); });
-                        else
-                            $msg.fadeOut('slow', function(){ $(this).remove(); });
-                    });
                 });
             });
             $(document).ajaxStart(function(){ window.open_waitModal(); });

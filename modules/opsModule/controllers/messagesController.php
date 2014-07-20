@@ -149,7 +149,7 @@ class messagesController extends \zinux\kernel\controller\baseController
         $c =\core\db\models\conversation::open(\core\db\models\user::GetInstance()->user_id, $this->request->params["u"], 0);
         if(!$c)
             throw new \zinux\kernel\exceptions\notFoundException;
-        $this->view->messages = $c->fetch_messages();
+        $this->view->messages = $c->fetch_messages(\core\db\models\user::GetInstance()->user_id);
         $this->view->target_user = \core\db\models\user::Fetch($this->request->params["u"]);
         $this->view->current_user = \core\db\models\user::GetInstance();
     }
@@ -162,5 +162,10 @@ class messagesController extends \zinux\kernel\controller\baseController
     {
         if(!$this->request->IsPOST())
             throw new \zinux\kernel\exceptions\accessDeniedException("Unexpected request method `{$_SERVER["REQUEST_METHOD"]}`, only `POST` requests are accepted!");
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("messages"), array("messages" => array("\is_array", "\count")));
+        \zinux\kernel\security\security::__validate_request($this->request->params);
+        $msgs = $this->request->params["messages"];
+        \core\db\models\message::deleteCollection(\core\db\models\user::GetInstance()->user_id, $msgs);
+        exit;
     }
 }
