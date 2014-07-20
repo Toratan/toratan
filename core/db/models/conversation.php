@@ -119,7 +119,7 @@ class conversation extends baseModel
     public function is_conversation_seen($current_user) {
         if($this->user1 != $current_user && $this->user2 != $current_user)
             throw new \zinux\kernel\exceptions\invalidOperationException("The user#`$current_user` is not part of conversation#`$this->conversation_id`.");
-        $lm = message::find('last', array("readonly" => true, "conditions" => array("conversation_id = ? AND sender_id = ?", $this->conversation_id, $current_user)));
+        $lm = message::find('last', array("readonly" => true, "conditions" => array("conversation_id = ? AND receiver_id = ?", $this->conversation_id, $current_user)));
         if(!$lm) return true;
         if($lm->is_read)
             return true;
