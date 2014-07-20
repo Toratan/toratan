@@ -170,4 +170,13 @@ class messagesController extends \zinux\kernel\controller\baseController
         \core\db\models\message::deleteCollection(\core\db\models\user::GetInstance()->user_id, $msgs);
         exit;
     }
+
+    /**
+    * The \modules\opsModule\controllers\messagesController::delete_conversationAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function delete_conversationAction()
+    {
+        
+    }
 }

@@ -45,7 +45,7 @@
                     <li><a href="#" id="delete-messages-view">Delete Messages</a></li>
                     <li><a href="#">Mark Conversation</a></li>
                     <li class='divider'></li>
-                    <li><a href="#">Delete Conversation</a></li>
+                    <li><a href="#" id="delete-conversation-view">Delete Conversation</a></li>
                 </ul>
             </div>
         </div>
@@ -186,7 +186,7 @@
                 $('.message-check').fadeIn();$('.conversation-options').parents('.topbar').hide();
                 document.deleting_message = true;
                 $("message mbody").css("cursor", "pointer");
-            }).click();
+            });
             $("#delete-messages-cancel").click(function(){
                 $('.conversation-options').parents('.topbar').show();
                 $('.message-check').fadeOut();
