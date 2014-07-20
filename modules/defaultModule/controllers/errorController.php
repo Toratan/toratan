@@ -85,7 +85,15 @@ class errorController extends \zinux\kernel\controller\baseController
     {
         if($this->request->CountIndexedParam() !== 1 )
             die(\core\ui\html\alert::Tout("BAD REQUEST", \core\ui\html\alert::PIPE_DANGER));
-        $this->view->e = \core\db\models\exception::find($this->request->indexed_param[0]);
+        try{
+            $this->view->e = \core\db\models\exception::find($this->request->indexed_param[0]);
+        } catch(\zinux\kernel\exceptions\notFoundException $_e) {
+            $e = new \core\db\models\exception;
+            $e->disableSave();
+            $e->exception_id = $this->request->indexed_param[0];
+            $e->exception_data =serialize($_e);
+            $this->view->e = $e;
+        }
         $this->layout->SetLayout("basic");
         $this->layout->AddTitle("Error #{$this->view->e->exception_id}");
     }
