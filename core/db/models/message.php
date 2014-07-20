@@ -31,14 +31,17 @@ class message extends baseModel
      * Find last message between two users
      * @param $user_id1 The user ID
      * @param $user_id2 The user ID
+     * @param $current_user The current user id which is reviewing the last message?(SHOULD BE ONE OF $user_id1 OR $user_id2)
      * @return message The last message
      */
-    public static function last($user_id1, $user_id2)
+    public static function last($user_id1, $user_id2, $current_user)
     {
+        if($user_id1 !== $current_user && $user_id2 !== $current_user)
+            throw new \zinux\kernel\exceptions\invalidArgumentException("\$current_user SHOULD BE ONE OF \$user_id1 OR \$user_id2");
         $c = conversation::fetch($user_id1, $user_id2);
         if(!$c)
             throw new \zinux\kernel\exceptions\notFoundException("No conversation between `$user_id1` and `$user_id2` found.");
-        return parent::last(array('conditions' => array('conversation_id = ?', $c->conversation_id)));
+        return parent::last(array('conditions' => array('conversation_id = ? AND (deleted_id IS NULL OR deleted_id NOT IN (?))', $c->conversation_id, $current_user)));
     }
     /**
      * Delete a collection of messsages at point of view a user id, if both the sender and the reciever of the message

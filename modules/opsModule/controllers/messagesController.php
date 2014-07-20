@@ -30,12 +30,14 @@ class messagesController extends \zinux\kernel\controller\baseController
         $users = array();
         foreach($c as $index => $value) {
             $lm = new \stdClass;
-            $m = \core\db\models\message::last($value->user1, $value->user2);
+            $m = \core\db\models\message::last($value->user1, $value->user2, $uid);
             # if any last message?
             if($m) {
                 $lm->message_data = $m->message_data;
                 $lm->created_at = $m->created_at;
             } else {
+                unset($c[$index]);
+                continue;
                 $lm->message_data = "NO MESSAGE";
                 $lm->created_at = NULL;
             }

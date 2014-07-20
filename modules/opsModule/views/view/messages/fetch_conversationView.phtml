@@ -183,13 +183,13 @@
                 return document.deleting_message;
             };
             $("#delete-messages-view").click(function(){
-                $('.message-check').fadeToggle();$('.conversation-options').parents('.topbar').hide();
+                $('.message-check').fadeIn();$('.conversation-options').parents('.topbar').hide();
                 document.deleting_message = true;
                 $("message mbody").css("cursor", "pointer");
             }).click();
             $("#delete-messages-cancel").click(function(){
                 $('.conversation-options').parents('.topbar').show();
-                $('.message-check').fadeToggle();
+                $('.message-check').fadeOut();
                 $("message mbody").css("cursor", "default");
                 delete document.deleting_message;
                 $(".message-check:checked").prop("checked", false);
