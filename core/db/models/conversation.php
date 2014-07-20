@@ -78,7 +78,7 @@ class conversation extends baseModel
     }
     /**
      * Counts user's all conversation
-     * @param $user_id The user's ID
+     * @param $user_id The user's ID for whom is fetching for
      * @return integer # of user's conversations
      */
     public static function countAll($user_id, $non_deleted = 1) {
