@@ -296,7 +296,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                     "<b>Once you delete your copy of conversation, it cannot be undone.<br />Are you sure?</b>",
                     function(){
                         $.ajax({
-                            url: "/messages/delete_conversation?<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid), $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages"); ?>",
+                            url: "/messages/delete_conversation?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid), $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages"); ?>",
                             method: "POST",
                             data: "cid=<?php echo $this->view->cid; ?>",
                             success: function(){
