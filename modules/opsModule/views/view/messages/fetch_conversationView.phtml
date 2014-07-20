@@ -1,7 +1,11 @@
 <?php
     $rm = new modules\opsModule\models\renderMessage($this);
+if(isset($this->request->params["ajax"])) {
+    $rm->__render_messages();
+} else {
     $rm->__render_header();
     $rm->__render_messages();
     $rm->__render_css();
     $rm->__render_js();
     $rm->__render_footer();
+}
