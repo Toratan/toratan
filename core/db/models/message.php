@@ -64,4 +64,19 @@ class message extends baseModel
                 "UPDATE  `".(\ActiveRecord\Utils::pluralize(str_replace(__NAMESPACE__."\\", "", __CLASS__)))."` SET deleted_id =  ? WHERE (sender_id = ? OR receiver_id = ?) AND message_id IN ($messages_id) AND deleted_id IS NULL",
                 array($user_id, $user_id, $user_id));
     }
+    /**
+     * Counts a conversation's messages
+     * @param $user_id The user's ID for whom is fetching for
+     * @return integer # of conversations's messages
+     */
+    public static function countAll(conversation $conversation, $user_id, $non_deleted = 1) {
+        $conversation->readonly();
+        $cond = array('conversation_id = ?', $conversation->conversation_id);
+        if($non_deleted) {
+            $cond[0] .= " AND (deleted_id IS NULL OR deleted_id != ?)";
+            $cond[] = $user_id;
+        }
+        $conversation->readonly(false);
+        return parent::count(array('conditions' => $cond));
+    }
 }

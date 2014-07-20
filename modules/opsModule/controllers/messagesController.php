@@ -164,7 +164,7 @@ class messagesController extends \zinux\kernel\controller\baseController
             $this->request->params["page"] = 1;
         $fetch_limit = 20;
         $this->view->messages = $c->fetch_messages($uid, ($this->request->params["page"] - 1) * $fetch_limit, $fetch_limit);
-        $this->view->is_more =\core\db\models\conversation::countAll($uid) > $this->request->params["page"] * $fetch_limit;
+        $this->view->is_more =\core\db\models\message::countAll($c, $uid) > $this->request->params["page"] * $fetch_limit;
         $this->view->target_user = \core\db\models\user::Fetch($this->request->params["u"]);
         $this->view->current_user = \core\db\models\user::GetInstance();
     }

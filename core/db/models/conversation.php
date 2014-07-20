@@ -77,7 +77,7 @@ class conversation extends baseModel
         return parent::all($args);
     }
     /**
-     * Counds user's all conversation
+     * Counts user's all conversation
      * @param $user_id The user's ID
      * @return integer # of user's conversations
      */
