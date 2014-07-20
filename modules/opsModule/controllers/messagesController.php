@@ -22,8 +22,12 @@ class messagesController extends \zinux\kernel\controller\baseController
     public function IndexAction()
     {
         $this->layout->AddTitle("Inbox @ Toratan");
+        if(!isset($this->request->params["page"]) || $this->request->params["page"] < 1)
+            $this->request->params["page"] = 1;
         $uid = \core\db\models\user::GetInstance()->user_id;
-        $c = \core\db\models\conversation::fetchAll($uid);
+        $fetch_limit = 10;
+        $c = \core\db\models\conversation::fetchAll($uid, ($this->request->params["page"] - 1) * $fetch_limit, $fetch_limit);
+        $this->view->is_more =\core\db\models\conversation::countAll($uid) > $this->request->params["page"] * $fetch_limit;
         if(!is_array($c))
             throw new \zinux\kernel\exceptions\invalidOperationException("Expecting conversation list to be array!!");
         $last_messages = array();

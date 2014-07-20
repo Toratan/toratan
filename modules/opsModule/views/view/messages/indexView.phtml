@@ -1,8 +1,12 @@
 <?php
     $rc = new modules\opsModule\models\renderConversation($this);
+if(isset($this->request->params["ajax"])) {
+    $rc->__render_conversations();
+} else {
     $rc->__render_css();
     $rc->__render_header();
     $rc->__render_conversations();
     $rc->__render_footer();
     $rc->__render_js();
+}
 ?>

@@ -79,7 +79,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
             <?php endforeach; ?>
             <?php if($this->view->is_more): ?>
             <div class="clearfix"></div>
-            <a href="/messages/page/2" class="list-group-item text-center" style="margin-bottom: 10px;font-weight: bold;font-size: 80%;color:#0088cc">
+            <a href="/messages/page/<?php echo $this->view->request->params["page"] + 1?>" class="list-group-item text-center" id="load-older-conv" style="margin-bottom: 10px;font-weight: bold;font-size: 80%;color:#0088cc">
                 <span class="glyphicon glyphicon-arrow-down"></span> Load Older Conversations
             </a>
             <?php endif; ?>
@@ -138,11 +138,14 @@ class renderConversation extends \zinux\kernel\model\baseModel {
 <script src="/access/js/moment.min.js"></script>
 <script type="text/javascript">
     $(function(){
-        $(".datetime").each(function(){
-            $(this).html(
-                    moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').fromNow("lll") + " ago"
-            );
-        });
+        var update_dates = function() {
+            $(".datetime:not(.time-inited)").each(function(){
+                $(this).html(
+                        moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').fromNow("lll") + " ago"
+                ).addClass("time-inited");
+            });
+        };
+        update_dates();
         $(".conversation").click(function(e){
             $(this)
                 .addClass("active")
@@ -165,6 +168,25 @@ class renderConversation extends \zinux\kernel\model\baseModel {
             });
             e.preventDefault();
         });
+        var load_more_conv = function(e){
+            e.preventDefault();
+            $(this).data("initial_html", $(this).html());
+            $(this).html("Loading....");
+            $.ajax({
+                url: $(this).attr("href"),
+                type: "POST",
+                data: "ajax=1",
+                success:function(data){
+                    console.log("FETCHED");
+                    $(data).replaceAll("#load-older-conv");
+                    $("#load-older-conv").click(load_more_conv);
+                    update_dates();
+                }
+            }).fail(function(xhr) {
+                setTimeout(function() { $("#load-older-conv").html($("#load-older-conv").data("initial_html"));window.open_errorModal(xhr.responseText, -1, true); }, 500);
+            });
+        };
+        $("#load-older-conv").click(load_more_conv);
     });
 </script>
 <?php endif; ?>
