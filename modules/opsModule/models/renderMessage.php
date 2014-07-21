@@ -29,7 +29,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                 </button>
                 <ul class="dropdown-menu pull-right">
                     <li><a href="#" id="delete-messages-view">Delete Messages</a></li>
-                    <li><a href="#">Mark Conversation</a></li>
+                    <li><a href="#" id="report-conv-view">Report Conversation</a></li>
                     <li class='divider'></li>
                     <li><a href="#" id="delete-conversation-view">Delete Conversation</a></li>
                 </ul>
@@ -335,6 +335,18 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                         });
                     }
                 );
+            });
+            $("#report-conv-view").click(function(){
+                $.ajax({
+                    url:"/messages/report/type/conv/i/<?php echo $this->view->cid; ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid), $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages") ?>",
+                    type: "POST",
+                    data: "ajax=1",
+                    success: function(data) {
+                        window.open_dialogModal(data);
+                    }
+                }).fail(function(xhr) {
+                    setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
+                });
             });
             $(document).ajaxStart(function(){ window.open_waitModal(); });
             $(document).ajaxStop(function(){ window.open_waitModal(true); });

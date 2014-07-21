@@ -205,4 +205,18 @@ class messagesController extends \zinux\kernel\controller\baseController
         \zinux\kernel\utilities\debug::_var($c, 1);
         exit;
     }
+
+    /**
+    * The \modules\opsModule\controllers\messagesController::reportAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function reportAction()
+    {
+        if(!$this->request->IsPOST())
+            throw new \zinux\kernel\exceptions\accessDeniedException("Unexpected request method `{$_SERVER["REQUEST_METHOD"]}`, only `POST` requests are accepted!");
+        $this->layout->SuppressLayout();
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("type", "i"), array("type" => "strlen", "i" => "strlen"));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["i"]));
+        \zinux\kernel\utilities\debug::_var($this->request->params, 1);
+    }
 }
