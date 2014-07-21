@@ -179,7 +179,6 @@ class renderConversation extends \zinux\kernel\model\baseModel {
                 type: "POST",
                 data: "ajax=1",
                 success:function(data){
-                    console.log(data);
                     $(data).replaceAll("#load-older-conv");
                     init_conversations_js();
                 }
