@@ -27,6 +27,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
     #conversations .conversation .image.avatar {max-height: 80px!important; max-width: 80px!important}
     #conversations .conversation.unseen {border: 2px solid #0088cc}
     .window-height{min-height: 500px;overflow: auto;}
+    .load-older {margin-bottom: 10px;font-weight: bold;font-size: 80%;color:#0088cc!important}
 </style>
 <?php
     }
@@ -81,7 +82,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
             <?php endforeach; ?>
             <?php if($this->view->is_more): ?>
             <div class="clearfix"></div>
-            <a href="/messages/page/<?php echo $this->view->request->params["page"] + 1?>" class="list-group-item text-center" id="load-older-conv" style="margin-bottom: 10px;font-weight: bold;font-size: 80%;color:#0088cc">
+            <a href="/messages/page/<?php echo $this->view->request->params["page"] + 1?>" class="list-group-item text-center load-older" id="load-older-conv">
                 <span class="glyphicon glyphicon-arrow-down"></span> Load Older Conversations
             </a>
             <?php endif; ?>

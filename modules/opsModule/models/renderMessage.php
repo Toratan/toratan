@@ -121,12 +121,10 @@ class renderMessage extends \zinux\kernel\model\baseModel {
     </div>
     <?php endforeach; ?>
     <?php if($this->view->is_more): ?>
-    <div id="load-older-msgs">
-        <div style="border: 1px solid #EEE;padding:10px;font-weight: bold" class="text-center">
-            <a href="/messages/fetch_conversation/page/<?php echo $this->view->request->params["page"] + 1 ?>/c/<?php echo $this->view->cid ?>/u/<?php echo $this->view->target_user->user_id ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid, $this->view->target_user->user_id, session_id()), ($_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages")) ?>" id="load-older-msgs-link">
-                <span class="glyphicon glyphicon-arrow-down"></span> Load Older Messages
-            </a>
-        </div>
+    <div id="load-older-msgs" class="list-group text-center">
+        <a href="/messages/fetch_conversation/page/<?php echo $this->view->request->params["page"] + 1 ?>/c/<?php echo $this->view->cid ?>/u/<?php echo $this->view->target_user->user_id ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid, $this->view->target_user->user_id, session_id()), ($_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages")) ?>" id="load-older-msgs-link" class="list-group-item load-older">
+            <span class="glyphicon glyphicon-arrow-down"></span> Load Older Messages
+        </a>
     </div>
     <?php endif; ?>
 </div>
@@ -209,8 +207,8 @@ class renderMessage extends \zinux\kernel\model\baseModel {
     <script type='text/javascript'>
         $(document).ready(function(){
             var is_deleting_messages = function() {
-                if(typeof(document.deleting_message) === "undefined") return false;
-                return document.deleting_message;
+                if(typeof(window.deleting_message) === "undefined") return false;
+                return window.deleting_message;
             };
             var ini_messages_js = function() {
                 $("a[href='#']").click(function(e){ e.preventDefault(); });
@@ -260,14 +258,14 @@ class renderMessage extends \zinux\kernel\model\baseModel {
             ini_messages_js();
             $("#delete-messages-view").click(function(){
                 $('.message-check').fadeIn();$('.conversation-options').parents('.topbar').hide();
-                document.deleting_message = true;
+                window.deleting_message = true;
                 $("message mbody").css("cursor", "pointer");
             });
             $("#delete-messages-cancel").click(function(){
                 $('.conversation-options').parents('.topbar').show();
                 $('.message-check').fadeOut();
                 $("message mbody").css("cursor", "default");
-                delete document.deleting_message;
+                delete window.deleting_message;
                 $(".message-check:checked").prop("checked", false);
             });
             $("a#send-message").click(function(e){
