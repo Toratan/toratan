@@ -217,6 +217,18 @@ class messagesController extends \zinux\kernel\controller\baseController
         $this->layout->SuppressLayout();
         \zinux\kernel\security\security::IsSecure($this->request->params, array("type", "i"), array("type" => "strlen", "i" => "strlen"));
         \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["i"]));
-        \zinux\kernel\utilities\debug::_var($this->request->params, 1);
+        if(!in_array($this->request->params["type"], array("conv")))
+                throw new \zinux\kernel\exceptions\invalidOperationException("Unexpected `type` value : `{$this->request->params["type"]}`");
+        if(!isset($this->request->params["submit"])) return;
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("reportmsg"));
+        if(!in_array($this->request->params["reportmsg"], array("spam")))
+            throw new \zinux\kernel\exceptions\invalidOperationException("Unexpected `reportmsg` value : `{$this->request->params["reportmsg"]}`");
+        switch($this->request->params["type"]) {
+            case "conv":
+                break;
+            default:
+                throw new \zinux\kernel\exceptions\invalidOperationException("Unexpected `type` value : `{$this->request->params["type"]}`");
+        }
+        exit;
     }
 }
