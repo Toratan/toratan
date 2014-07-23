@@ -108,8 +108,12 @@ class messagesController extends \zinux\kernel\controller\baseController
             else {
                 # fetch the count since last send date
                 $lsdc = $profile->getSetting("/message/last_send_date_count");
-                # between every 40 message in each day
-                if($lsdc && $lsdc % 40 === 0)
+                # periodically between message in each day which increase over time that users trying send new message
+                # the periodically messages# count for launching recaptcha are:
+                # 40, 60, 80, 91, 104, 117, 130, 140, 150, 160, 168, 176, 184, 192, 200, ...
+                # the distances are:
+                # 40, 20, 20, 11, 13, 13, 13, 10, 10, 10, 8, 8, 8, 8, 8, 8, ...
+                if($lsdc && $lsdc % (40 / ceil($lsdc / 40)) === 0)
                     # we need recaptcha to be in effect
                     $this->view->use_recaptcha = TRUE;
             }
