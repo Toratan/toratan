@@ -43,8 +43,8 @@
                 success: function(data) {
                     window.close_modal();
                     setTimeout(function() {
-                        window.open_dialogModal("<b>"+data+"</b>", -2000);
-//                        setTimeout(function() { window.location.reload(); }, 2000);
+                        window.open_dialogModal("<b>"+data+"</b>", 2000);
+                        setTimeout(function() { window.location.reload(); }, 2000);
                     }, 500);
                 }
             }).fail(function(xhr) {

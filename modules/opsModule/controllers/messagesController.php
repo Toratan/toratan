@@ -202,7 +202,6 @@ class messagesController extends \zinux\kernel\controller\baseController
         \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["cid"]));
         $c =\core\db\models\conversation::find($this->request->params["cid"]);
         $c->deleteConversation(\core\db\models\user::GetInstance()->user_id);
-        \zinux\kernel\utilities\debug::_var($c, 1);
         exit;
     }
 
@@ -212,22 +211,52 @@ class messagesController extends \zinux\kernel\controller\baseController
     */
     public function reportAction()
     {
+        # we only accept POST requests
         if(!$this->request->IsPOST())
             throw new \zinux\kernel\exceptions\accessDeniedException("Unexpected request method `{$_SERVER["REQUEST_METHOD"]}`, only `POST` requests are accepted!");
+        # this should always be an ajax call, no need for layout 
         $this->layout->SuppressLayout();
+        # validating data existance
         \zinux\kernel\security\security::IsSecure($this->request->params, array("type", "i"), array("type" => "strlen", "i" => "strlen"));
+        # validating the request
         \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["i"]));
+        # validating the instance type for reporting
         if(!in_array($this->request->params["type"], array("conv")))
                 throw new \zinux\kernel\exceptions\invalidOperationException("Unexpected `type` value : `{$this->request->params["type"]}`");
+        # if we are submiting 
         if(!isset($this->request->params["submit"])) return;
+        # if submiting we need to re-validate the submited data
         \zinux\kernel\security\security::IsSecure($this->request->params, array("reportmsg"));
+        # validating report type
         if(!in_array($this->request->params["reportmsg"], array("spam")))
             throw new \zinux\kernel\exceptions\invalidOperationException("Unexpected `reportmsg` value : `{$this->request->params["reportmsg"]}`");
+        # define an instance for the ops
+        $instance = NULL;
+        # branch off the instance type
         switch($this->request->params["type"]) {
+            # if we are flaging a converation
             case "conv":
+                # fetch the conversation
+                $instance = \core\db\models\conversation::find($this->request->params["i"]);
                 break;
             default:
                 throw new \zinux\kernel\exceptions\invalidOperationException("Unexpected `type` value : `{$this->request->params["type"]}`");
+        }
+        # fail-safe for validation
+        if(!($instance instanceof \core\db\models\communicationModel))
+            throw new \zinux\kernel\exceptions\invalidOperationException("Expecting \$instance to be instance of `\\core\\db\\models\\communicationModel` for type `{$this->request->params["type"]}` but wasn't.");
+        # branch off the report type
+        switch($this->request->params["reportmsg"]) {
+            # ops for {SPAM} stuff
+            case "spam":
+                # mark as spam
+                $instance->mark_as_spam();
+                # delete the conversation
+                $instance->deleteConversation(\core\db\models\user::GetInstance()->user_id);
+                die("The item marked as spam successfully!");
+                break;
+            default:
+                throw new \zinux\kernel\exceptions\invalidOperationException("Unexpected `reportmsg` value : `{$this->request->params["reportmsg"]}`");
         }
         exit;
     }

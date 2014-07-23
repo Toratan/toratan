@@ -4,7 +4,7 @@ namespace core\db\models;
 /**
  * Conversation Entity
  */
-class conversation extends baseModel
+class conversation extends communicationModel
 {
     static $belongs_to = array(
       array('profile', 'readonly' => true ,'select' => 'user_id, first_name, last_name')
@@ -23,6 +23,11 @@ class conversation extends baseModel
             $c->user1 = $user_id1;
             $c->user2 = $user_id2;
             $c->save();
+        }
+        # if mark as below?
+        switch($c->marked_as){
+            case self::MARKED_AS_SPAM:
+                throw new \zinux\kernel\exceptions\accessDeniedException("It is not possible to open an spammed conversation #{$c->conversation_id}");
         }
         return $c;
     }
@@ -52,7 +57,7 @@ class conversation extends baseModel
      * @param integer $limit (optional) The limit# for pagination
      * @return array of conversation instances
      */
-    public static function fetchAll($user_id, $offset = -1, $limit = -1, $non_deleted = 1) {
+    public static function fetchAll($user_id, $offset = -1, $limit = -1, $non_deleted = 1, $marked_as = self::MARKED_AS_NORMAL) {
         # init args with a basic condition
         $args = array('order' => 'last_conversation_at DESC');
         # init conditions
@@ -62,6 +67,20 @@ class conversation extends baseModel
             # update the conditions
             $cond[0] .= " AND (deleted_id IS NULL OR deleted_id != ?)";
             $cond[] = $user_id;
+        }
+        # if marked as is defined?
+        if(is_integer($marked_as)) {
+            # validate the input
+            switch($marked_as) {
+                case self::MARKED_AS_NORMAL:
+                case self::MARKED_AS_SPAM:
+                    break;
+                default:
+                    throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid \$marked_as value : `$marked_as`");
+            }
+            # update the conditions
+            $cond[0] .= " AND marked_as = ?";
+            $cond[] = $marked_as;
         }
         # if any positive offset arg passed
         if($offset >= 0)

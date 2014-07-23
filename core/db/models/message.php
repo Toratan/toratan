@@ -4,7 +4,7 @@ namespace core\db\models;
 /**
  * Message Entity
  */
-class message extends baseModel
+class message extends communicationModel
 {
     static $validates_presence_of = array(
         array("conversation_id", "sender_id", "receiver_id", "message_data")
