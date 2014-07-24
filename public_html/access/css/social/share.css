@@ -91,15 +91,14 @@ ul.social-sharing li.shareBtn a .sIcon {
     width: 15px;
     font-size: 11px;
     position: relative;
-    margin-right: 3px;
 }
 
-ul.social-sharing li.animate { 
+ul.social-sharing li.animated { 
     opacity: 1!important;
     max-height: 999px
 }
 
-ul.social-sharing li.animate a { 
+ul.social-sharing li.animated a { 
     left: 0;
     pointer-events: auto;
     cursor: pointer
@@ -122,7 +121,7 @@ ul.social-sharing li.sbMain a {
     pointer-events: auto;
     cursor: pointer
 }
-.social-sharing .shareBtn.animate:not(.sbMain) {
+ul.social-sharing li.shareBtn:not(.sbMain):not(.animated) {
     display: none;
 }
 ul.social-sharing li.sbMain a .sIcon {

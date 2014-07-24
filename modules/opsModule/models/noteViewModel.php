@@ -209,41 +209,52 @@ class noteViewModel
         # otherwise render the note's origin body.
         echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
     ?></div>
-    <div style="width: 100px;margin-top: 23px;" class="pull-right">
+    <div class="pull-right right-sticky-container">
         <ul class="social-sharing" style="">
+            <?php  $uri = $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__.preg_replace("#^/ops#i", "", $this->view->request->GetURI()); ?>
             <li class="shareBtn sbMain">
-                <a href="https://www.digitalocean.com/community/tutorials/how-to-configure-the-apache-web-server-on-an-ubuntu-or-debian-vps#">
-                <span class="sIcon icon-share"></span>  
-                SHARE
+                <a href="#">
+                    <span class="sIcon icon-share"></span>  
+                    SHARE
                 </a>
             </li>
-            <li class="shareBtn animatable" id="sbTwitter">
-                <a href="http://twitter.com/share?text=How%20To%20Configure%20the%20Apache%20Web%20Server%20on%20an%20Ubuntu%20or%20Debian%20VPS&url=https://www.digitalocean.com/community/tutorials/how-to-configure-the-apache-web-server-on-an-ubuntu-or-debian-vps" target="_blank" title="Share on Twitter">
-                <span class="sIcon icon-bird"></span>  
-                TWEET
+            <li class="shareBtn animatable animated" id="sbTwitter">
+                <a href="http://twitter.com/share?text=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&url=<?php echo $uri ?>" target="_blank" title="Share on Twitter">
+                    <span class="sIcon icon-bird"></span>  
+                    TWEET
                 </a>
             </li>
-            <li class="shareBtn animatable" id="sbFacebook">
-                <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-configure-the-apache-web-server-on-an-ubuntu-or-debian-vps" target="_blank" title="Share on Facebook">
-                <span class="sIcon icon-facebook-B"></span>
-                SHARE
+            <li class="shareBtn animatable animated" id="sbFacebook">
+                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $uri ?>" target="_blank" title="Share on Facebook">
+                    <span class="sIcon icon-facebook-B"></span>
+                    SHARE
                 </a>
             </li>
-            <li class="shareBtn animatable" id="sbGoogle">
-                <a href="https://plus.google.com/share?url=https://www.digitalocean.com/community/tutorials/how-to-configure-the-apache-web-server-on-an-ubuntu-or-debian-vps" target="_blank" title="Share on Google+">
-                <span class="sIcon icon-google-plus-B"></span>  
-                SHARE
+            <li class="shareBtn animatable animated" id="sbGoogle">
+                <a href="https://plus.google.com/share?url=<?php echo $uri ?>" target="_blank" title="Share on Google+">
+                    <span class="sIcon icon-google-plus-B"></span>  
+                    SHARE
                 </a>
             </li>
         </ul>
     </div>
+    <style>
+        @media screen and (max-width: 450px) {
+            #note-body{width: 100%!important}
+            .right-sticky-container{clear: both}
+        }
+        .right-sticky-container { width: 100px; margin-top: 23px }
+        .sticky-wrapper.is-sticky  .right-sticky-container { margin-top: 10px;}
+    </style>
     <link rel="stylesheet" href='/access/css/social/share.css' />
+    <script type="text/javascript" src="/access/js/sticky/jquery.sticky.min.js"></script>
     <script type="text/javascript" src="/access/css/social/share.js"></script>
     <script src="/access/js/moment.min.js"></script>
     <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
     <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
     <script type="text/javascript">
         (function(){
+            $(".right-sticky-container").sticky();
     <?php if(!$is_preview): ?>
             window.ajax_start = function(){ window.open_waitModal();};
             window.ajax_stop = function() { window.open_waitModal(true);};
