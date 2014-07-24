@@ -8,7 +8,7 @@ $(function(){
         var t = $(this).parents(".social-sharing").find(".shareBtn.animatable"), e = 0, i = function() {
             var $e = $(t[e++]);
             if(!$e.hasClass("animated")) {
-                $e.animate({margin: "+=10px", "margin-top": "+=20px"}, 100, function(){$(this).animate({margin: "-=10px", "margin-top": "-=20px"})});
+                $e.stop().animate({margin: "+=10px", "margin-top": "+=20px"}, 100, function(){$(this).animate({margin: "-=10px", "margin-top": "-=20px"});});
             }
             $e.toggleClass("animated"), e < t.length && setTimeout(i, 50);
         };

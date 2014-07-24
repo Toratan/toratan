@@ -81,7 +81,8 @@ ul.social-sharing li.shareBtn a {
     -o-transition: left .3s ease;
     transition: left .3s ease;
     pointer-events: none;
-    cursor: default
+    cursor: default;
+    font-weight: bolder;
 }
 
 ul.social-sharing li.shareBtn a .sIcon { 
