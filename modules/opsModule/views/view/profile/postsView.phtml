@@ -133,8 +133,16 @@
                 $(window).scroll(function() {
                     var h = [];
                     $(".row.article").each(function() {
-                        var ts = $(window).scrollTop() / $(this).offset().top;
-                        if(ts > 0.99 && ts < 1.0) {
+                        var isScrolledIntoView = function (elem){
+                            var docViewTop = $(window).scrollTop();
+                            var docViewBottom = docViewTop + $(window).height();
+
+                            var elemTop = $(elem).offset().top;
+                            var elemBottom = elemTop + $(elem).height();
+
+                            return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+                        };
+                        if(isScrolledIntoView(this)) {
                             h.push($(this).find('.year').text());
                         }
                     });
