@@ -137,6 +137,10 @@
         function openGuides() {
             window.open_dialogModal($("#ace-guide").html());
         };
+        function tagit(){
+            console.log("FUCK");
+            window.open_infoModal('<input type="text" name="tags" id="tags" class="block input form-control" placeholder="Tag this note(Optional)" value="" />');
+        };
 </script>
 <!-- ace editor placeholder -->
 <div id="editor-container">
@@ -152,7 +156,12 @@
                 <button onclick="save(window.editor);" type="button" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;" tabindex="-1" title="Save">
                     <span class="glyphicon glyphicon-hdd"></span>
                 </button>
-                <a href="<?php echo $this->edit && $note_id ? "/view/note/$note_id" : "/#!/d/{$this->pid}.notes" ?>" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;"><span class="glyphicon glyphicon-trash"></span></a>
+                <a href="<?php echo $this->edit && $note_id ? "/view/note/$note_id" : "/#!/d/{$this->pid}.notes" ?>" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
+                <a class="btn btn-success" onclick='tagit();return false;' tabindex="-1" style="margin-left:10px;" title="Tag this note">
+                    <span class="glyphicon glyphicon-tags"></span>
+                </a>
             </span>
             <div class="pull-right">
                 <div class="input-group inline">
