@@ -138,8 +138,10 @@
             window.open_dialogModal($("#ace-guide").html());
         };
         function tagit(){
-            console.log("FUCK");
-            window.open_infoModal('<input type="text" name="tags" id="tags" class="block input form-control" placeholder="Tag this note(Optional)" value="" />');
+            window.open_savecloseModal($("#tagit-container").html(), function(){
+                $("#tagit-container .tagit").attr('value', $(".modal-body .tagit").val());
+            });
+            setTimeout(function(){ $('input[name="tags"]').focus(); },600);
         };
 </script>
 <!-- ace editor placeholder -->
@@ -190,6 +192,10 @@
 <script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <form action="/<?php echo $this->request->action->name ?>/note/<?php echo $this->edit ? "$note_id?": "?pid=$this->pid"?><?php echo zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit ? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>" method="POST" name='note' style="display: none;">
     <input type="hidden" name="version" value="ace" />
+    <div id="tagit-container" style="display: none">
+        <label>Tag this note (Separate with SPACE):</label>
+        <input type="text" name="tags" id="tags" class="tagit block input form-control" placeholder="(Optional)" value="" />
+    </div>
     <?php if($this->edit) : ?>
         <input type="hidden" name="note_id" value="<?php echo $note_id ?>" />
     <?php endif; ?>
