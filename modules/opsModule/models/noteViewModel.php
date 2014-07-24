@@ -209,13 +209,36 @@ class noteViewModel
         # otherwise render the note's origin body.
         echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
     ?></div>
-    <div class="pull-right" style="width: 100px;">
-        <ul class="list-unstyled share">
-            <li class="fb"><a href="#">Facebook</a></li>
-            <li class="tw"><a href="#">Twitter</a></li>
-            <li class="gp"><a href="#">Google+</a></li>
+    <div style="width: 100px;margin-top: 23px;" class="pull-right">
+        <ul class="social-sharing" style="">
+            <li class="shareBtn sbMain">
+                <a href="https://www.digitalocean.com/community/tutorials/how-to-configure-the-apache-web-server-on-an-ubuntu-or-debian-vps#">
+                <span class="sIcon icon-share"></span>  
+                SHARE
+                </a>
+            </li>
+            <li class="shareBtn animatable" id="sbTwitter">
+                <a href="http://twitter.com/share?text=How%20To%20Configure%20the%20Apache%20Web%20Server%20on%20an%20Ubuntu%20or%20Debian%20VPS&url=https://www.digitalocean.com/community/tutorials/how-to-configure-the-apache-web-server-on-an-ubuntu-or-debian-vps" target="_blank" title="Share on Twitter">
+                <span class="sIcon icon-bird"></span>  
+                TWEET
+                </a>
+            </li>
+            <li class="shareBtn animatable" id="sbFacebook">
+                <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-configure-the-apache-web-server-on-an-ubuntu-or-debian-vps" target="_blank" title="Share on Facebook">
+                <span class="sIcon icon-facebook-B"></span>
+                SHARE
+                </a>
+            </li>
+            <li class="shareBtn animatable" id="sbGoogle">
+                <a href="https://plus.google.com/share?url=https://www.digitalocean.com/community/tutorials/how-to-configure-the-apache-web-server-on-an-ubuntu-or-debian-vps" target="_blank" title="Share on Google+">
+                <span class="sIcon icon-google-plus-B"></span>  
+                SHARE
+                </a>
+            </li>
         </ul>
     </div>
+    <link rel="stylesheet" href='/access/css/social/share.css' />
+    <script type="text/javascript" src="/access/css/social/share.js"></script>
     <script src="/access/js/moment.min.js"></script>
     <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
     <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
