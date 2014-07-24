@@ -203,12 +203,19 @@ class noteViewModel
         </tbody>
     </table>
     <hr style='margin: 0'/>
-    <div id="note-body" style="width: 100%" class="links-enabled"><?php 
+    <div id="note-body" style="width: calc(100% - 100px)" class="links-enabled pull-left"><?php 
         # if note's pre-processed html body exists and not empty?
         # don't render the origin body, just echo the pre-processed one!
         # otherwise render the note's origin body.
         echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
     ?></div>
+    <div class="pull-right" style="width: 100px;">
+        <ul class="list-unstyled share">
+            <li class="fb"><a href="#">Facebook</a></li>
+            <li class="tw"><a href="#">Twitter</a></li>
+            <li class="gp"><a href="#">Google+</a></li>
+        </ul>
+    </div>
     <script src="/access/js/moment.min.js"></script>
     <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
     <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
