@@ -131,19 +131,102 @@
                             $(data).submit();
                         }, "Options");
                     }, 200, data);
-                },
+                }
             });
         };
         function openGuides() {
             window.open_dialogModal($("#ace-guide").html());
         };
+        function close_tag_sug() {
+            $(".close-tag-sug")
+                .parents('.tag-sug-container')
+                .data('closed', 1)
+                .slideUp('fast');
+        }
+        function open_tag_sug() {
+            var $selector = $(".close-tag-sug").parents('.tag-sug-container');
+            var is_closed = $selector.data('closed');
+            if(typeof(is_closed) === "undefined" || is_closed) {
+                $selector.slideDown("fast");
+            }
+        }
+        function tagit_action(_this) {
+            close_tag_sug();
+            console.log(["ACTION", get_last_tag($('.modal-body .tagit[name="tags"]'))]);
+        };
+        function get_last_tag($this) {
+            var val = String($this.text());
+            var sval = String(val).lastIndexOf(" ");
+            var tagval = String(val.substr(sval + 1, val.length + 1)).replace(/^[\s|\n]+|[\s|\n]+$/g,'');
+            if(tagval.length === 0) return "";
+            return tagval;
+        }
         function tagit(){
             window.open_savecloseModal($("#tagit-container").html(), function(){
-                $("#tagit-container .tagit").attr('value', $(".modal-body .tagit").val());
+                $("#tagit-container .tagit").html($(".modal-body .tagit").unbind('keyup').html());
             });
-            setTimeout(function(){ $('input[name="tags"]').focus(); },600);
+            setTimeout(function(){ 
+                var SearchInput = $('.modal-body .tagit[name="tags"]');
+                var strLength= SearchInput.text().trim().length;
+                SearchInput.focus();
+                SearchInput
+                    .keydown(function(e){
+                        var code = e.keyCode || e.which;
+                        if(code === " ".charCodeAt(0)) // submit at SPACE key
+                            setTimeout(function(){ tagit_action(); }, 10);
+                        var retval = (code !== 13 && code !== 10); // avoid ENTER key
+                        var inp = String.fromCharCode(code);
+                        console.log(e);
+                        
+                        if(/[a-z0-9-_]/ig.test(inp))
+                            open_tag_sug();
+                        if(!retval) {
+                            e.preventDefault();
+                            tagit_action($(this));
+                        }
+                        return retval;
+                    })
+                    .keyup(function(){
+                        var tagval = get_last_tag($(this));
+                        $(".modal-body .tag-sug-container").children(".just-use-it-tag-sug").remove();
+                        $(".modal-body .tag-sug-container").prepend("<div class='tag-sug-block just-use-it-tag-sug' onclick='tagit_action(this)'><small>Just use </small>`"+tagval+"`</div>");
+                    });
+            },600);
         };
 </script>
+<style>
+    [contentEditable='true']{
+        height: auto;
+        min-height: 34px;
+    }
+    .tag-sug-container {
+        position: fixed;
+        margin-top:5px;
+        width: calc(100% - 41px);
+        height: 400px;
+        border: 1px solid #000;
+        background-color: #FFF;
+        display: none;
+    }
+    .tag-sug-block{
+        display: table;
+        margin: 10px;
+        padding: 10px;
+        height: 50px;
+        min-width: 50px;
+        font-weight: bold;
+        border: 1px solid #000;
+        word-break: break-all;
+        border-radius: 3px;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+    }
+    .tag-sug-block:hover{
+        background-color: #0088cc;
+        color: #fff;
+        cursor: pointer;
+    }
+</style>
 <!-- ace editor placeholder -->
 <div id="editor-container">
     <div id="editor-parent">
@@ -156,14 +239,20 @@
             <input type="text" name="title"  id="editor-title" class="block input form-control" placeholder="Your note's title" value="<?php echo str_replace('"', "&quot;", $title) ?>" autofocus="" required=""/>
             <span class="input-group-btn">
                 <button onclick="save(window.editor);" type="button" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;" tabindex="-1" title="Save">
-                    <span class="glyphicon glyphicon-hdd"></span>
+                    <span class="glyphicon glyphicon-hdd"></span> Save
                 </button>
                 <a href="<?php echo $this->edit && $note_id ? "/view/note/$note_id" : "/#!/d/{$this->pid}.notes" ?>" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;">
-                    <span class="glyphicon glyphicon-trash"></span>
+                    <span class="glyphicon glyphicon-trash"></span> Discard
                 </a>
                 <a class="btn btn-success" onclick='tagit();return false;' tabindex="-1" style="margin-left:10px;" title="Tag this note">
-                    <span class="glyphicon glyphicon-tags"></span>
+                    <span class="glyphicon glyphicon-tags"></span> Tagit
                 </a>
+                <script>
+                    $(document).ready(function(){
+                        console.warn("DELETE ME");
+                        $(".btn-success").click();
+                    });
+                </script>
             </span>
             <div class="pull-right">
                 <div class="input-group inline">
@@ -194,7 +283,11 @@
     <input type="hidden" name="version" value="ace" />
     <div id="tagit-container" style="display: none">
         <label>Tag this note (Separate with SPACE):</label>
-        <input type="text" name="tags" id="tags" class="tagit block input form-control" placeholder="(Optional)" value="" />
+        <div class="text-danger error-overflow" style='font-weight: bold;margin-bottom: 10px;'><span class='glyphicon glyphicon-warning-sign'></span> Tags' lenght cannot be more than 50 charactor!</div>
+        <div type="text" name="tags" id="tags" class="tagit block input form-control" placeholder="(Optional)" value="" contentEditable="true"></div>
+        <div class="tag-sug-container">
+            <a href='#' style='position: absolute;bottom: 10px;right: 10px' class="close-tag-sug" onclick="close_tag_sug(); return false;">Close</a>
+        </div>
     </div>
     <?php if($this->edit) : ?>
         <input type="hidden" name="note_id" value="<?php echo $note_id ?>" />
