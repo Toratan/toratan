@@ -143,111 +143,22 @@
                 .data('closed', 1)
                 .slideUp('fast');
         }
-        function open_tag_sug() {
-            var $selector = $(".close-tag-sug").parents('.tag-sug-container');
-            var is_closed = $selector.data('closed');
-            if(typeof(is_closed) === "undefined" || is_closed) {
-                $selector.slideDown("fast");
-            }
-        }
-        function tagit_action(_this) {
-            close_tag_sug();
-        };
-        function get_last_tag($this) {
-            var val = String($this.text());
-            var sval = String(val).lastIndexOf(" ");
-            var tagval = String(val.substr(sval + 1, val.length + 1)).replace(/^[\s|\n]+|[\s|\n]+$/g,'');
-            if(tagval.length === 0) return "";
-            return tagval;
-        }
         function tagit(){
+            $("ul.tagit").remove();
             window.open_savecloseModal($("#tagit-container").html(), function(){
-                $("#tagit-container .tagit").html($(".modal-body .tagit").unbind('keyup').html());
+                $("#tagit-container .myTags").val($(".modal-body .myTags").val());
             });
-            setTimeout(function(){ 
-                var SearchInput = $('.modal-body .tagit[name="tags"]');
-                var strLength= SearchInput.text().trim().length;
-                SearchInput.focus();
-                SearchInput
-                    .keydown(function(e){
-                        var code = e.keyCode || e.which;
-                        if(code === " ".charCodeAt(0)) // submit at SPACE key
-                            setTimeout(function(){ tagit_action(); }, 10);
-                        var retval = (code !== 13 && code !== 10); // avoid ENTER key
-                        if(!retval) {
-                            e.preventDefault();
-                            tagit_action($(this));
-                        }
-                        return retval;
-                    })
-                    .keyup(function(){
-                        var tagval = get_last_tag($(this));
-                        $(".modal-body .tag-sug-container").children(".just-use-it-tag-sug").remove();
-                        $(".modal-body .tag-sug-container").prepend("<div class='tag-sug-block just-use-it-tag-sug' onclick='tagit_action(this)'><small>Just use </small>`"+tagval+"`</div>");
-                        if($(this).data("prev_tag_val") !== tagval && tagval.length) {
-                            open_tag_sug();
-                        }
-                        $(this).data("prev_tag_val", tagval); 
-                    });
-            },600);
+            setTimeout(function(){
+                $(".modal-body .myTags").data('uiTagit').tagInput.focus();
+            }, 600);
         };
 </script>
 <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>-->
-<script src="/access/js/jquery-ui-1.8.12.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/access/js/jquery-ui-1.11.0.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="/access/js/tag-it/js/tag-it.js" type="text/javascript" charset="utf-8"></script>
 <!--<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">-->
 <link href="/access/js/tag-it/css/jquery.tagit.css" rel="stylesheet" type="text/css">
 <link href="/access/js/tag-it/css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
-<style>
-    [contentEditable='true']{
-        height: auto;
-        min-height: 34px;
-    }
-    .ui-state-default,
-    .ui-widget-content .ui-state-default,
-    .ui-widget-header .ui-state-default{
-        background: transparent;
-    }
-    .tag{
-        border:1px solid #DDD;
-        background-color: red;
-        width: 100px;
-        padding:3px;
-        text-align: center;
-        float: left;
-    }
-    .tag-sug-container {
-        position: fixed;
-        margin-top:5px;
-        width: calc(100% - 41px);
-        height: auto;
-        border: 1px solid #000;
-        background-color: #FFF;
-        display: none;
-    }
-    .tagit-label,
-    .tag,
-    .tag-sug-block{
-        border-radius: 3px;
-            -webkit-border-radius: 3px;
-            -moz-border-radius: 3px;
-    }
-    .tag-sug-block{
-        display: table;
-        margin: 10px;
-        padding: 10px;
-        height: 34px;
-        min-width: 50px;
-        font-weight: bold;
-        border: 1px solid #000;
-        word-break: break-all;
-    }
-    .tag-sug-block:hover{
-        background-color: #0088cc;
-        color: #fff;
-        cursor: pointer;
-    }
-</style>
 <!-- ace editor placeholder -->
 <div id="editor-container">
     <div id="editor-parent">
@@ -309,15 +220,15 @@
         </div>
         <script type="text/javascript">
             $(document).ready(function() {
-                $("#myTags").tagit();
+                $(".myTags").tagit({
+                    beforeTagRemoved: function(event, ui) {
+                        if(String(ui.tagLabel).trim().length === 0) return;
+                        $(ui.tag).remove();
+                    }
+                });
             });
         </script>
-
-        <ul id="myTags">
-            <!-- Existing list items will be pre-added to the tags -->
-            <li>Tag1</li>
-            <li>Tag2</li>
-        </ul>
+        <input name='tagit' class='myTags' type="hidden" value='Tag1, Tag2'/>
         <div class="tag-sug-container">
             <a href='#' style='position: absolute;bottom: 10px;right: 10px;display: none' class="close-tag-sug block" onclick="close_tag_sug(); return false;">Close</a>
         </div>
