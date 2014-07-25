@@ -26,12 +26,12 @@
             <div class="clearfix"></div>
         </div>
         <script type="text/javascript">
-            (function(){
+            (function($){
                 // if we are in a frame?
                 if(window.top !== window.self)
                     // remove the header
                     $(".header").remove();
-            })(jQuery);
+            })();
         </script>
         <div class="clearfix" style="margin-top:10px;"></div>
         <div id="error-layout">
