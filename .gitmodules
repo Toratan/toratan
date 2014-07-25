@@ -17,12 +17,9 @@
 [submodule "public_html/access/js/sticky"]
 	path = public_html/access/js/sticky
 	url = git@github.com:noise2/sticky.git
-<<<<<<< Updated upstream
 [submodule "public_html/access/js/jQuery-Tagit"]
 	path = public_html/access/js/jQuery-Tagit
 	url = git@github.com:hailwood/jQuery-Tagit.git
-=======
 [submodule "public_html/access/js/tag-it"]
 	path = public_html/access/js/tag-it
 	url = git@github.com:aehlke/tag-it.git
->>>>>>> Stashed changes
