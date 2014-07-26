@@ -153,10 +153,8 @@
             }, 600);
         };
 </script>
-<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>-->
 <script src="/access/js/jquery-ui-1.11.0.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="/access/js/tag-it/js/tag-it.js" type="text/javascript" charset="utf-8"></script>
-<!--<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">-->
 <link href="/access/js/tag-it/css/jquery.tagit.css" rel="stylesheet" type="text/css">
 <link href="/access/js/tag-it/css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
 <!-- ace editor placeholder -->
@@ -210,27 +208,82 @@
         <div id="editor" style="display: none;"><?php echo htmlspecialchars($body) ?></div>
     </div>
 </div>
+<style type="text/css">
+    .tag-sug-container {
+        position: fixed;
+        margin-top: -5px;
+        width: calc(100% - 41px);
+        height: auto;
+        border: 1px solid #000;
+        background-color: #FFF;
+        display: none;
+        padding:10px;
+    }
+</style>
 <script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <form action="/<?php echo $this->request->action->name ?>/note/<?php echo $this->edit ? "$note_id?": "?pid=$this->pid"?><?php echo zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit ? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>" method="POST" name='note' style="display: none;">
     <input type="hidden" name="version" value="ace" />
     <div id="tagit-container" style="display: none">
         <label>Tag this note (Separate with SPACE):</label>
-        <div class="text-danger error-overflow" style='font-weight: bold;margin-bottom: 10px;display: none'>
+        <div class='pull-right tag-fetching-wait' style='display: none'><img src='/access/img/ajax-loader.gif' alt="Searching..." title='Fetching similar tags....'/></div>
+        <div class="text-danger tag-error-overflow" style='font-weight: bold;margin-bottom: 10px;display: none'>
             <span class='glyphicon glyphicon-warning-sign'></span> Tag's length cannot be more than 50 charactor!
         </div>
+        <div class="text-danger tag-error-ajax" style='font-weight: bold;padding-bottom: 10px;display: none'></div>
         <script type="text/javascript">
             $(document).ready(function() {
                 $(".myTags").tagit({
                     beforeTagRemoved: function(event, ui) {
                         if(String(ui.tagLabel).trim().length === 0) return;
                         $(ui.tag).remove();
+                    },
+                    beforeTagAdded: function(event, ui) {
+                        var retval = ui.tagLabel.length <= 50;
+                        if(!retval)
+                            $(".tag-error-overflow").fadeIn();
+                        else
+                            $(".tag-error-overflow").fadeOut();
+                        return retval;
+                    },
+                    afterTagAdded: function(event, ui) {
+                        close_tag_sug();
                     }
+                }).data('uiTagit').tagInput.keyup(function(e){
+                    clearTimeout($(this).data("autocomplete_delay"));
+                    close_tag_sug();
+                    if($(this).data("autocomplete_prev_txt") === $(this).val() || $(this).val().trim().length === 0) return;
+                    clearTimeout($(this).data("autocomplete_delay"));
+                    var val = $(this).val();
+                    var $this = $(this);
+                    $(this).data("autocomplete_delay", setTimeout(function(){
+                        $this.data("autocomplete_prev_txt", val);
+                        $(".tag-fetching-wait").show();
+                        $.ajax({
+                            url: "/ops/fetch/tags?term="+val,
+                            global: false,
+                            success: function(data) {
+                                $(".tag-sug-container")
+                                    .html(data)
+                                    .slideDown();
+                            }
+                        }).complete(function(){
+                            $(".tag-fetching-wait").fadeOut();
+                        }).fail(function(xhr) {
+                            var info = xhr.responseText;
+                            var $body = $('<div>').append($(info)).find("#error-layout").wrap("<div>");
+                            if($body.length !== 0) {
+                                $body.find(".container").removeClass("container").css("margin", "-10px").html();
+                                info = $body.html();
+                            }
+                            $(".tag-error-ajax").html(info).fadeIn();
+                        });
+                    }, 500));
                 });
             });
         </script>
         <input name='tagit' class='myTags' type="hidden" value='Tag1, Tag2'/>
         <div class="tag-sug-container">
-            <a href='#' style='position: absolute;bottom: 10px;right: 10px;display: none' class="close-tag-sug block" onclick="close_tag_sug(); return false;">Close</a>
+            <a href='#' style='position: absolute;bottom: 0px;right: 10px;' class="close-tag-sug block" onclick="close_tag_sug(); return false;">Close</a>
         </div>
     </div>
     <?php if($this->edit) : ?>
