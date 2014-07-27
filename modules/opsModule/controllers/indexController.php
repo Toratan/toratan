@@ -465,6 +465,9 @@ __OP_FUNC:
                                 $nc, $nc, $nc,
                                 $editor_version_id);
                     }
+                    if(isset($this->request->params["tagit"])) {
+                        \core\db\models\note_tag::tagit_array($item_value, explode(",", $this->request->params["tagit"]));
+                    }
                     # generating note's summary
                     $doc = new \DOMDocument();
                     # load a HTML markdown parsed text
