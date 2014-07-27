@@ -26,4 +26,21 @@ class note_tag extends baseModel
         return $count;
     }
     public static function tagit(note $note, $tag) { return self::tagit_array($note, array($tag)); }
+    public static function untagit_array(note $note, array $tags) {
+        $note->readonly();
+        $tags_id = array();
+        foreach($note->tags as $tag) {
+            if(in_array($tag->tag_value, $tags)) 
+                $tags_id[] = $tag->tag_id;
+        }
+        # glutize the array an fetch the string format of tag ids
+        $tags_id = implode(", ", $tags_id);
+        # secure(escape) the tag id and re-normalize it to inject directly into QUERY 
+        $tags_id = "'".implode("', '", explode(", ", substr(self::connection()->escape($tags_id), 1, strlen($tags_id))))."'";
+        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        $builder->delete()->where("note_id = ? AND tag_id IN ($tags_id)", $note->note_id);
+        self::query($builder->to_s(), $builder->bind_values());
+        $note->readonly(false);
+    } 
+    public static function untagit(note $note, $tag) { return self::untagit_array($note, array($tag)); }
 }

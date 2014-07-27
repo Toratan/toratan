@@ -7,7 +7,7 @@ class note extends item
 {
     static $has_many = array(
         array('note_tags', "class_name" => "note_tag"),
-        array('tags', 'through' => 'note_tags')
+        array('tags', 'through' => 'note_tags', "order" => "note_tags.created_at ASC")
     );
     /**
      * Saves current note into database
@@ -119,5 +119,17 @@ class note extends item
         if($auto_save)
             $this->save();
         return $this;
+    }
+    /**
+     * Get value of tags which are associated with this note
+     * @return array of string
+     */
+    public function get_tags_value(){
+        $tags = array();
+        $otags = $this->tags;
+        foreach($otags as $tag) {
+            $tags[] = $tag->tag_value;
+        }
+        return $tags;
     }
 }

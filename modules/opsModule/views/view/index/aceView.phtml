@@ -9,7 +9,7 @@
         $note_id = $this->values['note_id'];
         $tags = "";
         foreach($this->values["tags"] as $tag) {
-            $tags = "$tag->tag_value, $tags";
+            $tags = "$tags, $tag->tag_value";
         }
     }
     $profile =\core\db\models\profile::getInstance();
@@ -238,6 +238,12 @@
         background-color: #FFF;
         display: none;
         padding:10px;
+    }
+    .tagit-choice {
+        -moz-user-select: none; 
+        -khtml-user-select: none; 
+        -webkit-user-select: none; 
+        -o-user-select: none; 
     }
 </style>
 <script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>

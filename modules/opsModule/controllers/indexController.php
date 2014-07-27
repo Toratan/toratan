@@ -466,12 +466,31 @@ __OP_FUNC:
                                 $nc, $nc, $nc,
                                 $editor_version_id);
                     }
-                    # if not tagged?
-                    if(!isset($this->request->params["tagit"]))
+                    /**
+                     * calculate the deleted/new tags
+                     */
+                    $ntags = explode(",", $this->request->params["tagit"]);
+                    $otags = $item_value->get_tags_value();
+                    $new_tags = array_diff($ntags, $otags);
+                    $to_delete_tags = array_diff($otags, $ntags);
+                    # if creating new note and not tagged?
+                    if($is_new && !isset($this->request->params["tagit"]))
                         # tag is as untagged!!
                         $this->request->params["tagit"] = "Untagged";
-                    # store the tags
-                    \core\db\models\note_tag::tagit_array($item_value, explode(",", $this->request->params["tagit"]));
+                    # if there are already tag exist and we have `Untagged` tag among existings delete that!!
+                    if(count($ntags) + count($new_tags) - count($to_delete_tags) && !array_search("Untagged", $to_delete_tags))
+                        if(($untagged = array_search("Untagged", $new_tags)))
+                            unset($new_tags[$untagged]);
+                        elseif(($untagged = array_search("Untagged", $ntags)))
+                            $to_delete_tags[] = "Untagged";
+                    # if there are deleted tags?
+                    if(count($to_delete_tags))
+                        # delete the deleted tags
+                        \core\db\models\note_tag::untagit_array($item_value, $to_delete_tags);
+                    # if there are new tags?
+                    if(count($new_tags))
+                        # add the new tags
+                        \core\db\models\note_tag::tagit_array($item_value, $new_tags);
                     # generating note's summary
                     $doc = new \DOMDocument();
                     # load a HTML markdown parsed text
