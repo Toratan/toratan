@@ -7,6 +7,31 @@ class note_tag extends baseModel
         array('note'),
         array('tag')
     );
+    public static function unify_tagit_array(note $note, array $tags) {
+        $note->readonly();
+        /**
+         * calculate the deleted/new tags
+         */
+        $ntags = $tags;
+        $otags = $note->get_tags_value();
+        $new_tags = array_diff($ntags, $otags);
+        $to_delete_tags = array_diff($otags, $ntags);
+        # if there are already tag exist and we have `Untagged` tag among existings delete that!!
+        if(count($ntags) + count($new_tags) - count($to_delete_tags) && !array_search("Untagged", $to_delete_tags))
+            if(($untagged = array_search("Untagged", $new_tags)))
+                unset($new_tags[$untagged]);
+            elseif(($untagged = array_search("Untagged", $ntags)))
+                $to_delete_tags[] = "Untagged";
+        # if there are deleted tags?
+        if(count($to_delete_tags))
+            # delete the deleted tags
+            \core\db\models\note_tag::untagit_array($note, $to_delete_tags);
+        # if there are new tags?
+        if(count($new_tags))
+            # add the new tags
+            \core\db\models\note_tag::tagit_array($note, $new_tags);
+        $note->readonly(false);
+    }
     public static function tagit_array(note $note, array $tags) {
         $note->readonly();
         $count = 0;
