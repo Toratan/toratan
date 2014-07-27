@@ -138,18 +138,33 @@
             window.open_dialogModal($("#ace-guide").html());
         };
         function close_tag_sug() {
-            $(".close-tag-sug")
-                .parents('.tag-sug-container')
+            $('.tag-sug-container')
                 .data('closed', 1)
                 .slideUp('fast');
         }
+        function submit_tag(tag) {
+            $(".myTags").tagit("createTag", tag);
+            new_tag_focus();
+        }
+        function new_tag_focus() {
+            $(".myTags")
+                    .data('uiTagit')
+                        .tagInput
+                            .focus();
+        }
         function tagit(){
+            close_tag_sug();
             $("ul.tagit").remove();
             window.open_savecloseModal($("#tagit-container").html(), function(){
                 $("#tagit-container .myTags").val($(".modal-body .myTags").val());
             });
             setTimeout(function(){
-                $(".modal-body .myTags").data('uiTagit').tagInput.focus();
+                new_tag_focus();
+                // to disable unblur submit tag event
+                $(".myTags")
+                    .data('uiTagit')
+                        .tagInput
+                            .unbind("blur");
             }, 600);
         };
 </script>
@@ -233,6 +248,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $(".myTags").tagit({
+                    placeholderText: "Add a tag....",
                     beforeTagRemoved: function(event, ui) {
                         if(String(ui.tagLabel).trim().length === 0) return;
                         $(ui.tag).remove();
@@ -258,8 +274,10 @@
                     $(this).data("autocomplete_delay", setTimeout(function(){
                         $this.data("autocomplete_prev_txt", val);
                         $(".tag-fetching-wait").show();
+                        $(".tag-error-ajax").html("").slideUp();
                         $.ajax({
                             url: "/ops/fetch/tags?<?php echo zinux\kernel\security\security::__get_uri_hash_string() ?>&term="+val,
+                            type: "POST",
                             global: false,
                             success: function(data) {
                                 $(".tag-sug-container")
