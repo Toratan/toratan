@@ -69,8 +69,13 @@ class errorController extends \zinux\kernel\controller\baseController
         # set proper view file
         $this->view->setView("e$code");
         $er = new \core\db\models\exception;
-        # record the error and fetch the error-reference
-        $this->view->eref = $er->record($last, $code);
+        try{
+            # record the error and fetch the error-reference
+            $this->view->eref = $er->record($last, $code);
+        } catch(\Exception $e) {
+            # ignore
+            unset($e);
+        }
         # if headers has not sent yet
         if(!headers_sent())
             # send the error header
