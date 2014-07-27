@@ -259,7 +259,7 @@
                         $this.data("autocomplete_prev_txt", val);
                         $(".tag-fetching-wait").show();
                         $.ajax({
-                            url: "/ops/fetch/tags?term="+val,
+                            url: "/ops/fetch/tags?<?php echo zinux\kernel\security\security::__get_uri_hash_string() ?>&term="+val,
                             global: false,
                             success: function(data) {
                                 $(".tag-sug-container")
