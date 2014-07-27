@@ -200,6 +200,24 @@ class noteViewModel
                 <?php endif; ?>
                 </td>
             </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td colspan="2">
+                    <ul class="pagination" style='margin: 0;'>
+                <?php if(count($n->tags)): ?>
+                    <?php foreach($n->tags as $tag): ?>
+                        <li>
+                            <a href="/tag/<?php echo urldecode($tag->tag_value); ?>">
+                                <span class='glyphicon glyphicon-tag small'></span> <?php echo $tag->tag_value; ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                        <li><a href='#'>Untagged</a></li>
+                <?php endif; ?>
+                    </ul>
+                </td>
+            </tr>
         </tbody>
     </table>
     <hr style='margin: 0'/>

@@ -349,6 +349,7 @@ __OP_FUNC:
                 $this->view->values["{$item}_id"] = $item_value->{"{$item}_id"};
                 $this->view->values["{$item}_title"] = $item_value->{"{$item}_title"};
                 $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
+                $this->view->values["tags"] = $item_value->tags;
                 $this->view->pid = $item_value->parent_id;
                 if(isset($item_value->editor_type))
                     $this->view->editor_type = $item_value->editor_type;
@@ -465,9 +466,12 @@ __OP_FUNC:
                                 $nc, $nc, $nc,
                                 $editor_version_id);
                     }
-                    if(isset($this->request->params["tagit"])) {
-                        \core\db\models\note_tag::tagit_array($item_value, explode(",", $this->request->params["tagit"]));
-                    }
+                    # if not tagged?
+                    if(!isset($this->request->params["tagit"]))
+                        # tag is as untagged!!
+                        $this->request->params["tagit"] = "Untagged";
+                    # store the tags
+                    \core\db\models\note_tag::tagit_array($item_value, explode(",", $this->request->params["tagit"]));
                     # generating note's summary
                     $doc = new \DOMDocument();
                     # load a HTML markdown parsed text
@@ -589,7 +593,7 @@ __OP_FUNC:
             throw new \zinux\kernel\exceptions\accessDeniedException("The `$item` you are looking for does not exists or you don't have the pemission to view it.");
         # pass the item's instance to view
         $this->view->instance = $item_value;
-		# fetch route path to current note
+        # fetch route path to current note
         $folder = new \core\db\models\folder;
         $this->view->route = $folder->fetchRouteToRoot($item_value->parent_id, $item_value->owner_id);
     }

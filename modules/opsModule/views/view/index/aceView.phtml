@@ -1,11 +1,16 @@
 <?php
     $title = "Your note's title here ...";
     $body = "Your note's body here ...";
+    $tags = "";
     if($this->edit)
     {
         $title = $this->values['note_title'];
         $body = $this->values['note_body'];
         $note_id = $this->values['note_id'];
+        $tags = "";
+        foreach($this->values["tags"] as $tag) {
+            $tags = "$tag->tag_value, $tags";
+        }
     }
     $profile =\core\db\models\profile::getInstance();
     if(!($eo = $profile->getSetting("/rte/options/ace")) || !($eo instanceof \modules\opsModule\models\aceEditorOptions)) {
@@ -112,7 +117,7 @@
             $(window).unbind('beforeunload');
             if(typeof(force_save) === "undefined") force_save = false;
 <?php if(strtolower($this->request->action->name) != "new") : ?>
-            if(!(force_save || anything_changed())) {
+            if(false && !(force_save || anything_changed())) {
                 $("a.note-discard").click();
                 return;
             }
@@ -299,7 +304,7 @@
                 });
             });
         </script>
-        <input name='tagit' class='myTags' type="hidden" value='Tag1, Tag2'/>
+        <input name='tagit' class='myTags' type="hidden" value='<?php echo $tags ?>'/>
         <div class="tag-sug-container">
             <a href='#' style='position: absolute;bottom: 0px;right: 10px;' class="close-tag-sug block" onclick="close_tag_sug(); return false;">Close</a>
         </div>

@@ -5,6 +5,10 @@ namespace core\db\models;
  */
 class note extends item
 {
+    static $has_many = array(
+        array('note_tags', "class_name" => "note_tag"),
+        array('tags', 'through' => 'note_tags')
+    );
     /**
      * Saves current note into database
      * @param boolean $validate Should validate?

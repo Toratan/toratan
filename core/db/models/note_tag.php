@@ -3,8 +3,11 @@ namespace core\db\models;
 
 class note_tag extends baseModel
 {
+    static $belongs_to = array(
+        array('note'),
+        array('tag')
+    );
     public static function tagit_array(note $note, array $tags) {
-//        \zinux\kernel\utilities\debug::_var(func_get_args(), 1);
         $note->readonly();
         $count = 0;
         foreach($tags as $tag) {
@@ -22,4 +25,5 @@ class note_tag extends baseModel
         $note->readonly(false);
         return $count;
     }
+    public static function tagit(note $note, $tag) { return self::tagit_array($note, array($tag)); }
 }
