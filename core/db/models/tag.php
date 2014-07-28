@@ -59,7 +59,7 @@ class tag extends baseModel
      * @return array of array(count_of_all_notes_with_this_tag, current_result_due_to_offset_and_limit)
      */
     public function fetch_related_notes($offset, $limit = 10, $is_public = note::FLAG_SET, $order = "popularity DESC") {
-        $tags = note_tag::all(array("conditions" => array("tag_id = ?", $this->tag_id), "offset" => $offset, "limit" => $limit, "select" => "note_id"));
+        $tags = note_tag::all(array("conditions" => array("tag_id = ?", $this->tag_id), "select" => "note_id"));
         $in = "";
         foreach($tags as $tag) {
             $in = "$in, '$tag->note_id'";
@@ -79,9 +79,12 @@ class tag extends baseModel
         call_user_func_array(array($builder, "where"), $cond);
         $builder->limit($limit)->offset($offset)->order($order);
         $notes = note::find_by_sql($builder->to_s(), $builder->bind_values());
+        $builder = new \ActiveRecord\SQLBuilder(note::connection(), note::table_name());
         $builder->select("count(*) as total_count");
         call_user_func_array(array($builder, "where"), $cond);
-        $count = array_shift(note::find_by_sql($builder->to_s(), $builder->bind_values()))->total_count;
+        $count = @array_shift(note::find_by_sql($builder->to_s(), $builder->bind_values()))->total_count;
+        if(!$count)
+            $count = 0;
         return array($count, $notes);
     }
 }
