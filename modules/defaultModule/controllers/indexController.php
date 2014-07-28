@@ -21,16 +21,33 @@ class indexController extends \zinux\kernel\controller\baseController
     */
     public function tagAction()
     {
+        $this->layout->SetLayout("basic");
+        $this->layout->AddTitle("Tag Browser");
         if(!$this->request->CountIndexedParam())
             throw new \zinux\kernel\exceptions\invalidArgumentException("No tag value passed");
         \zinux\kernel\security\security::IsSecure($this->request->params, array("list"));
+        $this->view->total_count = 0;
+        $this->view->is_more = false;
+        $this->view->notes = array();
+        foreach (array("page") as $arg) {
+            if(!isset($this->request->params[$arg]) || !is_numeric($this->request->params[$arg]) || $this->request->params[$arg] < 1 )
+                $this->request->params[$arg] = 1;
+        }
         $tag = \core\db\models\tag::search($this->request->params["list"]);
         if(!$tag)
-            throw new \zinux\kernel\exceptions\notFoundException("The tag `{$this->request->params["list"]}` not found");
-        if(!isset($this->request->params["page"]) || !is_numeric($this->request->params["page"]) || $this->request->params["page"] < 1 )
-            $this->request->params["page"] = 1;
-        $this->layout->SetLayout("basic");
-        list($this->view->total_count, $this->view->notes) = $tag->fetch_related_notes(($this->request->params["page"] - 1) * 10);
+            return;
+        $order = "popularity DESC";
+        switch(@strtolower($this->request->params["order"])){
+            default:
+            case "popularity":
+                $this->request->params["order"] = 1;
+                break;
+            case "new":
+                $order = "created_at DESC";
+                $this->request->params["order"] = 2;
+                break;
+        }
+        list($this->view->total_count, $this->view->notes) = $tag->fetch_related_notes(($this->request->params["page"] - 1) * 10, $order);
         $this->view->is_more = ($this->request->params["page"] * 10 < $this->view->total_count);
     }
 }

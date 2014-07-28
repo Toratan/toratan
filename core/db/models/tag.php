@@ -58,7 +58,7 @@ class tag extends baseModel
      * @param string $order The query order(default: `popularity DESC`)
      * @return array of array(count_of_all_notes_with_this_tag, current_result_due_to_offset_and_limit)
      */
-    public function fetch_related_notes($offset, $limit = 10, $is_public = note::FLAG_SET, $order = "popularity DESC") {
+    public function fetch_related_notes($offset, $order = "popularity DESC", $limit = 10, $is_public = note::FLAG_SET) {
         $tags = note_tag::all(array("conditions" => array("tag_id = ?", $this->tag_id), "select" => "note_id"));
         $in = "";
         foreach($tags as $tag) {
@@ -67,8 +67,7 @@ class tag extends baseModel
         $in_val = trim($in, ", ");
         $builder = new \ActiveRecord\SQLBuilder(note::connection(), note::table_name());
         $cond = array("note_id IN ($in_val)");
-        switch($is_public)
-        {
+        switch($is_public) {
             case note::FLAG_SET:
             case note::FLAG_UNSET:
                 $cond[0] .= " AND is_public = ?";

@@ -1,11 +1,58 @@
+<?php $tag = $this->request->params["list"]; ?>
+<?php
+$get_url_link = function($for_page) use($tag) {
+    $uri = "/tag/$tag/list";
+    if($this->request->params["order"] == 1)
+        $uri .= "/order/popularity";
+    else
+        $uri .= "/order/new";
+    $uri .= "/page/$for_page";
+    return $uri;
+}
+?>
 <div class="container">
     <link type="text/css" rel="stylesheet" href="/access/css/posts.css" />
-    <div class="clearfix"></div>
-    <div class="container col-lg-12  col-md-12  col-sm-12 col-xm-12 posts pull-right">
+    <div class="container col-lg-10  col-md-10 col-sm-10 col-xm-12 posts">
+        <?php if(count($this->notes)) : ?>
+        <div class="btn-group pull-right" style="margin-right: -150px;margin-top: 20px;">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><b>Order by <span class="caret"></span></b></button>
+            <ul class="dropdown-menu large" role="menu">
+                <li class="<?php echo $this->request->params["order"] == 1 ? "active" : "" ?>">
+                    <a href="<?php echo $get_url_link(1) ?>">
+                        <span class='glyphicon glyphicon-heart'></span> Popularity
+                    </a>
+                </li>
+                <li class="<?php echo $this->request->params["order"] == 2 ? "active" : "" ?>">
+                    <a href="<?php echo $get_url_link(1) ?>">
+                        <span class='glyphicon glyphicon-plus'></span> New
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <?php endif; ?>
         <?php foreach($this->notes as $note): ?>
             <?php modules\opsModule\models\post::__render_summary($note); ?><br />
         <?php endforeach; ?>
+        <?php if(!count($this->notes)): ?>
+            <div class="row article" style="margin-bottom: 100px;">
+                <style>
+                    .error-header { border: 1px solid #cccccc; padding: 10px; font-weight: bold;}
+                </style>
+                <article style="margin-bottom: 10px;margin-top: 10px;">
+                    <div class="error-404 text-center">
+                        <div class="error-header">
+                            <span class="glyphicon glyphicon-warning-sign"></span> There are no more public article. 
+                        </div>
+                    </div>
+                </article>
+            </div>
+        <?php endif; ?>
     </div>
+    <div class="clearfix"></div>
+    <style type="text/css">
+        .pagination > .disabled > a { cursor: default!important; }
+        .dropdown-menu.large li a { height: 40px;padding-top: 10px;}
+    </style>
     <?php
     # from: http://stackoverflow.com/questions/8361808/limit-pagination-page-number
     $get_paging_info = function($tot_rows,$pp,$curr_page){
@@ -23,14 +70,14 @@
         return $data;
     }
     ?>
-    <?php $count = $this->total_count = 1013; ?>
-    <?php $this->request->params["page"] = 2; ?>
+    <?php $count = $this->total_count ?>
     <?php // Call our function from above ?>
     <?php $paging_info = $get_paging_info($count, 10, $this->request->params["page"]); ?>
+    <?php if($paging_info["pages"] < 2) return; ?>
     <ul class="pagination" style="display: table;margin:auto; margin-bottom: 400px">
         <?php // If the current page is more than 1, show the First and Previous links ?>
         <?php if($paging_info['curr_page'] > 1) : ?>
-            <li><a href="#">&laquo;</a></li>
+            <li><a href="<?php echo $get_url_link($paging_info['curr_page'] - 1) ?>">&laquo;</a></li>
         <?php endif; ?>
         <?php
             // setup starting point
@@ -47,9 +94,9 @@
         ?>
 
         <?php // If the current page >= $max then show link to 1st page ?>
-        <?php if($paging_info['curr_page'] >= $max) : ?>
-            <li><a href='' title='Page 1'>1</a></li>
-            <li class="disabled"><a href="#">...</a></li>
+        <?php if($paging_info['curr_page'] >= $max && $paging_info['curr_page'] <= $paging_info['pages'] ) : ?>
+            <li><a href='<?php echo $get_url_link(1) ?>' title='Page 1'>1</a></li>
+            <li class="disabled"><a href="<?php echo $get_url_link(2) ?>">...</a></li>
         <?php endif; ?>
 
         <?php // Loop though max number of pages shown and show links either side equal to $max / 2 ?>
@@ -58,19 +105,19 @@
             <?php if($paging_info['curr_page'] == $i) : ?>
                 <li class="active"><a href="#"><?php echo $i; ?></a></li>
             <?php else : ?>
-                <li><a href='' title='Page <?php echo $i; ?>'><?php echo $i; ?></a></li>
+                <li><a href='<?php echo $get_url_link($i) ?>' title='Page <?php echo $i; ?>'><?php echo $i; ?></a></li>
             <?php endif; ?>
         <?php endfor; ?>
 
         <?php // If the current page is less than say the last page minus $max pages divided by 2 ?>
         <?php if($paging_info['curr_page'] < ($paging_info['pages'] - floor($max / 2))) : ?>
-            <li class="disabled"><a href="#">...</a></li>
-            <li><a href='' title='Page <?php echo $paging_info['pages']; ?>'><?php echo $paging_info['pages']; ?></a></li>
+            <li class="disabled"><a href="<?php echo $get_url_link($paging_info['pages'] - 1) ?>">...</a></li>
+            <li><a href='<?php echo $get_url_link($paging_info['pages']) ?>' title='Page <?php echo $paging_info['pages']; ?>'><?php echo $paging_info['pages']; ?></a></li>
         <?php endif; ?>
 
         <?php // Show last two pages if we're not near them ?>
         <?php if($paging_info['curr_page'] < $paging_info['pages']) : ?>
-            <li><a href="#">&raquo;</a></li>
+            <li><a href="<?php echo $get_url_link($paging_info['curr_page'] + 1) ?>">&raquo;</a></li>
         <?php endif; ?>
     </ul>
 </div>
