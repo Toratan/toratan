@@ -48,7 +48,7 @@ class tagit
     }
 </script>
 <script src="/access/js/jquery-ui-1.11.0.min.js" type="text/javascript" charset="utf-8"></script>
-<script src="/access/js/tag-it/js/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script src="/access/js/tag-it/js/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
 <?php
     }
     public function __renderCSS(){
