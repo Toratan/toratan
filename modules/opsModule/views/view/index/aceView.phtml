@@ -153,9 +153,9 @@
         }
         function new_tag_focus() {
             $(".myTags")
-                    .data('uiTagit')
-                        .tagInput
-                            .focus();
+                .data('uiTagit')
+                    .tagInput
+                        .focus();
         }
         function tagit(){
             close_tag_sug();
@@ -197,12 +197,6 @@
                 <a class="btn btn-success" onclick='tagit();return false;' tabindex="-1" style="margin-left:10px;" title="Tag this note">
                     <span class="glyphicon glyphicon-tags"></span> Tagit
                 </a>
-                <script>
-                    $(document).ready(function(){
-                        console.warn("DELETE ME");
-                        $(".btn-success").click();
-                    });
-                </script>
             </span>
             <div class="pull-right">
                 <div class="input-group inline">
