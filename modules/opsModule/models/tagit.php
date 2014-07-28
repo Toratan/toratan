@@ -64,6 +64,8 @@ class tagit
         -webkit-user-select: none; 
         -o-user-select: none; 
     }
+    /* remove unwanted jQuery-UI SHIT!! */
+    .ui-helper-hidden-accessible, ui-autocomplete{ visibility: collapse!important;display: none!important;}
 </style>
 <link href="/access/js/tag-it/css/jquery.tagit.css" rel="stylesheet" type="text/css">
 <link href="/access/js/tag-it/css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
