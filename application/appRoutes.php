@@ -68,5 +68,10 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          *      This route needs to be after {$this->addRoute("^/(profile)$2", "/ops/$1$2");}
          */
         $this->addRoute("^/(ops/profile)/(cover)/(random|remove)$4", "$1/$3$2$4");
+        /**
+         * Routes
+         *      {/tag/@TAG(/@WHATEVER)?/list(/@WHATEVER)?} to {/tag/list/@TAG/@WHATEVER}
+         */
+        $this->addRoute("^/tag/(.*[^/])/list$2", "/tag/list/$1$2");
     }
 }

@@ -212,7 +212,7 @@ class noteViewModel
                 <?php if(count($tags)): ?>
                     <?php foreach($tags as $tag): ?>
                         <li>
-                            <a href="/tag/<?php echo urldecode($tag->tag_value); ?>">
+                            <a href="/tag/<?php echo urldecode($tag->tag_value); ?>/list">
                                 <span class='glyphicon glyphicon-tag small'></span> <?php echo $tag->tag_value; ?>
                             </a>
                         </li>
