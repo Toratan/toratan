@@ -10,6 +10,7 @@
         <link rel="shortcut icon" href="/favicon.ico">
         <?php $this->RenderTitle();?>
         <?php $this->RenderImports(); ?>
+        <script type="text/javascript" src="/access/js/jquery-1.11.1.min.js"></script>
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -31,6 +32,9 @@
                 if(window.top !== window.self)
                     // remove the header
                     $(".header").remove();
+                    // if i am in a frame?
+                    if(window.top !== window.self)
+                        window.top.document.title = '<?php echo $this->getTitle() ?>';
             })();
         </script>
         <div class="clearfix" style="margin-top:10px;"></div>
@@ -41,13 +45,6 @@
                 .error-body {text-align: justify; padding: 10px; font-size: 15px}
                 .eref {font-family: monospace;cursor: pointer;width: 98%;overflow: auto}
             </style>
-            <script type="text/javascript">
-                (function(){
-                    // if i am in a frame?
-                    if(window.top !== window.self)
-                        window.top.document.title = '<?php echo $this->getTitle() ?>';
-                })(jQuery);
-            </script>
             <div class="container">
                 <div class="error-container">
                     <?php echo $this->content; ?>
