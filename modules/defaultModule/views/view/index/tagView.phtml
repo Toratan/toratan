@@ -1,8 +1,76 @@
-<!--
- The \modules\defaultModule\views\view\index\tagView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for '<b>\modules\defaultModule\controllers\indexController::tagAction()</b>'<br />
-    Location: '<b>/var/www/toratan/modules/defaultModule/views/view/index/tagView.phtml</b>'
-</p>
+<div class="container">
+    <link type="text/css" rel="stylesheet" href="/access/css/posts.css" />
+    <div class="clearfix"></div>
+    <div class="container col-lg-12  col-md-12  col-sm-12 col-xm-12 posts pull-right">
+        <?php foreach($this->notes as $note): ?>
+            <?php modules\opsModule\models\post::__render_summary($note); ?><br />
+        <?php endforeach; ?>
+    </div>
+    <?php
+    # from: http://stackoverflow.com/questions/8361808/limit-pagination-page-number
+    $get_paging_info = function($tot_rows,$pp,$curr_page){
+        // calc pages
+        $pages = ceil($tot_rows / $pp);
+        // start out array
+        $data = array();
+        // what row to start at
+        $data['si'] = ($curr_page * $pp) - $pp;
+        // add the pages
+        $data['pages'] = $pages;
+        // Whats the current page
+        $data['curr_page'] = $curr_page;
+         //return the paging data
+        return $data;
+    }
+    ?>
+    <?php $count = $this->total_count = 1013; ?>
+    <?php $this->request->params["page"] = 2; ?>
+    <?php // Call our function from above ?>
+    <?php $paging_info = $get_paging_info($count, 10, $this->request->params["page"]); ?>
+    <ul class="pagination" style="display: table;margin:auto; margin-bottom: 400px">
+        <?php // If the current page is more than 1, show the First and Previous links ?>
+        <?php if($paging_info['curr_page'] > 1) : ?>
+            <li><a href="#">&laquo;</a></li>
+        <?php endif; ?>
+        <?php
+            // setup starting point
+            // $max is equal to number of links shown
+            $max = 10;
+            if($paging_info['curr_page'] < $max)
+                $sp = 1;
+            elseif($paging_info['curr_page'] >= ($paging_info['pages'] - floor($max / 2)) )
+                $sp = $paging_info['pages'] - $max + 1;
+            elseif($paging_info['curr_page'] >= $max)
+                $sp = $paging_info['curr_page']  -floor($max/2);
+            if($sp < 0)
+                $sp = 1;
+        ?>
+
+        <?php // If the current page >= $max then show link to 1st page ?>
+        <?php if($paging_info['curr_page'] >= $max) : ?>
+            <li><a href='' title='Page 1'>1</a></li>
+            <li class="disabled"><a href="#">...</a></li>
+        <?php endif; ?>
+
+        <?php // Loop though max number of pages shown and show links either side equal to $max / 2 ?>
+        <?php for($i = $sp; $i <= ($sp + $max -1);$i++) : ?>
+            <?php if($i > $paging_info['pages']) continue; ?>
+            <?php if($paging_info['curr_page'] == $i) : ?>
+                <li class="active"><a href="#"><?php echo $i; ?></a></li>
+            <?php else : ?>
+                <li><a href='' title='Page <?php echo $i; ?>'><?php echo $i; ?></a></li>
+            <?php endif; ?>
+        <?php endfor; ?>
+
+        <?php // If the current page is less than say the last page minus $max pages divided by 2 ?>
+        <?php if($paging_info['curr_page'] < ($paging_info['pages'] - floor($max / 2))) : ?>
+            <li class="disabled"><a href="#">...</a></li>
+            <li><a href='' title='Page <?php echo $paging_info['pages']; ?>'><?php echo $paging_info['pages']; ?></a></li>
+        <?php endif; ?>
+
+        <?php // Show last two pages if we're not near them ?>
+        <?php if($paging_info['curr_page'] < $paging_info['pages']) : ?>
+            <li><a href="#">&raquo;</a></li>
+        <?php endif; ?>
+    </ul>
+</div>
