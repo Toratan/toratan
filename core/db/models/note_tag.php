@@ -7,6 +7,11 @@ class note_tag extends baseModel
         array('note'),
         array('tag')
     );
+    /**
+     * Unifies tag of a note with given {SHOULD_EXIST} tags, it will automatically tags that are missing and create tags that are new
+     * @param \core\db\models\note $note The note to bind the tags to.(NOTE: the content of note will not be change during this operation
+     * @param array $tags Tags that SHOULD EXIST in note
+     */
     public static function unify_tagit_array(note $note, array $tags) {
         # if no tags are passed?
         if(!count($tags))
@@ -35,6 +40,12 @@ class note_tag extends baseModel
             \core\db\models\note_tag::tagit_array($note, $new_tags);
         $note->readonly(false);
     }
+    /**
+     * Tags a note with elements of array, already existed are ignored
+     * @param \core\db\models\note $note The note to bind the tags to.(NOTE: the content of note will not be change during this operation)
+     * @param array $tags Tags that SHOULD EXIST in note
+     * @return int
+     */
     public static function tagit_array(note $note, array $tags) {
         $note->readonly();
         $count = 0;
@@ -53,7 +64,17 @@ class note_tag extends baseModel
         $note->readonly(false);
         return $count;
     }
+    /**
+     * Tag a note with a single tag value
+     * @param \core\db\models\note $note The note to bind the tags to.(NOTE: the content of note will not be change during this operation)
+     * @param array $tag Tag a note with it
+     */
     public static function tagit(note $note, $tag) { return self::tagit_array($note, array($tag)); }
+    /**
+     * Untags a note from elements of array, already untagged are ignored
+     * @param \core\db\models\note $note The note to unbind the tags to.(NOTE: the content of note will not be change during this operation)
+     * @param array $tags Tags that SHOULD DELETE from note
+     */
     public static function untagit_array(note $note, array $tags) {
         $note->readonly();
         $tags_id = array();
@@ -70,5 +91,10 @@ class note_tag extends baseModel
         self::query($builder->to_s(), $builder->bind_values());
         $note->readonly(false);
     } 
+    /**
+     * Untag a note from a single tag value
+     * @param \core\db\models\note $note The note to unbind the tags to.(NOTE: the content of note will not be change during this operation)
+     * @param array $tag Untag a note from it
+     */
     public static function untagit(note $note, $tag) { return self::untagit_array($note, array($tag)); }
 }
