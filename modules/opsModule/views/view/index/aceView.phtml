@@ -108,6 +108,7 @@
         });
         function anything_changed() {
             if("<?php echo  str_replace('"', "&quot;", $title) ?>" !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
+            if(is_tags_changed()) return true;
             return <?php echo @$this->is_using_buffer? "true || " : ""  ?>window.editor.session.getUndoManager().isClean() !== true;
         };
         window.saveAPI = function() {
@@ -117,7 +118,7 @@
             $(window).unbind('beforeunload');
             if(typeof(force_save) === "undefined") force_save = false;
 <?php if(strtolower($this->request->action->name) != "new") : ?>
-            if(false && !(force_save || anything_changed())) {
+            if(!(force_save || anything_changed())) {
                 $("a.note-discard").click();
                 return;
             }

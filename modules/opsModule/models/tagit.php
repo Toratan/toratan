@@ -10,36 +10,42 @@ class tagit
     public function __renderJS(){
 ?>
 <script type='text/javascript'>
-        function close_tag_sug() {
-            $('.tag-sug-container')
-                .data('closed', 1)
-                .slideUp('fast');
-        }
-        function submit_tag(tag) {
-            $(".myTags").tagit("createTag", tag);
+    function close_tag_sug() {
+        $('.tag-sug-container')
+            .data('closed', 1)
+            .slideUp('fast');
+    }
+    function submit_tag(tag) {
+        $(".myTags").tagit("createTag", tag);
+        new_tag_focus();
+    }
+    function new_tag_focus() {
+        $(".myTags")
+            .data('uiTagit')
+                .tagInput
+                    .focus();
+    }
+    function tagit(){
+        close_tag_sug();
+        $("ul.tagit").remove();
+        window.open_savecloseModal($("#tagit-container").html(), function(){
+            $("#tagit-container .myTags").val($(".modal-body .myTags").val());
+        });
+        setTimeout(function(){
             new_tag_focus();
-        }
-        function new_tag_focus() {
+            // to disable unblur submit tag event
             $(".myTags")
                 .data('uiTagit')
                     .tagInput
-                        .focus();
-        }
-        function tagit(){
-            close_tag_sug();
-            $("ul.tagit").remove();
-            window.open_savecloseModal($("#tagit-container").html(), function(){
-                $("#tagit-container .myTags").val($(".modal-body .myTags").val());
-            });
-            setTimeout(function(){
-                new_tag_focus();
-                // to disable unblur submit tag event
-                $(".myTags")
-                    .data('uiTagit')
-                        .tagInput
-                            .unbind("blur");
-            }, 600);
-        };
+                        .unbind("blur");
+        }, 600);
+    }
+    function is_tags_changed() {
+        var ic = $(".myTags").data('is_changed');
+        if(typeof(ic) !== "undefined" && ic)
+            return true;
+        return false;
+    }
 </script>
 <script src="/access/js/jquery-ui-1.11.0.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="/access/js/tag-it/js/tag-it.js" type="text/javascript" charset="utf-8"></script>
@@ -92,6 +98,9 @@ class tagit
                         if(String(ui.tagLabel).trim().length === 0) return;
                         $(ui.tag).remove();
                     },
+                    afterTagRemoved: function(event, ui) {
+                        $(".myTags").data("is_changed", true);
+                    },
                     beforeTagAdded: function(event, ui) {
                         var retval = ui.tagLabel.length <= 50;
                         if(!retval)
@@ -102,6 +111,7 @@ class tagit
                     },
                     afterTagAdded: function(event, ui) {
                         close_tag_sug();
+                        $(".myTags").data("is_changed", true);
                     }
                 }).data('uiTagit')
                         .tagInput
