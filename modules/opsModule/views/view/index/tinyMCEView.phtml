@@ -1,11 +1,16 @@
 <?php
     $title = "Your note's title here ...";
     $body = "Your note's body here ...";
+    $tags = "";
     if($this->edit)
     {
         $title = $this->values['note_title'];
         $body = $this->values['note_body'];
         $note_id = $this->values['note_id'];
+        $tags = "";
+        foreach($this->values["tags"] as $tag) {
+            $tags = "$tags, $tag->tag_value";
+        }
     }
 ?>
 <script src="/access/js/shortcut.min.js"></script>
@@ -97,10 +102,16 @@
     #editor-container {margin-top: 10px;margin-bottom: 10px;}
     .mce-panel { border: 1px solid #e6e6e6!important;}
 </style>
+<?php 
+$tagit = new modules\opsModule\models\tagit;
+$tagit->__renderJS();
+$tagit->__renderCSS();
+?>
 <!-- ckeditor placeholder -->
 <div id="editor-container">
     <form action="/<?php echo $this->request->action->name ?>/note/<?php echo $this->edit ? "$note_id?": "?pid=$this->pid"?><?php echo zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit ? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>" method="POST" name='note'>
         <input type="hidden" name="version" value="html" />
+        <?php $tagit->__renderHTML($tags); ?>
     <?php if($this->edit) : ?>
         <input type="hidden" name="note_id" value="<?php echo $note_id ?>" />
     <?php endif; ?>
@@ -114,9 +125,14 @@
                 <input type="text" name="note_title"  id="editor-title" class="block input form-control" placeholder="Your note's title" value="<?php echo str_replace('"', "&quot;", $title) ?>" autofocus="" maxlength="300"/>
                 <span class="input-group-btn">
                     <button onclick="save();" type="button" class="btn btn-default" style="border-bottom-left-radius: 0;border-top-left-radius: 0;" tabindex="-1" title="Save">
-                        <span class="glyphicon glyphicon-hdd"></span>
+                        <span class="glyphicon glyphicon-hdd"></span> Save
                     </button>
-                    <a href="<?php echo $this->edit && $note_id ? "/view/note/$note_id" : "/#!/d/{$this->pid}.notes" ?>" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;"><span class="glyphicon glyphicon-trash"></span></a>
+                    <a href="<?php echo $this->edit && $note_id ? "/view/note/$note_id" : "/#!/d/{$this->pid}.notes" ?>" title="Discard" class="note-discard btn btn-warning" tabindex="-1" style="margin-left:10px;">
+                        <span class="glyphicon glyphicon-trash"></span> Discard
+                    </a>
+                <a class="btn btn-success" onclick='tagit();return false;' tabindex="-1" style="margin-left:10px;" title="Tag this note">
+                    <span class="glyphicon glyphicon-tags"></span> Tagit
+                </a>
                 </span>
                 <div class="pull-right">
                     <div class="input-group inline">

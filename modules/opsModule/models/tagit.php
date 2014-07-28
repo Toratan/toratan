@@ -80,6 +80,9 @@ class tagit
         <div class="text-danger tag-error-ajax" style='font-weight: bold;padding-bottom: 10px;display: none'></div>
         <input name='<?php echo $html_input_name ?>' class='myTags' type="hidden" value='<?php echo $tags ?>'/>
         <script type="text/javascript">
+            function get_tags_string() {
+                return $(".myTags").tagit("assignedTags");
+            }
             $(document).ready(function() {
                 $(".myTags").tagit({
                     placeholderText: "Add a tag....",

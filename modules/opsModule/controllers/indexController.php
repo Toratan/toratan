@@ -865,12 +865,12 @@ __OP_FUNC:
     /**
      * Validates if we should be using editor buffer for an instance?<br />
      * If so, it also automatically initializes the view's variables according to {new|edit}Action()'s views standard data-format
-     * @param string $item_type should be one of {note|folder|link}
+     * @param string $item_type should be one of {note}
      * @return \stdClass|null if fails to use buffer returns NULL otherwise returns an instance of stdClass containing {"{$item_type}_title", "{$item_type}_body", "pid", "owner_id"} attributes
      */
     protected function isUsingEditorBuffer($item_type = "note") {
         switch(strtolower($item_type)) {
-            case "note": case "folder": case "link": break;
+            case "note":  break;
             default: throw new \zinux\kernel\exceptions\invalidArgumentException("`$item_type` not defined");
         }
         # create a new instance of stdClass
@@ -891,6 +891,19 @@ __OP_FUNC:
             $value->{"{$item_type}_id"} = @$b["{$item_type}_id"];
             $value->{"{$item_type}_title"} = $b["{$item_type}_title"];
             $value->{"{$item_type}_body"} = $b["{$item_type}_body"];
+            switch($item_type) {
+                case "note":
+                    $tags = array();
+                    if(isset($b["tagit"])) {
+                        foreach(explode(",", $b["tagit"]) as $tag) {
+                            $t = new \stdClass;
+                            $t->tag_value = $tag;
+                            $tags[] = $t;
+                        }
+                    }
+                    $value->{"tags"} = $tags; 
+                    break;
+            }
             $value->parent_id = $b["pid"];
             $value->owner_id = $b["owner_id"];
             goto __PASS_DATA_2_VALUE;
@@ -902,6 +915,7 @@ __PASS_DATA_2_VALUE:
         $this->view->values["{$item_type}_id"] = $value->{"{$item_type}_id"};
         $this->view->values["{$item_type}_title"] = $value->{"{$item_type}_title"};
         $this->view->values["{$item_type}_body"] = $value->{"{$item_type}_body"};
+        $this->view->values["tags"] = @$value->{"tags"};
         $this->view->pid = $value->parent_id;
         $this->view->is_using_buffer = true;
         # return extracted values

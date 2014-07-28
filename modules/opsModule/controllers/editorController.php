@@ -121,5 +121,13 @@ class editorController extends \zinux\kernel\controller\baseController
         $this->view->title = $this->request->params["t"];
         $this->view->body = $this->request->params["b"];
         $this->view->pid = $this->request->params["p"];
+        $this->view->tags = array();
+        if(isset($this->request->params["tags"])) {
+            foreach(explode(",", $this->request->params["tags"]) as $tag) {
+                $t = new \stdClass;
+                $t->tag_value = $tag;
+                $this->view->tags[] = $t;
+            }
+        }
     }
 }

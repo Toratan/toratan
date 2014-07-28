@@ -34,6 +34,11 @@ class noteViewModel
     $this->view->is_trash = $n->is_trash;
     $this->view->layout->AddMeta("description", $n->note_title);
     $this->view->layout->addTitle($n->note_title);
+    $tags = array();
+    if($is_preview)
+        $tags = $this->view->tags;
+    else
+        $tags = $n->tags;
     $author_link = "/profile/{$writer->user_id}";
     $cURL = $this->view->request->getURI();
     $is_owner = (\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id);
@@ -204,8 +209,8 @@ class noteViewModel
                 <td>&nbsp;</td>
                 <td colspan="2">
                     <ul class="pagination" style='margin: 0;'>
-                <?php if(count($n->tags)): ?>
-                    <?php foreach($n->tags as $tag): ?>
+                <?php if(count($tags)): ?>
+                    <?php foreach($tags as $tag): ?>
                         <li>
                             <a href="/tag/<?php echo urldecode($tag->tag_value); ?>">
                                 <span class='glyphicon glyphicon-tag small'></span> <?php echo $tag->tag_value; ?>
