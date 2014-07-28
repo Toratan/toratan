@@ -425,12 +425,12 @@ __OP_FUNC:
      */
     protected function save_item($item, $is_new, \core\db\models\item &$item_ins, $editor_version_id) {
         # try to save the item
+        /**
+         * @var \core\db\models\item
+         */
+        $item_value = NULL;
         try
         {
-            /**
-             * @var \core\db\models\item
-             */
-            $item_value = NULL;
             $uid = \core\db\models\user::GetInstance()->user_id;
             switch($item) {
                 case "folder":
@@ -465,11 +465,17 @@ __OP_FUNC:
                                 $this->request->params["{$item}_body"],
                                 $nc, $nc, $nc,
                                 $editor_version_id);
-                    }
-                    # if creating new note and not tagged?
-                    if($is_new && !isset($this->request->params["tagit"]))
-                        # tag is as untagged!!
-                        $this->request->params["tagit"] = "Untagged";
+                    }                        
+                    # if not tagged?
+                    if(!isset($this->request->params["tagit"]))
+                        # if creating new note?
+                        if($is_new)
+                            # tag is as untagged!!
+                            $this->request->params["tagit"] = "Untagged";
+                        else
+                            # otherwise live it empty
+                            $this->request->params["tagit"]  = "";
+                    # link the tags with this note
                     \core\db\models\note_tag::unify_tagit_array($item_value, explode(",", $this->request->params["tagit"]));
                     # generating note's summary
                     $doc = new \DOMDocument();
@@ -535,6 +541,8 @@ __OP_FUNC:
         # catch any exception raised
         catch(\zinux\kernel\exceptions\appException $e)
         {
+            if(!$item_value)
+                throw $e;
             # if it was a collection of exceptions
             if($e instanceof \core\exceptions\exceptionCollection)
                 # fetch each of exceptions messages
@@ -547,7 +555,7 @@ __OP_FUNC:
             $this->view->values["{$item}_title"] = $this->request->params["{$item}_title"];
             $this->view->values["{$item}_body"] = $this->request->params["{$item}_body"];
             # return
-            return false;
+            return $item_value;
         }
     }
     /**

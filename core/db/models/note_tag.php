@@ -8,6 +8,9 @@ class note_tag extends baseModel
         array('tag')
     );
     public static function unify_tagit_array(note $note, array $tags) {
+        # if no tags are passed?
+        if(!count($tags))
+            return;
         $note->readonly();
         /**
          * calculate the deleted/new tags
