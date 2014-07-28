@@ -58,7 +58,7 @@ class tag extends baseModel
      * @param string $order The query order(default: `popularity DESC`)
      * @return array of array(count_of_all_notes_with_this_tag, current_result_due_to_offset_and_limit)
      */
-    public function fetch_related_notes($offset, $limit = 10, $order = "popularity DESC") {
+    public function fetch_related_notes($offset, $limit = 10, $is_public = note::FLAG_SET, $order = "popularity DESC") {
         $tags = note_tag::all(array("conditions" => array("tag_id = ?", $this->tag_id), "offset" => $offset, "limit" => $limit, "select" => "note_id"));
         $in = "";
         foreach($tags as $tag) {
@@ -66,7 +66,22 @@ class tag extends baseModel
         }
         $in_val = trim($in, ", ");
         $builder = new \ActiveRecord\SQLBuilder(note::connection(), note::table_name());
-        $builder->select("note_id, popularity")->where("note_id IN ($in_val)")->limit($limit)->offset($offset)->order($order);
-        return array(count($tags), note::find_by_sql($builder->to_s(), $builder->bind_values()));
+        $cond = array("note_id IN ($in_val)");
+        switch($is_public)
+        {
+            case note::FLAG_SET:
+            case note::FLAG_UNSET:
+                $cond[0] .= " AND is_public = ?";
+                $cond[] = $is_public;
+                break;
+        }
+        $builder->select("*");
+        call_user_func_array(array($builder, "where"), $cond);
+        $builder->limit($limit)->offset($offset)->order($order);
+        $notes = note::find_by_sql($builder->to_s(), $builder->bind_values());
+        $builder->select("count(*) as total_count");
+        call_user_func_array(array($builder, "where"), $cond);
+        $count = array_shift(note::find_by_sql($builder->to_s(), $builder->bind_values()))->total_count;
+        return array($count, $notes);
     }
 }
