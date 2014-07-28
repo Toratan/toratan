@@ -23,6 +23,9 @@ class indexController extends \zinux\kernel\controller\baseController
     {
         if(!$this->request->CountIndexedParam())
             throw new \zinux\kernel\exceptions\invalidArgumentException("No tag value passed");
-        \zinux\kernel\utilities\debug::_var($this->request->params, 1);
+        $tag = \core\db\models\tag::search($this->request->GetIndexedParam(0));
+        if(!$tag)
+            throw new \zinux\kernel\exceptions\notFoundException("The tag `{$this->request->GetIndexedParam(0)}` not found");
+//    \zinux\kernel\utilities\debug::_var($tag->fetch_related_notes(0), 1);
     }
 }
