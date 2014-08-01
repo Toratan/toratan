@@ -241,19 +241,19 @@ class noteViewModel
                     SHARE
                 </a>
             </li>
-            <li class="shareBtn animatable animated" id="sbTwitter">
+            <li class="shareBtn animatable" id="sbTwitter">
                 <a href="http://twitter.com/share?text=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&url=<?php echo $uri ?>" target="_blank" title="Share on Twitter">
                     <span class="sIcon icon-bird"></span>  
                     TWEET
                 </a>
             </li>
-            <li class="shareBtn animatable animated" id="sbFacebook">
+            <li class="shareBtn animatable" id="sbFacebook">
                 <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $uri ?>" target="_blank" title="Share on Facebook">
                     <span class="sIcon icon-facebook-B"></span>
                     SHARE
                 </a>
             </li>
-            <li class="shareBtn animatable animated" id="sbGoogle">
+            <li class="shareBtn animatable" id="sbGoogle">
                 <a href="https://plus.google.com/share?url=<?php echo $uri ?>" target="_blank" title="Share on Google+">
                     <span class="sIcon icon-google-plus-B"></span>  
                     SHARE
