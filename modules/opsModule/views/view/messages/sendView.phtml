@@ -1,6 +1,5 @@
-<?php $refer = isset($this->request->params["ajax"]) ? @$_SERVER['HTTP_REFERER'] : NULL; ?>
 <div id="send-msg">
-    <form action="/send/message/to/<?php echo $this->rcv_user->username ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->rcv_user->user_id), $refer) ?>" method="POST" name="send-message">
+    <form action="/send/message/to/<?php echo $this->rcv_user->username ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->rcv_user->user_id)) ?>" method="POST" name="send-message">
 <?php if(@$this->error): ?>
         <div class="text-danger" style="font-variant: small-caps;padding:10px;">» <?php echo $this->error ?></div>
 <?php endif; ?>

@@ -37,7 +37,7 @@
                 return;
             }
             $.ajax({
-                url: "/messages/report/type/<?php echo $this->request->params["type"] ?>/i/<?php echo $this->request->params["i"]?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->request->params["i"]), $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages") ?>",
+                url: "/messages/report/type/<?php echo $this->request->params["type"] ?>/i/<?php echo $this->request->params["i"]?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->request->params["i"])) ?>",
                 type: "POST",
                 data:"submit=1&ajax=1&"+$("form#report").serialize(),
                 success: function(data) {

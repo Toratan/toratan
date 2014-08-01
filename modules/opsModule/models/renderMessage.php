@@ -17,7 +17,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
 <div class="conversations">
     <div class="topbar">
         <div class="pull-left">
-            <a class="btn btn-default" href="<?php echo "#!/send/message/to/{$this->view->target_user->username}?".\zinux\kernel\security\security::__get_uri_hash_string(array($this->view->target_user->user_id), @$_SERVER["HTTP_REFERER"])?>" id="send-message">
+            <a class="btn btn-default" href="<?php echo "#!/send/message/to/{$this->view->target_user->username}?".\zinux\kernel\security\security::__get_uri_hash_string(array($this->view->target_user->user_id))?>" id="send-message">
                 <span class="glyphicon glyphicon-retweet"></span> Reply
             </a>
         </div>
@@ -122,7 +122,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
     <?php endforeach; ?>
     <?php if($this->view->is_more): ?>
     <div id="load-older-msgs" class="list-group text-center">
-        <a href="/messages/fetch_conversation/page/<?php echo $this->view->request->params["page"] + 1 ?>/c/<?php echo $this->view->cid ?>/u/<?php echo $this->view->target_user->user_id ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid, $this->view->target_user->user_id, session_id()), ($_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages")) ?>" id="load-older-msgs-link" class="list-group-item load-older">
+        <a href="/messages/fetch_conversation/page/<?php echo $this->view->request->params["page"] + 1 ?>/c/<?php echo $this->view->cid ?>/u/<?php echo $this->view->target_user->user_id ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid, $this->view->target_user->user_id, session_id())) ?>" id="load-older-msgs-link" class="list-group-item load-older">
             <span class="glyphicon glyphicon-arrow-down"></span> Load Older Messages
         </a>
     </div>
@@ -323,7 +323,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                     "<b>Once you delete your copy of conversation, it cannot be undone.<br />Are you sure?</b>",
                     function(){
                         $.ajax({
-                            url: "/messages/delete_conversation?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid), $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages"); ?>",
+                            url: "/messages/delete_conversation?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid)); ?>",
                             method: "POST",
                             data: "cid=<?php echo $this->view->cid; ?>",
                             success: function(){
@@ -338,7 +338,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
             });
             $("#report-conv-view").click(function(){
                 $.ajax({
-                    url:"/messages/report/type/conv/i/<?php echo $this->view->cid; ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid), $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages") ?>",
+                    url:"/messages/report/type/conv/i/<?php echo $this->view->cid; ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid)) ?>",
                     type: "POST",
                     data: "ajax=1",
                     success: function(data) {
