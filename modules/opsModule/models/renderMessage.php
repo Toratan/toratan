@@ -295,7 +295,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                             throw "expecting a list of IDs";
                         if(array.length === 0) return;
                         $.ajax({
-                            url: "/messages/delete_messages/?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(), $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__."/messages") ?>",
+                            url: "/messages/delete_messages/?<?php echo \zinux\kernel\security\security::__get_uri_hash_string() ?>",
                             type: "POST",
                             data: {"messages[]":array},
                             success: function(data) {
