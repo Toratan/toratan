@@ -176,6 +176,8 @@
                     setTimeout(function($this) {
                         $.ajax({
                             url: $($this).attr('href').split("#!")[1]+"&suppress_layout=1&continue=<?php echo $this->request->GetURI(); ?>"
+                        }).fail(function(xhr){
+                            setTimeout(function() { window.top.open_errorModal(xhr.responseText, -1, true); }, 500);
                         });
                     }, 400, this);
                     break;

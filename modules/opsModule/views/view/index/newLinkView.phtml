@@ -20,8 +20,8 @@
         <input type="hidden" name="continue" value="<?php echo $this->request->params["continue"]; ?>" />
     <?php endif; ?>
         <div class="input-group double-input">
-            <input type="text" class="form-control" name="link_title" maxlength="250" placeholder="Link's title" value="<?php echo isset($this->values['link_title'])?$this->values['link_title']:"" ?>"/>
-            <input type="text" class="form-control" name="link_body" maxlength="250" placeholder="Link's body" value="<?php echo isset($this->values['link_body'])?$this->values['link_body']:"" ?>"/>
+            <input type="text" class="form-control" name="link_title" maxlength="250" placeholder="Link's title" value="<?php echo isset($this->values['link_title'])?$this->values['link_title']:"" ?>" required="required"/>
+            <input type="text" class="form-control" name="link_body" maxlength="250" placeholder="Link's body" value="<?php echo isset($this->values['link_body'])?$this->values['link_body']:"" ?>" required="required"/>
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="submit">Create</button>
             </span>

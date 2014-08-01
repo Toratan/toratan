@@ -541,8 +541,6 @@ __OP_FUNC:
         # catch any exception raised
         catch(\zinux\kernel\exceptions\appException $e)
         {
-            if(!$item_value)
-                throw $e;
             # if it was a collection of exceptions
             if($e instanceof \core\exceptions\exceptionCollection)
                 # fetch each of exceptions messages
@@ -554,6 +552,8 @@ __OP_FUNC:
             # resore back the values to views
             $this->view->values["{$item}_title"] = $this->request->params["{$item}_title"];
             $this->view->values["{$item}_body"] = $this->request->params["{$item}_body"];
+            # send `Bad Request` error code
+            $e->SendErrorCode(400);
             # return
             return $item_value;
         }

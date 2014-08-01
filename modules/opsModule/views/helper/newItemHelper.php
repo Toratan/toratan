@@ -28,7 +28,7 @@ class newItemHelper {
     <?php else: ?>
                             // unbind the success method to ignore the general result output
                             $(window).unbind('ajaxSuccess');
-                            $(data).hide().appendTo("#explorer-table table.table").fadeIn(1500);
+                            $(data).hide().appendTo("#explorer-table.<?php echo $target_type ?>-explorer table.table").fadeIn(1500);
                             $("#explorer-table-empty").hide();
                             // init the table
                             window.init_table();
@@ -36,6 +36,8 @@ class newItemHelper {
                             setTimeout(function() { $(window).ajaxSuccess(window.ajax_success); }, 50);
     <?php endif; ?>
                         }
+                    }).fail(function(xhr){
+                        $("#new-<?php echo $target_type ?>-ui").replaceWith(xhr.responseText);
                     });
                 });
             });

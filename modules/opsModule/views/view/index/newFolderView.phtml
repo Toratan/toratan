@@ -11,7 +11,7 @@
         <input type="hidden" name="continue" value="<?php echo $this->request->params["continue"]; ?>" />
     <?php endif; ?>
         <div class="input-group col-lg-6 col-md-6 col-sm-12 col-xm-12" style="padding: 0;margin: 0">
-            <input type="text" class="form-control" name="folder_title" maxlength="250" placeholder="Folder's title" value="<?php echo isset($this->values['folder_title'])?$this->values['folder_title']:"" ?>">
+            <input type="text" class="form-control" name="folder_title" maxlength="250" placeholder="Folder's title" value="<?php echo isset($this->values['folder_title'])?$this->values['folder_title']:"" ?>" required="required">
             <span class="input-group-btn">
             <button type="submit" class="btn btn-primary">Create</button>
             </span>
