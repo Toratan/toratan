@@ -162,6 +162,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
             $.ajax({
                 type: "POST",
                 url: $(this).attr("target-href"),
+                global: false,
                 success: function(data) {
                     $("#conv-load-ui").hide();
                     $("#conv-messages-placeholder").prepend(data);
@@ -179,6 +180,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
                 url: $(this).attr("href"),
                 type: "POST",
                 data: "ajax=1",
+                global: false,
                 success:function(data){
                     $(data).replaceAll("#load-older-conv");
                     init_conversations_js();
@@ -191,6 +193,8 @@ class renderConversation extends \zinux\kernel\model\baseModel {
     };
     $(function(){
         init_conversations_js();
+        $(document).ajaxStart(function(){ window.open_waitModal(); });
+        $(document).ajaxStop(function(){ window.open_waitModal(true); });
     });
 </script>
 <?php endif; ?>

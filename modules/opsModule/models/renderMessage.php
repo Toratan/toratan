@@ -245,6 +245,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                         url: $(this).attr("href"),
                         type: "POST",
                         data: "ajax=1",
+                        global: false,
                         success:function(data){
                             $(data).replaceAll("#load-older-msgs");
                             ini_messages_js();
@@ -348,8 +349,6 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                     setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
                 });
             });
-            $(document).ajaxStart(function(){ window.open_waitModal(); });
-            $(document).ajaxStop(function(){ window.open_waitModal(true); });
         });
     </script>
 <?php
