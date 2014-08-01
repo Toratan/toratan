@@ -47,7 +47,7 @@ class indexController extends \zinux\kernel\controller\baseController
         if(!$this->request->IsPOST()) throw new \zinux\kernel\exceptions\invalidOperationException;
         \zinux\kernel\security\security::IsSecure($this->request->params,
                 array("type", "op", "items", "continue"),
-                array('is_array' => $this->request->params["items"]));
+                array("items" => 'is_array'));
         \zinux\kernel\security\security::__validate_request($this->request->params,
                 array($this->request->params["type"], $this->request->params["continue"], session_id()));
         if(!in_array($this->request->params["type"], array("folder", "note", "link")))
