@@ -31,6 +31,10 @@
                     if($(node).hasClass('status')) {
                         txt = $(node).attr('status') + $(node).next("td").text().trim();
                     }
+                    if($(node).hasClass("item-name")) {
+                        // to fix a tablesorter bug
+                        txt = "0" + txt;
+                    }
                     return txt;
                 },
                 headers:{
@@ -132,7 +136,7 @@
                 type: "GET",
                 global: false,
                 url: "<?php echo $this->request->getURI() ?>",
-                data: "o="+$o+"&l="+$l+"&sort="+sort_base+"&order="+order+"&infscroll=1<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(session_id())) ?>",
+                data: "o="+$o+"&l="+$l+"&sort="+sort_base+"&e-order="+order+"&infscroll=1<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(session_id())) ?>",
                 dataType: "JSON",
                 success: function(data) {
                     if(typeof(data.count) === "undefined" || typeof(data.content) === "undefined") {
