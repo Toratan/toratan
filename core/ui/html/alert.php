@@ -43,7 +43,7 @@ class alert
             default: throw new \zinux\kernel\exceptions\invalidArgumentException;
         }
         return self::out(
-            "<div class='alert fade in alert-$alert_type ' style='z-index:10000000;border: 1px solid;padding: 1%;margin:0.5%;' id='".($id="alert-".sha1($data))."'>
+            "<div class='alert fade in alert-$alert_type pipe' style='z-index:10000000;border: 1px solid;padding: 1%;margin:0.5%;' id='".($id="alert-".sha1($data))."'>
                 <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
                 <p class='text-center inline' style='margin:0;padding:0'>$data</p>
             </div>
@@ -77,7 +77,7 @@ class alert
                 throw new \zinux\kernel\exceptions\invalidArgumentException;
         }
         return self::out(
-            "<div class='text-justify text-center text-$pipe_type' id='".($id="pipe-".sha1($data))."'>
+            "<div class='text-justify text-center text-$pipe_type pipe' id='".($id="pipe-".sha1($data))."'>
                 <style class='.error-container' type='text/css'>
                     .pipe-msg {width: 100%;padding: 20px;margin: 10px auto;border: 1px solid #cccccc; font-weight:bold;text-align:center}
                 </style>
@@ -95,7 +95,7 @@ class alert
      * @return string if $immediate_echo == 0 returns the data string
      */
     protected static function out($data, $id, $auto_dispose = 1, $immediate_echo = 1, $show_time = 7000) {
-        $data .= "<script id='$id' type='text/javascript'>
+        $data .= "<style  type='text/css'>.pipe{display:none;}</style><script id='$id' type='text/javascript'>
             $(document).ready(function(){
                 \$(\"div#$id\").hide().slideDown(\"slow\");";
         if($auto_dispose)

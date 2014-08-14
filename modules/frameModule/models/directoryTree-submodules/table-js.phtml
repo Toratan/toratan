@@ -24,7 +24,7 @@
             $('table.table').tablesorter({
                 sortList: [[defaultHeadIndex, defaultHeadOrder]],
                 textExtraction: function(node) {
-                    var txt = $(node).text();
+                    var txt = String($(node).text()).trim();
                     if($(node).hasClass('updated-at')) {
                         txt = new Date($(node).attr('origin-date')).getTime();
                     }
