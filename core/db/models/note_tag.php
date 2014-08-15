@@ -26,8 +26,12 @@ class note_tag extends baseModel
         $to_delete_tags = array_diff($otags, $ntags);
         # if there are already tag exist and we have `Untagged` tag among existings delete that!!
         if(count($ntags) + count($new_tags) - count($to_delete_tags) && !array_search("Untagged", $to_delete_tags))
-            if(($untagged = array_search("Untagged", $new_tags)) !== FALSE)
-                unset($new_tags[$untagged]);
+            if(($untagged = array_search("Untagged", $new_tags)) !== FALSE) {
+                # if there are any other tags beside `Untagged` tag?
+                if(count($new_tags) > 1)
+                    # remove the `Untagged` tag
+                    unset($new_tags[$untagged]);
+            }
             elseif(array_search("Untagged", $ntags)  !== FALSE)
                 $to_delete_tags[] = "Untagged";
         # if there are deleted tags?

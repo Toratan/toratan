@@ -465,16 +465,11 @@ __OP_FUNC:
                                 $this->request->params["{$item}_body"],
                                 $nc, $nc, $nc,
                                 $editor_version_id);
-                    }                        
+                    }
                     # if not tagged?
-                    if(!isset($this->request->params["tagit"]))
-                        # if creating new note?
-                        if($is_new)
-                            # tag is as untagged!!
-                            $this->request->params["tagit"] = "Untagged";
-                        else
-                            # otherwise live it empty
-                            $this->request->params["tagit"]  = "";
+                    if(!isset($this->request->params["tagit"]) || !is_string($this->request->params["tagit"]) || !strlen($this->request->params["tagit"]))
+                        # tag is as untagged!!
+                        $this->request->params["tagit"] = "Untagged";
                     # link the tags with this note
                     \core\db\models\note_tag::unify_tagit_array($item_value, explode(",", $this->request->params["tagit"]));
                     # generating note's summary

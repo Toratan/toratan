@@ -24,7 +24,7 @@ class post
                             </li>
                         <?php endforeach; ?>
                     <?php else: ?>
-                            <li><a href='#'>Untagged</a></li>
+                            <?php /* No tag found; so we leave it empty */?>
                     <?php endif; ?>
                 </ul>
                 <div class="blog-preview-meta">
