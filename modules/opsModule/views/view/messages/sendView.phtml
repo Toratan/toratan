@@ -1,5 +1,5 @@
 <div id="send-msg">
-    <form action="/send/message/to/<?php echo $this->rcv_user->username ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->rcv_user->user_id)) ?>" method="POST" name="send-message">
+    <form action="/send/message/to/<?php echo $this->rcv_user->username ?><?php echo isset($this->request->params["from"]) ? "/from/{$this->request->params["from"]}" : ""?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->rcv_user->user_id)) ?>" method="POST" name="send-message">
 <?php if(@$this->error): ?>
         <div class="text-danger" style="font-variant: small-caps;padding:10px;">» <?php echo $this->error ?></div>
 <?php endif; ?>
@@ -74,13 +74,19 @@
                 data: $(this).serialize(),
                 success: function(data) {
                     var has_input = data.length;
-                    if(!data.length)
+                    if(!has_input)
                         data = "<strong><span class='glyphicon glyphicon-ok'></span> Your message sent successfully.</strong>";
                     // make a delay to close ajax modals the show the results
                     setTimeout(function() { 
-                        window.open_dialogModal(data, has_input ? -1 : 2000);
-                        if(<?php echo isset($this->request->params["inbox"]) ? "true" : "false"?> && !has_input)
-                            setTimeout(function(){window.location = "/messages";}, 2000);
+                        if(!has_input)
+                            window.open_dialogModal(data, 2000);
+                        if(<?php echo isset($this->request->params["inbox"]) ? "true" : "false"?>) {
+                            if(!has_input || typeof(window.send_msg_callback) === "undefined" || typeof(window.send_msg_callback) !== "function") {
+                                setTimeout(function(){window.location = "/messages";}, 2000);
+                            } else {
+                                window.send_msg_callback(data);
+                            }
+                        }
                     }, 500);
                 }
             }).fail(function(xhr) {

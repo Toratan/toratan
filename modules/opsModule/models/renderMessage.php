@@ -14,10 +14,10 @@ class renderMessage extends \zinux\kernel\model\baseModel {
     public function __construct(\zinux\kernel\view\baseView $view) { $this->view = $view; $this->ommit_body = !count($this->view->messages); }
     public function __render_header() { if($this->ommit_body) return;
 ?>
-<div class="conversations">
+<div class="conversation">
     <div class="topbar">
         <div class="pull-left">
-            <a class="btn btn-default" href="<?php echo "#!/send/message/to/{$this->view->target_user->username}?".\zinux\kernel\security\security::__get_uri_hash_string(array($this->view->target_user->user_id))?>" id="send-message">
+            <a class="btn btn-default" href="<?php echo "#!/send/message/to/{$this->view->target_user->username}/from/inbox?".\zinux\kernel\security\security::__get_uri_hash_string(array($this->view->target_user->user_id))?>" id="send-message">
                 <span class="glyphicon glyphicon-retweet"></span> Reply
             </a>
         </div>
@@ -87,6 +87,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                 $mgroups[count($mgroups) - 1][] = $message;
         endforeach;
     ?>
+<div id="message-groups">
     <?php foreach($mgroups as $group): $message = @$group[0];?>
     <div class="message-group">
         <div class="arrow arrow-<?php echo $is_me_sending($message) ? "right me-sending" : "left you-sending" ?>"></div>
@@ -120,7 +121,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
         <div class="clearfix"></div>
     </div>
     <?php endforeach; ?>
-    <?php if($this->view->is_more): ?>
+    <?php if(@$this->view->is_more): ?>
     <div id="load-older-msgs" class="list-group text-center">
         <a href="/messages/fetch_conversation/page/<?php echo $this->view->request->params["page"] + 1 ?>/c/<?php echo $this->view->cid ?>/u/<?php echo $this->view->target_user->user_id ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->view->cid, $this->view->target_user->user_id, session_id())) ?>" id="load-older-msgs-link" class="list-group-item load-older">
             <span class="glyphicon glyphicon-arrow-down"></span> Load Older Messages
@@ -128,14 +129,15 @@ class renderMessage extends \zinux\kernel\model\baseModel {
     </div>
     <?php endif; ?>
 </div>
+</div>
 <?php
     }
     public function __render_css() { if($this->ommit_body) return;
 ?>
     <style type='text/css'>
-        .conversations{width: 100%}
-        .conversations #topbar-sep {padding-top: 55px;}
-        .conversations .topbar{position: absolute;background-color: #FFF!important;border-bottom: 1px solid #e6e6e6; width: 92%;top: 50px}
+        .conversation{width: 100%}
+        .conversation #topbar-sep {padding-top: 55px;}
+        .conversation .topbar{position: absolute;background-color: #FFF!important;border-bottom: 1px solid #e6e6e6; width: 92%;top: 50px}
         .message-check{display: none}
         mgroup{
             display: block;
@@ -210,27 +212,27 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                 if(typeof(window.deleting_message) === "undefined") return false;
                 return window.deleting_message;
             };
-            var ini_messages_js = function() {
+            $.propHooks.checked = {
+                set: function(elem, value, name) {
+                  var ret = (elem[ name ] = value);
+                  $(elem).trigger("change");
+                  return ret;
+                }
+            };
+            document.ini_messages_js = function() {
                 $("a[href='#']").click(function(e){ e.preventDefault(); });
-                $(".send-date").each(function(){
+                $(".send-date:not(.init)").each(function(){
                     $(this).html(
                         moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').format("lll")
-                    );
+                    ).addClass("init");
                 });
-                $.propHooks.checked = {
-                    set: function(elem, value, name) {
-                      var ret = (elem[ name ] = value);
-                      $(elem).trigger("change");
-                      return ret;
-                    }
-                };
-                $(".message-check").change(function(){
+                $(".message-check").unbind("change").change(function(){
                     if($(this).prop("checked"))
                         $(this).parents("message").css({"background-color": "#F1F2F7", "border": "1px solid #CCC"});
                     else
                         $(this).parents("message").css({"background-color": "transparent", "border": "0"});
                 });
-                $("message mbody").click(function(){
+                $("message mbody").unbind("click").click(function(){
                     if(is_deleting_messages()) 
                         $(this)
                             .parents("message")
@@ -248,15 +250,18 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                         global: false,
                         success:function(data){
                             $(data).replaceAll("#load-older-msgs");
-                            ini_messages_js();
+                            document.ini_messages_js();
                         }
                     }).fail(function(xhr) {
                         setTimeout(function() { $("#load-older-msgs-link").html($("#load-older-msgs").data("initial_html"));window.open_errorModal(xhr.responseText, -1, true); }, 500);
                     });
                 };
-                $("#load-older-msgs-link").click(load_more_msgs);
+                $("#load-older-msgs-link").unbind("click").click(load_more_msgs);
+                if(typeof(window.deleting_message) !== "undefined") {
+                    $("#delete-messages-view").click();
+                }
             };
-            ini_messages_js();
+            document.ini_messages_js();
             $("#delete-messages-view").click(function(){
                 $('.message-check').fadeIn();$('.conversation-options').parents('.topbar').hide();
                 window.deleting_message = true;
@@ -350,6 +355,20 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                 });
             });
         });
+        window.send_msg_callback = function(data) {
+            var should_merge = $("#message-groups").find(".message-group:first").children("mgroup").hasClass("me-sending");
+            var $msg = $(data);
+            if(should_merge) {
+                var $target_div = $("#message-groups").find(".message-group mgroup message").first();
+                $msg.find("mgroup message").each(function(){
+                    $target_div.before($(this).clone().wrap('<p/>').parent().html());
+                });
+                $msg.remove();
+            } else  {
+                $("#message-groups").prepend(data);
+            }
+            document.ini_messages_js();
+        };
     </script>
 <?php
     }

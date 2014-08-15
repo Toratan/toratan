@@ -80,7 +80,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
                 </div>
             </a>
             <?php endforeach; ?>
-            <?php if($this->view->is_more): ?>
+            <?php if(@$this->view->is_more): ?>
             <div class="clearfix"></div>
             <a href="/messages/page/<?php echo $this->view->request->params["page"] + 1?>" class="list-group-item text-center load-older" id="load-older-conv">
                 <span class="glyphicon glyphicon-arrow-down"></span> Load Older Conversations

@@ -150,6 +150,16 @@ class messagesController extends \zinux\kernel\controller\baseController
         if(!isset($this->request->params["ajax"]))
             # redirect the use browser
             header("location: /@{$this->view->rcv_user->username}");
+        else {
+            /**
+             * in ajax call render a copy of sended message to the client
+             */
+            $this->view->messages = array($m);
+            $this->view->current_user = $this->view->sender_user;
+            $this->view->target_user = $this->view->rcv_user;
+            $rm = new \modules\opsModule\models\renderMessage($this->view);
+            $rm->__render_messages();
+        }
         exit;
     }
 
