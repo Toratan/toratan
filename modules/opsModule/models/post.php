@@ -23,7 +23,7 @@ class post
                                 </a>
                             </li>
                         <?php endforeach; ?>
-                    <?php else: ?>tagView.phtml
+                    <?php else: ?>
                             <li><a href='#'>Untagged</a></li>
                     <?php endif; ?>
                 </ul>
