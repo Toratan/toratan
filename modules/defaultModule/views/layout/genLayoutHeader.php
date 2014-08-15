@@ -80,7 +80,7 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
             (function(){
                 // if i am in a frame?
                 if(window.top !== window.self)
-                    window.top.document.title = '<?php echo $this->layout->RenderTitle(); ?>';
+                    window.top.document.title = <?php echo json_encode(strip_tags($this->layout->title)); ?>;
             })();
             (function(){
                 // if we are in a frame?

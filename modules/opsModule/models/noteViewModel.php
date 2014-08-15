@@ -279,7 +279,6 @@ class noteViewModel
     <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
     <script type="text/javascript">
         (function(){
-            $(".right-sticky-container").sticky();
     <?php if(!$is_preview): ?>
             window.ajax_start = function(){ window.open_waitModal();};
             window.ajax_stop = function() { window.open_waitModal(true);};
@@ -307,6 +306,9 @@ class noteViewModel
             else console.error("`moment` not defined");
         })(jQuery);
         $(document).ready(function(){
+<?php if(@$n->is_public): ?>
+            $(".right-sticky-container").sticky();
+<?php endif; ?>
             window.update_time();
             prettyPrint();
     <?php if(!$is_preview): ?>
