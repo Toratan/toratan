@@ -30,6 +30,8 @@ class tagit
         $("ul.tagit").remove();
         window.open_savecloseModal($("#tagit-container").html(), function(){
             $("#tagit-container .myTags").val($(".modal-body .myTags").val());
+            if(typeof(document.tagit_callback) !== "undefined" && typeof(document.tagit_callback) === "function")
+                document.tagit_callback($(".modal-body .myTags").val());
         });
         setTimeout(function(){
             new_tag_focus();

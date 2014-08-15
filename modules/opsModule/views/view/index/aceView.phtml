@@ -12,6 +12,7 @@
             $tags = "$tags, $tag->tag_value";
         }
     }
+    $this->edit = $this->edit && !$this->is_using_buffer;
     $profile =\core\db\models\profile::getInstance();
     if(!($eo = $profile->getSetting("/rte/options/ace")) || !($eo instanceof \modules\opsModule\models\aceEditorOptions)) {
         $eo = new \modules\opsModule\models\aceEditorOptions;
@@ -68,6 +69,7 @@
                                     .append('<input type="hidden" name="submit-type" value="change-editor" />')
                                     .append('<input type="hidden" name="pid" value="<?php echo $this->pid ?>" />')
                                     .attr('action', href);
+                            document.switch_editor = true;
                             save(window.editor, undefined, true);
 <?php if($this->edit) : ?>
                         }, undefined, false);
@@ -115,6 +117,25 @@
             save(window.editor);
         };
         function save(editor, obj, force_save) {
+            if(<?php echo $this->edit? "false" : "true" ?> && typeof(document.switch_editor) === "undefined" && typeof(document.tagit_callback) === "undefined") {
+                document.tagit_callback = function(){
+                    var o = document.tagit_callback_params;
+                    if(typeof(o) === "undefined")
+                        throw "undefined callback obj";
+                    __save(o._editor, o._obj, o._force_save);
+                    delete document.tagit_callback_params, document.tagit_callback;
+                };
+                document.tagit_callback_params = {
+                    _editor: editor,
+                    _obj: obj,
+                    _force_save: force_save
+                };
+                tagit();
+            } else {
+                __save(editor, obj, force_save);
+            }
+        };
+        function __save(editor, obj, force_save) {
             $(window).unbind('beforeunload');
             if(typeof(force_save) === "undefined") force_save = false;
 <?php if(strtolower($this->request->action->name) != "new") : ?>
@@ -181,7 +202,7 @@ $tagit->__renderCSS();
                             <li><a href='#' onclick="openOptions();"><span class="glyphicon glyphicon-th-list"></span> Editor's options</a></li>
                             <li class="divider"></li>
                             <li title="Change to classic editor">
-                                <a href="#/editor/change/to/classic?continue=<?php echo urlencode("/".$this->request->action->name."/note/".($this->edit ? "$note_id?": "?pid=$this->pid").zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit ? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id))); ?>" id="switch-editor">
+                                <a href="#/editor/change/to/classic?continue=<?php echo urlencode("/".$this->request->action->name."/note/".($this->edit? "$note_id?": "?pid=$this->pid").zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id))); ?>" id="switch-editor">
                                     <span class="glyphicon glyphicon-credit-card"></span> Classic editor
                                 </a>
                             </li>
@@ -195,7 +216,7 @@ $tagit->__renderCSS();
     </div>
 </div>
 <script src="/access/rte/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-<form action="/<?php echo $this->request->action->name ?>/note/<?php echo $this->edit ? "$note_id?": "?pid=$this->pid"?><?php echo zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit ? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>" method="POST" name='note' style="display: none;">
+<form action="/<?php echo $this->request->action->name ?>/note/<?php echo $this->edit? "$note_id?": "?pid=$this->pid"?><?php echo zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit ? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>" method="POST" name='note' style="display: none;">
     <input type="hidden" name="version" value="ace" />
     <?php $tagit->__renderHTML($tags); ?>
     <?php if($this->edit) : ?>

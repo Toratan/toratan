@@ -12,6 +12,7 @@
             $tags = "$tags, $tag->tag_value";
         }
     }
+    $this->edit = $this->edit && !$this->is_using_buffer;
 ?>
 <script src="/access/js/shortcut.min.js"></script>
 <script src="/access/rte/tinymce/tinymce.min.js"></script>
@@ -54,6 +55,7 @@
                                     .append('<input type="hidden" name="submit-type" value="change-editor" />')
                                     .append('<input type="hidden" name="pid" value="<?php echo $this->pid ?>" />')
                                     .attr('action', href);
+                            document.switch_editor = true;
                             save(true);
 <?php if($this->edit) : ?>
                         }, undefined, false);
@@ -88,6 +90,23 @@
             save();
         };
         function save(force_save) {
+            if(<?php echo $this->edit? "false" : "true" ?> && typeof(document.switch_editor) === "undefined" && typeof(document.tagit_callback) === "undefined") {
+                document.tagit_callback = function(){
+                    var o = document.tagit_callback_params;
+                    if(typeof(o) === "undefined")
+                        throw "undefined callback obj";
+                    __save(o._force_save);
+                    delete document.tagit_callback_params, document.tagit_callback;
+                };
+                document.tagit_callback_params = {
+                    _force_save: force_save
+                };
+                tagit();
+            } else {
+                __save(force_save);
+            }
+        };
+        function __save(force_save) {
             $(window).unbind('beforeunload');
             if(typeof(force_save) === "undefined") force_save = false;
 <?php if(strtolower($this->request->action->name) != "new") : ?>
@@ -143,7 +162,7 @@ $tagit->__renderCSS();
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <li class="divider hidden"></li>
-                                <li title="Change to Ace editor"><a href="#/editor/change/to/ace?continue=<?php echo urlencode("/".$this->request->action->name."/note/".($this->edit ? "$note_id?": "?pid=$this->pid").zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit ? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id))); ?>" id="switch-editor"><span class="glyphicon glyphicon-credit-card"></span> Ace editor</a></li>
+                                <li title="Change to Ace editor"><a href="#/editor/change/to/ace?continue=<?php echo urlencode("/".$this->request->action->name."/note/".($this->edit? "$note_id?": "?pid=$this->pid").zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id))); ?>" id="switch-editor"><span class="glyphicon glyphicon-credit-card"></span> Ace editor</a></li>
                             </ul>
                         </div>
                     </div>
