@@ -73,6 +73,12 @@
             case "site": 
                 $arr =explode(";", $p[$key]);
                 if(!count($arr) || !@strlen(trim($arr[0]))) break;
+                if($key == "public_email" && !$is_profile_owner) {
+                    $gr = new vendor\recaptcha\recaptcha;
+                    for($index=0; $index < count($arr); $index++) {
+                        $arr[$index] = $gr->mailhide($arr[$index]);
+                    }
+                }
                 $v .= '<ul class="list-unstyled">';
                 foreach($arr as $partial) {
                     $v .= '<li>';
@@ -87,7 +93,7 @@
                         $host = ucfirst($host);
                         $v .= "<a href='$partial'>$host</a>";
                     }
-                    elseif($key == "public_email") $v .= "<a href='mailto:$partial'>$partial</a>";
+                    elseif($key == "public_email") $v .= "$partial";
                     else $v .= $partial;
                     $v .= '</li><li class="divider"></li>';
                 }

@@ -78,4 +78,21 @@ class recaptcha {
     public function get_last_error() {
         return $this->last_error;
     }
+    /**
+     * invokes mail hide functionality of google recaptcha
+     * @param string $email
+     * @param boolean $html_version (default: true) flag it to whether or not to use html version of mailhide api or not 
+     */
+    public function mailhide($email, $html_version = 1) {
+        /**
+         * For mail hide there are different type of keys to use
+         * got keys at http://www.google.com/recaptcha/mailhide/apikey
+         */
+        $mailhide_pub_key = "01AqRGul3OsqgOby5PA1vd9w==";
+        $mailhide_prv_key = "3ebddcb55a46385363337153219641ad";
+        $func = "recaptcha_mailhide_html";
+        if(!$html_version)
+            $func ="recaptcha_mailhide_url";
+        return $func($mailhide_pub_key, $mailhide_prv_key, $email);
+    }
 }
