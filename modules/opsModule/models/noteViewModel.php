@@ -232,6 +232,7 @@ class noteViewModel
         # otherwise render the note's origin body.
         echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
     ?></div>
+<?php if(@$n->is_public): ?>
     <div class="pull-right right-sticky-container">
         <ul class="social-sharing" style="">
             <?php  $uri = $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__.preg_replace("#^/ops#i", "", $this->view->request->GetURI()); ?>
@@ -272,6 +273,7 @@ class noteViewModel
     <link rel="stylesheet" href='/access/css/social/share.css' />
     <script type="text/javascript" src="/access/js/sticky/jquery.sticky.min.js"></script>
     <script type="text/javascript" src="/access/css/social/share.js"></script>
+<?php endif; ?>
     <script src="/access/js/moment.min.js"></script>
     <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
     <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
