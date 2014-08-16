@@ -99,7 +99,7 @@ class note extends item
     /**
      * Applies summary to current note
      * @param string $summary
-     * @param boolean $auto_save Shoud the method attempt to autosave after the assignment?
+     * @param boolean $auto_save (default: true) Shoud the method attempt to autosave after the assignment?
      * @return \core\db\models\note $this
      */
     public function apply_summary($summary, $auto_save = 1) {
@@ -111,7 +111,7 @@ class note extends item
     /**
      * Applies note pre-processed html body to current note
      * @param string $html
-     * @param boolean $auto_save Shoud the method attempt to autosave after the assignment?
+     * @param boolean $auto_save (default: true) Shoud the method attempt to autosave after the assignment?
      * @return \core\db\models\note $this
      */
     public function apply_note_html_body($html, $auto_save = 1) {
@@ -131,5 +131,27 @@ class note extends item
             $tags[] = $tag->tag_value;
         }
         return $tags;
+    }
+    /**
+     * Increases the note's popularity
+     * @param boolean $auto_save (default: true) Shoud the method attempt to autosave after the assignment?
+     * @return The after increase popularity rate
+     */
+    public function increase_popularity($auto_save = 1){
+        $this->popularity += 0.1;
+        if($auto_save)
+            $this->save();
+        return $this->popularity;
+    }
+    /**
+     * Decreases the note's popularity
+     * @param boolean $auto_save (default: true) Shoud the method attempt to autosave after the assignment?
+     * @return The after decrease popularity rate
+     */
+    public function decrease_popularity($auto_save = 1){
+        $this->popularity -= 0.1;
+        if($auto_save)
+            $this->save();
+        return $this->popularity;
     }
 }

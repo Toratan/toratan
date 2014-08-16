@@ -593,6 +593,38 @@ __OP_FUNC:
         if(!$is_owner && (!$item_value->is_public || $item_value->is_trash))
             # drop the balls
             throw new \zinux\kernel\exceptions\accessDeniedException("The `$item` you are looking for does not exists or you don't have the pemission to view it.");
+        # if not the owner who is reviewing ...
+        if(!$is_owner) {
+            # implementation fail-safe
+            if(!\method_exists($item_value, "increase_popularity"))
+                throw new \zinux\kernel\exceptions\notImplementedException("It seems method `$item_class::increase_popularity()` has not implemented!");
+            # open up a session cache socket
+            $sc = new \zinux\kernel\caching\sessionCache(__METHOD__);
+            # name for caching item viewing tracking list
+            $nvtl_key_name = "items-view-track-list";
+            # by default there is no abort in popularity increasing ...
+            $abort_popularity = false;
+            # if there is a cache value for the tracking list
+            if($sc->isCached($nvtl_key_name)) {
+                # fetch the list
+                $track_list = $sc->fetch($nvtl_key_name);
+                # if this item IS NOT previously visited by current user in its session life time
+                if(!($abort_popularity = in_array($item_value->getItemID(), $track_list))) {
+                    # add the current item's ID into tracking list
+                    $track_list[] = $item_value->getItemID();
+                    # save update the caching data
+                    $sc->save($nvtl_key_name, $track_list);
+                }
+            # if this is the first time viewing a note in current session life time ...
+            } else {
+                # create a tracking list with current item's ID
+                $sc->save($nvtl_key_name, array($item_value->getItemID()));
+            }
+            # if there is no popularity increase plan
+            if(!$abort_popularity)
+                # increase the popularity of the item
+                $item_value->increase_popularity();
+        }
         # pass the item's instance to view
         $this->view->instance = $item_value;
         # fetch route path to current note
