@@ -78,11 +78,6 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
         </div>
         <script type="text/javascript">
             (function(){
-                // if i am in a frame?
-                if(window.top !== window.self)
-                    window.top.document.title = <?php echo json_encode(strip_tags($this->layout->title)); ?>;
-            })();
-            (function(){
                 // if we are in a frame?
                 if(window.top !== window.self)
                     // remove the header
