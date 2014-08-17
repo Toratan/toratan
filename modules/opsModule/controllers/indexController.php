@@ -952,4 +952,13 @@ __USE_DEFAULT:
         # we failed!
         return null;
     }
+    /**
+    * The \modules\opsModule\controllers\indexController::moveAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function moveAction()
+    {
+        \zinux\kernel\utilities\debug::
+            _var($this->request, 1);
+    }
 }

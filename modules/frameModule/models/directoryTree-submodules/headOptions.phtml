@@ -52,6 +52,7 @@
     case self::SHARED:
 __GENERIC: ?>
             <button type="submit" class="btn btn-default w60" title="Toggle Share" name="op" value="share"><span class="glyphicon glyphicon-<?php echo $this->tree_type === self::SHARED? "minus":"share-alt" ?>"></span></button>
+            <button type="submit" class="btn btn-default w60" title="Move To" name="op" value="move"><span class="glyphicon glyphicon-folder-close"></span></button>
 <?php if($this->tree_type !== self::SHARED): ?>
             <?php if($this->tree_type === self::ARCHIVE && $this->request->params["d"] == 0): ?>
             <button type="submit" class="btn btn-info w60" title="Un-Archive" name="op" value="archive"><span class="glyphicon glyphicon-open"></span></button>
