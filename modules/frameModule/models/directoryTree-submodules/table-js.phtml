@@ -1,4 +1,5 @@
 <script src="/access/js/jquery.tablesorter.min.js"></script>
+<script src="/access/js/jquery-ui-1.11.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         window.setInterval(window.update_times, 500);
@@ -255,7 +256,56 @@
             window.trim_rows();
             window.init_links();
             window.apply_menu_checkbox_to_items();
+<?php if($active_type == "folder") : ?>
+            window.dragable_folders();
+<?php endif; ?>
         };
+<?php if($active_type == "folder") : ?>
+        window.dragable_folders = function() {
+            $('tr.item-row td.item-name a:not(.drag-init)').draggable({
+                revert: "invalid",
+                helper: function() {
+                    var selected = $('.item-row input[type="checkbox"].item-checkbox:checked').parents('tr');
+                    if (selected.length === 0) {
+                      selected = $(this).parents('tr');
+                    }
+                    selected.find("input[type='checkbox'].item-checkbox").prop("checked", true);
+                    selected.addClass("dragging");
+                    return $("<div></div>").append("Move "+selected.length+" folders.").addClass("dragging-folder");
+                }
+            })
+            $(".item-row:has(.item-name):not(.dragging):not(.drag-init)").droppable({
+                accept: "tr.item-row.dragging td.item-name a",
+                hoverClass: "drop-hover",
+                drop: function(e, ui) {
+                    if($(this).hasClass("dragging")) {
+                        $(this).removeClass("dragging");
+                        return false;
+                    }
+                    window.top.open_waitModal();
+                    $.ajax({
+                        global: false,
+                        type: "POST",
+                        url: "/ops/move?&cpid="+$(this).attr("data-item-id")+"&pid=<?php echo @$parent_id ?>",
+                        data: $('form#opt-form').serialize()+<?php echo json_encode(zinux\kernel\security\security::__get_uri_hash_string(array($active_type, @$parent_id))) ?>,
+                        success: function(data){
+                            window.top.movement_callback();
+                        }
+                    }).fail(function(xhr){
+                        setTimeout(function() { window.top.open_errorModal(xhr.responseText, -1, true); }, 500);
+                    }).always(function(){
+                        window.top.open_waitModal(true);
+                    });
+                },
+                over: function( event, ui ) {
+                    if($(this).hasClass("dragging")) {
+                        $(this).removeClass("drop-hover");
+                        return false;
+                    }
+                }
+            });
+        };
+<?php endif; ?>
         // init the table as page's init call
         window.init_table(true);
     });

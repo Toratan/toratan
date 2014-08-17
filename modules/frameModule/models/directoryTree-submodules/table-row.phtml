@@ -1,4 +1,4 @@
-<tr class="<?php echo $type ?> item-row">
+<tr class="<?php echo $type ?> item-row" data-item-id="<?php echo $item->getItemID(); ?>">
     <td><?php if($is_owner) : ?><input name="items[]" class="input <?php echo $this->getCheckBoxClasses($item) ?>" related-item="<?php echo $item->WhoAmI();?>" type="checkbox" value="<?php echo $this->getPostCheckVal($item); ?>" /><?php else: ?>&nbsp;<?php endif; ?></td>
     <td class="status" status="<?php echo $this->getStatusBinary($item) ?>">
         <?php echo $this->getStatusIcons($item) ?>

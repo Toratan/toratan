@@ -37,6 +37,21 @@
             #explorer-table #table-header-updated,
             #explorer-table .updated-at{display:none}
     }
+    #explorer-table .ui-draggable-dragging {
+        height: 35px!important;
+        padding: 5px 10px 5px 10px;
+        border: 1px solid black;
+        background-color: #FFF;
+        overflow: hidden;
+        font-weight: bold;
+        font-variant: small-caps;
+        z-index: 10000;
+        min-width: 100px;
+    }
+    #explorer-table .drop-hover {
+        background-color: #efefef!important;
+        font-weight: bold;
+    }
 </style>
 <form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($active_type, $this->request->GetURI(), session_id())) ?>">
     <input type="hidden" name="type" value="<?php echo $active_type ?>" />
