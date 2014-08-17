@@ -71,10 +71,6 @@
                     window.submit_ops($this);
             }
         });
-        $('input[name="items[]"]').each(function(index){
-            if(index < 3)
-                $(this).prop("checked", true);
-        });
         window.top.movement_callback = function() {
             window.top.close_modal();
             var $checks = $("input[type='checkbox'].item-checkbox:checked");
