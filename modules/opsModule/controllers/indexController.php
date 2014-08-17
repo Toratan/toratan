@@ -960,9 +960,10 @@ __USE_DEFAULT:
     {
         $this->layout->SuppressLayout();
         \zinux\kernel\security\security::IsSecure($this->request->params, array("type", "items", "pid"));
+        $this->request->params["items"] = \zinux\kernel\utilities\_array::array_normalize($this->request->params["items"]);
         if(isset($this->request->params["init"]))
             $this->request->params["cpid"] = $this->request->params["pid"];
-        \zinux\kernel\security\security::IsSecure($this->request->params, array("cpid"));
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("cpid"), array("items" => array("is_array", "count")));
         \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["type"], $this->request->params["pid"]));
         if($this->request->IsGET()) {
             $this->view->items_string = json_encode($this->request->params["items"]);
