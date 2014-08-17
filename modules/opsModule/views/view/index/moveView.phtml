@@ -14,24 +14,39 @@ foreach($this->route_path as $index => $path) {
     echo "</li>";
 }
 echo "</ol>";
-echo "<dl class='move-list'>";
-if($this->current_pid != "0")
-    echo "<dt><span class='glyphicon glyphicon-folder-open'></span>&nbsp;&nbsp;".end($this->route_path)->getItemTitle()."</dt>";
-$title_max_len = 80;
-$this->folders_list =array_merge($this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list);
-foreach($this->folders_list as $folder) {
+$current_folder = end($this->route_path);
+$get_folder_title = function(\core\db\models\folder $folder){
+    $title_max_len = 80;
     $title = $folder->getItemTitle();
     if(strlen($title) > $title_max_len)
         $title =substr($title, 0, $title_max_len - 5)."[...]";
-    echo "<dd><span class='glyphicon glyphicon-folder-close'></span>&nbsp;&nbsp;$title</dd>";
+    return $title;
+};
+echo "<dl class='move-list'>";
+if($this->current_pid != "0")
+    echo "<dt><span class='glyphicon glyphicon-folder-open'></span>&nbsp;&nbsp;{$get_folder_title($current_folder)}</dt>";
+//$this->folders_list =array_merge($this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list);
+foreach($this->folders_list as $folder) {
+    # no-recursive movement allowed
+    if($current_folder->folder_id == $folder->folder_id) continue;
+    echo "<dd><span class='glyphicon glyphicon-folder-close'></span>&nbsp;&nbsp;{$get_folder_title($folder)}</dd>";
 }
 echo "</dl>";
+if(isset($this->request->params["dive"])) return;
 ?>
 <hr />
 <div class="action-btns">
     <button class="btn btn-default btn-sm pull-left" data-dismiss="modal" >Cancel</button>
     <button class="btn btn-primary btn-sm pull-right">Move Here</button>
 </div>
+<script type="text/javascript">
+    (function(){
+        $.ajax({
+            global: false,
+            data: {dive: 1, items:<?php echo $this->items_string ?>}
+        });
+    })(jQuery);
+</script>
 <div class="clearfix"></div>
 <style type="text/css">
     @media screen and (min-height: 0px) and (max-height: 700px) {
