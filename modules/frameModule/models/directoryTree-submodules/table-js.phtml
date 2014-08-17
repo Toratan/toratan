@@ -82,7 +82,7 @@
                 global: false,
                 type: "GET",
                 url: "/ops/move?init=1&pid=<?php echo @$parent_id ?>",
-                data: $('form#opt-form').serialize()+<?php echo json_encode(zinux\kernel\security\security::__get_uri_hash_string(array($active_type))) ?>,
+                data: $('form#opt-form').serialize()+<?php echo json_encode(zinux\kernel\security\security::__get_uri_hash_string(array($active_type, @$parent_id))) ?>,
                 success: function(data){
                     window.top.open_dialogModal(data);
                 }
