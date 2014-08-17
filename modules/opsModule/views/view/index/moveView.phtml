@@ -1,6 +1,6 @@
 <?php
 $this->folders_list = isset($this->folders_list) ? $this->folders_list : array();
-foreach(array("items_string", "origin_pid", "current_pid", "folders_list", "route_path") as $attr) {
+foreach(array("items_string", "origin_pid", "current_pid", "folders_list", "route_path", "items_id") as $attr) {
     if(!isset($this->$attr))
         throw new zinux\kernel\exceptions\notImplementedException("The argument `$attr` has not supplied");
 }
@@ -13,6 +13,7 @@ $get_folder_title = function(\core\db\models\folder $folder, $title_max_len = 60
 echo "<div id='move-container'>";
 echo "<ol class='breadcrumb'>";
 foreach($this->route_path as $index => $path) {
+    $route_ids[] = $path->getItemID();
     $is_active = ($index === count($this->route_path) - 1);
     echo "<li class='".($is_active ? "active" : "")."'>";
     if(!$is_active) echo "<a href='#' data-id='$path->folder_id'>";
@@ -25,7 +26,8 @@ $current_folder = end($this->route_path);
 echo "<dl class='move-list'>";
     echo "<dt ".($this->current_pid != "0" ? "data-id='{$current_folder->parent_id}'" : "" )."><span class='glyphicon glyphicon-folder-open'></span>&nbsp;&nbsp;{$get_folder_title($current_folder)}</dt>";
 foreach($this->folders_list as $folder) {
-    echo "<dd data-id='{$folder->folder_id}'><span class='glyphicon glyphicon-folder-close'></span>&nbsp;&nbsp;{$get_folder_title($folder)}</dd>";
+    $in_valid_push = in_array($folder->getItemID(), $this->items_id);
+    echo "<dd ".(!$in_valid_push ? "data-id='{$folder->folder_id}'" : "class='invalid-push' title='Cannot move into this!'")."><span class='glyphicon glyphicon-folder-close'></span>&nbsp;&nbsp;{$get_folder_title($folder)}</dd>";
 }
 echo "</dl>";
 if(!count($this->folders_list)) {
@@ -124,6 +126,14 @@ if(isset($this->request->params["dive"])) return;
     dl.move-list dd:hover {
         background-color: #e6e6e6;
         border: 1px solid #a5a5a5;
+    }
+    dl.move-list .invalid-push{
+        color: #DDD;
+        cursor: default;
+    }
+    dl.move-list .invalid-push:hover{
+        border:0;
+        background-color: transparent!important;
     }
     dl.move-list dd {
         margin-left: 20px;
