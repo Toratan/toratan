@@ -1,8 +1,60 @@
-<!--
- The \modules\opsModule\views\view\index\moveView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for '<b>\modules\opsModule\controllers\indexController::moveAction()</b>'<br />
-    Location: '<b>/var/www/toratan/modules/opsModule/views/view/index/moveView.phtml</b>'
-</p>
+<?php
+$this->folders_list = isset($this->folders_list) ? $this->folders_list : array();
+foreach(array("items_string", "origin_pid", "current_pid", "folders_list", "route_path") as $attr) {
+    if(!isset($this->$attr))
+        throw new zinux\kernel\exceptions\notImplementedException("The argument `$attr` has not supplied");
+}
+echo "<ol class='breadcrumb'>";
+foreach($this->route_path as $index => $path) {
+    $is_active = ($index === count($this->route_path) - 1);
+    echo "<li class='".($is_active ? "active" : "")."'>";
+    if(!$is_active) echo "<a href='#'>";
+    echo $path->getItemTitle();
+    if(!$is_active)  echo "</a>";
+    echo "</li>";
+}
+echo "</ol>";
+echo "<dl class='move-list'>";
+if($this->current_pid != "0")
+    echo "<dt><span class='glyphicon glyphicon-folder-open'></span>&nbsp;&nbsp;".end($this->route_path)->getItemTitle()."</dt>";
+$title_max_len = 80;
+$this->folders_list =array_merge($this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list, $this->folders_list);
+foreach($this->folders_list as $folder) {
+    $title = $folder->getItemTitle();
+    if(strlen($title) > $title_max_len)
+        $title =substr($title, 0, $title_max_len - 5)."[...]";
+    echo "<dd><span class='glyphicon glyphicon-folder-close'></span>&nbsp;&nbsp;$title</dd>";
+}
+echo "</dl>";
+?>
+<hr />
+<div class="action-btns">
+    <button class="btn btn-default btn-sm pull-left" data-dismiss="modal" >Cancel</button>
+    <button class="btn btn-primary btn-sm pull-right">Move Here</button>
+</div>
+<div class="clearfix"></div>
+<style type="text/css">
+    .breadcrumb li.active { color: #888; }
+    dl.move-list {
+        max-height: 500px;
+        overflow: auto;
+    }
+    dl.move-list dt,
+    dl.move-list dd {
+        height: 40px;
+        padding: 8px;
+        margin: 1px;
+        vertical-align: central;
+        cursor: pointer;
+        overflow: hidden;
+        word-break: break-all;
+    }
+    dl.move-list dt:hover,
+    dl.move-list dd:hover {
+        background-color: #e6e6e6;
+        border: 1px solid #a5a5a5;
+    }
+    dl.move-list dd {
+        margin-left: 20px;
+    }
+</style>

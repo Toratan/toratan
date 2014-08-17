@@ -958,7 +958,29 @@ __USE_DEFAULT:
     */
     public function moveAction()
     {
-        \zinux\kernel\utilities\debug::
-            _var($this->request, 1);
+        $this->layout->SuppressLayout();
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("type", "items", "pid"));
+        if(isset($this->request->params["init"]))
+            $this->request->params["cpid"] = $this->request->params["pid"];
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("cpid"));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["type"], $this->request->params["pid"]));
+        if($this->request->IsGET()) {
+            $this->view->items_string = json_encode($this->request->params["items"]);
+            $this->view->origin_pid = $this->request->params["pid"];
+            $this->view->current_pid = $this->request->params["cpid"];
+            $folders = new \core\db\models\folder;
+            $this->view->folders_list = $folders->fetchItems(\core\db\models\user::GetInstance()->user_id, $this->view->current_pid);
+            $this->view->route_path = $folders->fetchRouteToRoot($this->view->current_pid, \core\db\models\user::GetInstance()->user_id);
+            return;
+        }
+        $this->view->items = array();
+        foreach($this->request->params["items"] as $item) {
+            $this->view->items[] =\modules\opsModule\models\itemInfo::decode($item)->i;
+        }
+        $this->view->type = $this->request->params["type"];
+        $item_class = "\\core\\db\\models\\$type";
+        $item_ins = new $item_class;
+        $item_ins->move($items, \core\db\models\user::GetInstance()->user_id, $this->request->params["cpid"]);
+        die;
     }
 }
