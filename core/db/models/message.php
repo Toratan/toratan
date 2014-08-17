@@ -53,9 +53,7 @@ class message extends communicationModel
      */
     public static function deleteCollection($user_id, array $messages_id) {
         # glutize the array an fetch the string format of message ids
-        $messages_id = implode(", ", $messages_id);
-        # secure(escape) the message id and re-normalize it to inject directly into QUERY 
-        $messages_id = "'".implode("', '", explode(", ", substr(self::connection()->escape($messages_id), 1, strlen($messages_id))))."'";
+        $messages_id = self::escape_in_query($messages_id);
         # delete messages with given ID collection which both users are deleted them 
         self::delete_all(array('conditions' => array("(sender_id = ? OR receiver_id = ?) AND message_id in ($messages_id) AND deleted_id IS NOT NULL AND deleted_id != ?", $user_id, $user_id, $user_id)));
         # QUERY a update

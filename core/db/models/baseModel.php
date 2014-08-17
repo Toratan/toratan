@@ -12,6 +12,25 @@ abstract class baseModel extends \ActiveRecord\Model
      */
     private $save_disabled;
     /**
+     * Prepares and escapes an array for an IN(?) query
+     * @param array $in The in query array
+     * @param boolean $prepare_for_inline_injection (default: true) If you are binding the result of this function 
+     * to the query pass false, But if you are injecting it like `... IN($result_of_escape_in_query_func) ...` pass true.
+     * @return string The IN(?) query value
+     */
+    protected static function escape_in_query(array $in, $prepare_for_inline_injection = 1) {
+        # glutize the array an fetch the string format of INs
+        $in = implode(", ", $in);
+        # secure(escape) the IN and re-normalize it to inject directly into QUERY 
+        $in = implode("', '", explode(", ", substr(self::connection()->escape($in), 1, strlen($in))));
+        # if we are preparing for inline injection?
+        if($prepare_for_inline_injection)
+            # queto it
+            return "'$in'";
+        # return pure, because PAR will quetofy the text as well
+        return $in;
+    }
+    /**
      * @see \ActiveRecord\Model::find()
      */
     public static function find()
