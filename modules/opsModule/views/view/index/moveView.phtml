@@ -1,3 +1,4 @@
+<div id="move-global-container">
 <?php
 $this->folders_list = isset($this->folders_list) ? $this->folders_list : array();
 foreach(array("items_string", "origin_pid", "current_pid", "folders_list", "route_path", "items_id") as $attr) {
@@ -23,12 +24,10 @@ foreach($this->route_path as $index => $path) {
 }
 echo "</ol>";
 $current_folder = end($this->route_path);
-$self_move = false;
+$self_move = ($this->origin_pid == $current_folder->folder_id);
 echo "<dl class='move-list'>";
     echo "<dt ".($this->current_pid != "0" ? "data-id='{$current_folder->parent_id}'" : "" )."><span class='glyphicon glyphicon-folder-open'></span>&nbsp;&nbsp;{$get_folder_title($current_folder)}</dt>";
 foreach($this->folders_list as $folder) {
-    if(!$self_move && $folder->parent_id == $current_folder->folder_id)
-        $self_move = true;
     $in_valid_push = in_array($folder->getItemID(), $this->items_id);
     echo "<dd ".(!$in_valid_push ? "data-id='{$folder->folder_id}'" : "class='invalid-push' title='Cannot move into this!'")."><span class='glyphicon glyphicon-folder-close'></span>&nbsp;&nbsp;{$get_folder_title($folder)}</dd>";
 }
@@ -45,30 +44,37 @@ if(!count($this->folders_list)) {
     document.self_move = <?php echo $self_move ? "true" :  "false" ?>;
     $(document).ready(function(){
         $("button[name='move-here-action']:not(.disabled)").unbind('click').click(function(){
+            var submit_data = $.extend({}, window.movement_ajax_default_data, {cpid: <?php echo $this->current_pid ?>, submit: 1});
+            window.top.open_waitModal();
             $.ajax({
                 global: false,
                 type: "POST",
                 url: "/ops/move?<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($this->type, $this->origin_pid))?>",
-                data: $.extend({}, window.movement_ajax_default_data, {cpid: <?php echo $this->current_pid ?>, submit: 1}),
+                data: submit_data,
                 success: function(data){
                     if(typeof(window.movement_callback) === "function")
                         window.movement_callback();
                     else
                         window.location.reload();
                 }
+            }).fail(function(xhr){
+                window.top.close_modal();
+                setTimeout(function() { window.top.open_errorModal(xhr.responseText, -1, true); }, 500);
+            }).always(function(){
+                window.top.open_waitModal(true);
             });
         });
     });
 </script>
+<hr />
+<div class="action-btns">
+    <button class="btn btn-default btn-sm pull-left" data-dismiss="modal" onclick="delete window.movement_ajax_default_data;setTimeout(function(){$('#move-global-container').remove();}, 1000);" name="move-here-cancel">Cancel</button>
+    <button class="btn btn-primary btn-sm pull-right" type="submit" name="move-here-action">Move Here</button>
+</div>
 <?php
 echo "</div>";
 if(isset($this->request->params["dive"])) return;
 ?>
-<hr />
-<div class="action-btns">
-    <button class="btn btn-default btn-sm pull-left" data-dismiss="modal" onclick="delete window.movement_ajax_default_data;" name="move-here-cancel">Cancel</button>
-    <button class="btn btn-primary btn-sm pull-right" type="submit" name="move-here-action">Move Here</button>
-</div>
 <script type="text/javascript">
     (function(){
         window.movement_ajax_default_data = {
@@ -104,44 +110,5 @@ if(isset($this->request->params["dive"])) return;
     })(jQuery);
 </script>
 <div class="clearfix"></div>
-<style type="text/css">
-    @media screen and (min-height: 0px) and (max-height: 700px) {
-        dl.move-list { max-height: 300px;}
-    }
-    @media screen and (min-height: 701px) and (max-height: 800px) {
-        dl.move-list { max-height: 450px;}
-    }
-    @media screen and (min-height: 801px) {
-        dl.move-list { max-height: 500px;}
-    }
-    .breadcrumb li.active { color: #888; }
-    dl.move-list {
-        overflow: auto;
-    }
-    dl.move-list dt,
-    dl.move-list dd {
-        height: 40px;
-        padding: 8px;
-        margin: 1px;
-        vertical-align: central;
-        cursor: pointer;
-        overflow: hidden;
-        word-break: break-all;
-    }
-    dl.move-list dt:hover,
-    dl.move-list dd:hover {
-        background-color: #e6e6e6;
-        border: 1px solid #a5a5a5;
-    }
-    dl.move-list .invalid-push{
-        color: #DDD;
-        cursor: default;
-    }
-    dl.move-list .invalid-push:hover{
-        border:0;
-        background-color: transparent!important;
-    }
-    dl.move-list dd {
-        margin-left: 20px;
-    }
-</style>
+<style type="text/css">@media screen and (min-height:0) and (max-height:700px){dl.move-list{max-height:300px}}@media screen and (min-height:701px) and (max-height:800px){dl.move-list{max-height:450px}}@media screen and (min-height:801px){dl.move-list{max-height:500px}}.breadcrumb li.active{color:#888}dl.move-list{overflow:auto}.action-btns button{font-weight:700}dl.move-list dd,dl.move-list dt{height:40px;padding:8px;margin:1px;vertical-align:central;cursor:pointer;overflow:hidden;word-break:break-all}dl.move-list dd:hover,dl.move-list dt:hover{background-color:#e6e6e6;border:1px solid #a5a5a5}dl.move-list .invalid-push{color:#DDD;cursor:default}dl.move-list .invalid-push:hover{border:0;background-color:transparent!important}dl.move-list dd{margin-left:20px}</style>
+</div>
