@@ -34,9 +34,17 @@ echo "</dl>";
 </div>
 <div class="clearfix"></div>
 <style type="text/css">
+    @media screen and (min-height: 0px) and (max-height: 700px) {
+        dl.move-list { max-height: 300px;}
+    }
+    @media screen and (min-height: 701px) and (max-height: 800px) {
+        dl.move-list { max-height: 450px;}
+    }
+    @media screen and (min-height: 801px) {
+        dl.move-list { max-height: 500px;}
+    }
     .breadcrumb li.active { color: #888; }
     dl.move-list {
-        max-height: 500px;
         overflow: auto;
     }
     dl.move-list dt,
