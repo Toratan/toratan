@@ -75,6 +75,15 @@
             if(index < 3)
                 $(this).prop("checked", true);
         });
+        window.top.movement_callback = function() {
+            window.top.close_modal();
+            var $checks = $("input[type='checkbox'].item-checkbox:checked");
+            $checks.parents('tr').fadeOut('slow', function(){ 
+                $checks.parents('tr').remove();
+                window.plot_if_no_item_found();
+                window.init_checkboxes();
+            });
+        };
         $("button[value='move']").click(function(e) {
             e.preventDefault();
             window.top.open_waitModal();
