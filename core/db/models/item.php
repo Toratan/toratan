@@ -440,23 +440,14 @@ abstract class item extends baseModel
     }
     /**
      * moves an item
-     * @param string $item_id the item's id
+     * @param array $item_id the items' id collection
      * @param string $owner_id the item's owner id
-     * @param string $parent_id the item's currently parent id
      * @param string $new_parent_id the new parent id
-     * @return item the moved item
      */
-    public function move($item_id, $owner_id, $parent_id, $new_parent_id) {
-        try
-        {
-            $item = $this->fetch($item_id, $owner_id, array("conditions" => array("parent_id = ?", $parent_id)));
-        }
-        catch(\core\db\exceptions\dbNotFoundException $dbnf) {
-            throw new \core\db\exceptions\dbNotFoundException("Couldn't locate the item....", NULL, $dbnf);
-        }
-        $item->parent_id = $new_parent_id;
-        $item->save();
-        return $item;
+    public function move(array $item_ids, $owner_id, $new_parent_id) {
+        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        $builder->update(array("parent_id" => $new_parent_id))->where("owner_id = ? AND {$this->WhoAmI()}_id IN({$this->escape_in_query($item_ids)})", $owner_id);
+        $this->query($builder->to_s(), $builder->bind_values());
     }
     /**
      * Fetches all shared items that the owner has
