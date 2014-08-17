@@ -966,6 +966,7 @@ __USE_DEFAULT:
         \zinux\kernel\security\security::IsSecure($this->request->params, array("cpid"), array("items" => array("is_array", "count")));
         \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["type"], $this->request->params["pid"]));
         if($this->request->IsGET()) {
+            $this->view->type = $this->request->params["type"];
             $this->view->items_string = json_encode($this->request->params["items"]);
             $this->view->origin_pid = $this->request->params["pid"];
             $this->view->current_pid = $this->request->params["cpid"];
@@ -974,11 +975,11 @@ __USE_DEFAULT:
             $this->view->route_path = $folders->fetchRouteToRoot($this->view->current_pid, \core\db\models\user::GetInstance()->user_id);
             return;
         }
-        $this->view->items = array();
+        $items = array();
         foreach($this->request->params["items"] as $item) {
-            $this->view->items[] =\modules\opsModule\models\itemInfo::decode($item)->i;
+            $items[] =\modules\opsModule\models\itemInfo::decode($item)->i;
         }
-        $this->view->type = $this->request->params["type"];
+        $type = $this->request->params["type"];
         $item_class = "\\core\\db\\models\\$type";
         $item_ins = new $item_class;
         $item_ins->move($items, \core\db\models\user::GetInstance()->user_id, $this->request->params["cpid"]);
