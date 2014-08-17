@@ -23,9 +23,12 @@ foreach($this->route_path as $index => $path) {
 }
 echo "</ol>";
 $current_folder = end($this->route_path);
+$self_move = false;
 echo "<dl class='move-list'>";
     echo "<dt ".($this->current_pid != "0" ? "data-id='{$current_folder->parent_id}'" : "" )."><span class='glyphicon glyphicon-folder-open'></span>&nbsp;&nbsp;{$get_folder_title($current_folder)}</dt>";
 foreach($this->folders_list as $folder) {
+    if(!$self_move && $folder->parent_id == $current_folder->folder_id)
+        $self_move = true;
     $in_valid_push = in_array($folder->getItemID(), $this->items_id);
     echo "<dd ".(!$in_valid_push ? "data-id='{$folder->folder_id}'" : "class='invalid-push' title='Cannot move into this!'")."><span class='glyphicon glyphicon-folder-close'></span>&nbsp;&nbsp;{$get_folder_title($folder)}</dd>";
 }
@@ -39,16 +42,15 @@ if(!count($this->folders_list)) {
 }
 ?>
 <script type="text/javascript">
+    document.self_move = <?php echo $self_move ? "true" :  "false" ?>;
     $(document).ready(function(){
-        console.warn("no-recursive movement allowed");
-        $("button[name='move-here-action']").unbind('click').click(function(){
+        $("button[name='move-here-action']:not(.disabled)").unbind('click').click(function(){
             $.ajax({
                 global: false,
                 type: "POST",
                 url: "/ops/move?<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($this->type, $this->origin_pid))?>",
                 data: $.extend({}, window.movement_ajax_default_data, {cpid: <?php echo $this->current_pid ?>, submit: 1}),
                 success: function(data){
-            console.log(typeof(window.movement_callback)); return;
                     if(typeof(window.movement_callback) === "function")
                         window.movement_callback();
                     else
@@ -75,6 +77,10 @@ if(isset($this->request->params["dive"])) return;
                     type: <?php echo json_encode($this->type) ?>
                 };
         var init_movements = function() {
+            if(typeof(document.self_move) !== "undefined" && document.self_move)
+                $("button[name='move-here-action']").addClass("disabled");
+            else
+                $("button[name='move-here-action']").removeClass("disabled");
             $("dl.move-list [data-id], .breadcrumb a[data-id]").click(function(e){
                 e.preventDefault();
                 window.top.open_waitModal();
