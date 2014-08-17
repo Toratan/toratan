@@ -43,7 +43,11 @@
             });
         };
         $("button[name='op']").click(function(e){
-            if($(this).attr('value') === 'edit') return;
+            switch(String($(this).attr('value')).toLowerCase()){
+                case 'edit':
+                case 'move':
+                    return;
+            }
             e.preventDefault();
             var ops = String($(this).attr('value')).toLowerCase();
             var $this = this;
@@ -66,6 +70,27 @@
                 default:
                     window.submit_ops($this);
             }
+        });
+        $('input[name="items[]"]').each(function(index){
+            if(index < 3)
+                $(this).prop("checked", true);
+        });
+        $("button[value='move']").click(function(e) {
+            e.preventDefault();
+            window.top.open_waitModal();
+            $.ajax({
+                global: false,
+                type: "POST",
+                url: "/ops/move",
+                data: $('form#opt-form').serialize()+<?php echo json_encode(zinux\kernel\security\security::__get_uri_hash_string(array($active_type))) ?>,
+                success: function(data){
+                    window.top.open_dialogModal(data);
+                }
+            }).fail(function(xhr){
+                setTimeout(function() { window.top.open_errorModal(xhr.responseText, -1, true); }, 500);
+            }).always(function(){
+                window.top.open_waitModal(true);
+            });
         });
         $("button[value='edit']").click(function(e) {
             e.preventDefault();
