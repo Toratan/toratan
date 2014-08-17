@@ -74,11 +74,17 @@
         window.top.movement_callback = function() {
             window.top.close_modal();
             var $checks = $("input[type='checkbox'].item-checkbox:checked");
+            <?php if($this->tree_type == self::REGULAR): ?>
             $checks.parents('tr').fadeOut('slow', function(){ 
                 $checks.parents('tr').remove();
+            <?php else: ?>
+                $checks.prop("checked", false);
+            <?php endif; ?>
                 window.plot_if_no_item_found();
                 window.init_checkboxes();
+            <?php if($this->tree_type == self::REGULAR): ?>
             });
+            <?php endif; ?>
         };
         $("button[value='move']").click(function(e) {
             e.preventDefault();

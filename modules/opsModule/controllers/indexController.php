@@ -976,7 +976,7 @@ __USE_DEFAULT:
             $this->view->origin_pid = $this->request->params["pid"];
             $this->view->current_pid = $this->request->params["cpid"];
             $folders = new \core\db\models\folder;
-            $this->view->folders_list = $folders->fetchItems(\core\db\models\user::GetInstance()->user_id, $this->view->current_pid);
+            $this->view->folders_list = $folders->fetchItems(\core\db\models\user::GetInstance()->user_id, $this->view->current_pid, \core\db\models\folder::WHATEVER, \core\db\models\folder::FLAG_UNSET, \core\db\models\folder::FLAG_UNSET);
             $this->view->route_path = $folders->fetchRouteToRoot($this->view->current_pid, \core\db\models\user::GetInstance()->user_id);
             return;
         }
