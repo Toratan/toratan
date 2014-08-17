@@ -63,8 +63,8 @@
         <div class="container-fluid">
         <?php if(($user_logged = \core\db\models\user::IsSignedin())) :  ?>
             <iframe id="explorer-nav-frame" name="explorer-nav-frame" frameborder="0" style="height: 270px" src="/frame/en" class="pull-left col-lg-2 col-md-3 col-sm-3 col-xm-3"></iframe>
-            <iframe id="explorer-frame" name="explorer-frame" frameborder="0" style="height: 768px" src="" class="col-lg-7 col-md-9 col-sm-9 col-xm-9"></iframe>
-            <iframe id="feed-frame" name="feed-frame" frameborder="0" style="height: 768px" src="/frame/f" class="pull-right col-lg-3 hidden-md hidden-sm hidden-xs"></iframe>
+            <iframe id="explorer-frame" name="explorer-frame" frameborder="0" style="height: 768px" src="" class="max-height col-lg-7 col-md-9 col-sm-9 col-xm-9"></iframe>
+            <iframe id="feed-frame" name="feed-frame" frameborder="0" style="height: 768px" src="/frame/f" class="max-height pull-right col-lg-3 hidden-md hidden-sm hidden-xs"></iframe>
         <?php else: ?>
             <iframe id="public-frame" name="public-frame" frameborder="0" style="height: 768px;margin: 0!important;padding: 0;" src="" class="col-lg-12 col-md-12 col-sm-12 col-xm-12"></iframe>
             <script type="text/javascript">
@@ -78,7 +78,7 @@
             (function(){
                 // modify frames' size on window resize event
                 $(window).resize(function() {
-                    var $frames = $('iframe');
+                    var $frames = $('iframe.max-height');
                     if($(window).height() >= 420)
                         // re-size the frames
                         $frames.css('height', ($(window).height() - 90)+'px');
