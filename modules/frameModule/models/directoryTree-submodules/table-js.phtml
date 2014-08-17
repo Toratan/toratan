@@ -88,12 +88,24 @@
         };
         $("button[value='move']").click(function(e) {
             e.preventDefault();
+            var sort_base = "";
+            var $activeHead = 'table thead tr th.headerSortDown, table thead tr th.headerSortUp';
+            var order = $($activeHead).hasClass('headerSortDown') ? 0 : 1;
+            switch($($activeHead).index()) {
+                default:
+                case 2:
+                    sort_base = 1;
+                    break;
+                case 3:
+                    sort_base = 2;
+                    break;
+            };
             window.top.open_waitModal();
             $.ajax({
                 global: false,
                 type: "GET",
                 url: "/ops/move?init=1&pid=<?php echo @$parent_id ?>",
-                data: $('form#opt-form').serialize()+<?php echo json_encode(zinux\kernel\security\security::__get_uri_hash_string(array($active_type, @$parent_id))) ?>,
+                data: $('form#opt-form').serialize()+"&sort="+sort_base+"&order="+order+<?php echo json_encode(zinux\kernel\security\security::__get_uri_hash_string(array($active_type, @$parent_id))) ?>,
                 success: function(data){
                     window.top.open_dialogModal(data);
                 }

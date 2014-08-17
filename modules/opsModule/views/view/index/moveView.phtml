@@ -1,7 +1,7 @@
 <div id="move-global-container">
 <?php
 $this->folders_list = isset($this->folders_list) ? $this->folders_list : array();
-foreach(array("items_string", "origin_pid", "current_pid", "folders_list", "route_path", "items_id") as $attr) {
+foreach(array("items_string", "origin_pid", "current_pid", "folders_list", "route_path", "items_id", "sort", "order") as $attr) {
     if(!isset($this->$attr))
         throw new zinux\kernel\exceptions\notImplementedException("The argument `$attr` has not supplied");
 }
@@ -79,7 +79,9 @@ if(isset($this->request->params["dive"])) return;
         window.movement_ajax_default_data = {
                     items:<?php echo $this->items_string ?>,
                     pid: <?php echo $this->origin_pid ?>,
-                    type: <?php echo json_encode($this->type) ?>
+                    type: <?php echo json_encode($this->type) ?>,
+                    order: <?php echo json_encode($this->order) ?>,
+                    sort: <?php echo json_encode($this->sort) ?>
                 };
         var init_movements = function() {
             $('[data-toggle="tooltip"]').tooltip();

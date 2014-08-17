@@ -976,7 +976,25 @@ __USE_DEFAULT:
             $this->view->origin_pid = $this->request->params["pid"];
             $this->view->current_pid = $this->request->params["cpid"];
             $folders = new \core\db\models\folder;
-            $this->view->folders_list = $folders->fetchItems(\core\db\models\user::GetInstance()->user_id, $this->view->current_pid, \core\db\models\folder::WHATEVER, \core\db\models\folder::FLAG_UNSET, \core\db\models\folder::FLAG_UNSET);
+            $sort_base = "folder_title";
+            if(isset($this->request->params["sort"])) {
+                switch($this->request->params["sort"]) {
+                    case 2:
+                        $sort_base = "updated_at";
+                        break;
+                }
+            }
+            $order = "asc";
+            if(isset($this->request->params["order"])) {
+                switch($this->request->params["order"]) {
+                    case 1:
+                        $order = "desc";
+                        break;
+                }
+            }
+            $this->view->order = @$this->request->params["order"];
+            $this->view->sort = @$this->request->params["sort"];
+            $this->view->folders_list = $folders->fetchItems(\core\db\models\user::GetInstance()->user_id, $this->view->current_pid, \core\db\models\folder::WHATEVER, \core\db\models\folder::FLAG_UNSET, \core\db\models\folder::FLAG_UNSET, array("order" => "$sort_base $order"));
             $this->view->route_path = $folders->fetchRouteToRoot($this->view->current_pid, \core\db\models\user::GetInstance()->user_id);
             return;
         }
