@@ -786,4 +786,12 @@ __ERROR:
         # redirect to user's profile
         header("location: /profile");    
     }
+    /**
+    * The \modules\opsModule\controllers\profileController::setAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function setAction()
+    {
+        \zinux\kernel\security\security::__validate_request($this->request->params);
+    }
 }
