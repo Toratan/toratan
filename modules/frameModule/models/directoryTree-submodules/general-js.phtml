@@ -84,8 +84,8 @@
             var selection_rule = 'td.updated-at.timeago';
             if(!updating) selection_rule += ':not(.time-inited)';
             $(selection_rule).each(function(){
-                var time = moment($(this).find("time").attr("datetime"), 'ddd, DD MMM YYYY HH:mm:ss ZZ').format("lll");
-                var time_str = (moment($(this).find("time").attr("datetime"), 'ddd, DD MMM YYYY HH:mm:ss ZZ').fromNow("lll")) + " ago";
+                var time = moment($(this).find("time").attr("datetime")).format("lll");
+                var time_str = (moment($(this).find("time").attr("datetime")).fromNow("lll")) + " ago";
                 $(this)
                     .attr('title', time)
                     .children('time')
@@ -263,7 +263,7 @@
             }
             if(shouldUpdateTime) {
                 // update the update row
-                var updateTime = moment().format('ddd, DD MMM YYYY HH:mm:ss ZZ');
+                var updateTime = moment().format();
                 $("tr.item-checked td.updated-at")
                     .attr('title', updateTime)
                     .attr('origin-date', updateTime)

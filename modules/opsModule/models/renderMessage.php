@@ -106,9 +106,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                             <div class="pull-left">
                                 <input type="checkbox" class="message-check input" mid='<?php echo $message->message_id ?>'/>
                             </div>
-                            <div class='send-date pull-right'>
-                                <?php echo $message->created_at; ?>
-                            </div>
+                            <time class='send-date pull-right' datetime='<?php echo $message->created_at; ?>'></time>
                         </mhead>
                         <mbody  class="pull-left text-justify">
                             <p class="inline"><?php echo $message->message_data; ?></p>
@@ -223,7 +221,7 @@ class renderMessage extends \zinux\kernel\model\baseModel {
                 $("a[href='#']").click(function(e){ e.preventDefault(); });
                 $(".send-date:not(.init)").each(function(){
                     $(this).html(
-                        moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').format("lll")
+                        moment($(this).attr('datetime')).format("lll")
                     ).addClass("init");
                 });
                 $(".message-check").unbind("change").change(function(){

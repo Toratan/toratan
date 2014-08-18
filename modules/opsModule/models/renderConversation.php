@@ -68,9 +68,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
                     <div class="col-md-9 col-sm-9 col-xs-9" style="">
                                 <h4 class="list-group-item-heading" style="word-break: break-all;padding-bottom: 3px">
                                     <span class='pull-left'><?php echo ucwords($user->first_name . " " . $user->last_name) ?></span>
-                                    <span class=" list-group-item-text  pull-right small text-muted datetime">
-                                        <?php echo @$this->view->conv_ids[$index]->last_conversation_at ?>
-                                    </span>
+                                    <time class=" list-group-item-text  pull-right small text-muted datetime" datetime="<?php echo @$this->view->conv_ids[$index]->last_conversation_at ?>"></time>
                                     <div class="clearfix"></div>
                                 </h4>
                                 <p class="list-group-item-text small text-muted" style="height: 45px;overflow: hidden;word-break: break-all;">
@@ -144,7 +142,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
         var update_dates = function() {
             $(".datetime:not(.inited)").each(function(){
                 $(this).html(
-                        moment($(this).html(), 'ddd, DD MMM YYYY HH:mm:ss ZZ').fromNow("lll") + " ago"
+                        moment($(this).attr('datetime')).fromNow("lll") + " ago"
                 ).addClass("inited");
             });
         };

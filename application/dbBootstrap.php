@@ -24,6 +24,8 @@ class dbBootstrap extends \zinux\kernel\application\applicationBootstrap
            # enable the connection string as to \application\dbBootstrap::MODE_TORATAN
             $cfg->set_default_connection(\application\dbBootstrap::MODE_TORATAN);
         });
+        # set default datetime format
+        \ActiveRecord\DateTime::$DEFAULT_FORMAT = "iso8601";
         # testing db connection
         \ActiveRecord\Connection::instance();
         # if we reach here we are all OK
