@@ -342,6 +342,8 @@ abstract class item extends baseModel
             array $items_id,
             $owner_id,
             $TRASH_OPS = self::DELETE_PUT_TARSH) {
+        # return on empty query
+        if(!$items_id || !count($items_id)) return;
         # normalize/escape the items id
         $items_id = self::escape_in_query($items_id);
         # invoke a sql builder
@@ -385,6 +387,8 @@ abstract class item extends baseModel
             array $items_id,
             $owner_id,
             $ARCHIVE_STATUS = self::FLAG_SET) {
+        # return on empty query
+        if(!$items_id || !count($items_id)) return;
         # normalize/escape the items id
         $items_id = self::escape_in_query($items_id);
         # invoke a sql builder
@@ -415,6 +419,8 @@ abstract class item extends baseModel
             array $items_id,
             $owner_id,
             $SHARE_STATUS = self::FLAG_SET) {
+        # return on empty query
+        if(!$items_id || !count($items_id)) return;
         # normalize/escape the items id
         $items_id = self::escape_in_query($items_id);
         # invoke a sql builder

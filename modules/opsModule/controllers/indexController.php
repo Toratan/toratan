@@ -62,27 +62,40 @@ class indexController extends \zinux\kernel\controller\baseController
         $ajax = isset($this->request->params["ajax"]);
         $this->op_index_interface = 1;
         $this->suppress_redirect = 1;
-        $counter = 0;
         $uid = \core\db\models\user::GetInstance()->user_id;
         $item_class = "\\core\\db\\models\\$type";
         $ins = new $item_class;
         $shared = 0;
         $unshared = 0;
         $flag = \core\db\models\item::FLAG_UNSET;
+        $items = array();
+        $items_id = array();
         foreach ($infos as $info)
         {
-            $item = \modules\opsModule\models\itemInfo::decode($info);
-            $func = $op;
+            $items[] = \modules\opsModule\models\itemInfo::decode($info);
+            $items_id[] =end($items)->i;
+        }
+        $func = $op;
+        $counter = count($items);
+        if($counter) {
             switch($op) {
                 case "archive":
-                    if(!isset($item->a)) throw new \zinux\kernel\exceptions\invalidOperationException;
-                    $flag = $item->a;
+                    if(!isset($items[0]->a)) throw new \zinux\kernel\exceptions\invalidOperationException;
+                    $flag = $items[0]->a;
+                    $ins->$func($items_id, $uid, $flag);
                     break;
                 case "share":
-                    if(!isset($item->s)) throw new \zinux\kernel\exceptions\invalidOperationException;
-                    $flag = $item->s;
-                    if($flag) $shared++;
-                    else $unshared++;
+                    $shared = array();
+                    $unshared = array();
+                    foreach($items as $item) {
+                        if(!isset($item->s)) throw new \zinux\kernel\exceptions\invalidOperationException;
+                        if($item->s) $shared[] = $item->i;
+                        else $unshared[] = $item->i;
+                    }
+                    $ins->$func($shared, $uid, \core\db\models\item::FLAG_SET);
+                    $ins->$func($unshared, $uid, \core\db\models\item::FLAG_UNSET);
+                    $shared =count($shared);
+                    $unshared =count($unshared);
                     break;
                 case "trash":
                     $flag = \core\db\models\item::DELETE_PUT_TARSH;
@@ -92,12 +105,11 @@ class indexController extends \zinux\kernel\controller\baseController
                     goto __OP_FUNC;
                 case "remove":
                     $flag = \core\db\models\item::DELETE_PERIOD;
-__OP_FUNC:
+    __OP_FUNC:
                     $func = "delete";
+                    $ins->$func($items_id, $uid, $flag);
                     break;
             }
-            $ins->$func($item->i, $uid, $flag);
-            $counter++;
         }
         $op_name = "toggle-{$op}d";
         switch($op) {
