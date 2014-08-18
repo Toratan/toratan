@@ -7,8 +7,11 @@
             // if no item exists?
             if(!$('.item-row').length)
                 return;
-            var defaultHeadIndex = 2;
-            var defaultHeadOrder = 0;
+            <?php $profile =\core\db\models\profile::getInstance(); ?>
+            <?php $s = $profile->getSetting("/general/directory-tree-sort-type"); ?>
+            <?php $s = ($s && is_array($s) && count($s) === 2 ? $s : array("defaultHeadIndex" => 2, "defaultHeadOrder" => 0)); ?>
+            var defaultHeadIndex = <?php echo $s["defaultHeadIndex"] ?>;
+            var defaultHeadOrder = <?php echo $s["defaultHeadOrder"] ?>;
             var $activeHead = 'table thead tr th.headerSortDown, table thead tr th.headerSortUp';
             if($($activeHead).length !== 0) {
                 defaultHeadIndex = $($activeHead).index();
@@ -41,6 +44,18 @@
                 headers:{
                     0: { sorter: false }
                 }
+            }).bind("sortEnd",function() {
+                // escape the init sort
+                if(typeof($(this).data("init-sort")) === "undefined") {
+                    $(this).data("init-sort", 1);
+                    return;
+                }
+                $.ajax({
+                    global: false,
+                    type: "POST",
+                    url:  "/profile/set?<?php echo \zinux\kernel\security\security::__get_uri_hash_string() ?>",
+                    data: { keys: [ "/general/directory-tree-sort-type" ], values: [ { defaultHeadIndex: $($activeHead).index(), defaultHeadOrder: $($activeHead).hasClass('headerSortDown') ? 0 : 1 }] }
+                });
             });
         };
         $("button[name='op']").click(function(e){

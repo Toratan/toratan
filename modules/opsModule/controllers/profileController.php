@@ -792,6 +792,17 @@ __ERROR:
     */
     public function setAction()
     {
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("keys", "values"), array("keys" => "is_array", "values" => "is_array"));
         \zinux\kernel\security\security::__validate_request($this->request->params);
+        if(count($this->request->params["keys"]) !== count($this->request->params["values"]))
+            throw new \zinux\kernel\exceptions\invalidArgumentException("The no match between count of `keys` and `values`!");
+        $keys = $this->request->params["keys"];
+        $values = $this->request->params["values"];
+        $profile =\core\db\models\profile::getInstance();
+        for($index=0; $index < count($keys); $index++) {
+            $profile->setSetting("{$keys[$index]}", $values[$index], 0);
+        };
+        $profile->save();
+        exit;
     }
 }
