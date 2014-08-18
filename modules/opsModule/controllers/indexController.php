@@ -55,7 +55,6 @@ class indexController extends \zinux\kernel\controller\baseController
         if(!in_array($this->request->params["op"], array("share", "archive", "trash", "restore", "remove")))
                 throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined op `{$this->request->params["op"]}`");
         $continue = $this->request->params["continue"];
-        $method = $_SERVER['REQUEST_METHOD'];
         $infos = $this->request->params["items"];
         $type = $this->request->params["type"];
         $op = strtolower($this->request->params["op"]);
@@ -85,17 +84,17 @@ class indexController extends \zinux\kernel\controller\baseController
                     $ins->$func($items_id, $uid, $flag);
                     break;
                 case "share":
-                    $shared = array();
-                    $unshared = array();
+                    $__shared = array();
+                    $__unshared = array();
                     foreach($items as $item) {
                         if(!isset($item->s)) throw new \zinux\kernel\exceptions\invalidOperationException;
-                        if($item->s) $shared[] = $item->i;
-                        else $unshared[] = $item->i;
+                        if($item->s) $__shared[] = $item->i;
+                        else $__unshared[] = $item->i;
                     }
-                    $ins->$func($shared, $uid, \core\db\models\item::FLAG_SET);
-                    $ins->$func($unshared, $uid, \core\db\models\item::FLAG_UNSET);
-                    $shared =count($shared);
-                    $unshared =count($unshared);
+                    $ins->$func($__shared, $uid, \core\db\models\item::FLAG_SET);
+                    $ins->$func($__unshared, $uid, \core\db\models\item::FLAG_UNSET);
+                    $shared =count($__shared);
+                    $unshared =count($__unshared);
                     break;
                 case "trash":
                     $flag = \core\db\models\item::DELETE_PUT_TARSH;
@@ -642,197 +641,6 @@ class indexController extends \zinux\kernel\controller\baseController
         # fetch route path to current note
         $folder = new \core\db\models\folder;
         $this->view->route = $folder->fetchRouteToRoot($item_value->parent_id, $item_value->owner_id);
-    }
-    /**
-    * The \modules\opsModule\controllers\indexController::deleteAction()
-    * @access via /ops/delete/{folder|note|link}/(ID)/trash/(-1,0,1)?hash_sum
-    * If you set the
-    * trash : -1 => retores the item from trash
-    * trash : 0  => deletes permanently
-    * trash : 1  => logically flag items as trash
-    * @hash-sum {folder|note|link}.(ID).session_id().user_id
-    * @by Zinux Generator <b.g.dariush@gmail.com>
-    */
-    public function deleteAction()
-    {
-        # we need at least 2 params to go for
-        if($this->request->CountIndexedParam()<2)
-            throw new \zinux\kernel\exceptions\invalidOperationException;
-        # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
-        \zinux\kernel\security\security::__validate_request(
-                $this->request->params,
-                array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
-        # if reach here we are OK to proceed the opt
-        switch (strtoupper($this->request->GetIndexedParam(0)))
-        {
-            # the valid 'delete' opts are
-            case "FOLDER":
-            case "NOTE":
-            case "LINK":
-                break;
-            default:
-                # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalidOperationException;
-        }
-        if(!isset($this->request->params["trash"]))
-            $is_trash = 0;
-        else
-        {
-            switch ($this->request->params["trash"])
-            {
-                case \core\db\models\item::DELETE_PERIOD:
-                case \core\db\models\item::DELETE_PUT_TARSH:
-                case \core\db\models\item::DELETE_RESTORE:
-                    $is_trash = $this->request->params["trash"];
-                    break;
-                default:
-                    throw new \zinux\kernel\exceptions\invalidOperationException;
-            }
-        }
-        # fetch the items name
-        $item = strtolower($this->request->GetIndexedParam(0));
-        # generate a proper handler for item creatation
-        $item_class = "\\core\\db\\models\\$item";
-        # create an instance of item
-        $item_ins = new $item_class;
-        # delete the item
-        $deleted_item = $item_ins->delete($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_trash);
-        if(!$this->suppress_redirect) {
-            # invoke a message pipe line
-            $mp = new \core\utiles\messagePipe;
-            # indicate the success
-            $mp->write("<span class='glyphicon glyphicon-ok'></span> <b>".($is_trash?"Deleted":"Restored")."</b>");
-            if($this->request->params["trash"] == \core\db\models\item::DELETE_PERIOD)
-                unset($this->request->params["continue"]);
-            # redirect if any redirection provided
-            $this->Redirect();
-            # otherwise relocate properly
-            header("location: /#!/d/{$deleted_item->parent_id}.{$item}s");
-            exit;
-        }
-        if(!$this->ops_index_interface) exit;
-    }
-    /**
-    * @access via /ops/archive/{folder|note|link}/(ID)/archive/(0,1)?hash_sum
-    * @hash-sum {folder|note|link}.(ID).session_id().user_id
-    * @by Zinux Generator <b.g.dariush@gmail.com>
-    */
-    public function archiveAction()
-    {
-        # we need at least 2 params to go for
-        if($this->request->CountIndexedParam()<2)
-            throw new \zinux\kernel\exceptions\invalidOperationException;
-        # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
-        \zinux\kernel\security\security::__validate_request(
-                $this->request->params,
-                array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
-        # if reach here we are OK to proceed the opt
-        switch (strtoupper($this->request->GetIndexedParam(0)))
-        {
-            # the valid 'archive' opts are
-            case "FOLDER":
-            case "NOTE":
-            case "LINK":
-                break;
-            default:
-                # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalidOperationException;
-        }
-        if(!isset($this->request->params["archive"]))
-            $is_archive = 0;
-        else
-        {
-            switch ($this->request->params["archive"])
-            {
-                case \core\db\models\item::FLAG_SET:
-                case \core\db\models\item::FLAG_UNSET:
-                    $is_archive = $this->request->params["archive"];
-                    break;
-                default:
-                    throw new \zinux\kernel\exceptions\invalidOperationException;
-            }
-        }
-        # fetch the items name
-        $item = strtolower($this->request->GetIndexedParam(0));
-        # generate a proper handler for item creatation
-        $item_class = "\\core\\db\\models\\$item";
-        # create an instance of item
-        $item_ins = new $item_class;
-        # archive the item
-        $archived_item = $item_ins->archive($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_archive);
-        if(!$this->suppress_redirect) {
-            # invoke a message pipe line
-            $mp = new \core\utiles\messagePipe;
-            # indicate the success
-            $mp->write("<span class='glyphicon glyphicon-ok'></span> <b>".($is_archive?"Archived":"Un-Archived")."</b>");
-            # redirect if any redirection provided
-            $this->Redirect();
-            # otherwise relocate properly
-            header("location: /#!/d/{$archived_item->parent_id}.{$item}s");
-            exit;
-        }
-        if(!$this->ops_index_interface) exit;
-    }
-    /**
-    * @access via /ops/share/{folder|note|link}/(ID)/share/(0,1)?hash_sum
-    * @hash-sum {folder|note|link}.(ID).session_id().user_id
-    * @by Zinux Generator <b.g.dariush@gmail.com>
-    */
-    public function shareAction()
-    {
-        # we need at least 2 params to go for
-        if($this->request->CountIndexedParam()<2)
-            throw new \zinux\kernel\exceptions\invalidOperationException;
-        # checking hash-sum with {folder|note|link}.(ID).session_id().user_id
-        \zinux\kernel\security\security::__validate_request(
-                $this->request->params,
-                array($this->request->GetIndexedParam(0), $this->request->GetIndexedParam(1), session_id(), \core\db\models\user::GetInstance()->user_id));
-        # if reach here we are OK to proceed the opt
-        switch (strtoupper($this->request->GetIndexedParam(0)))
-        {
-            # the valid 'share' opts are
-            case "FOLDER":
-            case "NOTE":
-            case "LINK":
-                break;
-            default:
-                # if no ops matched, raise an exception
-                throw new \zinux\kernel\exceptions\invalidOperationException;
-        }
-        if(!isset($this->request->params["share"]))
-            $is_share = 0;
-        else
-        {
-            switch ($this->request->params["share"])
-            {
-                case \core\db\models\item::FLAG_SET:
-                case \core\db\models\item::FLAG_UNSET:
-                    $is_share = $this->request->params["share"];
-                    break;
-                default:
-                    throw new \zinux\kernel\exceptions\invalidOperationException;
-            }
-        }
-        # fetch the items name
-        $item = strtolower($this->request->GetIndexedParam(0));
-        # generate a proper handler for item creatation
-        $item_class = "\\core\\db\\models\\$item";
-        # create an instance of item
-        $item_ins = new $item_class;
-        # share the item
-        $item_ins->share($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id, $is_share);
-        if(!$this->suppress_redirect) {
-            # invoke a message pipe line
-            $mp = new \core\utiles\messagePipe;
-            # indicate the success
-            $mp->write("<span class='glyphicon glyphicon-ok'></span> <b>".($is_share?"Shared":"Un-Shared")."</b>");
-            # redirect if any redirection provided
-            $this->Redirect();
-            # otherwise relocate properly
-            header("location: /#!/d/{$shared_item->parent_id}.{$item}s");
-            exit;
-        }
-        if(!$this->ops_index_interface) exit;
     }
     /**
     * Subscribe a user to a profile 
