@@ -339,34 +339,31 @@ abstract class item extends baseModel
      * @return item the deleted item
      */
     public function delete(
-            $item_id,
+            array $items_id,
             $owner_id,
             $TRASH_OPS = self::DELETE_PUT_TARSH) {
-        # fetch the item
-        $item = $this->fetch($item_id, $owner_id);
+        # normalize/escape the items id
+        $items_id = self::escape_in_query($items_id);
+        # invoke a sql builder
+        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
         # if we should flag it as trash
         switch($TRASH_OPS) {
+            case self::DELETE_RESTORE:
             case self::DELETE_PUT_TARSH:
                 # so be it
-                $item->is_trash = 1;
-                $item->save();
+                $builder->update(array("is_trash" => $TRASH_OPS));
                 break;
             case self::DELETE_PERIOD:
                 # detele permanent
-                $item->delete_all(array("conditions" => array("{$this->item_name}_id = ?", $item_id)));
-                # cleanup any notifications bounded to this item
-                \core\db\models\notification::deleteNotification($owner_id, $item_id, $this->item_name);
-                break;
-            case self::DELETE_RESTORE:
-                # restore the item
-                $item->is_trash = 0;
-                $item->save();
+                $builder->delete();
                 break;
             default:
                 throw new \zinux\kernel\exceptions\invalidArgumentException("undefined ops demand!");
         }
-        # return the deleted item
-        return $item;
+        # construct the WHERE clause
+        $builder->where("owner_id = ? AND {$this->WhoAmI()}_id IN ($items_id)", $owner_id);
+        # execute the query
+        self::query($builder->to_s(), $builder->bind_values());
     }
     /**
      * Fetches all trash items that the owner has
@@ -385,23 +382,26 @@ abstract class item extends baseModel
      * @throws \zinux\kernel\exceptions\invalidOperationException if $ARCHIVE_STATUS is not valid
      */
     public function archive(
-            $item_id,
+            array $items_id,
             $owner_id,
             $ARCHIVE_STATUS = self::FLAG_SET) {
-        # fetch the item
-        $item = $this->fetch($item_id, $owner_id);
+        # normalize/escape the items id
+        $items_id = self::escape_in_query($items_id);
+        # invoke a sql builder
+        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
         # validate the archive status
         switch($ARCHIVE_STATUS) {
             case self::FLAG_SET:
             case self::FLAG_UNSET:
-                $item->is_archive = $ARCHIVE_STATUS;
-                $item->save();
+                $builder->update(array("is_archive" => $ARCHIVE_STATUS));
                 break;
             default:
                 throw new \zinux\kernel\exceptions\invalidOperationException;
         }
-        # return the item
-        return $item;
+        # construct the WHERE clause
+        $builder->where("owner_id = ? AND {$this->WhoAmI()}_id IN ($items_id)", $owner_id);
+        # execute the query
+        self::query($builder->to_s(), $builder->bind_values());
     }
     /**
      * Arhives/De-shares an item
@@ -412,23 +412,26 @@ abstract class item extends baseModel
      * @throws \zinux\kernel\exceptions\invalidOperationException if $SHARE_STATUS is not valid
      */
     public function share(
-            $item_id,
+            array $items_id,
             $owner_id,
             $SHARE_STATUS = self::FLAG_SET) {
-        # fetch the item
-        $item = $this->fetch($item_id, $owner_id);
+        # normalize/escape the items id
+        $items_id = self::escape_in_query($items_id);
+        # invoke a sql builder
+        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
         # validate the share status
         switch($SHARE_STATUS) {
             case self::FLAG_SET:
             case self::FLAG_UNSET:
-                $item->is_public = $SHARE_STATUS;
-                $item->save();
+                $builder->update(array("is_public" => $SHARE_STATUS));
                 break;
             default:
                 throw new \zinux\kernel\exceptions\invalidOperationException;
         }
-        # return the item
-        return $item;
+        # construct the WHERE clause
+        $builder->where("owner_id = ? AND {$this->WhoAmI()}_id IN ($items_id)", $owner_id);
+        # execute the query
+        self::query($builder->to_s(), $builder->bind_values());
     }
     /**
      * Fetches all archived items that the owner has
