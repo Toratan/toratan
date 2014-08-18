@@ -129,6 +129,45 @@ abstract class item extends baseModel
      */
     public function setItemBody($body) { $this->{"{$this->WhoAmI()}_body"} = $body; }
     /**
+     * normalize the conditions and options to use in \ActiveRecord::Model::find()
+     * @param array $conditions the find conditons
+     * @param array $options the other options this also can have conditons in it
+     * @return array the genaral options
+     * @throws \zinux\kernel\exceptions\invalidArgumentException if $options has "condition" and it does not have the conditons string
+     */
+    protected function normalize_conditions_options_ops(
+            $conditions = array(),
+            $options = array()) {
+        # normalize the array
+        if(!$conditions) $conditions = array();
+        if(!$options) $options = array();
+        # normalize the conditions array
+        if(!isset($conditions["conditions"]))
+            $conditions = array("conditions" => $conditions);
+        # if we have conditions in $options
+        # then we have merging conflict problem
+        if(isset($options["conditions"]) && count($options["conditions"])) {
+            # if the option has invalid conditions format
+            if(!is_string($options["conditions"][0]))
+                # flag the error
+                throw new \zinux\kernel\exceptions\invalidArgumentException("invalid \$options format");
+            # merge the $options' conditional string with genuine $conditions array
+            $conditions["conditions"][0] .= " AND (".array_shift($options["conditions"]).")";
+            # fetch the othe condition arguments, if any exists
+            while(count($options["conditions"]))
+                $conditions["conditions"][] = array_shift($options["conditions"]);
+            # replace the new generated conditions
+            $options["conditions"] = $conditions["conditions"];
+        }
+        else
+        {
+            # if no conditions presence at $options, just make a room for it
+            $options ["conditions"] = $conditions["conditions"];
+        }
+        # return the re-configured $options array
+        return $options;
+    }
+    /**
      * Creates a new item in { title | body } datastructure
      * @param string $title the item's title
      * @param string $body the item's body
@@ -180,45 +219,6 @@ abstract class item extends baseModel
        $item->save();
        # return the created item
        return $item;
-    }
-    /**
-     * normalize the conditions and options to use in \ActiveRecord::Model::find()
-     * @param array $conditions the find conditons
-     * @param array $options the other options this also can have conditons in it
-     * @return array the genaral options
-     * @throws \zinux\kernel\exceptions\invalidArgumentException if $options has "condition" and it does not have the conditons string
-     */
-    protected function normalize_conditions_options_ops(
-            $conditions = array(),
-            $options = array()) {
-        # normalize the array
-        if(!$conditions) $conditions = array();
-        if(!$options) $options = array();
-        # normalize the conditions array
-        if(!isset($conditions["conditions"]))
-            $conditions = array("conditions" => $conditions);
-        # if we have conditions in $options
-        # then we have merging conflict problem
-        if(isset($options["conditions"]) && count($options["conditions"])) {
-            # if the option has invalid conditions format
-            if(!is_string($options["conditions"][0]))
-                # flag the error
-                throw new \zinux\kernel\exceptions\invalidArgumentException("invalid \$options format");
-            # merge the $options' conditional string with genuine $conditions array
-            $conditions["conditions"][0] .= " AND (".array_shift($options["conditions"]).")";
-            # fetch the othe condition arguments, if any exists
-            while(count($options["conditions"]))
-                $conditions["conditions"][] = array_shift($options["conditions"]);
-            # replace the new generated conditions
-            $options["conditions"] = $conditions["conditions"];
-        }
-        else
-        {
-            # if no conditions presence at $options, just make a room for it
-            $options ["conditions"] = $conditions["conditions"];
-        }
-        # return the re-configured $options array
-        return $options;
     }
     /**
      * Fetches a single item from database
@@ -332,11 +332,11 @@ abstract class item extends baseModel
         return $item;
     }
     /**
-     * Deletes/Restores an item
-     * @param string $item_id the item's ID
-     * @param string $owner_id the item's owner's ID
+     * Deletes/Restores a collection of items
+     * @param array $items_id the items' ID
+     * @param string $owner_id the items' owner's ID
      * @param integet $TRASH_OPS can be one of <b>item::DELETE_RESTORE</b>, <b>item::DELETE_PUT_TARSH</b>, <b>item::DELETE_PERIOD</b>
-     * @return item the deleted item
+     * @throws \zinux\kernel\exceptions\invalidOperationException if $TRASH_OPS is not valid
      */
     public function delete(
             array $items_id,
@@ -368,19 +368,10 @@ abstract class item extends baseModel
         self::query($builder->to_s(), $builder->bind_values());
     }
     /**
-     * Fetches all trash items that the owner has
-     * @param string $owner_id
-     * @return array the trash items
-     */
-    public function fetchTrashes($owner_id, $options = array()) {
-        return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_SET, self::WHATEVER, $options);
-    }
-    /**
-     * Arhives/De-archives an item
-     * @param string $item_id the item's ID
-     * @param string $owner_id the item's owner's ID
+     * Arhives/De-archives a collection of items
+     * @param array $items_id the items' ID
+     * @param string $owner_id the items' owner's ID
      * @param integer $ARCHIVE_STATUS valid input for this are <b>self::FLAG_SET</b>, <b>self::FLAG_UNSET</b>
-     * @return item the modified item
      * @throws \zinux\kernel\exceptions\invalidOperationException if $ARCHIVE_STATUS is not valid
      */
     public function archive(
@@ -408,11 +399,10 @@ abstract class item extends baseModel
         self::query($builder->to_s(), $builder->bind_values());
     }
     /**
-     * Arhives/De-shares an item
-     * @param string $item_id the item's ID
-     * @param string $owner_id the item's owner's ID
+     * Arhives/De-shares a collection of items
+     * @param array $items_id the items' ID
+     * @param string $owner_id the items' owner's ID
      * @param integer $SHARE_STATUS valid input for this are <b>self::FLAG_SET</b>, <b>self::FLAG_UNSET</b>
-     * @return item the modified item
      * @throws \zinux\kernel\exceptions\invalidOperationException if $SHARE_STATUS is not valid
      */
     public function share(
@@ -440,12 +430,28 @@ abstract class item extends baseModel
         self::query($builder->to_s(), $builder->bind_values());
     }
     /**
+     * Fetches all trash items that the owner has
+     * @param string $owner_id
+     * @return array the trash items
+     */
+    public function fetchTrashes($owner_id, $options = array()) {
+        return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_SET, self::WHATEVER, $options);
+    }
+    /**
      * Fetches all archived items that the owner has
      * @param string $owner_id
      * @return array the archive items
      */
     public function fetchArchives($owner_id, $options = array()) {
         return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_UNSET, self::FLAG_SET, $options);
+    }
+    /**
+     * Fetches all shared items that the owner has
+     * @param string $owner_id
+     * @return array the shared items
+     */
+    public function fetchShared($owner_id, $options = array()) {
+        return $this->fetchItems($owner_id, NULL, self::FLAG_SET, self::FLAG_UNSET, self::WHATEVER, $options);
     }
     /**
      * moves an item
@@ -457,14 +463,6 @@ abstract class item extends baseModel
         $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
         $builder->update(array("parent_id" => $new_parent_id))->where("owner_id = ? AND {$this->WhoAmI()}_id IN({$this->escape_in_query($item_ids)})", $owner_id);
         $this->query($builder->to_s(), $builder->bind_values());
-    }
-    /**
-     * Fetches all shared items that the owner has
-     * @param string $owner_id
-     * @return array the shared items
-     */
-    public function fetchShared($owner_id, $options = array()) {
-        return $this->fetchItems($owner_id, NULL, self::FLAG_SET, self::FLAG_UNSET, self::WHATEVER, $options);
     }
     /**
      * Fetches verbal route to toot from an item
