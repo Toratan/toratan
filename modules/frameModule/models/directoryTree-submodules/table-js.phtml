@@ -242,14 +242,15 @@
     * init's table's links 
     */
     window.init_links = function() {
-    <?php if($active_type === 'link' || $active_type === "note"): ?>
         $(".item-row .item-name a:not(.link_inited)")
-                .addClass('link_inited')
-                .click(function($e){
-                    $e.preventDefault();
-                    window.top.<?php echo $active_type === "note" ? "location = " : "open" ?> ($(this).attr('href').split("#!")[1]);
-                });
-    <?php endif; ?>
+            .addClass('link_inited')
+            .click(function(e){
+                e.preventDefault();
+                e.stopPropagation();
+<?php if($active_type === 'link' || $active_type === "note"): ?>
+                window.top.<?php echo $active_type === "note" ? "location = " : "open" ?> ($(this).attr('href').split("#!")[1]);
+<?php endif; ?>
+            });
     };
 <?php if($this->tree_type === self::REGULAR): ?>
         window.fetching_more = false;
