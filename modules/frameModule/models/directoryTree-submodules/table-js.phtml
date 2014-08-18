@@ -1,5 +1,4 @@
 <script src="/access/js/jquery.tablesorter.min.js"></script>
-<script src="/access/js/jquery-ui-1.11.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         window.setInterval(window.update_times, 500);
@@ -274,79 +273,7 @@
             window.trim_rows();
             window.init_links();
             window.apply_menu_checkbox_to_items();
-<?php if($active_type == "folder") : ?>
-            window.dragable_folders();
-<?php endif; ?>
         };
-<?php if($active_type == "folder") : ?>
-        window.dragable_folders = function() {
-            $('tr.item-row td.item-name a:not(.drag-init)').draggable({
-                revert: "invalid",
-                stop: function( event, ui ) {
-                    // unfocus the link
-                   $(this).blur(); 
-                },
-                helper: function() {
-                    var selected = $('.item-row input[type="checkbox"].item-checkbox:checked').parents('tr');
-                    if (selected.length === 0) {
-                      selected = $(this).parents('tr');
-                    } else {
-                        var $this = $(this).parents('tr');
-                        var search_result = false;
-                        selected.each(function() {
-                            search_result = $(this).is($this);
-                            return !search_result;
-                        });
-                        if(!search_result) {
-                            selected.find("input[type='checkbox'].item-checkbox").prop("checked", false);
-                            selected = $this;
-                        }
-                    }
-                    selected.find("input[type='checkbox'].item-checkbox").prop("checked", true);
-                    selected.addClass("dragging");
-                    var $frame = $("<div></div>").append("<span class='text-muted'>Move "+selected.length+" folder"+(selected.length > 1 ? "s" : "")+"</span>").addClass("dragging-folder");
-                    $frame.data("init-text", $frame.html());
-                    return $frame;
-                }
-            }).addClass("drag-init");
-            $(".item-row:has(.item-name)").droppable({
-                accept: "tr.item-row.dragging td.item-name a",
-                hoverClass: "drop-hover",
-                drop: function(e, ui) {
-                    if($(this).hasClass("dragging")) {
-                        $(this).removeClass("dragging");
-                        return false;
-                    }
-                    window.top.open_waitModal();
-                    $.ajax({
-                        global: false,
-                        type: "POST",
-                        url: "/ops/move?&cpid="+$(this).attr("data-item-id")+"&pid=<?php echo @$parent_id ?>",
-                        data: $('form#opt-form').serialize()+<?php echo json_encode(zinux\kernel\security\security::__get_uri_hash_string(array($active_type, @$parent_id))) ?>,
-                        success: function(data){
-                            window.top.movement_callback();
-                        }
-                    }).fail(function(xhr){
-                        setTimeout(function() { window.top.open_errorModal(xhr.responseText, -1, true); }, 500);
-                    }).always(function(){
-                        window.top.open_waitModal(true);
-                    });
-                },
-                out: function( event, ui ) { },
-                over: function( event, ui ) {
-                    if($(this).hasClass("dragging")) {
-                        $(this).removeClass("drop-hover");
-                        $(ui.helper).html("Cannot move into itself!");
-                        return false;
-                    }
-                    var init_txt = $(ui.helper).data('init-text');
-                    if(typeof(init_txt) === "undefined")
-                        $(ui.helper).data('init-text', init_txt);
-                    $(ui.helper).html($(init_txt).append(" into").wrap("</p>").parent().html()+ " <span style='color:#000; font-variant:normal'>"+ $(this).find(".item-name").text()+"</span>");
-                }
-            });
-        };
-<?php endif; ?>
         // init the table as page's init call
         window.init_table(true);
     });
