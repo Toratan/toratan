@@ -273,6 +273,14 @@
             window.trim_rows();
             window.init_links();
             window.apply_menu_checkbox_to_items();
+            window.row_check_simu();
+        };
+        window.row_check_simu = function() {
+            $(".item-row:not(.init)").click(function(){
+                $(this).find("input[type='checkbox'].item-checkbox").prop('checked', function(){
+                    return !this.checked;
+                });
+            }).addClass("init");
         };
         // init the table as page's init call
         window.init_table(true);

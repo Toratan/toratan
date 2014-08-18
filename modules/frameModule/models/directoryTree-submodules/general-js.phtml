@@ -74,6 +74,8 @@
                     $(this).parent().parent().removeClass("item-checked");
                 }
                 window.update_menu_checkbox();
+            }).on('click', function(e) {
+                e.stopPropagation();
             });
             window.update_menu_checkbox();
         };
