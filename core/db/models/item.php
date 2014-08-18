@@ -69,7 +69,6 @@ abstract class item extends baseModel
      * @var array
      */
     private $temporary_container = array();
-
     public function __construct(array $attributes = array(), $guard_attributes = true, $instantiating_via_find = false, $new_record = true) {
         # fetch the cache sig.
         $cache_sig = get_called_class();
@@ -195,7 +194,7 @@ abstract class item extends baseModel
         # find the parent item
         $parent = $parent_item->fetch($parent_id);
         # validate the parent existance?
-        if(!$parent) 
+        if(!$parent)
             # apparently parent folder does not exists
             throw new \core\db\exceptions\dbNotFoundException("The parent folder not found!!");
         # validate  the owner id match with parent's owner id
@@ -367,6 +366,7 @@ abstract class item extends baseModel
         $builder->where("owner_id = ? AND {$this->WhoAmI()}_id IN ($items_id)", $owner_id);
         # execute the query
         $ret = self::query($builder->to_s(), $builder->bind_values());
+        # return the affected rows
         return $ret->rowCount();
     }
     /**
@@ -400,6 +400,7 @@ abstract class item extends baseModel
         $builder->where("owner_id = ? AND {$this->WhoAmI()}_id IN ($items_id)", $owner_id);
         # execute the query
         $ret = self::query($builder->to_s(), $builder->bind_values());
+        # return the affected rows
         return $ret->rowCount();
     }
     /**
@@ -433,6 +434,7 @@ abstract class item extends baseModel
         $builder->where("owner_id = ? AND {$this->WhoAmI()}_id IN ($items_id)", $owner_id);
         # execute the query
         $ret = self::query($builder->to_s(), $builder->bind_values());
+        # return the affected rows
         return $ret->rowCount();
     }
     /**
@@ -442,10 +444,34 @@ abstract class item extends baseModel
      * @param string $new_parent_id the new parent id
      * @return integer Number of rows affected
      */
-    public function move(array $item_ids, $owner_id, $new_parent_id) {
+    public function move(array $items_id, $owner_id, $new_parent_id) {
+        # return on empty query
+        if(!$items_id || !count($items_id)) return;
+        # invoke a sql builder
         $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
-        $builder->update(array("parent_id" => $new_parent_id))->where("owner_id = ? AND {$this->WhoAmI()}_id IN({$this->escape_in_query($item_ids)})", $owner_id);
+        # build the query
+        $builder->update(array("parent_id" => $new_parent_id))->where("owner_id = ? AND {$this->WhoAmI()}_id IN({$this->escape_in_query($items_id)})", $owner_id);
+        # execute the query
         $ret = self::query($builder->to_s(), $builder->bind_values());
+        # return the affected rows
+        return $ret->rowCount();
+    }
+    /**
+     * updates last visit column of gived items' ID
+     * @param array $item_id the items' id collection
+     * @param string $owner_id the item's owner id
+     * @return integer Number of rows affected
+     */
+    public function update_last_visit_at(array $items_id, $owner_id) {
+        # return on empty query
+        if(!$items_id || !count($items_id)) return;
+        # invoke a sql builder
+        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        # build the query
+        $builder->update(array("last_visit_at" => (new \ActiveRecord\DateTime)->__toString()))->where("owner_id = ? AND {$this->WhoAmI()}_id IN({$this->escape_in_query($items_id)})", $owner_id);
+        # execute the query
+        $ret = self::query($builder->to_s(), $builder->bind_values());
+        # return the affected rows
         return $ret->rowCount();
     }
     /**
