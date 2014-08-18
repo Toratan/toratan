@@ -288,7 +288,7 @@
                     selected.addClass("dragging");
                     return $("<div></div>").append("Move "+selected.length+" folder"+(selected.length > 1 ? "s" : "")).addClass("dragging-folder");
                 }
-            })
+            });
             $(".item-row:has(.item-name):not(.dragging):not(.drag-init)").droppable({
                 accept: "tr.item-row.dragging td.item-name a",
                 hoverClass: "drop-hover",
