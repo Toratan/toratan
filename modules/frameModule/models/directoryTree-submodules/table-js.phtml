@@ -286,7 +286,7 @@
                     }
                     selected.find("input[type='checkbox'].item-checkbox").prop("checked", true);
                     selected.addClass("dragging");
-                    return $("<div></div>").append("Move "+selected.length+" folders.").addClass("dragging-folder");
+                    return $("<div></div>").append("Move "+selected.length+" folder"+(selected.length > 1 ? "s" : "")).addClass("dragging-folder");
                 }
             })
             $(".item-row:has(.item-name):not(.dragging):not(.drag-init)").droppable({
