@@ -2,10 +2,13 @@
     if(!isset($this->request->params["p"])) $this->request->params["p"] = 0;
     if(!isset($total_count)) $total_count = "unknown";
     if($total_count == 0) return;
+    $last_page = floor($total_count / FETCH_LIMIT)  + 1;
     $disable_left = ($this->request->params["p"] <= 1);
     $disable_right = (($this->request->params["p"]) * FETCH_LIMIT >= $total_count);
     $left_uri = "/" . $this->request->action->name . "/p/" .($this->request->params["p"] - 1);
     $right_uri = "/" . $this->request->action->name . "/p/" .($this->request->params["p"] + 1);
+    $first_uri = "/" . $this->request->action->name;
+    $last_uri = "/" . $this->request->action->name . "/p/$last_page";
     if($disable_left) $left_uri = "#";
     if($disable_right) $right_uri = "#";
     $lower_bound = ($this->request->params["p"] - 1) * FETCH_LIMIT + 1;
@@ -19,7 +22,13 @@
         ?></strong> of <strong id="total-count"><?php echo $total_count ?></strong>
     </div>
     <ul class="pagination btn" style="margin: 0">
-      <li class="<?php echo $disable_left ? "disabled": "" ?>" id="left-btn"><a href="<?php echo $left_uri ?>"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-      <li class="<?php echo $disable_right ? "disabled": "" ?>" id="right-btn"><a href="<?php echo $right_uri ?>"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+     <?php if(!$disable_left): ?>
+        <li  id="right-btn"><a href="<?php echo $first_uri ?>" title='First Page' data-toggle="tooltip"><span class='glyphicon glyphicon-step-backward'></span></a></li>
+      <?php endif; ?>
+      <li class="<?php echo $disable_left ? "disabled": "" ?>" id="left-btn"><a href="<?php echo $left_uri ?>"  title='Previous Page' data-toggle="tooltip"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+      <li class="<?php echo $disable_right ? "disabled": "" ?>" id="right-btn"><a href="<?php echo $right_uri ?>"  title='Next Page' data-toggle="tooltip"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+      <?php if(!$disable_right): ?>
+      <li id="right-btn"><a href="<?php echo $last_uri ?>" title='Last Page' data-toggle="tooltip"><span class='glyphicon glyphicon-step-forward'></span></a></li>
+      <?php endif; ?>
     </ul>
 </div>

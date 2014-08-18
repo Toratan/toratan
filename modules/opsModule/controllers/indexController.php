@@ -602,6 +602,10 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_value = $item_ins->fetch($this->request->GetIndexedParam(1));
         # check if $uid is the owner?
         $is_owner = ($item_value->owner_id == $uid);
+        # if we are the owner of item?
+        if($is_owner)
+            # update the item's visit time value
+            $item_value->update_last_visit_at(array($item_value->getItemID()), $item_value->owner_id);
         # if value not found or the current item is not public and the current user is the owner
         if(!$is_owner && (!$item_value->is_public || $item_value->is_trash))
             # drop the balls
@@ -709,6 +713,8 @@ class indexController extends \zinux\kernel\controller\baseController
         
         $link = new \core\db\models\link;
         $this->view->link = $link->fetch($this->request->params["link"]);
+        # update the item's visit time value
+        $this->view->link->update_last_visit_at(array($this->view->link->getItemID()), $this->view->link->owner_id);
         $this->layout->SuppressLayout();
     }
     /**

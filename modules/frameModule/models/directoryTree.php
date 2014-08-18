@@ -78,8 +78,8 @@ class directoryTree extends \stdClass
                 return "#!/goto/link/{$item->link_id}/h/".sha1($item->link_id."LINK");
             case "folder":
                 switch($this->tree_type) {
-                    default: return "/d/{$item->folder_id}.folders";
-                    case self::RECENT: return "/recent/d/{$item->folder_id}.folders";
+                    default:
+                    case self::RECENT: return "/d/{$item->folder_id}.folders";
                     case self::ARCHIVE: return "/archives/d/{$item->folder_id}.folders";
                     case self::SHARED: return "/shared/d/{$item->folder_id}.folders";
                     case self::TRASH: return "/trashes/d/{$item->folder_id}.folders";

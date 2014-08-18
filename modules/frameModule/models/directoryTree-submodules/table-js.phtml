@@ -164,7 +164,11 @@
                         case "restore":
                         case "trash":
                         case "archive":
-                            window.apply_change(window.APPLY_REMOVE);
+                            <?php if($this->tree_type === self::RECENT): ?>
+                                window.location = '<?php echo $this->request->getURI(); ?>';
+                            <?php else: ?>
+                                window.apply_change(window.APPLY_REMOVE);
+                            <?php endif; ?>
                             break;
                         default:
                             throw "Undefined operation `"+ops+"`!";

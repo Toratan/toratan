@@ -90,6 +90,12 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
     }
     public function render_footer() {
 ?>
+        <script type='text/javascript'>
+                $(document).ready(function(){
+                    $('[data-toggle="tooltip"]:not([data-placement])').attr("data-placement", 'top');
+                    $('[data-toggle="tooltip"]').tooltip();
+                });
+        </script>
         <script type="text/javascript" src="/access/js/bootstrap.min.js"></script>
     </body>
 </html>

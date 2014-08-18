@@ -45,27 +45,27 @@
     case self::REGULAR:
     case self::ARCHIVE:
     case self::SHARED:
-__GENERIC: ?>
-    <div class="checked-opt btn-group hidden">
+?>
+    <div class="checked-opt btn-group hidden <?php echo $this->tree_type === self::RECENT ?  "checked-opt-unique"  : "" ?>">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="-webkit-border-radius: 0;-moz-border-radius: 0;border-radius: 0;">
             <strong>Actions <span class="caret"></span></strong>
         </button>
         <ul class="dropdown-menu" role="menu" style="-webkit-border-radius: 0;-moz-border-radius: 0;border-radius: 0;">
-<?php if($this->tree_type != self::TRASH): ?>
             <li><a type="submit" href="#" title="Edit" class="checked-opt checked-opt-unique" name="op" value="edit"><span class="glyphicon glyphicon-edit"></span> Edit</a></li>
-<?php endif; ?>
+            <?php if($this->tree_type === self::RECENT)  goto __EOG; ?>
             <li><a type="submit" href="#" title="Move To" name="op" value="move"><span class="glyphicon glyphicon-folder-close"></span> Move To</a></li>
             <li class="divider"></li>
             <li><a type="submit" href="#" title="Toggle Share" name="op" value="share"><span class="glyphicon glyphicon-<?php echo $this->tree_type === self::SHARED? "off":"share-alt" ?>"></span> <?php echo $this->tree_type === self::SHARED? "Un-" : "Toggle " ?>Share</a></li>
 <?php if($this->tree_type !== self::SHARED): ?>
-            <?php if(($this->tree_type === self::ARCHIVE || $this->tree_type === self::RECENT)&& $this->request->params["d"] == 0): ?>
-            <li><a type="submit" href="#" title="<?php echo $this->tree_type === self::RECENT ? "Toogle " : "Un-" ?>Archive" name="op" value="archive"><span class="glyphicon glyphicon-open"></span> <?php echo $this->tree_type === self::RECENT ? "Toogle " : "Un-" ?>archive</a></li>
+            <?php if(($this->tree_type === self::ARCHIVE)&& $this->request->params["d"] == 0): ?>
+            <li><a type="submit" href="#" title="Un-Archive" name="op" value="archive"><span class="glyphicon glyphicon-open"></span> Un-archive</a></li>
             <?php elseif($this->tree_type == self::REGULAR) : ?>
             <li><a type="submit" href="#" title="Archive" name="op" value="archive"><span class="glyphicon glyphicon-save"></span> Archive</a></li>
             <?php endif; ?>
 <?php endif; ?>
             <li class="divider"></li>
             <li><a type="submit" href="#" title="Delete" name="op" value="trash"><span class="glyphicon glyphicon-trash"></span> Delete</a></li>
+<?php __EOG: ?>
         </ul>
     </div>
 <?php break;
