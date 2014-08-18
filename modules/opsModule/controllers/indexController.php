@@ -81,7 +81,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 case "archive":
                     if(!isset($items[0]->a)) throw new \zinux\kernel\exceptions\invalidOperationException;
                     $flag = $items[0]->a;
-                    $ins->$func($items_id, $uid, $flag);
+                    $counter = $ins->$func($items_id, $uid, $flag);
                     break;
                 case "share":
                     $__shared = array();
@@ -91,10 +91,9 @@ class indexController extends \zinux\kernel\controller\baseController
                         if($item->s) $__shared[] = $item->i;
                         else $__unshared[] = $item->i;
                     }
-                    $ins->$func($__shared, $uid, \core\db\models\item::FLAG_SET);
-                    $ins->$func($__unshared, $uid, \core\db\models\item::FLAG_UNSET);
-                    $shared =count($__shared);
-                    $unshared =count($__unshared);
+                    $shared = $ins->$func($__shared, $uid, \core\db\models\item::FLAG_SET);
+                    $unshared = $ins->$func($__unshared, $uid, \core\db\models\item::FLAG_UNSET);
+                    $counter = $shared + $unshared;
                     break;
                 case "trash":
                     $flag = \core\db\models\item::DELETE_PUT_TARSH;
@@ -106,7 +105,7 @@ class indexController extends \zinux\kernel\controller\baseController
                     $flag = \core\db\models\item::DELETE_PERIOD;
     __OP_FUNC:
                     $func = "delete";
-                    $ins->$func($items_id, $uid, $flag);
+                    $counter = $ins->$func($items_id, $uid, $flag);
                     break;
             }
         }
@@ -126,11 +125,13 @@ class indexController extends \zinux\kernel\controller\baseController
                 break;
         }
         $result = "<span class='glyphicon glyphicon-ok'></span> Total<b># $counter <u>$type".($counter>1?"s":"")."</u></b> ha".($counter>1?"ve":"s")." been <b>$op_name</b>.";
-        if($op === "share") {
-            $result =
-                    ($shared ? sprintf("<span class='glyphicon glyphicon-ok'></span> <b>#$shared $type%s</b> ha%s been <b>shared</b>.<br />", ($shared>1?"s":""), ($shared>1?"ve":"s")) : "").
-                    ($unshared ? sprintf("<span class='glyphicon glyphicon-ok'></span> <b>#$unshared $type%s</b> ha%s been <b>un-shared</b>.<br />", ($unshared>1?"s":""), ($unshared>1?"ve":"s")) : "");
+        if($op === "share" && ($shared || $unshared)) {
+            $result = 
+                ($shared ? sprintf("<span class='glyphicon glyphicon-ok'></span> <b>#$shared $type%s</b> ha%s been <b>shared</b>.<br />", ($shared>1?"s":""), ($shared>1?"ve":"s")) : "").
+                ($unshared ? sprintf("<span class='glyphicon glyphicon-ok'></span> <b>#$unshared $type%s</b> ha%s been <b>un-shared</b>.<br />", ($unshared>1?"s":""), ($unshared>1?"ve":"s")) : "");
         }
+        if(!$counter)
+            throw new \ErrorException($result);
         if($ajax) {
             echo $result;
             exit;

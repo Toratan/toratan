@@ -337,6 +337,7 @@ abstract class item extends baseModel
      * @param string $owner_id the items' owner's ID
      * @param integet $TRASH_OPS can be one of <b>item::DELETE_RESTORE</b>, <b>item::DELETE_PUT_TARSH</b>, <b>item::DELETE_PERIOD</b>
      * @throws \zinux\kernel\exceptions\invalidOperationException if $TRASH_OPS is not valid
+     * @return integer Number of rows affected
      */
     public function delete(
             array $items_id,
@@ -365,7 +366,8 @@ abstract class item extends baseModel
         # construct the WHERE clause
         $builder->where("owner_id = ? AND {$this->WhoAmI()}_id IN ($items_id)", $owner_id);
         # execute the query
-        self::query($builder->to_s(), $builder->bind_values());
+        $ret = self::query($builder->to_s(), $builder->bind_values());
+        return $ret->rowCount();
     }
     /**
      * Arhives/De-archives a collection of items
@@ -373,6 +375,7 @@ abstract class item extends baseModel
      * @param string $owner_id the items' owner's ID
      * @param integer $ARCHIVE_STATUS valid input for this are <b>self::FLAG_SET</b>, <b>self::FLAG_UNSET</b>
      * @throws \zinux\kernel\exceptions\invalidOperationException if $ARCHIVE_STATUS is not valid
+     * @return integer Number of rows affected
      */
     public function archive(
             array $items_id,
@@ -396,7 +399,8 @@ abstract class item extends baseModel
         # construct the WHERE clause
         $builder->where("owner_id = ? AND {$this->WhoAmI()}_id IN ($items_id)", $owner_id);
         # execute the query
-        self::query($builder->to_s(), $builder->bind_values());
+        $ret = self::query($builder->to_s(), $builder->bind_values());
+        return $ret->rowCount();
     }
     /**
      * Arhives/De-shares a collection of items
@@ -404,6 +408,7 @@ abstract class item extends baseModel
      * @param string $owner_id the items' owner's ID
      * @param integer $SHARE_STATUS valid input for this are <b>self::FLAG_SET</b>, <b>self::FLAG_UNSET</b>
      * @throws \zinux\kernel\exceptions\invalidOperationException if $SHARE_STATUS is not valid
+     * @return integer Number of rows affected
      */
     public function share(
             array $items_id,
@@ -427,7 +432,21 @@ abstract class item extends baseModel
         # construct the WHERE clause
         $builder->where("owner_id = ? AND {$this->WhoAmI()}_id IN ($items_id)", $owner_id);
         # execute the query
-        self::query($builder->to_s(), $builder->bind_values());
+        $ret = self::query($builder->to_s(), $builder->bind_values());
+        return $ret->rowCount();
+    }
+    /**
+     * moves an item
+     * @param array $item_id the items' id collection
+     * @param string $owner_id the item's owner id
+     * @param string $new_parent_id the new parent id
+     * @return integer Number of rows affected
+     */
+    public function move(array $item_ids, $owner_id, $new_parent_id) {
+        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        $builder->update(array("parent_id" => $new_parent_id))->where("owner_id = ? AND {$this->WhoAmI()}_id IN({$this->escape_in_query($item_ids)})", $owner_id);
+        $ret = self::query($builder->to_s(), $builder->bind_values());
+        return $ret->rowCount();
     }
     /**
      * Fetches all trash items that the owner has
@@ -452,17 +471,6 @@ abstract class item extends baseModel
      */
     public function fetchShared($owner_id, $options = array()) {
         return $this->fetchItems($owner_id, NULL, self::FLAG_SET, self::FLAG_UNSET, self::WHATEVER, $options);
-    }
-    /**
-     * moves an item
-     * @param array $item_id the items' id collection
-     * @param string $owner_id the item's owner id
-     * @param string $new_parent_id the new parent id
-     */
-    public function move(array $item_ids, $owner_id, $new_parent_id) {
-        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
-        $builder->update(array("parent_id" => $new_parent_id))->where("owner_id = ? AND {$this->WhoAmI()}_id IN({$this->escape_in_query($item_ids)})", $owner_id);
-        $this->query($builder->to_s(), $builder->bind_values());
     }
     /**
      * Fetches verbal route to toot from an item
