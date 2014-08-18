@@ -50,6 +50,7 @@ class eController extends \zinux\kernel\controller\baseController
                 array($uid, $this->view->pid, $this->view->is_owner?item::WHATEVER:item::FLAG_SET, item::FLAG_UNSET, item::FLAG_UNSET));
         $folder = new \core\db\models\folder;
         $this->view->route = $folder->fetchRouteToRoot($this->view->pid, $uid);
+        $folder->update_last_visit_at(array($this->view->pid), $uid);
     }
     /**
      * get proper instance depends on current request
