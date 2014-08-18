@@ -85,17 +85,44 @@ class eController extends \zinux\kernel\controller\baseController
         $instance = $this->getRequestInstance();
         $type = $instance->WhoAmI();
         $select = "{$type}_id, parent_id, owner_id, {$type}_title, is_public, is_trash, is_archive, created_at, updated_at";
+        $profile =\core\db\models\profile::getInstance();
+        $s = $profile->getSetting("/general/directory-tree-sort-type");
+        if(!($s && is_array($s) && count($s) === 2)) {
+            $s = array("defaultHeadIndex" => 2, "defaultHeadOrder" => 0);
+            $profile->setSetting("/general/directory-tree-sort-type", $s);
+        }
+        switch($s["defaultHeadIndex"]) {
+                default:
+                case 2:
+                    $s["defaultHeadIndex"] = 1;
+                    break;
+                case 3:
+                    $s["defaultHeadIndex"] = 2;
+                    break;
+        };
+        if(!isset($this->request->params["sort"])) {
+            $this->request->params["sort"] = $s["defaultHeadIndex"];
+        }
         $sort_base = "{$instance->WhoAmI()}_title";
         if(isset($this->request->params["sort"])) {
             switch($this->request->params["sort"]) {
+                default:
+                    $sort_base = "{$instance->WhoAmI()}_title";
+                    break;
                 case 2:
                     $sort_base = "updated_at";
                     break;
             }
         }
+        if(!isset($this->request->params["order"])) {
+            $this->request->params["order"] = $s["defaultHeadOrder"];
+        }
         $order = "asc";
         if(isset($this->request->params["order"])) {
             switch($this->request->params["order"]) {
+                default:
+                    $order = "asc";
+                    break;
                 case 1:
                     $order = "desc";
                     break;
