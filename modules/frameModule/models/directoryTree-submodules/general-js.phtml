@@ -230,7 +230,7 @@
                 case window.APPLY_REMOVE:
                     var to_remove = $("tr.item-checked").length;
                     var all_rows = $("tr.item-row").length;
-                    $("tr.item-checked").fadeOut(200, function() { 
+                    $("tr.item-checked").fadeOut("slow", function() { 
                         $(this).remove();
                         window.plot_if_no_item_found();
                         window.update_menu_checkbox();

@@ -26,11 +26,11 @@
       </ul>
     </div>
     <div class="btn-group">
-        <a href="<?php echo $this->request->GetURI(); ?>" class="btn btn-default <?php echo $this->tree_type === self::REGULAR?"w60":"" ?>"><span class="glyphicon glyphicon-refresh"></span></a>
-        <?php if($this->tree_type == self::REGULAR) : ?>
+        <a href="<?php echo $this->request->GetURI(); ?>" class="btn btn-default w60"><span class="glyphicon glyphicon-refresh"></span></a>
+        <?php if($this->tree_type != self::TRASH) : ?>
         <div class="btn-group">
             <button type="button" class="btn btn-default dropdown-toggle w60" data-toggle="dropdown" title="Create New Item">
-              <span class="glyphicon glyphicon-plus"></span> <span class="caret"></span>
+                <strong><span class="glyphicon glyphicon-plus"></span></strong> <span class="caret"></span>
             </button>
             <ul class="dropdown-menu pull-right" role="menu">
               <li title="Create A Folder"><a href="#!/new/folder/?pid=<?php echo $pid, \zinux\kernel\security\security::__get_uri_hash_string(array("folder", $pid,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>" data-tag="folder" class="new-item"><span class="inline glyphicon glyphicon-folder-close"></span> Folder</a></li>
@@ -42,33 +42,40 @@
     </div>
 <?php if($this->tree_type != self::TRASH): ?>
     <div class="checked-opt checked-opt-unique btn-group hidden" style="margin-left: -5px">
-        <button type="submit" class="btn btn-default" title="Edit" name="op" value="edit"><span class="glyphicon glyphicon-edit"></span></button>
+        <button type="submit" class="btn btn-default" title="Edit" name="op" value="edit"><strong><span class="glyphicon glyphicon-edit"></span> Edit</strong></button>
     </div>
 <?php endif; ?>
-    <div class="checked-opt btn-group hidden">
 <?php switch($this->tree_type):
     case self::REGULAR:
     case self::ARCHIVE:
     case self::SHARED:
 __GENERIC: ?>
-            <button type="submit" class="btn btn-default w60" title="Toggle Share" name="op" value="share"><span class="glyphicon glyphicon-<?php echo $this->tree_type === self::SHARED? "minus":"share-alt" ?>"></span></button>
-            <button type="submit" class="btn btn-default w60" title="Move To" name="op" value="move"><span class="glyphicon glyphicon-folder-close"></span></button>
+    <div class="checked-opt btn-group hidden">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <strong>Actions <span class="caret"></span></strong>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li><a type="submit" href="#" title="Move To" name="op" value="move"><span class="glyphicon glyphicon-folder-close"></span> Move To</a></li>
+            <li class="divider"></li>
+            <li><a type="submit" href="#" title="Toggle Share" name="op" value="share"><span class="glyphicon glyphicon-<?php echo $this->tree_type === self::SHARED? "off":"share-alt" ?>"></span> <?php echo $this->tree_type === self::SHARED? "Un-" : "Toggle " ?>Share</a></li>
 <?php if($this->tree_type !== self::SHARED): ?>
             <?php if($this->tree_type === self::ARCHIVE && $this->request->params["d"] == 0): ?>
-            <button type="submit" class="btn btn-info w60" title="Un-Archive" name="op" value="archive"><span class="glyphicon glyphicon-open"></span></button>
+            <li><a type="submit" href="#" title="Un-Archive" name="op" value="archive"><span class="glyphicon glyphicon-open"></span> Un-archive</a></li>
             <?php elseif($this->tree_type == self::REGULAR) : ?>
-            <button type="submit" class="btn btn-info w60" title="Archive" name="op" value="archive"><span class="glyphicon glyphicon-save"></span></button>
+            <li><a type="submit" href="#" title="Archive" name="op" value="archive"><span class="glyphicon glyphicon-save"></span> Archive</a></li>
             <?php endif; ?>
 <?php endif; ?>
-            <button type="submit" class="btn btn-warning w60" title="Delete" name="op" value="trash"><span class="glyphicon glyphicon-trash"></span></button>
+            <li class="divider"></li>
+            <li><a type="submit" href="#" title="Delete" name="op" value="trash"><span class="glyphicon glyphicon-trash"></span> Delete</a></li>
+        </ul>
+    </div>
 <?php break;
     case self::TRASH: ?>
+    <div class="btn-group checked-opt hidden">
+        <button type="submit" class="btn btn-primary" title="Restore" name="op" value="restore"><strong><span class="glyphicon glyphicon-repeat"></span> Restore</strong></button>
     </div>
     <div class="btn-group checked-opt hidden">
-        <button type="submit" class="btn btn-success w60" title="Restore" name="op" value="restore"><span class="glyphicon glyphicon-cloud-upload"></span></button>
-    </div>
-    <div class="btn-group checked-opt hidden">
-        <button type="submit" class="btn btn-danger w60" title="Remove Permanently" name="op" value="remove"><span class="glyphicon glyphicon-remove"></span></button>
+        <button type="submit" class="btn btn-warning" title="Remove Permanently" name="op" value="remove"><strong><span class="glyphicon glyphicon-remove"></span> Delete Forever</strong></button>
     </div>
     <div class="small pull-right empty-trash" style="padding-top: 7px;">
         <a href='/trashes/do/empty'>Empty Trash</a>
@@ -79,11 +86,9 @@ __GENERIC: ?>
             });
         </script>
     </div>
-    <div>
 <?php break;
     default: throw new \zinux\kernel\exceptions\invalidOperationException("Undefined tree type# `{$this->tree_type}`!"); ?>
 <?php endswitch; ?>
-    </div> <!--end .checked-opt -->
     <div class="pull-right">
         <div class="btn-group hidden ajax-loader-img-general" style="margin:0;margin-right: 10px;padding-top: 5px;">
             <img class="image" src="/access/img/ajax-loader.gif" />

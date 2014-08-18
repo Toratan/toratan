@@ -58,7 +58,7 @@
                 });
             });
         };
-        $("button[name='op']").click(function(e){
+        $("[name='op'][name='op']").click(function(e){
             switch(String($(this).attr('value')).toLowerCase()){
                 case 'edit':
                 case 'move':
@@ -102,7 +102,7 @@
             });
             <?php endif; ?>
         };
-        $("button[value='move']").click(function(e) {
+        $("[name='op'][value='move']").click(function(e) {
             e.preventDefault();
             var sort_base = "";
             var $activeHead = 'table thead tr th.headerSortDown, table thead tr th.headerSortUp';
@@ -131,7 +131,7 @@
                 window.top.open_waitModal(true);
             });
         });
-        $("button[value='edit']").click(function(e) {
+        $("[name='op'][value='edit']").click(function(e) {
             e.preventDefault();
             if($("input[type='checkbox'].item-checkbox:checked").first() === 0) return;
             <?php if($active_type == "note"): ?>
