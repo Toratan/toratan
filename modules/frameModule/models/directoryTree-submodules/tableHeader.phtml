@@ -29,6 +29,7 @@
         border-top: 0!important;
     }
     #explorer-table .item-row { height: 45px!important;}
+    #explorer-table .item-row a {outline: none}    
     #explorer-table table tr th,
     #explorer-table table tr td{vertical-align:  middle!important;max-width: 90%;word-break: break-all}
     @media screen 
@@ -38,19 +39,20 @@
             #explorer-table .updated-at{display:none}
     }
     #explorer-table .ui-draggable-dragging {
-        height: 35px!important;
+        height: 28px!important;
         padding: 5px 10px 5px 10px;
         border: 1px solid black;
         background-color: #FFF;
         overflow: hidden;
         font-weight: bold;
-        font-variant: small-caps;
+        font-size: small;
         z-index: 10000;
         min-width: 100px;
     }
     #explorer-table .drop-hover {
         background-color: #efefef!important;
         font-weight: bold;
+        font-size: small;
     }
 </style>
 <form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($active_type, $this->request->GetURI(), session_id())) ?>">
