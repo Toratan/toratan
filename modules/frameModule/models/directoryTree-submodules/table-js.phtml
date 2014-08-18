@@ -290,6 +290,17 @@
                     var selected = $('.item-row input[type="checkbox"].item-checkbox:checked').parents('tr');
                     if (selected.length === 0) {
                       selected = $(this).parents('tr');
+                    } else {
+                        var $this = $(this).parents('tr');
+                        var search_result = false;
+                        selected.each(function() {
+                            search_result = $(this).is($this);
+                            return !search_result;
+                        });
+                        if(!search_result) {
+                            selected.find("input[type='checkbox'].item-checkbox").prop("checked", false);
+                            selected = $this;
+                        }
                     }
                     selected.find("input[type='checkbox'].item-checkbox").prop("checked", true);
                     selected.addClass("dragging");
@@ -321,17 +332,8 @@
                         window.top.open_waitModal(true);
                     });
                 },
-                out: function( event, ui ) {
-                    var init_txt = $(ui.helper).data('init-text');
-                    if(typeof(init_txt) === "undefined")
-                        return;
-                    if(typeof(window.dragable_folders.toutid) !== "undefined")
-                        clearTimeout(window.dragable_folders.toutid);
-                    window.dragable_folders.toutid = setTimeout(function() { $(ui.helper).html(init_txt); }, 300);
-                },
+                out: function( event, ui ) { },
                 over: function( event, ui ) {
-                    if(typeof(window.dragable_folders.toutid) !== "undefined")
-                        clearTimeout(window.dragable_folders.toutid);
                     if($(this).hasClass("dragging")) {
                         $(this).removeClass("drop-hover");
                         $(ui.helper).html("Cannot move into itself!");
