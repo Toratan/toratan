@@ -132,22 +132,23 @@ class eController extends \zinux\kernel\controller\baseController
         if(!count($args)) throw new \zinux\kernel\exceptions\invalidArgumentException("Empty `args` passed!");
         $count_arg = array("conditions" => array());
         $count_arg["conditions"][] = "owner_id = ?";
+        $count_arg["conditions"][] =  $args[0];
         switch($dtmode) {
+            case \modules\frameModule\models\directoryTree::RECENT: 
+                $sort_base = "last_visit_at";
+                $order = "DESC";
+                break;
             case \modules\frameModule\models\directoryTree::ARCHIVE: 
                 $count_arg["conditions"][0] .= " AND is_archive = 1";
-                $count_arg["conditions"][] =  $args[0];
                 break;
             case \modules\frameModule\models\directoryTree::SHARED:
                 $count_arg["conditions"][0] .= " AND is_public= 1";
-                $count_arg["conditions"][] =  $args[0];
                 break;
             case \modules\frameModule\models\directoryTree::TRASH: 
                 $count_arg["conditions"][0] .= " AND is_trash = 1";
-                $count_arg["conditions"][] =  $args[0];
                 break;
             case \modules\frameModule\models\directoryTree::REGULAR:
                 $count_arg["conditions"][0] .= " AND parent_id = ?";
-                $count_arg["conditions"][] =  $args[0];
                 $count_arg["conditions"][] =  $args[1];
                 break;
             default: throw new \zinux\kernel\exceptions\invalidArgumentException("Undefined `$dtmode`");
@@ -225,6 +226,10 @@ class eController extends \zinux\kernel\controller\baseController
         $func = "";
         $args = array(\core\db\models\user::GetInstance()->user_id);
         switch ($category) {
+            case \modules\frameModule\models\directoryTree::RECENT: 
+                $args = array_merge($args, array(NULL, item::WHATEVER, item::WHATEVER, item::WHATEVER));
+                $func = "fetchItems";
+                break;
             case \modules\frameModule\models\directoryTree::ARCHIVE: $func = "fetchArchives"; break;
             case \modules\frameModule\models\directoryTree::SHARED: $func = "fetchShared"; break;
             case \modules\frameModule\models\directoryTree::TRASH: $func = "fetchTrashes"; break;
@@ -234,5 +239,11 @@ class eController extends \zinux\kernel\controller\baseController
             $this->executeQuery($func,  $category, $args);
         else $this->IndexAction();
     }
+    /**
+    * Fetches recently accessed items 
+    * The \modules\frameModule\controllers\eController::recentAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function recentAction() { $this->fetchCategory(\modules\frameModule\models\directoryTree::RECENT); }
 }
 

@@ -24,9 +24,9 @@
             // both of handler(i.e the previous handlers 
             // and the following new one) and thing will
             // get messy!!
-            $('table.table .header').unbind('click');
+            $('table.table.sortable .header').unbind('click');
             // make/re-make the table sortable
-            $('table.table').tablesorter({
+            $('table.table.sortable').tablesorter({
                 sortList: [[defaultHeadIndex, defaultHeadOrder]],
                 textExtraction: function(node) {
                     var txt = String($(node).text()).trim();

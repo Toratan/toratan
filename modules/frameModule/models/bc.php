@@ -11,6 +11,7 @@ class bc {
                 static $apply = false;
                 if($apply) return true;
                 switch ($tree_type) {
+                    case \modules\frameModule\models\directoryTree::RECENT:
                     case \modules\frameModule\models\directoryTree::REGULAR: return true;
                     case \modules\frameModule\models\directoryTree::ARCHIVE: return ($apply = $item->is_archive);
                     case \modules\frameModule\models\directoryTree::SHARED: return ($apply = $item->is_public);

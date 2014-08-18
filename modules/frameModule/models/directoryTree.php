@@ -9,6 +9,7 @@ class directoryTree extends \stdClass
     const TRASH = 0x2;
     const ARCHIVE = 0x3;
     const SHARED = 0x4;
+    const RECENT = 0x5;
     /**
      * The type directory Tree
      * @var integer
@@ -78,6 +79,7 @@ class directoryTree extends \stdClass
             case "folder":
                 switch($this->tree_type) {
                     default: return "/d/{$item->folder_id}.folders";
+                    case self::RECENT: return "/recent/d/{$item->folder_id}.folders";
                     case self::ARCHIVE: return "/archives/d/{$item->folder_id}.folders";
                     case self::SHARED: return "/shared/d/{$item->folder_id}.folders";
                     case self::TRASH: return "/trashes/d/{$item->folder_id}.folders";

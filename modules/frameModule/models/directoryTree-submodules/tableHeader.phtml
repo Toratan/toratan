@@ -39,12 +39,15 @@
             #explorer-table #table-header-updated,
             #explorer-table .updated-at{display:none}
     }
+    <?php if($this->tree_type === self::RECENT) : ?>
+        .fs-toggle { display: none!important;}
+    <?php endif; ?>
 </style>
 <form id="opt-form" method="POST" action="/ops?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($active_type, $this->request->GetURI(), session_id())) ?>">
     <input type="hidden" name="type" value="<?php echo $active_type ?>" />
     <input type="hidden" name="continue" value="<?php echo $this->request->GetURI() ?>" />
     <div id="explorer-table" class="<?php echo $active_type ?>-explorer explorer-wide">
-        <table class="table table-hover table-responsive infinite-scroll">
+        <table class="table table-hover table-responsive infinite-scroll <?php echo $this->tree_type !== self::RECENT ? "sortable" : ""?>">
             <thead>
                 <tr>
                     <th style="width: 0.1%;"></th>

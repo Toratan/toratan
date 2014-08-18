@@ -57,7 +57,7 @@
                                 $should_link_ref = \core\db\models\user::IsSignedin() && 
                                         (@\core\db\models\user::GetInstance()->user_type == \core\db\models\user::USER_TYPE_ADMINISTRATOR || 
                                         @\core\db\models\user::GetInstance()->user_type == \core\db\models\user::USER_TYPE_DEVELOPER)
-                            ?><?php echo $should_link_ref ? "<a href='/error/view/{$this->view->eref}' title='View error detail'>" : "", $this->view->eref, $should_link_ref ? "</a>" : "" ?>
+                            ?><?php echo $should_link_ref ? "<a href='/error/view/{$this->view->eref}' title='View error detail' target='__blank'>" : "", $this->view->eref, $should_link_ref ? "</a>" : "" ?>
                         </span>
                         <?php endif; ?>
                     </small>

@@ -7,21 +7,17 @@
             "notes" => "<span class='glyphicon glyphicon-file'></span>", 
             "links" => "<span class='glyphicon glyphicon-link'></span>") as $key => $value)
     {
-        switch($this->tree_type)
-        {
-            case self::TRASH:
-                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/trashes.$key'>$value</a></li>";
-                break;
-            case self::ARCHIVE:
-                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/archives.$key'>$value</a></li>";
-                break;
-            case self::SHARED:
-                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/shared.$key'>$value</a></li>";
-                break;
-            default:
-                echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='/d/$pid.$key'>$value</a></li>";
-                break;
-        }
+        $singleton = array(
+           self::TRASH => "/trashes.$key",     
+           self::ARCHIVE => "/archives.$key",     
+           self::SHARED => "/shared.$key",     
+           self::RECENT => "/recent.$key",
+           "__default" => "/d/$pid.$key",
+        );
+        $url = $singleton["__default"];
+        if(key_exists($this->tree_type, $singleton))
+                $url = $singleton[$this->tree_type];
+        echo "<li ".(strtoupper("{$active_type}") == strtoupper($key)?"class='active'":"")." title='".(ucwords($key))."'><a class='table-nav-link' href='$url'>$value</a></li>";
     }
     ?></ul>
 </div>
