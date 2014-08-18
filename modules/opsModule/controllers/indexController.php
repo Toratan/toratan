@@ -360,7 +360,8 @@ class indexController extends \zinux\kernel\controller\baseController
                 $this->view->values["{$item}_id"] = $item_value->{"{$item}_id"};
                 $this->view->values["{$item}_title"] = $item_value->{"{$item}_title"};
                 $this->view->values["{$item}_body"] = $item_value->{"{$item}_body"};
-                $this->view->values["tags"] = $item_value->tags;
+                if($item == "note")
+                    $this->view->values["tags"] = $item_value->tags;
                 $this->view->pid = $item_value->parent_id;
                 if(isset($item_value->editor_type))
                     $this->view->editor_type = $item_value->editor_type;
