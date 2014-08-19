@@ -7,7 +7,8 @@ class note extends item
 {
     static $has_many = array(
         array('note_tags', "class_name" => "note_tag"),
-        array('tags', 'through' => 'note_tags', "order" => "note_tags.created_at ASC")
+        array('tags', 'through' => 'note_tags', "order" => "note_tags.created_at ASC"),
+        array('comments', "order" => "comments.created_at DESC")
     );
     /**
      * Saves current note into database
