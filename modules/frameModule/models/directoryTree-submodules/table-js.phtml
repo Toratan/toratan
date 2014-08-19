@@ -45,20 +45,16 @@
                 headers:{
                     0: { sorter: false }
                 }
-            }).bind("sortEnd",function() {
-                if(init_sort) { init_sort = false; return; }
-                // escape the init sort
-                if(typeof($(this).data("init-sort")) === "undefined") {
-                    $(this).data("init-sort", 1);
-                    return;
-                }
-                $.ajax({
-                    global: false,
-                    type: "POST",
-                    url:  "/profile/set?<?php echo \zinux\kernel\security\security::__get_uri_hash_string() ?>",
-                    data: { keys: [ "/general/directory-tree-sort-type" ], values: [ { defaultHeadIndex: $($activeHead).index(), defaultHeadOrder: $($activeHead).hasClass('headerSortDown') ? 0 : 1 }] }
-                });
-            });
+            }).find("th.header:not(.init)")
+                    .addClass("init")
+                    .click(function() {
+                        $.ajax({
+                            global: false,
+                            type: "POST",
+                            url:  "/profile/set?<?php echo \zinux\kernel\security\security::__get_uri_hash_string() ?>",
+                            data: { keys: [ "/general/directory-tree-sort-type" ], values: [ { defaultHeadIndex: $($activeHead).index(), defaultHeadOrder: $($activeHead).hasClass('headerSortDown') ? 0 : 1 }] }
+                        });
+                    });
         };
         $("[name='op'][name='op']").click(function(e){
             switch(String($(this).attr('value')).toLowerCase()){
@@ -274,7 +270,7 @@
             window.init_checkboxes();
             window.init_times();
             window.reset_ajax_placeholder(is_init);
-            window.sort_table(true);
+            window.sort_table(is_init);
             window.trim_rows();
             window.init_links();
             window.apply_menu_checkbox_to_items();
