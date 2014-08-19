@@ -231,7 +231,10 @@ class noteViewModel
         # don't render the origin body, just echo the pre-processed one!
         # otherwise render the note's origin body.
         echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
-    ?></div>
+    ?>
+        <div class="clearfix"></div>
+        <?php self::__renderComments($n); ?>
+    </div>
 <?php if(@$n->is_public): ?>
     <div class="pull-right right-sticky-container">
         <ul class="social-sharing" style="">
@@ -326,6 +329,18 @@ class noteViewModel
 </div>
 <?php unset($get_options_links); ?>
 <?php
+    }
+    public static function __renderComments(\core\db\models\note $note ,$echo = 1) {
+        if(!\core\db\models\user::IsSignedin()): ?>
+<div class="text-center" style="border: 1px solid #ddd;height: 55px;padding:15px;font-weight: bold">
+    <span class="glyphicon glyphicon-warning-sign"></span> You must <a href="/signup">Signup</a> or <a href="/signin">Signin</a> to comment.
+</div>
+<?php else: ?>
+<div class="comment-input">
+    <textarea class="form-control" rows="4"></textarea>
+</div>
+<?php endif;
+        
     }
     public static function __renderText($text, $echo = 1) {
         (new \vendor\markdown\Ciconia\CiconiaInitializer())->Execute();
