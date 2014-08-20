@@ -6,15 +6,18 @@ namespace modules\opsModule\models;
 */
 class renderComment
 {
+    protected $note_id;
     protected $comments;
     protected $count_of_comments;
     protected $is_more;
     /**
      * Construct a comment renderer
+     * @param $note_id the note's ID which the comments are belong to
      * @param array $comments array of comments
      * @param integer $count_of_comments (default: NULL) The count of total comments, if NULL passed, it will set automatically to `count($comments)`.
      */
-    public function __construct(array $comments, $count_of_comments = 0) {
+    public function __construct($note_id, array $comments, $count_of_comments = 0) {
+        $this->note_id = $note_id;
         $this->comments = $comments;
         if(is_null($count_of_comments))
             $count_of_comments = count($comments);
@@ -29,7 +32,7 @@ class renderComment
     }
     public function __render_css() {
 ?>
-<style type="text/css">.comments-container{padding:20px 40px}.comments-container>:not(.clearfix){margin-bottom:10px}.comments-container .avatar img{-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px}.comments-container .total-comment-no{font-weight:700;font-size:large}.comments-container .total-comment-no label{font-weight:700;font-size:medium}.comments-container .prev-comment-area .comments-head{border-bottom:2px solid #EEE;margin-bottom:20px}.comments-container .prev-comment-area .comments-head li{width:70px;padding:5px}.comments-container .prev-comment-area .comments-head li a{text-decoration:none;font-weight:700;color:#7c7c7c}.comments-container .prev-comment-area .comments-head li.active a{font-weight:bolder;color:#000}.comments-container .prev-comment-area .comments-head li a{display:block}.comments-container .prev-comment-area .comments-head li:not(.active) a:hover{color:#5a5a5a}.comments-container .prev-comment-area .comments-head li:not(.active):hover{border-bottom:2px solid #fc4}.comments-container .prev-comment-area .comments-head li.active{border-bottom:2px solid #08c}.comments-container .prev-comment-area .comments-head li .careta{margin-top:10px;margin-left:3px}.comments-container .prev-comment-area .comments-head li:not(.active) .caret{visibility:collapse}.comments-container .user-comment-erea .form-control{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.comments-container .prev-comment-area .comment{margin-bottom:30px}.comments-container .prev-comment-area .comment .comment-body{padding-left:30px}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .commenter-link{font-weight:bolder;display:inline}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date{display:inline;color:#AAA;font-weight:700;font-size:small}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date::before{content:" . "}.comments-container .prev-comment-area .comment .comment-body .comment-data{margin:10px;overflow:auto}.comments-container .prev-comment-area .comment .comment-body .comment-footer{margin:0 10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote{text-decoration:none}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote:hover{font-weight:700}.comments-container .prev-comment-area .comment .comment-body .comment-footer>*{display:inline;padding:3px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider{padding-top:-10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider::after{content:"."}.comments-container .prev-comment-area .comment .comment-body .comment-footer .actions *{padding:0;margin:0}.comments-container .prev-comment-area .comment .comment-body .comment-footer .actions a{color:#08c;padding:2px}.comments-container .prev-comment-area .load-more-comment{border:1px solid #ddd;height:45px;padding-top:10px}.comments-container .prev-comment-area .comment.my-comment{border-left:2px solid #08c;padding-left:10px;margin-left:-10px}@media screen and (min-width:0) and (max-width:399px){.comments-container .user-comment-erea .comment-signin-container .burden{display:none}}@media screen and (min-width:0) and (max-width:700px){.comments-container .prev-comment-area .comment .comment-body{padding-left:10px}}</style>
+<style type="text/css">.comments-container{padding:20px 40px}.comments-container>:not(.clearfix){margin-bottom:10px}.comments-container .avatar img{-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px}.comments-container .total-comment-no{font-weight:700;font-size:large}.comments-container .total-comment-no label{font-weight:700;font-size:medium}.comments-container .prev-comment-area .comments-head{border-bottom:2px solid #EEE;margin-bottom:20px}.comments-container .prev-comment-area .comments-head li{width:70px;padding:5px}.comments-container .prev-comment-area .comments-head li a{text-decoration:none;font-weight:700;color:#7c7c7c}.comments-container .prev-comment-area .comments-head li.active a{font-weight:bolder;color:#000}.comments-container .prev-comment-area .comments-head li a{display:block}.comments-container .prev-comment-area .comments-head li:not(.active) a:hover{color:#5a5a5a}.comments-container .prev-comment-area .comments-head li:not(.active):hover{border-bottom:2px solid #fc4}.comments-container .prev-comment-area .comments-head li.active{border-bottom:2px solid #08c}.comments-container .prev-comment-area .comments-head li .careta{margin-top:10px;margin-left:3px}.comments-container .prev-comment-area .comments-head li:not(.active) .caret{visibility:collapse}.comments-container .user-comment-erea .form-control{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.comments-container .prev-comment-area .comment{margin-bottom:30px}.comments-container .prev-comment-area .comment .comment-body{padding-left:30px}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .commenter-link{font-weight:bolder;display:inline}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date{display:inline;color:#AAA;font-weight:700;font-size:small}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date::before{content:" . "}.comments-container .prev-comment-area .comment .comment-body .comment-data{margin:10px;overflow:auto}.comments-container .prev-comment-area .comment .comment-body .comment-footer{margin:0 10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote{text-decoration:none}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote:hover{font-weight:700}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-up.disabled{color:#99C499}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-down.disabled{color:#C49999}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.disabled {cursor: default}.comments-container .prev-comment-area .comment .comment-body .comment-footer>*{display:inline;padding:3px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider{padding-top:-10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider::after{content:"."}.comments-container .prev-comment-area .comment .comment-body .comment-footer .actions *{padding:0;margin:0}.comments-container .prev-comment-area .comment .comment-body .comment-footer .actions a{color:#08c;padding:2px}.comments-container .prev-comment-area .load-more-comment{border:1px solid #ddd;height:45px;padding-top:10px}.comments-container .prev-comment-area .comment.my-comment{border-left:2px solid #08c;padding-left:10px;margin-left:-10px}@media screen and (min-width:0) and (max-width:399px){.comments-container .user-comment-erea .comment-signin-container .burden{display:none}}@media screen and (min-width:0) and (max-width:700px){.comments-container .prev-comment-area .comment .comment-body{padding-left:10px}}</style>
 <?php
     }
     public function __render_new_comment() {
@@ -81,7 +84,7 @@ class renderComment
 ?>
 <?php foreach($comments as $comment): ?>
 <?php list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link($comment->user_id); ?>
-<div class="comment <?php echo $comment->user_id == $cuid ? "my-comment" : "" ?>" data-commenter="<?php echo sha1($comment->user_id) ?>">
+<div class="comment <?php echo $comment->user_id == $cuid ? "my-comment" : "" ?>" data-commenter="<?php echo sha1($comment->user_id) ?>" data-id="<?php echo $comment->comment_id ?>">
     <div class="row">
         <div class="hidden-xs col-sm-1 comment-header avatar">
             <img src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>'" height="50" width="50">
@@ -162,13 +165,33 @@ $(document).ready(function(){
         .find('.vote')
             .attr({'data-toggle': 'tooltip', 'title': 'You cannot vote your own stuff.'})
             .css("cursor", "default")
-            .removeClass("vote vote-down vote-up");
-    $(".vote.vote-up, .vote.vote-down").click(function(){
-        if($(this).parents(".comment").attr("data-commenter") === window.cuid) { return; }
+            .addClass("disabled");
+    
+    $(".vote.vote-up:not(.disabled), .vote.vote-down:not(.disabled)").click(function(){
+        if($(this).parents(".comment").attr("data-commenter") === window.cuid || $(this).hasClass("disabled")) { return; }
         var current_vote = parseInt($(this).find(".vote-val:first").text());
         if(isNaN(current_vote))
             current_vote = 0;
-        $(this).find(".vote-val").html(current_vote + 1);
+        var _data = {
+            voteup: $(this).hasClass("vote-up"),
+            nid: <?php echo json_encode($this->note_id) ?>,
+            cid: $(this).parents(".comment").attr('data-id')
+        };
+        var $_thisp = $(this).parents(".comment").find(".vote");
+        $_thisp.addClass("disabled");
+        $.ajax({
+            global: false,
+            url: "/comment/vote?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id))?>",
+            type: "POST",
+            data: _data,
+            success: function(data) {
+                window.open_infoModal(data);
+            }
+        }).fail(function(xhr){
+            setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
+        }).always(function(){
+            $_thisp.removeClass("disabled");
+        });
     });
 <?php endif; ?>
 });
