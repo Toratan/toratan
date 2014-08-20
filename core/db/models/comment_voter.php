@@ -95,4 +95,14 @@ __RETURN:
         }
         return $cv;
     }
+    /**
+     * checks if a user has vote a comment or not?
+     * @return mixed If user not voted retrurns NULL, otherwise if use up-voted returns 1 and if user down-voted returns 0.
+     */
+    public static function __voter_exists($comment_id, $user_id) {
+        $cv = self::__fetch_or_create($comment_id, $user_id, 0);
+        if(!$cv)
+            return NULL;
+        return $cv->is_vote_up;
+    }  
 }
