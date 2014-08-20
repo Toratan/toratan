@@ -281,7 +281,7 @@ class renderComment
         });
     }).addClass("vote-event");
     $(".delete-comment:not(.com-init), .report-comment:not(.com-init)").click(function(){
-        if($(this).hasClass("deleting")) return;
+        if($(this).parents(".comment").hasClass("deleting")) return;
         $(this).parents(".comment").addClass('deleting').css("cursor", "progress");
         $.ajax({
             global: false,
