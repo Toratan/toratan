@@ -66,5 +66,20 @@ class commentController extends \zinux\kernel\controller\baseController
     */
     public function markAction()
     {
+        if(!$this->request->IsPOST())
+            throw new \zinux\kernel\exceptions\invalidOperationException("Invalid request type");
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("nid", "cid", "op"));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["nid"]));
+        switch(strtolower($this->request->params["op"])) {
+            case "delete":
+                $ar =\core\db\models\comment::__delete($this->request->params["nid"], $this->request->params["cid"], \core\db\models\user::GetInstance()->user_id);
+                echo json_encode(array("result" => $ar));
+                die;
+            case "report":
+                break;
+            default:
+                throw new \zinux\kernel\exceptions\invalidOperationException("Invalid op-type `{$this->request->params["op"]}`");
+        }
+        die;
     }
 }

@@ -54,4 +54,12 @@ class comment extends communicationModel
      * @return integer The count of comments associated with the note ID 
      */
     public static function  __fetch_count($note_id) { return self::count(array("conditions" => array("note_id = ?", $note_id))); }
+    /**
+     * Deletes a comment
+     * @param integer $note_id The note ID to comment to.
+     * @param integer $comment_id The comment ID to delete
+     * @param string $user_id The comment's owner's user ID.
+     * @return integer The affected row
+     */
+    public static function __delete($note_id, $comment_id, $user_id) {return self::delete_all(array("conditions"=>array("note_id = ? AND user_id = ? AND comment_id = ?", $note_id, $user_id, $comment_id)));} 
 }
