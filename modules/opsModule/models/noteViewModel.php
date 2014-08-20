@@ -364,6 +364,7 @@ class noteViewModel
     .comments-container .prev-comment-area .comment .comment-body .comment-footer .actions * {padding: 0;margin: 0}
     .comments-container .prev-comment-area .comment .comment-body .comment-footer .actions a {color:#0088cc;padding: 2px;}
     .comments-container .prev-comment-area .load-more-comment {border: 1px solid #ddd;height: 45px;padding-top: 10px}
+    .comments-container .prev-comment-area .comment.my-comment {border-left: 2px solid #0088cc; padding-left: 10px; margin-left: -10px;} 
     @media screen and (min-width:0px) and (max-width: 399px) { 
         .comments-container .user-comment-erea .comment-signin-container .burden{ display: none}
     }
@@ -405,7 +406,7 @@ class noteViewModel
             </ul>
             <div class="comments">
                 <?php for($i=0;$i<3;$i++) : ?>
-                <div class="comment">
+                <div class="comment <?php echo $i == 1 ? "my-comment" : "" ?>">
                     <div class="row">
                         <div class="hidden-xs col-sm-1 comment-header avatar">
                             <img src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>'" height="50" width="50">
