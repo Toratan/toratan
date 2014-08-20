@@ -29,8 +29,24 @@ class comment_voter extends communicationModel
      */
     public static function __vote_up($comment_id, $user_id) {
         $cv = self::__fetch_or_create($comment_id, $user_id);
-        $cv->is_vote_up = 1;
-        $cv->save();
+        # validate base on current voting status
+        switch($cv->is_vote_up) {
+            # if already down-voted?
+            case 0:
+                # unvote!!
+                return self::__unvote($comment_id, $user_id);
+            # if already up-voted?
+            case 1:
+                # return
+                goto __RETURN;
+            # otherwise
+            default:
+                $cv->is_vote_up = 1;
+                $cv->save();
+                $cv->comment->vote_up++;
+                $cv->comment->save();
+        }
+__RETURN:
         return $cv;
     }
     /**
@@ -41,8 +57,24 @@ class comment_voter extends communicationModel
      */
     public static function __vote_down($comment_id, $user_id) {
         $cv = self::__fetch_or_create($comment_id, $user_id);
-        $cv->is_vote_up = 0;
-        $cv->save();
+        # validate base on current voting status
+        switch($cv->is_vote_up) {
+            # if already down-voted?
+            case 0:
+                # return
+                goto __RETURN;
+            # if already up-voted?
+            case 1:
+                # unvote!!
+                return self::__unvote($comment_id, $user_id);
+            # otherwise
+            default:
+                $cv->is_vote_up = 0;
+                $cv->save();
+                $cv->comment->vote_down++;
+                $cv->comment->save();
+        }
+__RETURN:
         return $cv;
     }
     /**
@@ -51,10 +83,15 @@ class comment_voter extends communicationModel
      * @param $user_id The user ID
      * @return comment_voter The unvoted instance
      */
-    public function __unvote($comment_id, $user_id) {
+    public static function __unvote($comment_id, $user_id) {
         $cv = self::__fetch_or_create($comment_id, $user_id, 0);
         if($cv) {
             $cv->delete();
+            if($cv->is_vote_up)
+                $cv->comment->vote_up--;
+            else
+                $cv->comment->vote_down--;
+            $cv->comment->save();
         }
         return $cv;
     }

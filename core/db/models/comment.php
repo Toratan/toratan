@@ -38,11 +38,11 @@ class comment extends communicationModel
         $builder
                 ->select("*")
                 ->where("note_id = ?", $note_id)
-                # every two download will raise the affect of up votes
-                # the {.01} portion in the 2 factor is for when a comment voteup and votedowns are
+                # every one down-vote will erase an up votes
+                # the {.01} portion in the 1 factor is for when a comment voteup and votedowns are
                 # equally greater than zero the comment can be distinguished from zero voted comments
                 # by this query.
-                ->order("vote_up * 2.01 - vote_down")
+                ->order("vote_up * 1.01 - vote_down DESC")
                 ->offset($offset)
                 ->limit($limit);
         return self::find_by_sql($builder->to_s(), $builder->bind_values());

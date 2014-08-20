@@ -31,7 +31,26 @@ class commentController extends \zinux\kernel\controller\baseController
     */
     public function voteAction()
     {
-        \zinux\kernel\utilities\debug::_var($this->request->params, 1);
+        if(!$this->request->IsPOST())
+            throw new \zinux\kernel\exceptions\invalidOperationException("Invalid request type");
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("voteup", "nid", "cid"));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["nid"]));
+        $cv = new \core\db\models\comment_voter;
+        switch($this->request->params["voteup"]) {
+            case -1:
+                $cv = $cv->__unvote($this->request->params["cid"], \core\db\models\user::GetInstance()->user_id);
+                break;
+            case 0:
+                $cv = $cv->__vote_down($this->request->params["cid"], \core\db\models\user::GetInstance()->user_id);
+                break;
+            case 1:
+                $cv = $cv->__vote_up($this->request->params["cid"], \core\db\models\user::GetInstance()->user_id);
+                break;
+            default:
+                throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid `voteup` value.");
+        }
+        echo json_encode(array("vote_up" => @$cv->comment->vote_up, "vote_down" => @$cv->comment->vote_down));
+        die;
     }
     /**
     * The \modules\opsModule\controllers\commentController::markAction()

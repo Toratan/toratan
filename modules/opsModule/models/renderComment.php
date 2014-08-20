@@ -32,7 +32,10 @@ class renderComment
     }
     public function __render_css() {
 ?>
-<style type="text/css">.comments-container{padding:20px 40px}.comments-container>:not(.clearfix){margin-bottom:10px}.comments-container .avatar img{-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px}.comments-container .total-comment-no{font-weight:700;font-size:large}.comments-container .total-comment-no label{font-weight:700;font-size:medium}.comments-container .prev-comment-area .comments-head{border-bottom:2px solid #EEE;margin-bottom:20px}.comments-container .prev-comment-area .comments-head li{width:70px;padding:5px}.comments-container .prev-comment-area .comments-head li a{text-decoration:none;font-weight:700;color:#7c7c7c}.comments-container .prev-comment-area .comments-head li.active a{font-weight:bolder;color:#000}.comments-container .prev-comment-area .comments-head li a{display:block}.comments-container .prev-comment-area .comments-head li:not(.active) a:hover{color:#5a5a5a}.comments-container .prev-comment-area .comments-head li:not(.active):hover{border-bottom:2px solid #fc4}.comments-container .prev-comment-area .comments-head li.active{border-bottom:2px solid #08c}.comments-container .prev-comment-area .comments-head li .careta{margin-top:10px;margin-left:3px}.comments-container .prev-comment-area .comments-head li:not(.active) .caret{visibility:collapse}.comments-container .user-comment-erea .form-control{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.comments-container .prev-comment-area .comment{margin-bottom:30px}.comments-container .prev-comment-area .comment .comment-body{padding-left:30px}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .commenter-link{font-weight:bolder;display:inline}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date{display:inline;color:#AAA;font-weight:700;font-size:small}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date::before{content:" . "}.comments-container .prev-comment-area .comment .comment-body .comment-data{margin:10px;overflow:auto}.comments-container .prev-comment-area .comment .comment-body .comment-footer{margin:0 10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote{text-decoration:none}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote:hover{font-weight:700}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-up.disabled{color:#99C499}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-down.disabled{color:#C49999}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.disabled {cursor: default}.comments-container .prev-comment-area .comment .comment-body .comment-footer>*{display:inline;padding:3px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider{padding-top:-10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider::after{content:"."}.comments-container .prev-comment-area .comment .comment-body .comment-footer .actions *{padding:0;margin:0}.comments-container .prev-comment-area .comment .comment-body .comment-footer .actions a{color:#08c;padding:2px}.comments-container .prev-comment-area .load-more-comment{border:1px solid #ddd;height:45px;padding-top:10px}.comments-container .prev-comment-area .comment.my-comment{border-left:2px solid #08c;padding-left:10px;margin-left:-10px}@media screen and (min-width:0) and (max-width:399px){.comments-container .user-comment-erea .comment-signin-container .burden{display:none}}@media screen and (min-width:0) and (max-width:700px){.comments-container .prev-comment-area .comment .comment-body{padding-left:10px}}</style>
+<style type="text/css">.comments-container{padding:20px 40px}.comments-container>:not(.clearfix){margin-bottom:10px}.comments-container .avatar img{-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px}.comments-container .total-comment-no{font-weight:700;font-size:large}.comments-container .total-comment-no label{font-weight:700;font-size:medium}.comments-container .prev-comment-area .comments-head{border-bottom:2px solid #EEE;margin-bottom:20px}.comments-container .prev-comment-area .comments-head li{width:70px;padding:5px}.comments-container .prev-comment-area .comments-head li a{text-decoration:none;font-weight:700;color:#7c7c7c}.comments-container .prev-comment-area .comments-head li.active a{font-weight:bolder;color:#000}.comments-container .prev-comment-area .comments-head li a{display:block}.comments-container .prev-comment-area .comments-head li:not(.active) a:hover{color:#5a5a5a}.comments-container .prev-comment-area .comments-head li:not(.active):hover{border-bottom:2px solid #fc4}.comments-container .prev-comment-area .comments-head li.active{border-bottom:2px solid #08c}.comments-container .prev-comment-area .comments-head li .careta{margin-top:10px;margin-left:3px}.comments-container .prev-comment-area .comments-head li:not(.active) .caret{visibility:collapse}.comments-container .user-comment-erea .form-control{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.comments-container .prev-comment-area .comment{margin-bottom:30px}.comments-container .prev-comment-area .comment .comment-body{padding-left:30px}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .commenter-link{font-weight:bolder;display:inline}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date{display:inline;color:#AAA;font-weight:700;font-size:small}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date::before{content:" . "}.comments-container .prev-comment-area .comment .comment-body .comment-data{margin:10px;overflow:auto}.comments-container .prev-comment-area .comment .comment-body .comment-footer{margin:0 10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote{text-decoration:none}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote:hover{font-weight:700}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-up.disabled{color:#99C499}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-down.disabled{color:#C49999}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.disabled:not(.voted) {cursor: default}.comments-container .prev-comment-area .comment .comment-body .comment-footer>*{display:inline;padding:3px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider{padding-top:-10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider::after{content:"."}.comments-container .prev-comment-area .comment .comment-body .comment-footer .actions *{padding:0;margin:0}.comments-container .prev-comment-area .comment .comment-body .comment-footer .actions a{color:#08c;padding:2px}.comments-container .prev-comment-area .load-more-comment{border:1px solid #ddd;height:45px;padding-top:10px}.comments-container .prev-comment-area .comment.my-comment{border-left:2px solid #08c;padding-left:10px;margin-left:-10px}@media screen and (min-width:0) and (max-width:399px){.comments-container .user-comment-erea .comment-signin-container .burden{display:none}}@media screen and (min-width:0) and (max-width:700px){.comments-container .prev-comment-area .comment .comment-body{padding-left:10px}}
+.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-up.disabled.voted {color:green;font-weight: bold;border-bottom: 2px solid green}
+.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-down.disabled.voted {color:#CC4444;font-weight: bold;border-bottom: 2px solid #CC4444}
+</style>
 <?php
     }
     public function __render_new_comment() {
@@ -150,14 +153,18 @@ class renderComment
 ?>
 <script type="text/javascript">
 $(document).ready(function(){
-    $("time.timeago").each(function(){
-        var date = moment($(this).attr("datetime"));
-        $(this)
-            .html(date.fromNow("lll") + " ago")
-            .attr('title', date.format("lll"))
-            .attr('data-toggle', 'tooltip')
-            .css("cursor", "pointer");
-    });
+    window.update_comment_times = function(){
+        $("time.timeago").each(function(){
+            var date = moment($(this).attr("datetime"));
+            $(this)
+                .html(date.fromNow("lll") + " ago")
+                .attr('title', date.format("lll"))
+                .attr('data-toggle', 'tooltip')
+                .css("cursor", "pointer");
+        });
+    };
+    setInterval(window.update_comment_times, 15000);
+    window.update_comment_times();
     $("a[href=#]").click(function(e){e.preventDefault();});
 <?php if(\core\db\models\user::IsSignedin()): ?>
     window.cuid = '<?php echo sha1(\core\db\models\user::GetInstance()->user_id); ?>';
@@ -168,29 +175,59 @@ $(document).ready(function(){
             .addClass("disabled");
     
     $(".vote.vote-up:not(.disabled), .vote.vote-down:not(.disabled)").click(function(){
-        if($(this).parents(".comment").attr("data-commenter") === window.cuid || $(this).hasClass("disabled")) { return; }
-        var current_vote = parseInt($(this).find(".vote-val:first").text());
-        if(isNaN(current_vote))
-            current_vote = 0;
+        if($(this).parents(".comment").attr("data-commenter") === window.cuid || ($(this).hasClass("disabled") && !$(this).hasClass("voted"))) { return; }
         var _data = {
-            voteup: $(this).hasClass("vote-up"),
             nid: <?php echo json_encode($this->note_id) ?>,
             cid: $(this).parents(".comment").attr('data-id')
         };
         var $_thisp = $(this).parents(".comment").find(".vote");
+        var voted = ( $(this).parents(".comment").find(".vote.voted").length > 0 );
+        if(voted)
+            $.extend(_data, {voteup: -1});
+        else
+            $.extend(_data, {voteup: $(this).hasClass("vote-up") ? 1 : 0});
         $_thisp.addClass("disabled");
         $.ajax({
             global: false,
             url: "/comment/vote?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id))?>",
             type: "POST",
             data: _data,
+            dataType: "json",
             success: function(data) {
-                window.open_infoModal(data);
+                if(typeof(data.vote_up) === "undefined" || typeof(data.vote_down) === "undefined") {
+                    window.open_errorModal("Sorry, something went wrong... The page will be reloaded!!");
+                    setTimeout(function(){window.location.reload();}, 2000);
+                }
+                if(data.vote_up === null)
+                    data.vote_up = 0;
+                if(data.vote_down === null)
+                    data.vote_down = 0;
+                if(data.vote_up === 0) 
+                    data.vote_up = "";
+                if(data.vote_down === 0) 
+                    data.vote_down = "";
+                $_thisp.find(".vote-up-val").text(data.vote_up);
+                $_thisp.find(".vote-down-val").text(data.vote_down);
+                $_thisp.data("voted", !voted);
+                switch(_data.voteup) {
+                    case -1:
+                        $_thisp.removeClass("disabled voted");
+                        break;
+                    case 0:
+                        $_thisp.find(".vote-down-val").parents(".vote").addClass('disabled voted');
+                        break;
+                    case 1:
+                        $_thisp.find(".vote-up-val").parents(".vote").addClass('disabled voted');
+                        break;
+                }
             }
         }).fail(function(xhr){
             setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
         }).always(function(){
-            $_thisp.removeClass("disabled");
+            $_thisp.each(function(){
+                if(!$(this).hasClass("voted"))
+                    $(this).removeClass("disabled");
+            });
         });
     });
 <?php endif; ?>
