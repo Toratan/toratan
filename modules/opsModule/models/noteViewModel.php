@@ -293,9 +293,8 @@ class noteViewModel
             window.update_time = function() {
                 $('abbr.timeago').each(function(){
                     var sTime = $(this).find('time').attr("datetime");
-                    var format = 'ddd, DD MMM YYYY HH:mm:ss ZZ';
-                    var time = moment(sTime, format).format("lll");
-                    var time_str = (moment(sTime, format).fromNow("lll")) + " ago";
+                    var time = moment(sTime).format("lll");
+                    var time_str = (moment(sTime).fromNow("lll")) + " ago";
                     $(this)
                         .attr('title', 'Updated at : ' + time)
                         .children('time')
@@ -405,8 +404,10 @@ class noteViewModel
                 <li><a href="#">All <span class='caret'></span></a></li>
             </ul>
             <div class="comments">
-                <?php for($i=0;$i<3;$i++) : ?>
-                <div class="comment <?php echo $i == 1 ? "my-comment" : "" ?>">
+                <?php $comments =\core\db\models\comment::__fetch_top($note->getItemID()); ?>
+                <?php $cuid = @\core\db\models\user::GetInstance()->user_id ?>
+                <?php foreach($comments as $comment): ?>
+                <div class="comment <?php echo $comment->user_id == $cuid ? "my-comment" : "" ?>">
                     <div class="row">
                         <div class="hidden-xs col-sm-1 comment-header avatar">
                             <img src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>'" height="50" width="50">
@@ -418,15 +419,13 @@ class noteViewModel
                                         <?php $commenter = \core\db\models\user::GetInstance() ?>
                                         <a href="/@<?php echo $commenter->username ?>"><?php echo $commenter->get_RealName_or_Username() ?></a>
                                     </div>
-                                    <div class="comment-date">3 minutes ago</div>
+                                    <div class="comment-date"><time datetime="<?php echo $comment->created_at ?>" class="timeago"><?php echo $comment->created_at ?></time></div>
                                 </div>
-                                <div class="col-xs-12 comment-data">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sodales est dui, sed posuere erat porta vehicula. In sit amet ligula et neque commodo condimentum. Suspendisse vulputate condimentum nisi, ac pulvinar tellus consectetur et. Donec malesuada urna egestas vestibulum hendrerit.
-                                </div>
+                                <div class="col-xs-12 comment-data"><?php echo $comment->comment ?></div>
                                 <div class="col-xs-12 comment-footer">
-                                    <a href="#" class="vote vote-up text-success">2 <span class="glyphicon glyphicon-chevron-up"></span></a>
+                                    <a href="#" class="vote vote-up text-success"><span class="vote-up-val"><?php echo $comment->vote_up ? $comment->vote_up : "" ?></span> <span class="glyphicon glyphicon-chevron-up"></span></a>
                                     <div class="divider"></div>
-                                    <a href="#" class="vote vote-down text-danger">4 <span class="glyphicon glyphicon-chevron-down"></span></a>
+                                    <a href="#" class="vote vote-down text-danger"><span class="vote-down-val"><?php echo $comment->vote_down ? $comment->vote_down : "" ?></span> <span class="glyphicon glyphicon-chevron-down"></span></a>
                                     <div class="actions pull-right">
                                         <ul class="list-inline">
                                             <li><a href="#">Edit</a></li>
@@ -440,15 +439,29 @@ class noteViewModel
                         <div class="clearfix"></div>
                     </div>
                 </div>
-                <?php endfor; ?>
+                <?php endforeach; ?>
             </div>
+            <?php if(count($comments) < \core\db\models\comment::__fetch_count($note->getItemID())) : ?>
             <div class='load-more-comment text-center'>
                 <a href="#">Load more comments.</a>
             </div>
+            <?php endif; ?>
         </div>
         <div class="clearfix"></div>
     </div>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("time.timeago").each(function(){
+        var date = moment($(this).attr("datetime"));
+        $(this)
+            .html(date.fromNow("lll") + " ago")
+            .attr('title', date.format("lll"))
+            .attr('data-toggle', 'tooltip')
+            .css("cursor", "pointer");
+    });
+});
+</script>
 <?php
         
     }
