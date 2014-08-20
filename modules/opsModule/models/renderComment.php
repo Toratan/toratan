@@ -41,7 +41,7 @@ class renderComment
     public function __render_new_comment() {
 ?>
 <?php if($this->count_of_comments) : ?>
-<div  class="total-comment-no"><?php echo $this->count_of_comments; ?> <label><?php echo \ActiveRecord\Utils::pluralize_if($this->count_of_comments, "comment")?></label></div>
+<div  class="total-comment-no"><span class='no'><?php echo $this->count_of_comments; ?></span> <label><?php echo \ActiveRecord\Utils::pluralize_if($this->count_of_comments, "comment")?></label></div>
 <?php endif; ?>
 <div class="user-comment-erea" style="width: 100%">
     <div class="row">
@@ -59,7 +59,37 @@ class renderComment
             <script src="/access/js/autosize/jquery.autosize.min.js" type="text/javascript"></script>
             <script type="text/javascript">
                 (function(){
-                    $("textarea[name='comment']").autosize();
+                    $("textarea[name='comment']")
+                        .autosize()
+                        .keydown(function(e) {
+                            if ((e.keyCode === 10 || e.keyCode === 13) && e.ctrlKey) {
+                                var $this = $(this);
+                                $this.attr('readonly', "true").css("cursor", "progress");
+                                $.ajax({
+                                    global: false,
+                                    url: "/comment/new?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id))?>",
+                                    type: "POST",
+                                    data: {
+                                        nid: <?php echo json_encode($this->note_id); ?>,
+                                        c: $(this).val()
+                                    },
+                                    success: function(data) {
+                                        $(".comments").prepend(data);
+                                        var cc = $(".total-comment-no .no").text();
+                                        $(".total-comment-no .no").html(parseInt(cc) + 1);
+                                        if(cc > 2)
+                                            $(".total-comment-no label").text("comments");
+                                        else
+                                            $(".total-comment-no label").text("comment");
+                                        window.init_comments();
+                                    }
+                                }).fail(function(xhr){
+                                    setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
+                                }).always(function(){
+                                    $this.removeAttr('readonly').css("cursor", "initial");
+                                });
+                            }
+                        });
                 })(jQuery);
             </script>
         </div>
@@ -72,11 +102,13 @@ class renderComment
     public function __render_prev_comments_header() {
 ?>
 <div class="prev-comment-area">
-    <?php if(true || $this->count_of_comments) : ?>
+    <?php if(false &&$this->count_of_comments) : ?>
     <ul class="list-inline comments-head">
         <li class="active"><a href="#">Top  <span class='caret'></span></a></li>
         <li><a href="#">All <span class='caret'></span></a></li>
     </ul>
+    <?php else: ?>
+    <hr style="border-top: 1px solid #e6e6e6" />
     <?php endif; ?>
     <div class="comments">
 <?php
@@ -162,7 +194,7 @@ class renderComment
     public function __render_js() {
 ?>
 <script type="text/javascript">
-$(document).ready(function(){
+    window.init_comments = function() {
     window.update_comment_times = function(){
         $("time.timeago").each(function(){
             var date = moment($(this).attr("datetime"));
@@ -173,18 +205,23 @@ $(document).ready(function(){
                 .css("cursor", "pointer");
         });
     };
-    setInterval(window.update_comment_times, 15000);
+    $("textarea[name='comment']").val('');
+    if(typeof(window.init_comments.uct) !== "undefined")
+        clearInterval(window.init_comments.uct);
+    window.init_comments.uct = setInterval(window.update_comment_times, 15000);
     window.update_comment_times();
     $("a[href=#]").click(function(e){e.preventDefault();});
 <?php if(\core\db\models\user::IsSignedin()): ?>
     window.cuid = '<?php echo sha1(\core\db\models\user::GetInstance()->user_id); ?>';
-    $(".comment[data-commenter='"+window.cuid+"']")
+    $(".comment[data-commenter='"+window.cuid+"']:not(.init)")
         .find('.vote')
             .attr({'data-toggle': 'tooltip', 'title': 'You cannot vote your own stuff.'})
             .css("cursor", "default")
-            .addClass("disabled");
+            .addClass("disabled init")
+            .tooltip();
+    $('.comments-container [data-toggle="tooltip"]:not(.init)').addClass('init').attr("data-placement", 'top').tooltip();
     
-    $(".vote.vote-up:not(.disabled), .vote.vote-down:not(.disabled)").click(function(){
+    $(".vote.vote-up:not(.disabled):not(.vote-event), .vote.vote-down:not(.disabled):not(.vote-event)").click(function(){
         if($(this).parents(".comment").attr("data-commenter") === window.cuid || ($(this).hasClass("disabled") && !$(this).hasClass("voted"))) { return; }
         var _data = {
             nid: <?php echo json_encode($this->note_id) ?>,
@@ -239,9 +276,10 @@ $(document).ready(function(){
                     $(this).removeClass("disabled");
             });
         });
-    });
+    }).addClass("vote-event");
 <?php endif; ?>
-});
+};
+$(document).ready(function(){window.init_comments()});
 </script>
 <?php
     }

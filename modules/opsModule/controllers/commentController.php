@@ -17,6 +17,14 @@ class commentController extends \zinux\kernel\controller\baseController
     */
     public function newAction()
     {
+        if(!$this->request->IsPOST())
+            throw new \zinux\kernel\exceptions\invalidOperationException("Invalid request type");
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("nid", "c"), array("c" => array("is_string", "strlen")));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["nid"]));
+        $c = \core\db\models\comment::__new($this->request->params["c"], $this->request->params["nid"], \core\db\models\user::GetInstance()->user_id);
+        $cr =new \modules\opsModule\models\renderComment($this->request->params["nid"], array($c));
+        $cr->__render_prev_comments();
+        die;
     }
     /**
     * The \modules\opsModule\controllers\commentController::editAction()

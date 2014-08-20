@@ -14,17 +14,18 @@ class comment extends communicationModel
      * @param string $comment_txt The comment text
      * @param integer $note_id The note ID to comment to.
      * @param string $user_id The comment's owner's user ID
-     * @return \core\db\models\comment $this
+     * @return \core\db\models\comment The created comment
      */
-    public function __new($comment_txt, $note_id, $user_id) {
+    public static function __new($comment_txt, $note_id, $user_id) {
         $comment_txt = @trim($comment_txt);
         if(!$comment_txt || !is_string($comment_txt) || !strlen($comment_txt))
             throw new \zinux\kernel\exceptions\invalidArgumentException("The comment cannot be empty");
-        $this->comment = $comment_txt;
-        $this->note_id = $note_id;
-        $this->user_id = $user_id;
-        $this->save();
-        return $this;
+        $c = new self;
+        $c->comment = $comment_txt;
+        $c->note_id = $note_id;
+        $c->user_id = $user_id;
+        $c->save();
+        return $c;
     }
     /**
      * fetches top comments
@@ -42,7 +43,7 @@ class comment extends communicationModel
                 # the {.01} portion in the 1 factor is for when a comment voteup and votedowns are
                 # equally greater than zero the comment can be distinguished from zero voted comments
                 # by this query.
-                ->order("vote_up * 1.01 - vote_down DESC")
+                ->order("vote_up * 1.01 - vote_down DESC, created_at DESC")
                 ->offset($offset)
                 ->limit($limit);
         return self::find_by_sql($builder->to_s(), $builder->bind_values());
