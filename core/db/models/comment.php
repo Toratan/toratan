@@ -6,6 +6,9 @@ class comment extends communicationModel
     static $belongs_to = array(
         "note"
     );
+    static $has_many = array(
+       array("comment_voter", "class_name" => "comment_voter")
+    );
     /**
      * Creates new comment
      * @param string $comment_txt The comment text

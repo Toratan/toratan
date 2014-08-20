@@ -10,9 +10,7 @@ class commentController extends \zinux\kernel\controller\baseController
     * The modules\opsModule\controllers\commentController::IndexAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function IndexAction()
-    {
-    }
+    public function IndexAction() { throw new \zinux\kernel\exceptions\notFoundException; }
     /**
     * The \modules\opsModule\controllers\commentController::newAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -33,6 +31,7 @@ class commentController extends \zinux\kernel\controller\baseController
     */
     public function voteAction()
     {
+        \zinux\kernel\utilities\debug::_var($this->request->params, 1);
     }
     /**
     * The \modules\opsModule\controllers\commentController::markAction()

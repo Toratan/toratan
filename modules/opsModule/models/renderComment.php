@@ -81,7 +81,7 @@ class renderComment
 ?>
 <?php foreach($comments as $comment): ?>
 <?php list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link($comment->user_id); ?>
-<div class="comment <?php echo $comment->user_id == $cuid ? "my-comment" : "" ?>">
+<div class="comment <?php echo $comment->user_id == $cuid ? "my-comment" : "" ?>" data-commenter="<?php echo sha1($comment->user_id) ?>">
     <div class="row">
         <div class="hidden-xs col-sm-1 comment-header avatar">
             <img src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>'" height="50" width="50">
@@ -97,14 +97,18 @@ class renderComment
                 </div>
                 <div class="col-xs-12 comment-data"><?php echo $comment->comment ?></div>
                 <div class="col-xs-12 comment-footer">
-                    <a href="#" class="vote vote-up text-success"><span class="vote-up-val"><?php echo $comment->vote_up ? $comment->vote_up : "" ?></span> <span class="glyphicon glyphicon-chevron-up"></span></a>
+                    <a href="#" class="vote vote-up text-success"><span class="vote-val vote-up-val"><?php echo $comment->vote_up ? $comment->vote_up : "" ?></span> <span class="glyphicon glyphicon-chevron-up"></span></a>
                     <div class="divider"></div>
-                    <a href="#" class="vote vote-down text-danger"><span class="vote-down-val"><?php echo $comment->vote_down ? $comment->vote_down : "" ?></span> <span class="glyphicon glyphicon-chevron-down"></span></a>
+                    <a href="#" class="vote vote-down text-danger"><span class="vote-val vote-down-val"><?php echo $comment->vote_down ? $comment->vote_down : "" ?></span> <span class="glyphicon glyphicon-chevron-down"></span></a>
                     <div class="actions pull-right">
                         <ul class="list-inline">
+                            <?php if($cuid == $comment->user_id): ?>
                             <li><a href="#">Edit</a></li>
                             <li class="divider"></li>
                             <li><a href="#">Delete</a></li>
+                            <?php else: ?>
+                            <li><a href="#">Report</a></li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 </div>
@@ -151,6 +155,22 @@ $(document).ready(function(){
             .attr('data-toggle', 'tooltip')
             .css("cursor", "pointer");
     });
+    $("a[href=#]").click(function(e){e.preventDefault();});
+<?php if(\core\db\models\user::IsSignedin()): ?>
+    window.cuid = '<?php echo sha1(\core\db\models\user::GetInstance()->user_id); ?>';
+    $(".comment[data-commenter='"+window.cuid+"']")
+        .find('.vote')
+            .attr({'data-toggle': 'tooltip', 'title': 'You cannot vote your own stuff.'})
+            .css("cursor", "default")
+            .removeClass("vote vote-down vote-up");
+    $(".vote.vote-up, .vote.vote-down").click(function(){
+        if($(this).parents(".comment").attr("data-commenter") === window.cuid) { return; }
+        var current_vote = parseInt($(this).find(".vote-val:first").text());
+        if(isNaN(current_vote))
+            current_vote = 0;
+        $(this).find(".vote-val").html(current_vote + 1);
+    });
+<?php endif; ?>
 });
 </script>
 <?php
