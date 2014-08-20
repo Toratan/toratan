@@ -58,7 +58,7 @@ class message extends communicationModel
         self::delete_all(array('conditions' => array("(sender_id = ? OR receiver_id = ?) AND message_id in ($messages_id) AND deleted_id IS NOT NULL AND deleted_id != ?", $user_id, $user_id, $user_id)));
         # QUERY a update
         # NOTE: don't enject $message_id in format of *?* in the QUERY, PAR will get a pair of *'* around it and everything will be mess. $message_id is already secured in some line above.
-        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        $builder = self::getSQLBuilder();
         $builder->update(array("deleted_id" => $user_id))->where("(sender_id = ? OR receiver_id = ?) AND message_id IN ($messages_id) AND deleted_id IS NULL", $user_id, $user_id);
         self::query($builder->to_s(), $builder->bind_values());
     }

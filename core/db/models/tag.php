@@ -20,7 +20,7 @@ class tag extends baseModel
      * @return tag  The tag or NULL if not existed
      */
     public static function search($tag) {
-        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());     
+        $builder = self::getSQLBuilder();     
         $builder->select("*")->where("`tag_value` = ?", array($tag))->limit("1");
         return array_shift(self::find_by_sql($builder->to_s(), $builder->bind_values()));
     }
@@ -30,7 +30,7 @@ class tag extends baseModel
      * @return array of Tags
      */
     public static function search_similar($tag) {
-        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());     
+        $builder = self::getSQLBuilder();     
         $builder->select("*")->where("`tag_value` LIKE ?", array("%$tag%"))->limit("14");
         return self::find_by_sql($builder->to_s(), $builder->bind_values());
     }

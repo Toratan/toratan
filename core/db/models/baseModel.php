@@ -31,6 +31,13 @@ abstract class baseModel extends \ActiveRecord\Model
         return $in;
     }
     /**
+     * get sql builder according to current model of use
+     * @return \ActiveRecord\SQLBuilder
+     */
+    protected static function getSQLBuilder() {
+        return new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+    }
+    /**
      * @see \ActiveRecord\Model::find()
      */
     public static function find()

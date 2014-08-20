@@ -304,7 +304,7 @@ abstract class item extends abstractModel
         # normalize/escape the items id
         $items_id = self::escape_in_query($items_id);
         # invoke a sql builder
-        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        $builder = self::getSQLBuilder();
         # if we should flag it as trash
         switch($TRASH_OPS) {
             case self::DELETE_RESTORE:
@@ -343,7 +343,7 @@ abstract class item extends abstractModel
         # normalize/escape the items id
         $items_id = self::escape_in_query($items_id);
         # invoke a sql builder
-        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        $builder = self::getSQLBuilder();
         # validate the archive status
         switch($ARCHIVE_STATUS) {
             case self::FLAG_SET:
@@ -377,7 +377,7 @@ abstract class item extends abstractModel
         # normalize/escape the items id
         $items_id = self::escape_in_query($items_id);
         # invoke a sql builder
-        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        $builder = self::getSQLBuilder();
         # validate the share status
         switch($SHARE_STATUS) {
             case self::FLAG_SET:
@@ -405,7 +405,7 @@ abstract class item extends abstractModel
         # return on empty query
         if(!$items_id || !count($items_id)) return;
         # invoke a sql builder
-        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        $builder = self::getSQLBuilder();
         # build the query
         $builder->update(array("parent_id" => $new_parent_id))->where("owner_id = ? AND {$this->WhoAmI()}_id IN({$this->escape_in_query($items_id)})", $owner_id);
         # execute the query
@@ -423,7 +423,7 @@ abstract class item extends abstractModel
         # return on empty query
         if(!$items_id || !count($items_id)) return;
         # invoke a sql builder
-        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        $builder = self::getSQLBuilder();
         # build the query
         $builder->update(array("last_visit_at" => (new \ActiveRecord\DateTime)->__toString()))->where("owner_id = ? AND {$this->WhoAmI()}_id IN({$this->escape_in_query($items_id)})", $owner_id);
         # execute the query

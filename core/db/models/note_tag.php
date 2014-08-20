@@ -88,7 +88,7 @@ class note_tag extends baseModel
         }
         # glutize the array an fetch the string format of tag ids
         $tags_id = self::escape_in_query($tags_id);
-        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        $builder = self::getSQLBuilder();
         $builder->delete()->where("note_id = ? AND tag_id IN ($tags_id)", $note->note_id);
         self::query($builder->to_s(), $builder->bind_values());
         $note->readonly(false);
