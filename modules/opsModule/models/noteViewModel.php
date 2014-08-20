@@ -330,16 +330,60 @@ class noteViewModel
 <?php unset($get_options_links); ?>
 <?php
     }
-    public static function __renderComments(\core\db\models\note $note ,$echo = 1) {
-        if(!\core\db\models\user::IsSignedin()): ?>
-<div class="text-center" style="border: 1px solid #ddd;height: 55px;padding:15px;font-weight: bold">
-    <span class="glyphicon glyphicon-warning-sign"></span> You must <a href="/signup">Signup</a> or <a href="/signin">Signin</a> to comment.
-</div>
+    public static function __renderComments(\core\db\models\note $note) {
+?>
+<style type="text/css">
+    .comments-container {padding: 20px 40px 20px 40px}
+    .comments-container > *:not(.clearfix) {margin-bottom: 10px}
+    .comments-container .total-comment-no { font-weight: bold; font-size: large }
+    .comments-container .total-comment-no label { font-weight: bold; font-size: medium;}
+    .comments-container .prev-comment-area .comments-head {border-bottom: 2px solid #EEE;}
+    .comments-container .prev-comment-area .comments-head li{ width: 70px;padding: 5px}
+    .comments-container .prev-comment-area .comments-head li a {text-decoration: none;font-weight: bold;color:#7c7c7c}
+    .comments-container .prev-comment-area .comments-head li.active a {font-weight: bolder;color:#000}
+    .comments-container .prev-comment-area .comments-head li:not(.active) a {display: block;}
+    .comments-container .prev-comment-area .comments-head li:not(.active) a:hover{color:#5a5a5a}
+    .comments-container .prev-comment-area .comments-head li:not(.active):hover { border-bottom: 2px solid #ffcc44;}
+    .comments-container .prev-comment-area .comments-head li.active{ border-bottom: 2px solid #0088cc}
+    .comments-container .prev-comment-area .comments-head li .careta{ margin-top: 10px;margin-left: 3px;}
+    .comments-container .prev-comment-area .comments-head li:not(.active) .caret{ visibility: collapse;}
+    @media screen and (min-width:0px) and (max-width: 399px) { 
+        .comments-container .user-comment-erea .comment-signin-container .burden{ display: none}
+    }
+    
+</style>
+<div class="row">
+    <div class="col-md-push-2 col-md-8 comments-container" style="border: 1px solid #000;min-height: 100px">
+        <div  class="total-comment-no">15 <label>comments</label></div>
+        <div class="user-comment-erea" style="width: 100%">
+            <div class="row">
+<?php if(!\core\db\models\user::IsSignedin()): ?>
+                <div class="text-center col-xs-12 comment-signin-container" style="border: 1px solid #ddd;height: 55px;padding:15px;font-weight: bold">
+                    <span class="glyphicon glyphicon-warning-sign"></span> <span class="burden">You must </span><a href="/signup">Signup</a> or <a href="/signin">Signin</a> to comment.
+                </div>
 <?php else: ?>
-<div class="comment-input">
-    <textarea class="form-control" rows="4"></textarea>
+                <div class="hidden-xs col-sm-1" sstyle="height: 50px;border: 1px solid #000;padding: 0">
+                    <?php list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link(\core\db\models\user::GetInstance()->user_id); ?>
+                    <img src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>'" height="50" width="50">
+                </div>
+                <div class="col-xs-12 col-sm-11" sstyle="height: 50px;border: 1px solid #000">
+                    <textarea class="form-control" style="margin-top: -3px;max-width: 100%" placeholder="Leave a comment...."></textarea>
+                </div>
+<?php endif; ?>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="prev-comment-area">
+            <ul class="list-inline comments-head">
+                <li class="active"><a href="#">Best  <span class='caret'></span></a></li>
+                <li><a href="#">All <span class='caret'></span></a></li>
+            </ul>
+            <div style="min-height: 400px;"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
 </div>
-<?php endif;
+<?php
         
     }
     public static function __renderText($text, $echo = 1) {
