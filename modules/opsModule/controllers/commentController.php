@@ -22,7 +22,8 @@ class commentController extends \zinux\kernel\controller\baseController
         \zinux\kernel\security\security::IsSecure($this->request->params, array("nid", "c"), array("c" => array("is_string", "strlen")));
         \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["nid"]));
         $c = \core\db\models\comment::__new($this->request->params["c"], $this->request->params["nid"], \core\db\models\user::GetInstance()->user_id);
-        $cr =new \modules\opsModule\models\renderComment($this->request->params["nid"], array($c));
+        $is_owner = !is_null((new \core\db\models\note)->find($this->request->params["nid"], array("conditions" => array("owner_id = ?", \core\db\models\user::GetInstance()->user_id), "select" => "owner_id")));
+        $cr =new \modules\opsModule\models\renderComment($this->request->params["nid"], $is_owner, array($c));
         $cr->__render_prev_comments();
         die;
     }
@@ -76,7 +77,14 @@ class commentController extends \zinux\kernel\controller\baseController
                 echo json_encode(array("result" => $ar));
                 die;
             case "report":
-                break;
+                $is_owner = !is_null((new \core\db\models\note)->find($this->request->params["nid"], array("conditions" => array("owner_id = ?", \core\db\models\user::GetInstance()->user_id), "select" => "owner_id")));
+                if(!$is_owner)
+                    throw new \zinux\kernel\exceptions\invalidOperationException;
+                $ar = \core\db\models\comment::__find($this->request->params["nid"], $this->request->params["cid"]);
+                if($ar) 
+                    $ar->mark_as_spam();
+                echo json_encode(array("result" => $ar ? 1: 0));
+                die;
             default:
                 throw new \zinux\kernel\exceptions\invalidOperationException("Invalid op-type `{$this->request->params["op"]}`");
         }

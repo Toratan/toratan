@@ -10,15 +10,17 @@ class renderComment
     protected $comments;
     protected $count_of_comments;
     protected $is_more;
+    protected $is_owner;
     /**
      * Construct a comment renderer
      * @param $note_id the note's ID which the comments are belong to
      * @param array $comments array of comments
      * @param integer $count_of_comments (default: NULL) The count of total comments, if NULL passed, it will set automatically to `count($comments)`.
      */
-    public function __construct($note_id, array $comments, $count_of_comments = 0) {
+    public function __construct($note_id, $is_owner, array $comments, $count_of_comments = 0) {
         $this->note_id = $note_id;
         $this->comments = $comments;
+        $this->is_owner = $is_owner;
         if(is_null($count_of_comments))
             $count_of_comments = count($comments);
         $this->count_of_comments = $count_of_comments;
@@ -75,7 +77,7 @@ class renderComment
                                         c: $(this).val()
                                     },
                                     success: function(data) {
-                                        $(".comments").prepend(data);
+                                        $(data).hide().prependTo(".comments").fadeIn(1000);
                                         var cc = $(".total-comment-no .no").text();
                                         $(".total-comment-no .no").html(parseInt(cc) + 1);
                                         if(cc > 2)
@@ -143,7 +145,7 @@ class renderComment
                             <li><span class="divider"></span></li>
                             <?php endif; ?>
                             <li><a href="#" data-toggle="tooltip" title="Delete" class="delete-comment" op="delete">&Cross;</a></li>
-                        <?php else: ?>
+                        <?php elseif($this->is_owner): ?>
                             <li><a href="#" data-toggle="tooltip" title="Report" class="report-comment" op="report"><span class="glyphicon glyphicon-warning-sign"></span></a></li>
                         <?php endif; ?>
                         </ul>
@@ -302,7 +304,7 @@ class renderComment
         }).fail(function(xhr){
             setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
         }).always(function(){
-            setTimeout(function(){$(".comment.deleting").removeClass("deleting");}, 1000);
+            setTimeout(function(){$(".comment.deleting").removeClass("deleting").css("cursor", "default");}, 1000);
         });
     });
     $(".edit-comment:not(.com-init)").click(function(){

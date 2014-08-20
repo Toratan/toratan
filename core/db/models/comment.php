@@ -38,7 +38,7 @@ class comment extends communicationModel
         $builder = self::getSQLBuilder();
         $builder
                 ->select("*")
-                ->where("note_id = ?", $note_id)
+                ->where("note_id = ? AND marked_as = ?", $note_id, self::MARKED_AS_NORMAL)
                 # every one down-vote will erase an up votes
                 # the {.01} portion in the 1 factor is for when a comment voteup and votedowns are
                 # equally greater than zero the comment can be distinguished from zero voted comments
@@ -53,7 +53,7 @@ class comment extends communicationModel
      * @param integer $note_id The target note ID
      * @return integer The count of comments associated with the note ID 
      */
-    public static function  __fetch_count($note_id) { return self::count(array("conditions" => array("note_id = ?", $note_id))); }
+    public static function  __fetch_count($note_id) { return self::count(array("conditions" => array("note_id = ? AND marked_as = ?", $note_id, self::MARKED_AS_NORMAL))); }
     /**
      * Deletes a comment
      * @param integer $note_id The note ID to comment to.
@@ -62,4 +62,12 @@ class comment extends communicationModel
      * @return integer The affected row
      */
     public static function __delete($note_id, $comment_id, $user_id) {return self::delete_all(array("conditions"=>array("note_id = ? AND user_id = ? AND comment_id = ?", $note_id, $user_id, $comment_id)));} 
+    /**
+     * finds a comment with accurate details
+     * @param integer $note_id The note ID to comment to.
+     * @param integer $comment_id The comment ID to delete
+     * @param string $user_id The comment's owner's user ID.
+     * @return comment The found comment
+     */
+    public static function __find($note_id, $comment_id) { return self::first(array("conditions"=>array("comment_id = ? AND note_id = ?", $comment_id, $note_id))); }
 }

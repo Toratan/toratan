@@ -332,7 +332,7 @@ class noteViewModel
     public static function __renderComments(\core\db\models\note $note) {
         $comments =\core\db\models\comment::__fetch_top($note->getItemID());
         $count_of_comments = \core\db\models\comment::__fetch_count($note->getItemID());
-        $rc = new renderComment($note->getItemID(), $comments, $count_of_comments);
+        $rc = new renderComment($note->getItemID(), ($note->owner_id == \core\db\models\user::GetInstance()->user_id), $comments, $count_of_comments);
         $rc->__render_global_header();
         $rc->__render_css();
         $rc->__render_new_comment();
