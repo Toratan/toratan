@@ -20,3 +20,6 @@
 [submodule "public_html/access/js/tag-it"]
 	path = public_html/access/js/tag-it
 	url = git@github.com:aehlke/tag-it.git
+[submodule "public_html/access/js/autosize"]
+	path = public_html/access/js/autosize
+	url = git@github.com:jackmoore/autosize.git
