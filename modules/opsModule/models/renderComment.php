@@ -370,7 +370,7 @@ window.init_comments = function() {
         });
         $p.find(".comment-data").replaceWith($("textarea[name='comment']").clone());
         window.init_comment_txtbox(
-            $p.find("textarea[name='comment']").val(c).css({"max-width": "95%", "margin-left":"20px"}),
+            $p.find("textarea[name='comment']").focus().val('').val(c).css({"max-width": "95%", "margin-left":"20px"}),
             data
         );
     }).addClass("com-init");
