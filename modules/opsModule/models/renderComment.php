@@ -72,22 +72,26 @@ class renderComment
                                 nid: <?php echo json_encode($this->note_id); ?>,
                             },
                             start: function() {},
-                            always: function(){}
+                            always: function(){},
+                            fail: function() {}
                         }, obj);
                         $($item)
                             .autosize()
                             .keydown(function(e) {
                                 if ((e.keyCode === 10 || e.keyCode === 13) && e.ctrlKey) {
                                     var $this = $(this);
+                                    var val = String($($item).val()).trim();
+                                    if(val.length === 0) return;
                                     $this.attr('readonly', "true").css("cursor", "progress");
                                     obj.start();
                                     $.ajax({
                                         global: false,
                                         url: obj.url,
                                         type: "POST",
-                                        data: $.extend({}, obj.data, {c: $($item).val()}),
+                                        data: $.extend({}, obj.data, {c: val}),
                                         success: obj.success
                                     }).fail(function(xhr){
+                                        obj.fail(xhr);
                                         setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
                                     }).always(function(){
                                         obj.always();
@@ -214,6 +218,14 @@ class renderComment
     public function __render_js() {
 ?>
 <script type="text/javascript">
+window.mark_unavail_comment = function(comment) {
+    $(comment)
+        .find("[data-toggle='tooltip']").tooltip('destroy');
+    $(comment)
+        .addClass("unavail")
+        .css({"border": "3px solid #e0e0e0", "padding": "10px", "margin":"auto -10px 10px -10px", "cursor": "pointer"})
+        .attr({'data-toogle': 'tooltip', 'data-displacement': 'top', 'title': 'Currently this comment is not available!!'}).tooltip();
+};
 window.init_comments = function() {
     window.update_comment_times = function(){
         $("time.timeago").each(function(){
@@ -321,8 +333,7 @@ window.init_comments = function() {
                     else
                         $(".total-comment-no label").text("comment");
                 } else {
-                    $(".comment.deleting").css({"border": "3px solid #e0e0e0", "padding": "10px", "margin":"auto -10px 10px -10px", "cursor": "pointer"})
-                            .attr({'data-toogle': 'tooltip', 'data-displacement': 'top', 'title': 'Currently this comment is not available!!'}).addClass("not-avail").tooltip();
+                    mark_unavail_comment(".comment.deleting");
                     window.open_errorModal("<strong>&Cross; Something went wrong, please try again or reload the page.</strong>", 2000);
                 }
             }
@@ -342,7 +353,8 @@ window.init_comments = function() {
             url: "/comment/edit?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id))?>",
             data: {cid: $p.attr("data-id")},
             start: function() { $p.addClass("deleting");},
-            always: function() {$p.removeClass("deleting").find(".cancel-edit").remove();$t.fadeIn();$t.removeData("editing");},
+            always: function() {if(typeof($p.data("invalid"))==="undefined")$p.removeClass("deleting");$p.find(".cancel-edit").remove();$t.fadeIn();$t.removeData("editing");},
+            fail: function(){$p.data("invalid", 1).find('.cancel-edit').click();mark_unavail_comment($p);},
             success: function(data) {
                 $p.replaceWith(data);
                 window.init_comments();
