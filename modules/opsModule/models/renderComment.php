@@ -66,8 +66,12 @@ class renderComment
                     window.init_comment_txtbox = function($item, obj) {
                         if(typeof(obj.url) === "undefined")
                             throw "undefined url";
-                        if(typeof(obj.data) === "undefined")
-                            obj.data = {};
+                        obj = $.extend(true, {}, obj, {
+                            data: {
+                                nid: <?php echo json_encode($this->note_id); ?>,
+                            }, 
+                            always: function(){}
+                        });
                         $($item)
                             .autosize()
                             .keydown(function(e) {
@@ -78,14 +82,12 @@ class renderComment
                                         global: false,
                                         url: obj.url,
                                         type: "POST",
-                                        data: $.extend({}, obj.data, {
-                                            nid: <?php echo json_encode($this->note_id); ?>,
-                                            c: $(this).val()
-                                        }),
+                                        data: $.extend({}, obj.data, {c: $($item).val()}),
                                         success: obj.success
                                     }).fail(function(xhr){
                                         setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
                                     }).always(function(){
+                                        obj.always();
                                         $this.removeAttr('readonly').css("cursor", "initial");
                                     });
                                 }
@@ -326,19 +328,32 @@ window.init_comments = function() {
         });
     }).addClass("com-init");
     $(".edit-comment:not(.com-init)").click(function(){
+        if(typeof($(this).data("editing")) !== "undefined") return;
+        $(this).data("editing", 1);
+        var $t = $(this);
         var $p = $(this).parents(".comment");
+        var $origin = $p.find(".comment-data").clone().wrap("<p/>").parent().html();
+        var data = {
+            url: "/comment/edit?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id))?>",
+            data: {cid: $p.attr("data-id")},
+            always: function() {$p.find(".cancel-edit").remove();$t.fadeIn();$t.removeData("editing");},
+            success: function(data) {
+                $p.replaceWith(data);
+                window.init_comments();
+            }
+        };
         var c = $p.find(".comment-data").text();
+        $t.fadeOut('fast', function() {
+            $("<small class='cancel-edit'><a href='#'>Cancel</a></small>").click(function(e){
+                e.preventDefault();
+                $p.find("textarea[name='comment']").replaceWith($origin);
+                data.always();
+            }).appendTo($t.parent());
+        });
         $p.find(".comment-data").replaceWith($("textarea[name='comment']").clone());
         window.init_comment_txtbox(
             $p.find("textarea[name='comment']").val(c).css({"max-width": "95%", "margin-left":"20px"}),
-            {
-                url: "/comment/edit?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id))?>",
-                data: {cid: $p.attr("data-id")},
-                success: function(data) {
-                    $p.replaceWith(data);
-                    window.init_comments();
-                }
-            }
+            data
         );
     }).addClass("com-init");
 <?php endif; ?>
