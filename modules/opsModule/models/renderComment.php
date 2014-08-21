@@ -321,13 +321,15 @@ window.init_comments = function() {
                     else
                         $(".total-comment-no label").text("comment");
                 } else {
-                    window.open_errorModal("Something went wrong, please try again.");
+                    $(".comment.deleting").css({"border": "3px solid #e0e0e0", "padding": "10px", "margin":"auto -10px 10px -10px", "cursor": "pointer"})
+                            .attr({'data-toogle': 'tooltip', 'data-displacement': 'top', 'title': 'Currently this comment is not available!!'}).addClass("not-avail").tooltip();
+                    window.open_errorModal("<strong>&Cross; Something went wrong, please try again or reload the page.</strong>", 2000);
                 }
             }
         }).fail(function(xhr){
             setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
         }).always(function(){
-            setTimeout(function(){$(".comment.deleting").removeClass("deleting").css("cursor", "default");}, 500);
+            setTimeout(function(){$(".comment.deleting:not(.not-avail)").removeClass("deleting").css("cursor", "default");}, 500);
         });
     }).addClass("com-init");
     $(".edit-comment:not(.com-init)").click(function(){
@@ -339,7 +341,7 @@ window.init_comments = function() {
         var data = {
             url: "/comment/edit?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id))?>",
             data: {cid: $p.attr("data-id")},
-            start: function() { $p.addClass("deleting")},
+            start: function() { $p.addClass("deleting");},
             always: function() {$p.removeClass("deleting").find(".cancel-edit").remove();$t.fadeIn();$t.removeData("editing");},
             success: function(data) {
                 $p.replaceWith(data);
