@@ -38,6 +38,7 @@ class renderComment
 .comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-up.voted {color:green;font-weight: bold;border-bottom: 2px solid green}
 .comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-down.voted {color:#CC4444;font-weight: bold;border-bottom: 2px solid #CC4444}
 .comments-container .deleting {opacity:0.5;-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";filter:alpha(opacity=50);}
+.comments-container .deleting a[href="#"], .comments-container .deleting a[href="#"] + .divider, .comments-container .deleting .actions {visibility: collapse!important}
 </style>
 <?php
     }
@@ -66,18 +67,20 @@ class renderComment
                     window.init_comment_txtbox = function($item, obj) {
                         if(typeof(obj.url) === "undefined")
                             throw "undefined url";
-                        obj = $.extend(true, {}, obj, {
+                        obj = $.extend(true, {}, {
                             data: {
                                 nid: <?php echo json_encode($this->note_id); ?>,
-                            }, 
+                            },
+                            start: function() {},
                             always: function(){}
-                        });
+                        }, obj);
                         $($item)
                             .autosize()
                             .keydown(function(e) {
                                 if ((e.keyCode === 10 || e.keyCode === 13) && e.ctrlKey) {
                                     var $this = $(this);
                                     $this.attr('readonly', "true").css("cursor", "progress");
+                                    obj.start();
                                     $.ajax({
                                         global: false,
                                         url: obj.url,
@@ -324,7 +327,7 @@ window.init_comments = function() {
         }).fail(function(xhr){
             setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
         }).always(function(){
-            setTimeout(function(){$(".comment.deleting").removeClass("deleting").css("cursor", "default");}, 1000);
+            setTimeout(function(){$(".comment.deleting").removeClass("deleting").css("cursor", "default");}, 500);
         });
     }).addClass("com-init");
     $(".edit-comment:not(.com-init)").click(function(){
@@ -336,7 +339,8 @@ window.init_comments = function() {
         var data = {
             url: "/comment/edit?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id))?>",
             data: {cid: $p.attr("data-id")},
-            always: function() {$p.find(".cancel-edit").remove();$t.fadeIn();$t.removeData("editing");},
+            start: function() { $p.addClass("deleting")},
+            always: function() {$p.removeClass("deleting").find(".cancel-edit").remove();$t.fadeIn();$t.removeData("editing");},
             success: function(data) {
                 $p.replaceWith(data);
                 window.init_comments();
