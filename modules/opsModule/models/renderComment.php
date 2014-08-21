@@ -152,7 +152,7 @@ class renderComment
             <div class="row">
                 <div class="col-xs-12 commenter-detail">
                     <div class="commenter-link">
-                        <?php $commenter = \core\db\models\user::GetInstance() ?>
+                        <?php $commenter = \core\db\models\user::find($comment->user_id) ?>
                         <a href="/@<?php echo $commenter->username ?>"><?php echo $commenter->get_RealName_or_Username() ?></a>
                     </div>
                     <div class="comment-date"><time datetime="<?php echo $comment->created_at ?>" class="timeago"></time></div>
