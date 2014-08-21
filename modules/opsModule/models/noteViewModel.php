@@ -270,11 +270,10 @@ class noteViewModel
             #note-body{width: 100%!important}
             .right-sticky-container{clear: both}
         }
-        .right-sticky-container { width: 100px; margin-top: 23px }
-        .sticky-wrapper.is-sticky  .right-sticky-container { margin-top: 10px;}
+        .right-sticky-container { width: 100px; margin-top: 13px;}
     </style>
     <link rel="stylesheet" href='/access/css/social/share.css' />
-    <script type="text/javascript" src="/access/js/sticky/jquery.sticky.min.js"></script>
+    <script type="text/javascript" src="/access/js/iSticky/jquery.iSticky.min.js"></script>
     <script type="text/javascript" src="/access/css/social/share.js"></script>
 <?php endif; ?>
     <script src="/access/js/moment.min.js"></script>
@@ -309,7 +308,7 @@ class noteViewModel
         })(jQuery);
         $(document).ready(function(){
 <?php if(@$n->is_public): ?>
-            $(".right-sticky-container").sticky();
+            $(".right-sticky-container").iSticky();
 <?php endif; ?>
             window.update_time();
             prettyPrint();
