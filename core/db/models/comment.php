@@ -28,6 +28,23 @@ class comment extends communicationModel
         return $c;
     }
     /**
+     * Edits an existed comment
+     * @param string $comment_txt The comment text
+     * @param integer $note_id The note ID to comment to.
+     * @param string $user_id The comment's owner's user ID
+     * @param type $comment_txt
+     * @return \core\db\models\comment The edited comment
+     * @throws \zinux\kernel\exceptions\notFoundException If comment not found
+     */
+    public static function __edit($comment_id, $note_id, $user_id, $comment_txt) {
+        $c = self::find(array("conditions" => array("comment_id = ? AND note_id = ? AND user_id = ?", $comment_id, $note_id, $user_id)));
+        if(!$c)
+            throw new \zinux\kernel\exceptions\notFoundException("comment not found");
+        $c->comment = $comment_txt;
+        $c->save();
+        return $c;
+    }
+    /**
      * fetches top comments
      * @param integer $note_id The ID of note for loading comments
      * @param integer $offset (default: 0) The offset

@@ -34,7 +34,7 @@ class renderComment
     }
     public function __render_css() {
 ?>
-<style type="text/css">.comments-container{padding:20px 40px;border-bottom: 1px solid #e6e6e6!important;margin-bottom: 200px;}.comments-container>:not(.clearfix){margin-bottom:10px}.comments-container .avatar img{-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px}.comments-container .total-comment-no{font-weight:700;font-size:large}.comments-container .total-comment-no label{font-weight:700;font-size:medium}.comments-container .prev-comment-area .comments-head{border-bottom:2px solid #EEE;margin-bottom:20px}.comments-container .prev-comment-area .comments-head li{width:70px;padding:5px}.comments-container .prev-comment-area .comments-head li a{text-decoration:none;font-weight:700;color:#7c7c7c}.comments-container .prev-comment-area .comments-head li.active a{font-weight:bolder;color:#000}.comments-container .prev-comment-area .comments-head li a{display:block}.comments-container .prev-comment-area .comments-head li:not(.active) a:hover{color:#5a5a5a}.comments-container .prev-comment-area .comments-head li:not(.active):hover{border-bottom:2px solid #fc4}.comments-container .prev-comment-area .comments-head li.active{border-bottom:2px solid #08c}.comments-container .prev-comment-area .comments-head li .careta{margin-top:10px;margin-left:3px}.comments-container .prev-comment-area .comments-head li:not(.active) .caret{visibility:collapse}.comments-container .user-comment-erea .form-control{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.comments-container .prev-comment-area .comment{margin-bottom:30px}.comments-container .prev-comment-area .comment .comment-body{padding-left:30px}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .commenter-link{font-weight:bolder;display:inline}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date{display:inline;color:#AAA;font-weight:700;font-size:small}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date::before{content:" . "}.comments-container .prev-comment-area .comment .comment-body .comment-data{margin:10px;overflow:auto}.comments-container .prev-comment-area .comment .comment-body .comment-footer{margin:0 10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote{text-decoration:none}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote:hover{font-weight:700}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-up.disabled{color:#99C499}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-down.disabled{color:#C49999}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.disabled:not(.voted) {cursor: default}.comments-container .prev-comment-area .comment .comment-body .comment-footer>*{display:inline;padding:3px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider{padding-top:-10px}.comments-container .prev-comment-area .comment .divider::after{content:"."}.comments-container .prev-comment-area .comment .actions .list-inline>li{padding-left: 0;padding-right: 0;}.comments-container .prev-comment-area .comment .actions a{text-decoration: none;color:#08c;padding:2px}.comments-container .prev-comment-area .load-more-comment{border:1px solid #ddd;height:45px;padding-top:10px}.comments-container .prev-comment-area .comment.my-comment{border-left:2px solid #08c;padding-left:10px;margin-left:-10px}@media screen and (min-width:0) and (max-width:399px){.comments-container .user-comment-erea .comment-signin-container .burden{display:none}}@media screen and (min-width:0) and (max-width:700px){.comments-container .prev-comment-area .comment .comment-body{padding-left:10px}}
+<style type="text/css">.comments-container{padding:20px 40px;border-bottom: 1px solid #e6e6e6!important;margin-bottom: 200px;}.comments-container>:not(.clearfix){margin-bottom:10px}.comments-container .avatar img{-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px}.comments-container .total-comment-no{font-weight:700;font-size:large}.comments-container .total-comment-no label{font-weight:700;font-size:medium}.comments-container .prev-comment-area .comments-head{border-bottom:2px solid #EEE;margin-bottom:20px}.comments-container .prev-comment-area .comments-head li{width:70px;padding:5px}.comments-container .prev-comment-area .comments-head li a{text-decoration:none;font-weight:700;color:#7c7c7c}.comments-container .prev-comment-area .comments-head li.active a{font-weight:bolder;color:#000}.comments-container .prev-comment-area .comments-head li a{display:block}.comments-container .prev-comment-area .comments-head li:not(.active) a:hover{color:#5a5a5a}.comments-container .prev-comment-area .comments-head li:not(.active):hover{border-bottom:2px solid #fc4}.comments-container .prev-comment-area .comments-head li.active{border-bottom:2px solid #08c}.comments-container .prev-comment-area .comments-head li .careta{margin-top:10px;margin-left:3px}.comments-container .prev-comment-area .comments-head li:not(.active) .caret{visibility:collapse}.comments-container .form-control{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.comments-container .prev-comment-area .comment{margin-bottom:30px}.comments-container .prev-comment-area .comment .comment-body{padding-left:30px}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .commenter-link{font-weight:bolder;display:inline}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date{display:inline;color:#AAA;font-weight:700;font-size:small}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date::before{content:" . "}.comments-container .prev-comment-area .comment .comment-body .comment-data{margin:10px;overflow:auto}.comments-container .prev-comment-area .comment .comment-body .comment-footer{margin:0 10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote{text-decoration:none}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote:hover{font-weight:700}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-up.disabled{color:#99C499}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-down.disabled{color:#C49999}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.disabled:not(.voted) {cursor: default}.comments-container .prev-comment-area .comment .comment-body .comment-footer>*{display:inline;padding:3px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider{padding-top:-10px}.comments-container .prev-comment-area .comment .divider::after{content:"."}.comments-container .prev-comment-area .comment .actions .list-inline>li{padding-left: 0;padding-right: 0;}.comments-container .prev-comment-area .comment .actions a{text-decoration: none;color:#08c;padding:2px}.comments-container .prev-comment-area .load-more-comment{border:1px solid #ddd;height:45px;padding-top:10px}.comments-container .prev-comment-area .comment.my-comment{border-left:2px solid #08c;padding-left:10px;margin-left:-10px}@media screen and (min-width:0) and (max-width:399px){.comments-container .user-comment-erea .comment-signin-container .burden{display:none}}@media screen and (min-width:0) and (max-width:700px){.comments-container .prev-comment-area .comment .comment-body{padding-left:10px}}
 .comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-up.voted {color:green;font-weight: bold;border-bottom: 2px solid green}
 .comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-down.voted {color:#CC4444;font-weight: bold;border-bottom: 2px solid #CC4444}
 .comments-container .prev-comment-area .comment.deleting {opacity:0.5;-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";filter:alpha(opacity=50);}
@@ -59,38 +59,49 @@ class renderComment
         </div>
         <div class="col-xs-12 col-sm-11">
             <textarea class="form-control" name="comment" style="margin-top: -3px;max-width: 100%" placeholder="Leave a comment...."></textarea>
+            <small class="text-primary"><span class="glyphicon glyphicon-hand-right"></span> Press <code class="text-primary" style="font-weight: bold">Ctrl+Enter</code> to submit the comment.</small>
             <script src="/access/js/autosize/jquery.autosize.min.js" type="text/javascript"></script>
             <script type="text/javascript">
                 (function(){
-                    $("textarea[name='comment']")
-                        .autosize()
-                        .keydown(function(e) {
-                            if ((e.keyCode === 10 || e.keyCode === 13) && e.ctrlKey) {
-                                var $this = $(this);
-                                $this.attr('readonly', "true").css("cursor", "progress");
-                                $.ajax({
-                                    global: false,
-                                    url: "/comment/new?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id))?>",
-                                    type: "POST",
-                                    data: {
-                                        nid: <?php echo json_encode($this->note_id); ?>,
-                                        c: $(this).val()
-                                    },
-                                    success: function(data) {
-                                        $(data).hide().prependTo(".comments").fadeIn(1000);
-                                        var cc = $(".total-comment-no .no").text();
-                                        $(".total-comment-no .no").html(parseInt(cc) + 1);
-                                        if(cc > 2)
-                                            $(".total-comment-no label").text("comments");
-                                        else
-                                            $(".total-comment-no label").text("comment");
-                                        window.init_comments();
-                                    }
-                                }).fail(function(xhr){
-                                    setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
-                                }).always(function(){
-                                    $this.removeAttr('readonly').css("cursor", "initial");
-                                });
+                    window.init_comment_txtbox = function($item, obj) {
+                        if(typeof(obj.url) === "undefined")
+                            throw "undefined url";
+                        if(typeof(obj.data) === "undefined")
+                            obj.data = {};
+                        $($item)
+                            .autosize()
+                            .keydown(function(e) {
+                                if ((e.keyCode === 10 || e.keyCode === 13) && e.ctrlKey) {
+                                    var $this = $(this);
+                                    $this.attr('readonly', "true").css("cursor", "progress");
+                                    $.ajax({
+                                        global: false,
+                                        url: obj.url,
+                                        type: "POST",
+                                        data: $.extend({}, obj.data, {
+                                            nid: <?php echo json_encode($this->note_id); ?>,
+                                            c: $(this).val()
+                                        }),
+                                        success: obj.success
+                                    }).fail(function(xhr){
+                                        setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
+                                    }).always(function(){
+                                        $this.removeAttr('readonly').css("cursor", "initial");
+                                    });
+                                }
+                            });
+                    };
+                    window.init_comment_txtbox("textarea[name='comment']", {
+                        url: "/comment/new?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id))?>",
+                        success: function(data) {
+                                $(data).hide().prependTo(".comments").fadeIn(1000);
+                                var cc = $(".total-comment-no .no").text();
+                                $(".total-comment-no .no").html(parseInt(cc) + 1);
+                                if(cc > 2)
+                                    $(".total-comment-no label").text("comments");
+                                else
+                                    $(".total-comment-no label").text("comment");
+                                window.init_comments();
                             }
                         });
                 })(jQuery);
@@ -105,7 +116,7 @@ class renderComment
     public function __render_prev_comments_header() {
 ?>
 <div class="prev-comment-area">
-    <?php if(false &&$this->count_of_comments) : ?>
+    <?php if(true &&$this->count_of_comments) : ?>
     <ul class="list-inline comments-head">
         <li class="active"><a href="#">Top  <span class='caret'></span></a></li>
         <li><a href="#">All <span class='caret'></span></a></li>
@@ -151,6 +162,7 @@ class renderComment
                         </ul>
                     </div>
                 </div>
+                <div class="clearfix"></div>
                 <div class="col-xs-12 comment-data"><?php echo $comment->comment ?></div>
                 <div class="col-xs-12 comment-footer">
                     <a href="#" class="vote vote-up text-success <?php echo $vote_status === 1 ? "voted" : "" ?>">
@@ -197,7 +209,7 @@ class renderComment
     public function __render_js() {
 ?>
 <script type="text/javascript">
-    window.init_comments = function() {
+window.init_comments = function() {
     window.update_comment_times = function(){
         $("time.timeago").each(function(){
             var date = moment($(this).attr("datetime"));
@@ -213,7 +225,7 @@ class renderComment
         clearInterval(window.init_comments.uct);
     window.init_comments.uct = setInterval(window.update_comment_times, 15000);
     window.update_comment_times();
-    $("a[href=#]").click(function(e){e.preventDefault();$(this).blur();});
+    $("a[href=#]:not(.inited)").addClass("inited").click(function(e){e.preventDefault();$(this).blur();});
 <?php if(\core\db\models\user::IsSignedin()): ?>
     window.cuid = '<?php echo sha1(\core\db\models\user::GetInstance()->user_id); ?>';
     $(".comment[data-commenter='"+window.cuid+"']:not(.init)")
@@ -297,6 +309,12 @@ class renderComment
                     data.result = 0;
                 if(data.result) {
                     $(".comment.deleting").slideUp('slow', function(){$(this).remove();});
+                    var cc = $(".total-comment-no .no").text();
+                    $(".total-comment-no .no").html(parseInt(cc) - 1);
+                    if(cc > 2)
+                        $(".total-comment-no label").text("comments");
+                    else
+                        $(".total-comment-no label").text("comment");
                 } else {
                     window.open_errorModal("Something went wrong, please try again.");
                 }
@@ -306,13 +324,26 @@ class renderComment
         }).always(function(){
             setTimeout(function(){$(".comment.deleting").removeClass("deleting").css("cursor", "default");}, 1000);
         });
-    });
+    }).addClass("com-init");
     $(".edit-comment:not(.com-init)").click(function(){
-        console.log("edit");
-    });
+        var $p = $(this).parents(".comment");
+        var c = $p.find(".comment-data").text();
+        $p.find(".comment-data").replaceWith($("textarea[name='comment']").clone());
+        window.init_comment_txtbox(
+            $p.find("textarea[name='comment']").val(c).css({"max-width": "95%", "margin-left":"20px"}),
+            {
+                url: "/comment/edit?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id))?>",
+                data: {cid: $p.attr("data-id")},
+                success: function(data) {
+                    $p.replaceWith(data);
+                    window.init_comments();
+                }
+            }
+        );
+    }).addClass("com-init");
 <?php endif; ?>
 };
-$(document).ready(function(){window.init_comments()});
+$(document).ready(function(){window.init_comments();});
 </script>
 <?php
     }
