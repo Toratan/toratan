@@ -34,6 +34,9 @@ class tagit
                 document.tagit_callback($(".modal-body .myTags").val());
         });
         setTimeout(function(){
+            // it the window is opened by user we are recording the changes
+            $(window).data("tagit_change_record", true);
+            // focus on new tag input
             new_tag_focus();
             // to disable unblur submit tag event
             $(".myTags")
@@ -113,7 +116,9 @@ class tagit
                     },
                     afterTagAdded: function(event, ui) {
                         close_tag_sug();
-                        $(".myTags").data("is_changed", true);
+                        // this one is for escaping the is_change flag from initial tag-add op
+                        if(typeof($(window).data("tagit_change_record")) !== "undefined")
+                            $(".myTags").data("is_changed", true);
                     }
                 }).data('uiTagit')
                         .tagInput
