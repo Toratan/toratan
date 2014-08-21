@@ -23,3 +23,6 @@
 [submodule "public_html/access/js/autosize"]
 	path = public_html/access/js/autosize
 	url = git@github.com:jackmoore/autosize.git
+[submodule "public_html/access/js/iSticky"]
+	path = public_html/access/js/iSticky
+	url = git@github.com:noise2/jquery.iSticky.git
