@@ -131,7 +131,11 @@ $tagit->__renderCSS();
 <div id="editor-container">
     <form action="/<?php echo $this->request->action->name ?>/note/<?php echo $this->edit ? "$note_id?": "?pid=$this->pid"?><?php echo zinux\kernel\security\security::__get_uri_hash_string(array("note", $this->edit ? $note_id: $this->pid, session_id(), \core\db\models\user::GetInstance()->user_id)); ?>" method="POST" name='note'>
         <input type="hidden" name="version" value="html" />
-        <?php $tagit->__renderHTML($tags); ?>
+    <?php
+        # forge default tag based on note's route to root pattern
+        if(!strlen($tags)) { foreach($this->route as $folder) { if($folder->getItemID() === 0) continue; $tags = "$tags, {$folder->getItemTitle()}"; } }
+        $tagit->__renderHTML($tags);
+    ?>
     <?php if($this->edit) : ?>
         <input type="hidden" name="note_id" value="<?php echo $note_id ?>" />
     <?php endif; ?>
