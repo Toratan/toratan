@@ -34,10 +34,10 @@ class renderComment
     }
     public function __render_css() {
 ?>
-<style type="text/css">.comments-container{padding:20px 40px;border-bottom: 1px solid #e6e6e6!important;margin-bottom: 200px;}.comments-container>:not(.clearfix){margin-bottom:10px}.comments-container .avatar img{-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px}.comments-container .total-comment-no{font-weight:700;font-size:large}.comments-container .total-comment-no label{font-weight:700;font-size:medium}.comments-container .prev-comment-area .comments-head{border-bottom:2px solid #EEE;margin-bottom:20px}.comments-container .prev-comment-area .comments-head li{width:70px;padding:5px}.comments-container .prev-comment-area .comments-head li a{text-decoration:none;font-weight:700;color:#7c7c7c}.comments-container .prev-comment-area .comments-head li.active a{font-weight:bolder;color:#000}.comments-container .prev-comment-area .comments-head li a{display:block}.comments-container .prev-comment-area .comments-head li:not(.active) a:hover{color:#5a5a5a}.comments-container .prev-comment-area .comments-head li:not(.active):hover{border-bottom:2px solid #fc4}.comments-container .prev-comment-area .comments-head li.active{border-bottom:2px solid #08c}.comments-container .prev-comment-area .comments-head li .careta{margin-top:10px;margin-left:3px}.comments-container .prev-comment-area .comments-head li:not(.active) .caret{visibility:collapse}.comments-container .form-control{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.comments-container .prev-comment-area .comment{margin-bottom:30px}.comments-container .prev-comment-area .comment .comment-body{padding-left:30px}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .commenter-link{font-weight:bolder;display:inline}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date{display:inline;color:#AAA;font-weight:700;font-size:small}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date::before{content:" . "}.comments-container .prev-comment-area .comment .comment-body .comment-data{margin:10px;overflow:auto}.comments-container .prev-comment-area .comment .comment-body .comment-footer{margin:0 10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote{text-decoration:none}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote:hover{font-weight:700}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-up.disabled{color:#99C499}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-down.disabled{color:#C49999}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.disabled:not(.voted) {cursor: default}.comments-container .prev-comment-area .comment .comment-body .comment-footer>*{display:inline;padding:3px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider{padding-top:-10px}.comments-container .prev-comment-area .comment .divider::after{content:"."}.comments-container .prev-comment-area .comment .actions .list-inline>li{padding-left: 0;padding-right: 0;}.comments-container .prev-comment-area .comment .actions a{text-decoration: none;color:#08c;padding:2px}.comments-container .prev-comment-area .load-more-comment{border:1px solid #ddd;height:45px;padding-top:10px}.comments-container .prev-comment-area .comment.my-comment{border-left:2px solid #08c;padding-left:10px;margin-left:-10px}@media screen and (min-width:0) and (max-width:399px){.comments-container .user-comment-erea .comment-signin-container .burden{display:none}}@media screen and (min-width:0) and (max-width:700px){.comments-container .prev-comment-area .comment .comment-body{padding-left:10px}}
+<style type="text/css">.comments-container{padding:20px 40px;border-bottom: 1px solid #e6e6e6!important;margin-bottom: 200px;}.comments-container>:not(.clearfix){margin-bottom:10px}.comments-container .avatar img{-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px}.comments-container .total-comment-no{font-weight:700;font-size:large}.comments-container .total-comment-no label{font-weight:700;font-size:medium}.comments-container .prev-comment-area .comments-head{border-bottom:2px solid #EEE;margin-bottom:20px}.comments-container .prev-comment-area .comments-head li{width:70px;padding:5px}.comments-container .prev-comment-area .comments-head li a{text-decoration:none;font-weight:700;color:#7c7c7c}.comments-container .prev-comment-area .comments-head li.active a{font-weight:bolder;color:#000}.comments-container .prev-comment-area .comments-head li a{display:block}.comments-container .prev-comment-area .comments-head li:not(.active) a:hover{color:#5a5a5a}.comments-container .prev-comment-area .comments-head li:not(.active):hover{border-bottom:2px solid #fc4}.comments-container .prev-comment-area .comments-head li.active{border-bottom:2px solid #08c}.comments-container .prev-comment-area .comments-head li .careta{margin-top:10px;margin-left:3px}.comments-container .prev-comment-area .comments-head li:not(.active) .caret{visibility:collapse}.comments-container .form-control{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}.comments-container .prev-comment-area .comment{margin-bottom:30px}.comments-container .prev-comment-area .comment .comment-body{padding-left:30px}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .commenter-link{font-weight:bolder;display:inline}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date{display:inline;color:#AAA;font-weight:700;font-size:small}.comments-container .prev-comment-area .comment .comment-body .commenter-detail .comment-date::before{content:" . "}.comments-container .prev-comment-area .comment .comment-body .comment-data{margin:10px;overflow:auto}.comments-container .prev-comment-area .comment .comment-body .comment-footer{margin:0 10px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote{text-decoration:none}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote:hover{font-weight:700}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-up.disabled{color:#99C499}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-down.disabled{color:#C49999}.comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.disabled:not(.voted) {cursor: default}.comments-container .prev-comment-area .comment .comment-body .comment-footer>*{display:inline;padding:3px}.comments-container .prev-comment-area .comment .comment-body .comment-footer .divider{padding-top:-10px}.comments-container .prev-comment-area .comment .divider::after{content:"."}.comments-container .prev-comment-area .comment .actions .list-inline>li{padding-left: 0;padding-right: 0;}.comments-container .prev-comment-area .comment .actions a{text-decoration: none;color:#08c;padding:2px}.comments-container .prev-comment-area .load-more-comment-container{border:1px solid #ddd;height:45px;padding-top:10px}.comments-container .prev-comment-area .comment.my-comment{border-left:2px solid #08c;padding-left:10px;margin-left:-10px}@media screen and (min-width:0) and (max-width:399px){.comments-container .user-comment-erea .comment-signin-container .burden{display:none}}@media screen and (min-width:0) and (max-width:700px){.comments-container .prev-comment-area .comment .comment-body{padding-left:10px}}
 .comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-up.voted {color:green;font-weight: bold;border-bottom: 2px solid green}
 .comments-container .prev-comment-area .comment .comment-body .comment-footer .vote.vote-down.voted {color:#CC4444;font-weight: bold;border-bottom: 2px solid #CC4444}
-.comments-container .prev-comment-area .comment.deleting {opacity:0.5;-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";filter:alpha(opacity=50);}
+.comments-container .deleting {opacity:0.5;-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";filter:alpha(opacity=50);}
 </style>
 <?php
     }
@@ -116,10 +116,10 @@ class renderComment
     public function __render_prev_comments_header() {
 ?>
 <div class="prev-comment-area">
-    <?php if(true &&$this->count_of_comments) : ?>
+    <?php if($this->count_of_comments) : ?>
     <ul class="list-inline comments-head">
-        <li class="active"><a href="#">Top  <span class='caret'></span></a></li>
-        <li><a href="#">All <span class='caret'></span></a></li>
+        <li class="active"><a href="#" class="top-comments" op="top">Top  <span class='caret'></span></a></li>
+        <li><a href="#" class="all-comments" op="all">All <span class='caret'></span></a></li>
     </ul>
     <?php else: ?>
     <hr style="border-top: 1px solid #e6e6e6" />
@@ -190,12 +190,12 @@ class renderComment
     }
     public function __render_prev_comments_footer() {
 ?>
-        <?php if($this->is_more) : ?>
-        <div class='load-more-comment text-center'>
-            <a href="#">Load more comments.</a>
-        </div>
-        <?php endif; ?>
     </div>
+    <?php if($this->count_of_comments) : ?>
+    <div class='load-more-comment-container text-center <?php echo $this->is_more ? "" : "hidden"?>'>
+        <a href="#" class="load-more-comment">Load more comments.</a>
+    </div>
+    <?php endif; ?>
 </div>
 <?php
     }
@@ -341,6 +341,59 @@ window.init_comments = function() {
             }
         );
     }).addClass("com-init");
+<?php endif; ?>
+<?php if($this->count_of_comments): ?>
+    $(".load-more-comment:not(.head-comments-inited)").click(function(){
+        if(typeof($(this).data("init-text")) === "undefined")
+            $(this).data("init-text", $(this).html());
+        if(typeof($(this).data("nextp")) === "undefined")
+            $(this).data("nextp", 2);
+        if(typeof($(this).data("newload")) !== "undefined") $(".comments").addClass("deleting");
+        if(typeof($(this).data("loading")) !== "undefined") return;
+        $(this).data("loading", 1);
+        $(this).text("Loading ....");
+        var $this = $(this);
+        var is_more = false;
+        $.ajax({
+            global: false,
+            url: "/fetch/comment?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($this->note_id)) ?>",
+            type: "POST",
+            dataType: "json",
+            data: {
+                nid: <?php echo json_encode($this->note_id); ?>,
+                p: $(this).data("nextp"),
+                type: $(".comments-head .active a").attr("op")
+            },
+            success: function(data) {
+                $(".comments").removeClass("deleting");
+                if(typeof($this.data("newload")) !== "undefined") {
+                    $(".comments").html(data.comments);
+                    $this.removeData("newload");
+                } else {
+                    $(".comments").append(data.comments);
+                }
+                $this.data("nextp", data.nextp);
+                is_more = data.is_more;
+                window.init_comments();
+            }
+        }).fail(function(xhr){
+            setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
+        }).always(function(){
+            if(is_more)
+                $this.html($this.data("init-text"));
+            else
+                $this.parents(".load-more-comment-container").hide();
+            $this.removeData("loading").show();
+        });
+    }).addClass("head-comments-inited");
+    $(".top-comments:not(.head-comments-inited), .all-comments:not(.head-comments-inited)").click(function(){
+        if(typeof($(this).parent().data("loading")) !== "undefined" || typeof($(".load-more-comment").data("loading")) !== "undefined") return;
+        $(".comments a").off();
+        $(".comment a[href=#]").click(function(){return false;});
+        $(this).parent().addClass("active").siblings().removeClass("active");
+        $(".load-more-comment").data({"nextp": 1, "newload": 1}).hide().click();
+        $(this).parent().removeData("loading");
+    }).addClass("head-comments-inited");
 <?php endif; ?>
 };
 $(document).ready(function(){window.init_comments();});

@@ -66,6 +66,23 @@ class comment extends communicationModel
         return self::find_by_sql($builder->to_s(), $builder->bind_values());
     }
     /**
+     * fetches all comments
+     * @param integer $note_id The ID of note for loading comments
+     * @param integer $offset (default: 0) The offset
+     * @param integer $limit (default: 10) The limit for query
+     * @return array of comments
+     */
+    public static function __fetch_all($note_id, $offset = 0, $limit = 10) {
+        $builder = self::getSQLBuilder();
+        $builder
+                ->select("*")
+                ->where("note_id = ? AND marked_as = ?", $note_id, self::MARKED_AS_NORMAL)
+                ->order("created_at DESC")
+                ->offset($offset)
+                ->limit($limit);
+        return self::find_by_sql($builder->to_s(), $builder->bind_values());
+    }
+    /**
      * fetches totall count of comments bound with a note ID
      * @param integer $note_id The target note ID
      * @return integer The count of comments associated with the note ID 

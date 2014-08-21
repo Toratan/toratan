@@ -11,7 +11,7 @@ class fetchController extends \zinux\kernel\controller\baseController
     * The modules\opsModule\controllers\fetchController::IndexAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function IndexAction() { throw new \zinux\kernel\exceptions\notImplementedException; }
+    public function IndexAction() { throw new \zinux\kernel\exceptions\notFoundException; }
 
     /**
     * The \modules\opsModule\controllers\fetchController::tagsAction()
@@ -25,5 +25,41 @@ class fetchController extends \zinux\kernel\controller\baseController
         $this->view->tags = \core\db\models\tag::search_similar($this->request->params["term"]);
         $this->view->origin_term = $this->request->params["term"];
         $this->layout->SuppressLayout();
+    }
+    /**
+    * The \modules\opsModule\controllers\fetchController::commentAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function commentAction() {
+        if(!$this->request->IsPOST())
+            throw new \zinux\kernel\exceptions\accessDeniedException("invalid request type `{$_SERVER["REQUEST_METHOD"]}`");        
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("nid", "p", "type"));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["nid"]));
+        switch(strtolower($this->request->params["type"])) {
+            case "all":
+            case "top":
+                $func = "__fetch_{$this->request->params["type"]}";
+                $tops =\core\db\models\comment::$func($this->request->params["nid"], ($this->request->params["p"] - 1)* 10);
+                $is_more = !(count($tops) < 10);
+                if($is_more) {
+                    $is_more = \core\db\models\comment::__fetch_count($this->request->params["nid"]) > $this->request->params["p"] * 10;
+                }
+                $is_owner=!is_null((new \core\db\models\note)->find($this->request->params["nid"],array("conditions"=>array("owner_id = ?", \core\db\models\user::GetInstance()->user_id), "select" => "owner_id")));
+                $cr = new \modules\opsModule\models\renderComment($this->request->params["nid"], $is_owner, $tops);
+                ob_start();
+                    $cr->__render_prev_comments();
+                $tops_html =ob_get_clean();
+                echo json_encode(array(
+                    "count" => count($tops),
+                    "comments" => $tops_html,
+                    "nextp" => $this->request->params["p"] + 1,
+                    "is_more" => $is_more,
+                    "func" => "$func"
+                ));
+                die;
+            default:
+                throw new \zinux\kernel\exceptions\invalidArgumentException("invalid type `{$this->request->params["type"]}`");
+        }
+        die;
     }
 }
