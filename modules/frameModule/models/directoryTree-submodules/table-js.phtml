@@ -10,10 +10,12 @@
                 init_sort = false;
             <?php $profile =\core\db\models\profile::getInstance(); ?>
             <?php $s = $profile->getSetting("/general/directory-tree-sort-type"); ?>
-            <?php $s = ($s && is_array($s) && count($s) === 2 ? $s : array("defaultHeadIndex" => 2, "defaultHeadOrder" => 0)); ?>
+            <?php $is_valid_s = ($s && is_array($s) && count($s) === 2); ?>
+            <?php $s = ($is_valid_s ? $s : array("defaultHeadIndex" => 2, "defaultHeadOrder" => 0)); ?>
+            <?php if(!$is_valid_s) $profile->setSetting("/general/directory-tree-sort-type", $s); ?>
             var defaultHeadIndex = <?php echo $s["defaultHeadIndex"] ?>;
             var defaultHeadOrder = <?php echo $s["defaultHeadOrder"] ?>;
-            var $activeHead = 'table thead tr th.headerSortDown, table thead tr th.headerSortUp';
+            var $activeHead = 'table.sortable thead tr th.headerSortDown, table.sortable thead tr th.headerSortUp';
             if($($activeHead).length !== 0) {
                 defaultHeadIndex = $($activeHead).index();
                 defaultHeadOrder = $($activeHead).hasClass('headerSortDown') ? 0 : 1;
@@ -47,13 +49,17 @@
                 }
             }).find("th.header:not(.init)")
                     .addClass("init")
-                    .click(function() {
-                        $.ajax({
-                            global: false,
-                            type: "POST",
-                            url:  "/profile/set?<?php echo \zinux\kernel\security\security::__get_uri_hash_string() ?>",
-                            data: { keys: [ "/general/directory-tree-sort-type" ], values: [ { defaultHeadIndex: $($activeHead).index(), defaultHeadOrder: $($activeHead).hasClass('headerSortDown') ? 0 : 1 }] }
-                        });
+                    .click(function() { 
+                        clearTimeout(sto);
+                        // setting timeout, it seems there is a sync problem getting right $($activeHead).index() without timeout
+                        var sto = setTimeout(function(){
+                            $.ajax({
+                                global: false,
+                                type: "POST",
+                                url:  "/profile/set?<?php echo \zinux\kernel\security\security::__get_uri_hash_string() ?>",
+                                data: { keys: [ "/general/directory-tree-sort-type" ], values: [ { defaultHeadIndex: $($activeHead).index(), defaultHeadOrder: $($activeHead).hasClass('headerSortDown') ? 0 : 1 }] }
+                            });
+                        }, 500);
                     });
         };
         $("[name='op'][name='op']").click(function(e){
