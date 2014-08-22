@@ -96,6 +96,7 @@ class noteViewModel
         and (max-width : 500px) {
             table#title #headline{text-align: left!important}
     }
+    .breadcrumb>li+li.no-bc-slash::before {content:''!important}
 </style>
 <script type="text/javascript">
 <?php if($is_preview): ?>
@@ -110,12 +111,42 @@ class noteViewModel
                 });
     });
 <?php endif; ?>
+<?php if($is_owner) : ?>
+    window.movement_callback = function(address){
+        window.close_modal();
+        if(address.length === 0) { setTimeout(function(){ window.open_errorModal("Couldn't fetch the proper address!"); }, 500); return; }
+        var $epb = $("#note-render .breadcrumb").find("li:not(.cd)").remove().end();
+        address.reverse().forEach(function(e) {$epb.prepend($("<li>").append($("<a>").attr("data-id", e.data_id).text(e.title).attr("href", "/#!/d/"+e.data_id+".folders")));});
+    };
+    function change_path() {
+        <?php $profile =\core\db\models\profile::getInstance(); ?>
+        <?php $s = $profile->getSetting("/general/directory-tree-sort-type"); ?>
+        <?php $is_valid_s = ($s && is_array($s) && count($s) === 2); ?>
+        <?php $s = ($is_valid_s ? $s : array("defaultHeadIndex" => 2, "defaultHeadOrder" => 0)); ?>
+        $.ajax({
+            global: false,
+            type: "GET",
+            url: "/ops/move?init=1&pid=<?php echo $n->parent_id ?>",
+            data: "type=note&items[]=<?php echo itemInfo::encode($n) ?>&sort=<?php echo $s["defaultHeadIndex"] - 1?>&order=<?php echo $s["defaultHeadOrder"] ?>"+<?php echo json_encode(\zinux\kernel\security\security::__get_uri_hash_string(array("note", $n->parent_id))) ?>,
+            success: function(data){
+                window.top.open_dialogModal(data);
+            }
+        }).fail(function(xhr){
+            setTimeout(function() { window.top.open_errorModal(xhr.responseText, -1, true); }, 500);
+        }).always(function(){
+            window.top.open_waitModal(true);
+        });
+    };
+<?php endif; ?>
 </script>
 <div id="note-render">
     <ol class="breadcrumb">
         <?php $count = 0; foreach($this->view->route as $folder) : $active = count($this->view->route) == ++$count; $should_link = ($is_owner && strlen($folder->folder_title)); ?>
             <li <?php echo $active?"class='active'":""?>><?php echo $should_link ? "<a href='/#!/d/{$folder->folder_id}.".(!$active?"folders":"notes")."'>":"", $folder->folder_title, $should_link ? "</a>" : "" ?></li>
         <?php endforeach;unset($count);?>
+            <?php if($is_owner): ?>
+            <li class="pull-right no-bc-slash cd"><a href="#" onclick="change_path();return false;" data-toggle="tooltip" title="Change the path where the note will is saved.">Change</a></li>
+            <?php endif; ?>
     </ol>
     <table class="table table-responsive " id="title">
         <tbody>
