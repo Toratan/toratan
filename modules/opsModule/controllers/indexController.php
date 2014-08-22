@@ -792,7 +792,10 @@ __USE_DEFAULT:
         if(isset($this->request->params["init"]))
             $this->request->params["cpid"] = $this->request->params["pid"];
         \zinux\kernel\security\security::IsSecure($this->request->params, array("cpid"), array("items" => array("is_array", "count")));
-        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["type"], $this->request->params["pid"]));
+        $validators = array($this->request->params["type"], $this->request->params["pid"]);
+        if(isset($this->request->params["get_address_only"]))
+            $validators[] = 1;
+        \zinux\kernel\security\security::__validate_request($this->request->params, $validators);
         $items = array();
         foreach($this->request->params["items"] as $item) {
             $items[] =\modules\opsModule\models\itemInfo::decode($item)->i;

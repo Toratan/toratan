@@ -1,6 +1,7 @@
 <?php $this->edit = isset($this->edit)?$this->edit:0; ?>
 <style type="text/css">
     .note-container { width: 80%!important} 
+    .breadcrumb>li+li.no-bc-slash::before {content:''!important}
 </style>
 <div class="note-container container-fluid">
 <?php if(count($this->errors)): ?>

@@ -11,13 +11,19 @@ $get_folder_title = function(\core\db\models\folder $folder, $title_max_len = 60
         $title =substr($title, 0, $title_max_len - 5)."[...]";
     return $title;
 };
+$address = array();
 echo "<div id='move-container'>";
 echo "<ol class='breadcrumb'>";
 foreach($this->route_path as $index => $path) {
     $is_active = ($index === count($this->route_path) - 1);
-    echo "<li class='".($is_active ? "active" : "")."'>";
-    if(!$is_active) echo "<a href='#' data-id='$path->folder_id'>";
-    echo $get_folder_title($path, 30);
+    $r = new stdClass;
+    $r->is_active = $is_active;
+    $r->data_id = $path->getItemID();
+    $r->title = $get_folder_title($path, 30);
+    $address[] = $r;
+    echo "<li class='".($r->is_active ? "active" : "")."'>";
+    if(!$is_active) echo "<a href='#' data-id='$r->data_id'>";
+    echo $r->title;
     if(!$is_active)  echo "</a>";
     echo "</li>";
 }
@@ -43,6 +49,7 @@ if(!count($this->folders_list)) {
     document.self_move = <?php echo $self_move ? "true" :  "false" ?>;
     $(document).ready(function(){
         $("button[name='move-here-action']:not(.disabled)").unbind('click').click(function(){
+            <?php if(!isset($this->request->params["get_address_only"])) : ?>
             var submit_data = $.extend({}, window.movement_ajax_default_data, {cpid: <?php echo $this->current_pid ?>, submit: 1});
             window.top.open_waitModal();
             $.ajax({
@@ -51,8 +58,10 @@ if(!count($this->folders_list)) {
                 url: "/ops/move?<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($this->type, $this->origin_pid))?>",
                 data: submit_data,
                 success: function(data){
+            <?php endif; ?>
                     if(typeof(window.movement_callback) === "function")
-                        window.movement_callback();
+                        window.movement_callback(<?php echo json_encode($address) ?>);
+            <?php if(!isset($this->request->params["get_address_only"])) : ?>
                     else
                         window.location.reload();
                 }
@@ -62,6 +71,7 @@ if(!count($this->folders_list)) {
             }).always(function(){
                 window.top.open_waitModal(true);
             });
+            <?php endif; ?>
         });
     });
 </script>
@@ -92,10 +102,13 @@ if(isset($this->request->params["dive"])) return;
             $("dl.move-list [data-id], .breadcrumb a[data-id]").click(function(e){
                 e.preventDefault();
                 window.top.open_waitModal();
+                <?php $validators = array($this->type, $this->origin_pid); ?>
+                <?php if(isset($this->request->params["get_address_only"])) $validators[] = 1;?>
+                var data = {cpid: $(this).attr('data-id'), dive: 1<?php echo isset($this->request->params["get_address_only"]) ? ", get_address_only: 1" : "" ?>};
                 $.ajax({
                     global: false,
-                    url: "/ops/move?<?php echo zinux\kernel\security\security::__get_uri_hash_string(array($this->type, $this->origin_pid))?>",
-                    data: $.extend({}, window.movement_ajax_default_data, {cpid: $(this).attr('data-id'), dive: 1}),
+                    url: "/ops/move?<?php echo zinux\kernel\security\security::__get_uri_hash_string($validators)?>",
+                    data: $.extend({}, window.movement_ajax_default_data, data),
                     success: function(data){
                         $("#move-container").replaceWith(data);
                         init_movements();
