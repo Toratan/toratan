@@ -124,7 +124,6 @@ class noteViewModel
         <?php $is_valid_s = ($s && is_array($s) && count($s) === 2); ?>
         <?php $s = ($is_valid_s ? $s : array("defaultHeadIndex" => 2, "defaultHeadOrder" => 0)); ?>
         $.ajax({
-            global: false,
             type: "GET",
             url: "/ops/move?init=1&pid=<?php echo $n->parent_id ?>",
             data: "type=note&items[]=<?php echo itemInfo::encode($n) ?>&sort=<?php echo $s["defaultHeadIndex"] - 1?>&order=<?php echo $s["defaultHeadOrder"] ?>"+<?php echo json_encode(\zinux\kernel\security\security::__get_uri_hash_string(array("note", $n->parent_id))) ?>,

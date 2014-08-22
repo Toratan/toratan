@@ -74,8 +74,8 @@
         <?php $s = $profile->getSetting("/general/directory-tree-sort-type"); ?>
         <?php $is_valid_s = ($s && is_array($s) && count($s) === 2); ?>
         <?php $s = ($is_valid_s ? $s : array("defaultHeadIndex" => 2, "defaultHeadOrder" => 0)); ?>
+        window.open_waitModal();
         $.ajax({
-            global: false,
             type: "GET",
             url: "/ops/move?init=1&pid=<?php echo end($this->route)->getItemID() ?>&get_address_only=1",
             data: "type=folder&items[]=-1;1;1&sort=<?php echo $s["defaultHeadIndex"] - 1?>&order=<?php echo $s["defaultHeadOrder"] ?>"+<?php echo json_encode(zinux\kernel\security\security::__get_uri_hash_string(array("folder", end($this->route)->getItemID(), 1))) ?>,
@@ -85,7 +85,7 @@
         }).fail(function(xhr){
             setTimeout(function() { window.top.open_errorModal(xhr.responseText, -1, true); }, 500);
         }).always(function(){
-            window.top.open_waitModal(true);
+            window.open_waitModal(true);
         });
     };
     $(document).ready(function(){
