@@ -222,15 +222,6 @@ class noteViewModel
         </tbody>
     </table>
     <hr style='margin: 0'/>
-    <div id="note-body" style="width: calc(100% - 100px)" class="links-enabled pull-left"><?php 
-        # if note's pre-processed html body exists and not empty?
-        # don't render the origin body, just echo the pre-processed one!
-        # otherwise render the note's origin body.
-        echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
-    ?>
-        <div class="clearfix"></div>
-        <?php self::__renderComments($n); ?>
-    </div>
 <?php if(@$n->is_public): ?>
     <div class="pull-right right-sticky-container">
         <ul class="social-sharing" style="">
@@ -263,11 +254,20 @@ class noteViewModel
     </div>
     <style>
         @media screen and (max-width: 450px) {
-            #note-body{width: 100%!important}
-            .right-sticky-container{clear: both}
+            #note-body{width: 100%!important;clear: both}
+            .right-sticky-container.sticked{ display: none!important }
         }
         .right-sticky-container { width: 100px; margin-top: 13px;}
     </style>
+    <div id="note-body" style="width: calc(100% - 100px)" class="links-enabled pull-left"><?php 
+        # if note's pre-processed html body exists and not empty?
+        # don't render the origin body, just echo the pre-processed one!
+        # otherwise render the note's origin body.
+        echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
+    ?>
+        <div class="clearfix"></div>
+        <?php self::__renderComments($n); ?>
+    </div>
     <link rel="stylesheet" href='/access/css/social/share.css' />
     <script type="text/javascript" src="/access/js/iSticky/jquery.iSticky.min.js"></script>
     <script type="text/javascript" src="/access/css/social/share.js"></script>
