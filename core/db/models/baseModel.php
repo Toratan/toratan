@@ -82,10 +82,6 @@ abstract class baseModel extends \ActiveRecord\Model
         # check if it is an invalid
         if($this->is_invalid())
         {
-            # if it is a solo-error just throw it
-            if(count($this->errors->full_messages())==1)
-                throw new \zinux\kernel\exceptions\dbException(array_shift($this->errors->full_messages()));
-            
             # create an exception collector
             $ec = new \core\exceptions\exceptionCollection;
             foreach($this->errors->full_messages() as $error_msg)

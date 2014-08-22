@@ -351,8 +351,12 @@ class indexController extends \zinux\kernel\controller\baseController
         $item_class = "\\core\\db\\models\\$item";
         # create an instance of item
         $item_ins = new $item_class;
+        # init item value is null
         $item_value = NULL;
-        if($this->request->IsGET())
+        # flag for errors in saving items
+        $collect_get_data = false;
+__COLLECT_GET_DATA:
+        if($this->request->IsGET() || $collect_get_data)
         {
             $item_value = null;
             if(!($item_value = $this->isUsingEditorBuffer())) {
@@ -396,8 +400,10 @@ class indexController extends \zinux\kernel\controller\baseController
         # checkpoint for item body and title existance
         \zinux\kernel\security\security::IsSecure($this->request->params, array("{$item}_title", "{$item}_body"));
         # try to save into db
-        if(!($item_value = $this->save_item($item, FALSE, $item_ins, $editor_version_id)))
-            return;
+        if(!($item_value = $this->save_item($item, FALSE, $item_ins, $editor_version_id))) {
+            $collect_get_data = true;
+            goto __COLLECT_GET_DATA;
+        }
         # otherwise relocate properly
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
@@ -470,6 +476,8 @@ class indexController extends \zinux\kernel\controller\baseController
                         $this->view->pid = $this->request->params["cd"];
                     }
                     if($is_new) {
+                        if(!isset($this->view->pid))
+                            throw new \zinux\kernel\exceptions\invalidOperationException("No `PID` provided");
                         # we need to pass the edito verion too
                         $item_value = $item_ins->newItem(
                                 $this->request->params["{$item}_title"],
@@ -478,7 +486,12 @@ class indexController extends \zinux\kernel\controller\baseController
                                 $uid,
                                 $editor_version_id);
                     } else  {
+                        # an alias for no change op
                         $nc = \core\db\models\item::NOCHANGE;
+                        # if editing and pid not provided it means no `CD` op required!
+                        if(!isset($this->view->pid))
+                            # just set to don't change
+                            $this->view->pid = $nc;
                         # we need to pass the editor type as well
                         $item_value = $item_ins->edit(
                                 $this->request->GetIndexedParam(1),

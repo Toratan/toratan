@@ -11,6 +11,16 @@ class note extends item
         array('comments', "order" => "comments.created_at DESC")
     );
     /**
+     * General note validator
+     */
+    public function validate() {
+        # invoke parent validator
+        parent::validate();
+        # validate the note's body existance
+        if(!isset($this->note_body) || !\strlen($this->getItemBody()))
+            $this->errors->add("{$this->item_name}'s body", "cannot be blank.");
+    }
+    /**
      * Saves current note into database
      * @param boolean $validate Should validate?
      */
