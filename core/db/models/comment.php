@@ -51,7 +51,7 @@ class comment extends communicationModel
      * @param integer $limit (default: 10) The limit for query
      * @return array of comments
      */
-    public static function __fetch_top($note_id, $offset = 0, $limit = 10) {
+    public static function __fetch_top($note_id, $offset = 0, $limit = 40) {
         $builder = self::getSQLBuilder();
         $builder
                 ->select("*")
@@ -72,7 +72,7 @@ class comment extends communicationModel
      * @param integer $limit (default: 10) The limit for query
      * @return array of comments
      */
-    public static function __fetch_all($note_id, $offset = 0, $limit = 10) {
+    public static function __fetch_all($note_id, $offset = 0, $limit = 40) {
         $builder = self::getSQLBuilder();
         $builder
                 ->select("*")

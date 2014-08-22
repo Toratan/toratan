@@ -39,10 +39,11 @@ class fetchController extends \zinux\kernel\controller\baseController
             case "all":
             case "top":
                 $func = "__fetch_{$this->request->params["type"]}";
-                $tops =\core\db\models\comment::$func($this->request->params["nid"], ($this->request->params["p"] - 1)* 10);
-                $is_more = !(count($tops) < 10);
+                $fetch_rate = 40;
+                $tops =\core\db\models\comment::$func($this->request->params["nid"], ($this->request->params["p"] - 1) * $fetch_rate);
+                $is_more = !(count($tops) < $fetch_rate);
                 if($is_more) {
-                    $is_more = \core\db\models\comment::__fetch_count($this->request->params["nid"]) > $this->request->params["p"] * 10;
+                    $is_more = \core\db\models\comment::__fetch_count($this->request->params["nid"]) > $this->request->params["p"] * $fetch_rate;
                 }
                 $is_owner=!is_null((new \core\db\models\note)->find($this->request->params["nid"],array("conditions"=>array("owner_id = ?", \core\db\models\user::GetInstance()->user_id), "select" => "owner_id")));
                 $cr = new \modules\opsModule\models\renderComment($this->request->params["nid"], $is_owner, $tops);
