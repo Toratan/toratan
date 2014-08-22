@@ -5,6 +5,9 @@ namespace core\db\models;
  */
 abstract class item extends abstractModel
 {
+    static $belongs_to = array(
+            array("user", 'foreign_key' => 'owner_id')
+    );
     static $validates_numericality_of = array(
             array('is_public', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),
             array('is_trash', 'less_than_or_equal_to' => 1, 'greater_than_or_equal_to' => 0),

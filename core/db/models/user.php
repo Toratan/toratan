@@ -3,6 +3,11 @@ namespace core\db\models;
 
 class user extends baseModel
 {
+    static $has_many = array(
+       array("folders", 'foreign_key' => 'owner_id'), 
+       array("notes", 'foreign_key' => 'owner_id'), 
+       array("links", 'foreign_key' => 'owner_id'), 
+    );
     /**
      * Normal user type flag
      */
