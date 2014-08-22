@@ -265,11 +265,14 @@
 <?php endif; ?>
         /**
          * inits the table
-         * @param boolean is_init is this is page's init call?
+         * @param boolean is_init (default: false) is this is page's init call?
+         * @param boolean hold_checkboxes (default: false) should skip unckecking the checked checkboxes?
          */
-        window.init_table =  function(is_init) {
+        window.init_table =  function(is_init, hold_checkboxes) {
             if(typeof(is_init) === "undefined")
                 is_init = false;
+            if(typeof(hold_checkboxes) === "undefined")
+                hold_checkboxes = false;
             if(is_init)
                 window.update_menu_checkbox();
             window.plot_if_no_item_found();
@@ -279,7 +282,8 @@
             window.sort_table(is_init);
             window.trim_rows();
             window.init_links();
-            window.apply_menu_checkbox_to_items();
+            if(!hold_checkboxes)
+                window.apply_menu_checkbox_to_items();
             window.row_check_simu();
         };
         window.row_check_simu = function() {

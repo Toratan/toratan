@@ -75,7 +75,7 @@ if(!count($this->folders_list)) {
         });
         $.fn.insertAt=function(e,t){var n=this.children().size();if(e<0){e=Math.max(0,n+1+e);}this.append(t);if(e<n){this.children().eq(e).before(this.children().last());}return this;};
         var new_folder = function(){
-            if($("dl.move-list .new-folder").length) { $(this).off();console.log("ret"); return; }
+            $(this).off();
             $(this).data("ineffect", 1).addClass('disabled');
             var $n = $("<dd><input type='textbox' class='form-control' value='Untitled Folder' name='new-folder' style='display:inline;width:90%!important'/><small style='margin-left:10px;margin-top:7px;'><a class='iclose' href='#'>close</a></small><div class='clearfix'></div></dd>").addClass("new-folder").css("padding", 0);
             $this = $(this);
@@ -98,7 +98,6 @@ if(!count($this->folders_list)) {
                             window.init_movements();
                             clearout();
                             setTimeout(function(){$(".recently-created").removeClass("recently-created")}, 2500);
-                            console.log([typeof(window.apply_change), data]);
                             if(typeof(window.apply_change) === "function")
                                 window.apply_change(window.APPLY_NEW, {origin: data.html, type: "folder"});
                         }

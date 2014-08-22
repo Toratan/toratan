@@ -226,7 +226,7 @@
                     $(data.origin).hide().appendTo("#explorer-table."+data.type+"-explorer table.table").fadeIn(1500);
                     $("#explorer-table-empty").hide();
                     // init the table
-                    window.init_table();
+                    window.init_table(false, true);
                     break;
                 case window.APPLY_NAME_EDITTED:
                     // if item has been created?
@@ -279,10 +279,14 @@
                         .attr('datetime', updateTime)
                         .attr('title', updateTime);
             }
-            // tag checked items to be trackable
-            $("tr.item-checked").addClass("item-anim-tag");
-            // clear any UI applied by checking items
-            $(".check-none").click();
+            // tag checked items to be trackabl
+            if(apply_type === window.APPLY_NEW)
+                $("#explorer-table."+data.type+" tr.item-checked").addClass("item-anim-tag");
+            else {
+                $("tr.item-checked").addClass("item-anim-tag");
+                // clear any UI applied by checking items
+                $(".check-none").click();
+            }
             // animate the tagged items
             $('tr.item-anim-tag').hide().fadeIn(2000, function(){
                 // remove the tracking tag of tagged items
