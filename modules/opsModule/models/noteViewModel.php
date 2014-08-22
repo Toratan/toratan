@@ -254,7 +254,7 @@ class noteViewModel
     <hr style='margin: 0'/>
 <?php if(@$n->is_public): ?>
     <div class="pull-right right-sticky-container">
-        <ul class="social-sharing" style="">
+        <ul class="social-sharing" style="width: 100px">
             <?php  $uri = $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__.preg_replace("#^/ops#i", "", $this->view->request->GetURI()); ?>
             <li class="shareBtn sbMain">
                 <a href="#">
@@ -283,25 +283,18 @@ class noteViewModel
         </ul>
     </div>
     <style>
-        @media screen and (max-width: 450px) {
+        @media screen and (max-width: 500px) {
             #note-body{width: 100%!important;clear: both}
-            .right-sticky-container.sticked{ display: none!important }
+            .right-sticky-container.sticked{ position: static!important }
         }
-        .right-sticky-container { width: 100px; margin-top: 13px; display: none}
-        #note-body{ width: 100% }
+        .right-sticky-container {margin-top: 13px; display: block}
+        #note-body{ width: <?php echo @$n->is_public ? "75" : "100" ?>%}
     </style>
     <link rel="stylesheet" href='/access/css/social/share.css' />
     <script type="text/javascript" src="/access/js/iSticky/jquery.iSticky.min.js"></script>
     <script type="text/javascript" src="/access/css/social/share.js"></script>
 <?php endif; ?>
     <div id="note-body" class="links-enabled pull-left">
-<?php if(@$n->is_public): ?>
-    <script type="text/javascript">
-        (function(){
-            $('#note-body').animate({"width": "-=100px"}, 0, function(){$(".right-sticky-container").fadeIn();});
-        })(jQuery);
-    </script>
-<?php endif;?>
     <?php 
         # if note's pre-processed html body exists and not empty?
         # don't render the origin body, just echo the pre-processed one!
