@@ -252,66 +252,7 @@ class noteViewModel
         </tbody>
     </table>
     <hr style='margin: 0'/>
-<?php if(@$n->is_public): ?>
-    <div class="pull-right">
-        <div class="right-sticky-container">
-<?php if(false): ?>
-        <?php  $uri = $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__.preg_replace("#^/ops#i", "", $this->view->request->GetURI()); ?>
-        <ul class="social-sharing list-unstyled list-inline">
-            <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $uri ?>&t=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>" target="_blank"><img src="/access/img/flat_web_icon_set/color/Facebook.png"></a></li>
-            <li><a href="https://twitter.com/intent/tweet?source=<?php echo $uri ?>&text=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&via=toratan" target="_blank" title="Tweet"><img src="/access/img/flat_web_icon_set/color/Twitter.png"></a></li>
-            <li><a href="https://plus.google.com/share?url=<?php echo $uri ?>" target="_blank" title="Share on Google+"><img src="/access/img/flat_web_icon_set/color/Google+.png"></a></li>
-            <!--<li><a href="http://www.tumblr.com/share?v=3&u=<?php echo $uri ?>&t=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&s=<?php echo $uri ?>" target="_blank" title="Post to Tumblr"><img src="/access/img/flat_web_icon_set/color/Tumblr.png"></a></li>-->
-<!--            <li><a href="http://pinterest.com/pin/create/button/?url=<?php echo $uri ?>&description=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>" target="_blank" title="Pin it"><img src="/access/img/flat_web_icon_set/color/Pinterest.png"></a></li>-->
-            <li><a href="http://www.linkedin.com/shareArticle?mini=true&url=<?php echo $uri ?>&title=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&summary=<?php echo $n->note_summary ?>&source=<?php echo $uri ?>" target="_blank" title="Share on LinkedIn"><img src="/access/img/flat_web_icon_set/color/LinkedIn.png"></a></li>
-        </ul>
-<!--        <ul class="social-sharing" style="width: 100px">
-            <li class="shareBtn sbMain">
-                <a href="#">
-                    <span class="sIcon icon-share"></span>  
-                    SHARE
-                </a>
-            </li>
-            <li class="shareBtn animatable" id="sbTwitter">
-                <a href="http://twitter.com/share?text=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&url=<?php echo $uri ?>" target="_blank" title="Share on Twitter">
-                    <span class="sIcon icon-bird"></span>  
-                    TWEET
-                </a>
-            </li>
-            <li class="shareBtn animatable" id="sbFacebook">
-                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $uri ?>" target="_blank" title="Share on Facebook">
-                    <span class="sIcon icon-facebook-B"></span>
-                    SHARE
-                </a>
-            </li>
-            <li class="shareBtn animatable" id="sbGoogle">
-                <a href="https://plus.google.com/share?url=<?php echo $uri ?>" target="_blank" title="Share on Google+">
-                    <span class="sIcon icon-google-plus-B"></span>  
-                    SHARE
-                </a>
-            </li>
-        </ul>-->
-<?php endif; ?>
-        </div>
-    </div>
-    <style type="text/css">
-        .right-sticky-container {margin-top: 13px; display: block;}
-        #note-body{ width: <?php echo @$n->is_public ? "75" : "100" ?>%}
-        @media screen and (max-width: 500px) {
-            #note-body{width: 100%!important;clear: both}
-            .right-sticky-container.sticked{ position: static!important }
-            .right-sticky-container .social-sharing{width: 100%!important;}
-            .right-sticky-container .social-sharing>li{display: inline!important;padding: 0!important}
-        }
-        @media screen and (min-width: 501px) {
-        }
-        /*.right-sticky-container .social-sharing>li{padding: 0!important}*/
-        .right-sticky-container .social-sharing>li{padding-bottom: 3px}
-    </style>
-    <link rel="stylesheet" href='/access/css/social/share.css' />
-    <script type="text/javascript" src="/access/js/iSticky/jquery.iSticky.min.js"></script>
-    <script type="text/javascript" src="/access/css/social/share.js"></script>
-<?php endif; ?>
+    <?php self::__renderSideBar($n); ?>
     <div id="note-body" class="links-enabled pull-left">
     <?php 
         # if note's pre-processed html body exists and not empty?
@@ -372,6 +313,71 @@ class noteViewModel
     </script>
 </div>
 <?php unset($get_options_links); ?>
+<?php
+    }
+    public static function __renderSideBar(\core\db\models\note $note) {
+        $n = $note;
+?>
+<?php if(@$n->is_public): ?>
+    <div class="pull-right">
+        <div class="right-sticky-container">
+<?php if(false): ?>
+        <?php  $uri = $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__.preg_replace("#^/ops#i", "", $this->view->request->GetURI()); ?>
+        <ul class="social-sharing list-unstyled list-inline">
+            <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $uri ?>&t=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>" target="_blank"><img src="/access/img/flat_web_icon_set/color/Facebook.png"></a></li>
+            <li><a href="https://twitter.com/intent/tweet?source=<?php echo $uri ?>&text=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&via=toratan" target="_blank" title="Tweet"><img src="/access/img/flat_web_icon_set/color/Twitter.png"></a></li>
+            <li><a href="https://plus.google.com/share?url=<?php echo $uri ?>" target="_blank" title="Share on Google+"><img src="/access/img/flat_web_icon_set/color/Google+.png"></a></li>
+            <!--<li><a href="http://www.tumblr.com/share?v=3&u=<?php echo $uri ?>&t=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&s=<?php echo $uri ?>" target="_blank" title="Post to Tumblr"><img src="/access/img/flat_web_icon_set/color/Tumblr.png"></a></li>-->
+<!--            <li><a href="http://pinterest.com/pin/create/button/?url=<?php echo $uri ?>&description=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>" target="_blank" title="Pin it"><img src="/access/img/flat_web_icon_set/color/Pinterest.png"></a></li>-->
+            <li><a href="http://www.linkedin.com/shareArticle?mini=true&url=<?php echo $uri ?>&title=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&summary=<?php echo $n->note_summary ?>&source=<?php echo $uri ?>" target="_blank" title="Share on LinkedIn"><img src="/access/img/flat_web_icon_set/color/LinkedIn.png"></a></li>
+        </ul>
+<!--        <ul class="social-sharing" style="width: 100px">
+            <li class="shareBtn sbMain">
+                <a href="#">
+                    <span class="sIcon icon-share"></span>  
+                    SHARE
+                </a>
+            </li>
+            <li class="shareBtn animatable" id="sbTwitter">
+                <a href="http://twitter.com/share?text=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&url=<?php echo $uri ?>" target="_blank" title="Share on Twitter">
+                    <span class="sIcon icon-bird"></span>  
+                    TWEET
+                </a>
+            </li>
+            <li class="shareBtn animatable" id="sbFacebook">
+                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $uri ?>" target="_blank" title="Share on Facebook">
+                    <span class="sIcon icon-facebook-B"></span>
+                    SHARE
+                </a>
+            </li>
+            <li class="shareBtn animatable" id="sbGoogle">
+                <a href="https://plus.google.com/share?url=<?php echo $uri ?>" target="_blank" title="Share on Google+">
+                    <span class="sIcon icon-google-plus-B"></span>  
+                    SHARE
+                </a>
+            </li>
+        </ul>-->
+<?php endif; ?>
+        </div>
+    </div>
+    <style type="text/css">
+        .right-sticky-container {margin-top: 13px; display: block;}
+        #note-body{ width: <?php echo @$n->is_public ? "75" : "100" ?>%}
+        @media screen and (max-width: 500px) {
+            #note-body{width: 100%!important;clear: both}
+            .right-sticky-container.sticked{ position: static!important }
+            .right-sticky-container .social-sharing{width: 100%!important;}
+            .right-sticky-container .social-sharing>li{display: inline!important;padding: 0!important}
+        }
+        @media screen and (min-width: 501px) {
+        }
+        /*.right-sticky-container .social-sharing>li{padding: 0!important}*/
+        .right-sticky-container .social-sharing>li{padding-bottom: 3px}
+    </style>
+    <link rel="stylesheet" href='/access/css/social/share.css' />
+    <script type="text/javascript" src="/access/js/iSticky/jquery.iSticky.min.js"></script>
+    <script type="text/javascript" src="/access/css/social/share.js"></script>
+<?php endif; ?>
 <?php
     }
     public static function __renderComments(\core\db\models\note $note) {
