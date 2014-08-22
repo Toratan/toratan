@@ -294,9 +294,6 @@ class noteViewModel
             else console.error("`moment` not defined");
         })(jQuery);
         $(document).ready(function(){
-<?php if(@$n->is_public): ?>
-            $(".right-sticky-container").iSticky();
-<?php endif; ?>
             window.update_time();
             prettyPrint();
     <?php if(!$is_preview): ?>
@@ -321,43 +318,35 @@ class noteViewModel
 <?php if(@$n->is_public): ?>
     <div class="pull-right">
         <div class="right-sticky-container">
-<?php if(false): ?>
-        <?php  $uri = $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__.preg_replace("#^/ops#i", "", $this->view->request->GetURI()); ?>
-        <ul class="social-sharing list-unstyled list-inline">
-            <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $uri ?>&t=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>" target="_blank"><img src="/access/img/flat_web_icon_set/color/Facebook.png"></a></li>
-            <li><a href="https://twitter.com/intent/tweet?source=<?php echo $uri ?>&text=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&via=toratan" target="_blank" title="Tweet"><img src="/access/img/flat_web_icon_set/color/Twitter.png"></a></li>
-            <li><a href="https://plus.google.com/share?url=<?php echo $uri ?>" target="_blank" title="Share on Google+"><img src="/access/img/flat_web_icon_set/color/Google+.png"></a></li>
-            <!--<li><a href="http://www.tumblr.com/share?v=3&u=<?php echo $uri ?>&t=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&s=<?php echo $uri ?>" target="_blank" title="Post to Tumblr"><img src="/access/img/flat_web_icon_set/color/Tumblr.png"></a></li>-->
-<!--            <li><a href="http://pinterest.com/pin/create/button/?url=<?php echo $uri ?>&description=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>" target="_blank" title="Pin it"><img src="/access/img/flat_web_icon_set/color/Pinterest.png"></a></li>-->
-            <li><a href="http://www.linkedin.com/shareArticle?mini=true&url=<?php echo $uri ?>&title=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&summary=<?php echo $n->note_summary ?>&source=<?php echo $uri ?>" target="_blank" title="Share on LinkedIn"><img src="/access/img/flat_web_icon_set/color/LinkedIn.png"></a></li>
-        </ul>
-<!--        <ul class="social-sharing" style="width: 100px">
-            <li class="shareBtn sbMain">
-                <a href="#">
-                    <span class="sIcon icon-share"></span>  
-                    SHARE
-                </a>
-            </li>
-            <li class="shareBtn animatable" id="sbTwitter">
-                <a href="http://twitter.com/share?text=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>&url=<?php echo $uri ?>" target="_blank" title="Share on Twitter">
-                    <span class="sIcon icon-bird"></span>  
-                    TWEET
-                </a>
-            </li>
-            <li class="shareBtn animatable" id="sbFacebook">
-                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $uri ?>" target="_blank" title="Share on Facebook">
-                    <span class="sIcon icon-facebook-B"></span>
-                    SHARE
-                </a>
-            </li>
-            <li class="shareBtn animatable" id="sbGoogle">
-                <a href="https://plus.google.com/share?url=<?php echo $uri ?>" target="_blank" title="Share on Google+">
-                    <span class="sIcon icon-google-plus-B"></span>  
-                    SHARE
-                </a>
-            </li>
-        </ul>-->
-<?php endif; ?>
+            <div class='author-popular-posts'>
+                <legend>
+                    <a href='/@<?php $n->user->username ?>'><?php echo ($name = $n->user->get_RealName_or_Username(0)) ?></a>'<?php echo strtolower(substr($name, -1)) === 's' ? "" : "s"?> popular posts
+                </legend>
+                <center><img src='/access/img/config-loader.gif' id='confing-loader'/></center>
+                <script type="text/javascript">
+                    (function(){
+                        $.ajax({
+                            global: false,
+                            url: "/fetch/popular/type/notes?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($n->note_id, $n->owner_id))?>",
+                            data: {
+                                nid: <?php echo json_encode($n->note_id); ?>,
+                                uid: <?php echo json_encode($n->owner_id); ?>,
+                            },
+                            success: function(data) {
+                                if(typeof(data.html) === "undefined")
+                                    data = { html: data };
+                                $(".author-popular-posts #confing-loader").fadeOut(function(){ 
+                                    $(".author-popular-posts").append(data.html);
+                                });
+                            }
+                        }).fail(function(){
+                            $(".author-popular-posts").append("<div class='text-muted'>Failed to load popular posts</div>");
+                        }).always(function(){
+                            $(".author-popular-posts #confing-loader").fadeOut();
+                        });
+                    })(jQuery);
+                </script>
+            </div>
         </div>
     </div>
     <style type="text/css">
@@ -366,17 +355,18 @@ class noteViewModel
         @media screen and (max-width: 500px) {
             #note-body{width: 100%!important;clear: both}
             .right-sticky-container.sticked{ position: static!important }
-            .right-sticky-container .social-sharing{width: 100%!important;}
-            .right-sticky-container .social-sharing>li{display: inline!important;padding: 0!important}
         }
-        @media screen and (min-width: 501px) {
-        }
-        /*.right-sticky-container .social-sharing>li{padding: 0!important}*/
-        .right-sticky-container .social-sharing>li{padding-bottom: 3px}
+        .right-sticky-container {border: 1px solid #000;min-height: 300px;width: 270px;background-color: #F7F7F7;padding:10px}
+        .right-sticky-container *{font-size: small!important}
     </style>
     <link rel="stylesheet" href='/access/css/social/share.css' />
     <script type="text/javascript" src="/access/js/iSticky/jquery.iSticky.min.js"></script>
     <script type="text/javascript" src="/access/css/social/share.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".right-sticky-container").iSticky();
+        });
+    </script>
 <?php endif; ?>
 <?php
     }

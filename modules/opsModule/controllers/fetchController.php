@@ -7,6 +7,7 @@ namespace modules\opsModule\controllers;
  */
 class fetchController extends \zinux\kernel\controller\baseController
 {
+    public function Initiate() { parent::Initiate(); $this->layout->SuppressLayout();}
     /**
     * The modules\opsModule\controllers\fetchController::IndexAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -24,7 +25,6 @@ class fetchController extends \zinux\kernel\controller\baseController
         \zinux\kernel\security\security::IsSecure($this->request->params, array("term"));
         $this->view->tags = \core\db\models\tag::search_similar($this->request->params["term"]);
         $this->view->origin_term = $this->request->params["term"];
-        $this->layout->SuppressLayout();
     }
     /**
     * The \modules\opsModule\controllers\fetchController::commentAction()
@@ -62,5 +62,13 @@ class fetchController extends \zinux\kernel\controller\baseController
                 throw new \zinux\kernel\exceptions\invalidArgumentException("invalid type `{$this->request->params["type"]}`");
         }
         die;
+    }
+    /**
+    * The \modules\opsModule\controllers\fetchController::popularAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function popularAction()
+    {
+        
     }
 }
