@@ -42,6 +42,9 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          *      {/new} to {/ops/new}
          *      {/edit} to {/ops/edit} 
          *      {/view} to {/ops/view}
+         *      {/delete} to {/ops/delete}
+         *      {/archive} to {/ops/archive}
+         *      {/share} to {/ops/share}
          *      {/profile} to {/ops/profile}
          *      {/notifications} to {/ops/notifications}
          *      {/subscribe} to {/ops/subscribe}
@@ -50,7 +53,7 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          *      {/messages} to {/ops/messages}
          *      {/comment} to {/ops/comment}
          */
-        $this->addRoute("^/(new|edit|view|profile|notifications|follow|unfollow|goto|messages|comment|fetch)$2", "/ops/$1$2");
+        $this->addRoute("^/(new|edit|view|delete|archive|share|profile|notifications|follow|unfollow|goto|messages|comment|fetch)$2", "/ops/$1$2");
         /**
          * Routes
          *      {/ops/profile/avatar/crop} to {/ops/profile/avatar_crop}
