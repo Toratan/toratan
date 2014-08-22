@@ -45,6 +45,15 @@ class tagit
                         .unbind("blur");
         }, 600);
     }
+    function add_tags(tags, replace) {
+        if(typeof(replace) === "undefined")
+            replace = false;
+        if(replace)
+            $(".myTags").tagit("removeAll");
+        tags.forEach(function(tag) {
+            $(".myTags").tagit("createTag", tag);
+        });
+    }
     function is_tags_changed() {
         var ic = $(".myTags").data('is_changed');
         if(typeof(ic) !== "undefined" && ic)
