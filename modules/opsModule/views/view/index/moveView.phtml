@@ -73,12 +73,40 @@ if(!count($this->folders_list)) {
             });
             <?php endif; ?>
         });
+        $.fn.insertAt=function(e,t){var n=this.children().size();if(e<0){e=Math.max(0,n+1+e);}this.append(t);if(e<n){this.children().eq(e).before(this.children().last());}return this;};
+        var new_folder = function(){
+            if($("dl.move-list .new-folder").length) { $(this).off();console.log("ret"); return; }
+            $(this).data("ineffect", 1);
+            var $n = $("<dd><input type='textbox' class='form-control' value='Untitled Folder' name='new-folder' style='display:inline;width:calc(100%-36px)'/><small class='apull-right' style='margin-left:10px;margin-top:7px;'>close</small><div class='clearfix'></div></dd>").addClass("new-folder").css("padding", 0);
+            var $this = $(this).addClass('disabled');
+            $n.keydown(function(e) {
+                var clearout = function() { $("dl.move-list dd.new-folder").remove(); $this.on('click', new_folder).removeClass('disabled'); };
+                if (e.keyCode === 10 || e.keyCode === 13) {
+                    $.ajax({
+                        url: "/new/folder/?pid=<?php echo $current_folder->folder_id, \zinux\kernel\security\security::__get_uri_hash_string(array("folder", $current_folder->folder_id,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>",
+                        data: {
+                            folder_title: $(this).val()
+                        },
+                        success: function(data) { console.log(data);  clearout(); }
+                    }).fail(function(xhr){
+                        setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
+                    }).always(function(){
+                    });
+                }
+            });
+            $("dl.move-list").insertAt(1, $n);
+            setTimeout(function(){$n.find("input").select().focus();}, 600);
+        };
+        $("button[name='new-folder-action']:not(.disabled)").off('click').on('click', new_folder).click();
     });
 </script>
 <hr />
 <div class="action-btns">
-    <button class="btn btn-default btn-sm pull-left" data-dismiss="modal" onclick="delete window.movement_ajax_default_data;setTimeout(function(){$('#move-global-container').remove();}, 1000);" name="move-here-cancel">Cancel</button>
-    <button class="btn btn-primary btn-sm pull-right" type="submit" name="move-here-action">Move Here</button>
+    <button class="btn btn-default btn-sm pull-left" data-dismiss="modal" onclick="delete window.movement_ajax_default_data;setTimeout(function(){$('#move-global-container').remove();}, 1000);" name="move-here-cancel"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+    <div class="pull-right">
+    <button class="btn btn-success btn-sm" type="submit" name="new-folder-action"><span class="glyphicon glyphicon-plus"></span> Folder</button>
+    <button class="btn btn-primary btn-sm" type="submit" name="move-here-action"><span class="glyphicon glyphicon-save"></span> Move Here</button>
+    </div>
 </div>
 <?php
 echo "</div>";
@@ -125,5 +153,9 @@ if(isset($this->request->params["dive"])) return;
     })(jQuery);
 </script>
 <div class="clearfix"></div>
-<style type="text/css">@media screen and (min-height:0) and (max-height:700px){dl.move-list{max-height:300px}}@media screen and (min-height:701px) and (max-height:800px){dl.move-list{max-height:450px}}@media screen and (min-height:801px){dl.move-list{max-height:500px}}.breadcrumb li.active{color:#888}dl.move-list{overflow:auto}.action-btns button{font-weight:700}dl.move-list dd,dl.move-list dt{height:40px;padding:8px;margin:1px;vertical-align:central;cursor:pointer;overflow:hidden;word-break:break-all}dl.move-list dd:hover,dl.move-list dt:hover{background-color:#e6e6e6;border:1px solid #a5a5a5}dl.move-list .invalid-push{color:#DDD;cursor:default}dl.move-list .invalid-push:hover{border:1px solid #DDD;background-color:transparent!important}dl.move-list dd{margin-left:20px}</style>
+<style type="text/css">@media screen and (min-height:0) and (max-height:700px){dl.move-list{max-height:300px}}@media screen and (min-height:701px) and (max-height:800px){dl.move-list{max-height:450px}}@media screen and (min-height:801px){dl.move-list{max-height:500px}}.breadcrumb li.active{color:#888}dl.move-list{overflow:auto}.action-btns button{font-weight:700}dl.move-list dd,dl.move-list dt{height:40px;padding:8px;margin:1px;vertical-align:central;cursor:pointer;overflow:hidden;word-break:break-all}dl.move-list dd:hover,dl.move-list dt:hover{background-color:#e6e6e6;border:1px solid #a5a5a5}dl.move-list .invalid-push{color:#DDD;cursor:default}dl.move-list .invalid-push:hover{border:1px solid #DDD;background-color:transparent!important}dl.move-list dd{margin-left:20px}
+    
+dl.move-list dd.new-folder:hover {background-color:initial;border: initial}
+dl.move-list dd.new-folder input{border: 1px solid #66AFE9}
+</style>
 </div>
