@@ -145,26 +145,4 @@ class note extends item
         }
         return $tags;
     }
-    /**
-     * Increases the note's popularity
-     * @param boolean $auto_save (default: true) Shoud the method attempt to autosave after the assignment?
-     * @return The after increase popularity rate
-     */
-    public function increase_popularity($auto_save = 1){
-        $this->popularity += 0.1;
-        if($auto_save)
-            $this->save();
-        return $this->popularity;
-    }
-    /**
-     * Decreases the note's popularity
-     * @param boolean $auto_save (default: true) Shoud the method attempt to autosave after the assignment?
-     * @return The after decrease popularity rate
-     */
-    public function decrease_popularity($auto_save = 1){
-        $this->popularity -= 0.1;
-        if($auto_save)
-            $this->save();
-        return $this->popularity;
-    }
 }

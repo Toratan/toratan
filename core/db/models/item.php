@@ -464,6 +464,28 @@ abstract class item extends abstractModel
         return $this->fetchItems($owner_id, NULL, self::FLAG_SET, self::FLAG_UNSET, self::WHATEVER, $options);
     }
     /**
+     * Increases the item's popularity
+     * @param boolean $auto_save (default: true) Shoud the method attempt to autosave after the assignment?
+     * @return The after increase popularity rate
+     */
+    public function increase_popularity($auto_save = 1){
+        $this->popularity += 0.1;
+        if($auto_save)
+            $this->save();
+        return $this->popularity;
+    }
+    /**
+     * Decreases the items's popularity
+     * @param boolean $auto_save (default: true) Shoud the method attempt to autosave after the assignment?
+     * @return The after decrease popularity rate
+     */
+    public function decrease_popularity($auto_save = 1){
+        $this->popularity -= 0.1;
+        if($auto_save)
+            $this->save();
+        return $this->popularity;
+    }
+    /**
      * Fetches verbal route to toot from an item
      * @param string $item_id the item's ID
      * @param string $owner_id the item's owner's ID
