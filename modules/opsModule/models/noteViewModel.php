@@ -255,6 +255,7 @@ class noteViewModel
 <?php if(@$n->is_public): ?>
     <div class="pull-right">
         <div class="right-sticky-container">
+<?php if(false): ?>
         <?php  $uri = $_SERVER["REQUEST_SCHEME"]."://".__SERVER_NAME__.preg_replace("#^/ops#i", "", $this->view->request->GetURI()); ?>
         <ul class="social-sharing list-unstyled list-inline">
             <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $uri ?>&t=<?php echo urlencode(trim(substr($n->note_title, 0, 140 - strlen($uri) - 4))."...") ?>" target="_blank"><img src="/access/img/flat_web_icon_set/color/Facebook.png"></a></li>
@@ -290,6 +291,7 @@ class noteViewModel
                 </a>
             </li>
         </ul>-->
+<?php endif; ?>
         </div>
     </div>
     <style type="text/css">
