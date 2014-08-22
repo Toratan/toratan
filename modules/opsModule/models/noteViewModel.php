@@ -116,7 +116,7 @@ class noteViewModel
         window.close_modal();
         if(address.length === 0) { setTimeout(function(){ window.open_errorModal("Couldn't fetch the proper address!"); }, 500); return; }
         var $epb = $("#note-render .breadcrumb").find("li:not(.cd)").remove().end();
-        address.reverse().forEach(function(e) {$epb.prepend($("<li>").append($("<a>").attr("data-id", e.data_id).text(e.title).attr("href", "/#!/d/"+e.data_id+".folders")));});
+        address.reverse().forEach(function(e) {$epb.prepend($("<li>").append($("<a>").attr("data-id", e.data_id).text(e.title).attr("href", "/#!/d/"+e.data_id+(e.is_active ? ".notes" : ".folders"))));});
     };
     function change_path() {
         <?php $profile =\core\db\models\profile::getInstance(); ?>
@@ -358,7 +358,7 @@ class noteViewModel
                 }, undefined, false);
             });
     <?php endif; ?>
-        })(Query);
+        });
     </script>
 </div>
 <?php unset($get_options_links); ?>
