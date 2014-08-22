@@ -213,13 +213,21 @@
                 setTimeout(function() { $("#ajax-placeholder input").first().focus(); }, 500);
             }
         };
-        window.APPLY_NAME_EDITTED = "name-editted";
-        window.APPLY_REMOVE = "remove";
-        window.apply_change = function(apply_type, data, shouldUpdateTime) {
+        window.top.APPLY_NAME_EDITTED = window.APPLY_NAME_EDITTED = "name-editted";
+        window.top.APPLY_REMOVE = window.APPLY_REMOVE = "remove";
+        window.top.APPLY_NEW = window.APPLY_NEW = "new";
+        window.top.apply_change = window.apply_change = function(apply_type, data, shouldUpdateTime) {
             if(typeof(data) === "undefined") data = "";
             if(typeof(apply_type) === "undefined") apply_type = "nop";
             if(typeof(shouldUpdateTime) === "undefined") shouldUpdateTime = false;
             switch(String(apply_type).toLowerCase()) {
+                case window.APPLY_NEW:
+                    data = $.extend({}, {type: <?php echo json_encode($type) ?>}, data);
+                    $(data.origin).hide().appendTo("#explorer-table."+data.type+"-explorer table.table").fadeIn(1500);
+                    $("#explorer-table-empty").hide();
+                    // init the table
+                    window.init_table();
+                    break;
                 case window.APPLY_NAME_EDITTED:
                     // if item has been created?
                     if($("tr.item-checked td.item-checked-name a").length === 0)

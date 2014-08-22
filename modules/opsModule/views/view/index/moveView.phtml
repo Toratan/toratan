@@ -93,11 +93,14 @@ if(!count($this->folders_list)) {
                             json: 1
                         },
                         dataType: "JSON",
-                        success: function(data) { 
+                        success: function(data) {
                             $("<dd data-id='"+data.id+"'><span class='glyphicon glyphicon-folder-close'></span>&nbsp;&nbsp;"+data.title+"</dd>").addClass("recently-created").insertAfter("dl.move-list dt");
                             window.init_movements();
                             clearout();
                             setTimeout(function(){$(".recently-created").removeClass("recently-created")}, 2500);
+                            console.log([typeof(window.apply_change), data]);
+                            if(typeof(window.apply_change) === "function")
+                                window.apply_change(window.APPLY_NEW, {origin: data.html, type: "folder"});
                         }
                     }).fail(function(xhr){
                         window.close_modal();

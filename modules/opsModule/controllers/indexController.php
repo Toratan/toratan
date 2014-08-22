@@ -246,9 +246,12 @@ class indexController extends \zinux\kernel\controller\baseController
         if(!($item_value = $this->save_item($item, TRUE, $item_ins, $editor_version_id)))
             return;
         if(isset($this->request->params["ajax"])) {
-            if(!isset($this->request->params["json"])) {
+            ob_start();
                 $dt = new \modules\frameModule\models\directoryTree($this->request);
-                echo $dt->plotTableRow($item_value, strtolower($this->request->GetIndexedParam(0)), $item_value->parent_id, 1);
+                $dt->plotTableRow($item_value, strtolower($this->request->GetIndexedParam(0)), $item_value->parent_id, 1);
+            $item_html = ob_get_clean();
+            if(!isset($this->request->params["json"])) {
+                echo $item_html;
             } else {
                 $o = array(
                     "id" => @$item_value->getItemID(),
@@ -260,7 +263,8 @@ class indexController extends \zinux\kernel\controller\baseController
                     "parent" => @$item_value->parent_id,
                     "created" => @$item_value->created_at->format(),
                     "updated" => @$item_value->updated_at->format(),
-                    "owned_by" => @$item_value->owner_id
+                    "owned_by" => @$item_value->owner_id,
+                    "html" => $item_html
                 );
                 echo json_encode($o);
             }

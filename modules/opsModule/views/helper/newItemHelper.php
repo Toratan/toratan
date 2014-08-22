@@ -28,10 +28,7 @@ class newItemHelper {
     <?php else: ?>
                             // unbind the success method to ignore the general result output
                             $(window).unbind('ajaxSuccess');
-                            $(data).hide().appendTo("#explorer-table.<?php echo $target_type ?>-explorer table.table").fadeIn(1500);
-                            $("#explorer-table-empty").hide();
-                            // init the table
-                            window.init_table();
+                            window.apply_change(window.APPLY_NEW, {origin: data, type: <?php echo json_encode($target_type) ?>});
                             // set a timeout(50ms) for re-binding the ajax success method
                             setTimeout(function() { $(window).ajaxSuccess(window.ajax_success); }, 50);
     <?php endif; ?>
