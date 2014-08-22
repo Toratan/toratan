@@ -28,7 +28,7 @@ class renderComment
     }
     public function __render_global_header() {
 ?>
-<div class="row">
+<div class="row" style="margin-top: 30px;padding-top:30px;border-top: 1px solid #DDD">
     <div class="col-md-push-2 col-md-8 comments-container">
 <?php
     }

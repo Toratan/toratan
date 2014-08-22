@@ -40,7 +40,7 @@ class noteViewModel
     else
         $tags = $n->tags;
     $author_link = "/profile/{$writer->user_id}";
-    $cURL = $this->view->request->getURI();
+    $cURL = preg_replace("#^/ops#i", "", $this->view->request->getURI());
     $is_owner = (\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id);
     $get_options_links = function(\core\db\models\note $note, $type, $cURL) use($is_preview){
         if($is_preview) return "#";
