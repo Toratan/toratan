@@ -52,7 +52,7 @@ if(!count($this->folders_list)) {
             $("button[name='move-here-action']:not(.disabled)").unbind('click').click(function(){
                 <?php if(!isset($this->request->params["get_address_only"])) : ?>
                 var submit_data = $.extend({}, window.movement_ajax_default_data, {cpid: <?php echo $this->current_pid ?>, submit: 1});
-                window.top.open_waitModal();
+                window.disable_links();
                 $.ajax({
                     global: false,
                     type: "POST",
@@ -70,6 +70,7 @@ if(!count($this->folders_list)) {
                     window.top.close_modal();
                     setTimeout(function() { window.top.open_errorModal(xhr.responseText, -1, true); setTimeout(function(){ window.location.reload(); }, 2500);}, 500);
                 }).always(function(){
+                    window.disable_links(false);
                     window.top.open_waitModal(true);
                 });
                 <?php endif; ?>
@@ -144,9 +145,11 @@ if(isset($this->request->params["dive"])) return;
             if(typeof(do_disable) === "undefined") do_disable = true;
             if(do_disable) {
                 $("#move-global-container").addClass("disabled");
-                $("#move-global-container a, #move-global-container button").unbind('click').click(function(e){e.preventDefault()});
+                $("#move-global-container button[data-dismiss='modal']").fadeOut();
+                $("#move-global-container a, #move-global-container button").unbind('click').click(function(e){e.preventDefault();});
             } else {
                 $("#move-global-container").removeClass("disabled");
+                $("#move-global-container button[data-dismiss='modal']").fadeIn();
                 window.init_movements_action();
                 window.init_movements_link();
             }
