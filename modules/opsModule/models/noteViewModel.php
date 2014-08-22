@@ -289,8 +289,13 @@ class noteViewModel
             .right-sticky-container.sticked{ display: none!important }
         }
         .right-sticky-container { width: 100px; margin-top: 13px;}
+        .note-body{width: calc(100% - 100px)}
     </style>
-    <div id="note-body" style="width: calc(100% - 100px)" class="links-enabled pull-left"><?php 
+    <link rel="stylesheet" href='/access/css/social/share.css' />
+    <script type="text/javascript" src="/access/js/iSticky/jquery.iSticky.min.js"></script>
+    <script type="text/javascript" src="/access/css/social/share.js"></script>
+<?php endif; ?>
+    <div id="note-body" class="links-enabled pull-left"><?php 
         # if note's pre-processed html body exists and not empty?
         # don't render the origin body, just echo the pre-processed one!
         # otherwise render the note's origin body.
@@ -299,10 +304,6 @@ class noteViewModel
         <div class="clearfix"></div>
         <?php self::__renderComments($n); ?>
     </div>
-    <link rel="stylesheet" href='/access/css/social/share.css' />
-    <script type="text/javascript" src="/access/js/iSticky/jquery.iSticky.min.js"></script>
-    <script type="text/javascript" src="/access/css/social/share.js"></script>
-<?php endif; ?>
     <script src="/access/js/moment.min.js"></script>
     <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
     <script type="text/javascript" src="/access/google-code-prettify/prettify.js"></script>
