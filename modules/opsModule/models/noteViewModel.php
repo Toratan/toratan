@@ -288,14 +288,22 @@ class noteViewModel
             #note-body{width: 100%!important;clear: both}
             .right-sticky-container.sticked{ display: none!important }
         }
-        .right-sticky-container { width: 100px; margin-top: 13px;}
-        .note-body{width: calc(100% - 100px)}
+        .right-sticky-container { width: 100px; margin-top: 13px; display: none}
+        #note-body{ width: 100% }
     </style>
     <link rel="stylesheet" href='/access/css/social/share.css' />
     <script type="text/javascript" src="/access/js/iSticky/jquery.iSticky.min.js"></script>
     <script type="text/javascript" src="/access/css/social/share.js"></script>
 <?php endif; ?>
-    <div id="note-body" class="links-enabled pull-left"><?php 
+    <div id="note-body" class="links-enabled pull-left">
+<?php if(@$n->is_public): ?>
+    <script type="text/javascript">
+        (function(){
+            $('#note-body').animate({"width": "-=100px"}, 0, function(){$(".right-sticky-container").fadeIn();});
+        })(jQuery);
+    </script>
+<?php endif;?>
+    <?php 
         # if note's pre-processed html body exists and not empty?
         # don't render the origin body, just echo the pre-processed one!
         # otherwise render the note's origin body.
@@ -350,7 +358,7 @@ class noteViewModel
                 }, undefined, false);
             });
     <?php endif; ?>
-        });
+        })(Query);
     </script>
 </div>
 <?php unset($get_options_links); ?>

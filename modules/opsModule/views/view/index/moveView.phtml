@@ -76,28 +76,42 @@ if(!count($this->folders_list)) {
         $.fn.insertAt=function(e,t){var n=this.children().size();if(e<0){e=Math.max(0,n+1+e);}this.append(t);if(e<n){this.children().eq(e).before(this.children().last());}return this;};
         var new_folder = function(){
             if($("dl.move-list .new-folder").length) { $(this).off();console.log("ret"); return; }
-            $(this).data("ineffect", 1);
-            var $n = $("<dd><input type='textbox' class='form-control' value='Untitled Folder' name='new-folder' style='display:inline;width:calc(100%-36px)'/><small class='apull-right' style='margin-left:10px;margin-top:7px;'>close</small><div class='clearfix'></div></dd>").addClass("new-folder").css("padding", 0);
-            var $this = $(this).addClass('disabled');
-            $n.keydown(function(e) {
-                var clearout = function() { $("dl.move-list dd.new-folder").remove(); $this.on('click', new_folder).removeClass('disabled'); };
+            $(this).data("ineffect", 1).addClass('disabled');
+            var $n = $("<dd><input type='textbox' class='form-control' value='Untitled Folder' name='new-folder' style='display:inline;width:90%!important'/><small style='margin-left:10px;margin-top:7px;'><a class='iclose' href='#'>close</a></small><div class='clearfix'></div></dd>").addClass("new-folder").css("padding", 0);
+            $this = $(this);
+            var clearout = function() { $("dl.move-list dd.new-folder").remove(); $this.on('click', new_folder).removeClass('disabled'); return false;};
+            $n.find('input[name=new-folder]').keydown(function(e) {
                 if (e.keyCode === 10 || e.keyCode === 13) {
+                    $(this).attr("readonly", "true");
                     $.ajax({
+                        global: false,
                         url: "/new/folder/?pid=<?php echo $current_folder->folder_id, \zinux\kernel\security\security::__get_uri_hash_string(array("folder", $current_folder->folder_id,  session_id(),  \core\db\models\user::GetInstance()->user_id))?>",
+                        type: "POST",
                         data: {
-                            folder_title: $(this).val()
+                            folder_title: $(this).val(),
+                            ajax: 1,
+                            json: 1
                         },
-                        success: function(data) { console.log(data);  clearout(); }
+                        dataType: "JSON",
+                        success: function(data) { 
+                            $("<dd data-id='"+data.id+"'><span class='glyphicon glyphicon-folder-close'></span>&nbsp;&nbsp;"+data.title+"</dd>").addClass("recently-created").insertAfter("dl.move-list dt");
+                            window.init_movements();
+                            clearout();
+                            setTimeout(function(){$(".recently-created").removeClass("recently-created")}, 2500);
+                        }
                     }).fail(function(xhr){
+                        window.close_modal();
                         setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
                     }).always(function(){
+                        $(this).removeAttr("readonly");
                     });
                 }
             });
             $("dl.move-list").insertAt(1, $n);
-            setTimeout(function(){$n.find("input").select().focus();}, 600);
+            $('dl.move-list .new-folder .iclose').click(clearout);
+            setTimeout(function(){$n.find("input").select().focus();}, 200);
         };
-        $("button[name='new-folder-action']:not(.disabled)").off('click').on('click', new_folder).click();
+        $("button[name='new-folder-action']:not(.disabled)").off('click').on('click', new_folder);
     });
 </script>
 <hr />
@@ -121,7 +135,7 @@ if(isset($this->request->params["dive"])) return;
                     order: <?php echo json_encode($this->order) ?>,
                     sort: <?php echo json_encode($this->sort) ?>
                 };
-        var init_movements = function() {
+        window.init_movements = function() {
             $('[data-toggle="tooltip"]').tooltip();
             if(typeof(document.self_move) !== "undefined" && document.self_move)
                 $("button[name='move-here-action']").addClass("disabled");
@@ -157,5 +171,6 @@ if(isset($this->request->params["dive"])) return;
     
 dl.move-list dd.new-folder:hover {background-color:initial;border: initial}
 dl.move-list dd.new-folder input{border: 1px solid #66AFE9}
+dl.move-list dd.recently-created {font-weight: bold}
 </style>
 </div>

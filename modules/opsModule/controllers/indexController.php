@@ -236,7 +236,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 break;
         }
         # checkpoint for item body and title existance
-        \zinux\kernel\security\security::IsSecure($this->request->params, array("{$item}_title", "{$item}_body"));
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("{$item}_title", "{$item}_body"), array("{$item}_title" => "strlen", "{$item}_body" => "strlen"));
         # generate a proper handler for item creatation
         $item_class = "\\core\\db\\models\\$item";
         # invoke an instance of item handler
@@ -246,8 +246,24 @@ class indexController extends \zinux\kernel\controller\baseController
         if(!($item_value = $this->save_item($item, TRUE, $item_ins, $editor_version_id)))
             return;
         if(isset($this->request->params["ajax"])) {
-            $dt = new \modules\frameModule\models\directoryTree($this->request);
-            echo $dt->plotTableRow($item_value, strtolower($this->request->GetIndexedParam(0)), $item_value->parent_id, 1);
+            if(!isset($this->request->params["json"])) {
+                $dt = new \modules\frameModule\models\directoryTree($this->request);
+                echo $dt->plotTableRow($item_value, strtolower($this->request->GetIndexedParam(0)), $item_value->parent_id, 1);
+            } else {
+                $o = array(
+                    "id" => @$item_value->getItemID(),
+                    "title" => @$item_value->getItemTitle(),
+                    "body" => @$item_value->getItemBody(),
+                    "shared" => @$item_value->is_public,
+                    "archived" => @$item_value->is_archive,
+                    "trashed" => @$item_value->is_trash,
+                    "parent" => @$item_value->parent_id,
+                    "created" => @$item_value->created_at->format(),
+                    "updated" => @$item_value->updated_at->format(),
+                    "owned_by" => @$item_value->owner_id
+                );
+                echo json_encode($o);
+            }
             exit;
         }
         # otherwise relocate properly
@@ -398,7 +414,7 @@ __COLLECT_GET_DATA:
                 break;
         }
         # checkpoint for item body and title existance
-        \zinux\kernel\security\security::IsSecure($this->request->params, array("{$item}_title", "{$item}_body"));
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("{$item}_title", "{$item}_body"), array("{$item}_title" => "strlen", "{$item}_body" => "strlen"));
         # try to save into db
         if(!($item_value = $this->save_item($item, FALSE, $item_ins, $editor_version_id))) {
             $collect_get_data = true;
