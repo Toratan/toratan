@@ -42,10 +42,6 @@ class noteViewModel
     $author_link = "/profile/{$writer->user_id}";
     $cURL = $this->view->request->getURI();
     $is_owner = (\core\db\models\user::IsSignedin()  && $writer->user_id == \core\db\models\user::GetInstance()->user_id);
-    # if the note is in root?    
-    if(count($this->view->route) > 1)
-        # remove the root title(we don't want to have ROOT in html, it's pretty in this way)
-        $this->view->route[0]->folder_title = "";
     $get_options_links = function(\core\db\models\note $note, $type, $cURL) use($is_preview){
         if($is_preview) return "#";
         $uri = '';

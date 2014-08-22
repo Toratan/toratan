@@ -54,6 +54,7 @@ class link extends item
      * @param string $owner_id the link's owner id
      * @param string $title string the link's title
      * @param string $body the link's body
+     * @param string $parent_id the item's new parent ID, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @param boolean $is_public should it be public or not, pass '<b>link::NOCHANGE</b>' to don't chnage
      * @param boolean $is_trash should it be trashed or not, pass '<b>link::NOCHANGE</b>' to don't chnage
      * @param boolean $is_archive should it be archived or not, pass '<b>link::NOCHANGE</b>' to don't chnage
@@ -62,11 +63,10 @@ class link extends item
      * @return link the create link
      */
     public function edit($link_id, $owner_id, $title, $body,
-            $is_public = self::NOCHANGE, $is_trash = self::NOCHANGE,
-            $is_archive = self::NOCHANGE) {
+            $parent_id = self::NOCHANGE, $is_public = self::NOCHANGE,
+            $is_trash = self::NOCHANGE, $is_archive = self::NOCHANGE) {
         // validate link's body
         $this->validateBody($body);
-        return parent::edit($link_id, $owner_id, $title, $body, $is_public, $is_trash,
-                $is_archive);
+        return parent::edit($link_id, $owner_id, $title, $body, $parent_id, $is_public, $is_trash, $is_archive);
     }
 }

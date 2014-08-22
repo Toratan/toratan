@@ -52,6 +52,7 @@ class note extends item
      * @param string $owner_id the item's owner id
      * @param string $title string the item's title
      * @param string $body the item's body
+     * @param string $parent_id the item's new parent ID, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @param boolean $is_public should it be public or not, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @param boolean $is_trash should it be trashed or not, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @param boolean $is_archive should it be archived or not, pass '<b>item::NOCHANGE</b>' to don't chnage
@@ -64,6 +65,7 @@ class note extends item
             $owner_id,
             $title,
             $body,
+            $parent_id = self::NOCHANGE,
             $is_public = self::NOCHANGE,
             $is_trash = self::NOCHANGE,
             $is_archive = self::NOCHANGE,
@@ -71,7 +73,7 @@ class note extends item
     {
         if(!is_numeric($editor_type) || $editor_type < 0)
             throw new \zinux\kernel\exceptions\invalidArgumentException("The `editor type` should be unsigned numeric!");
-        $note = parent::edit($item_id, $owner_id, $title, $body, $is_public, $is_trash, $is_archive);
+        $note = parent::edit($item_id, $owner_id, $title, $body, $parent_id, $is_public, $is_trash, $is_archive);
         if($editor_type != self::NOCHANGE)
             $note->editor_type = $editor_type;
         $note->save();

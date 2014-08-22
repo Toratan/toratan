@@ -110,7 +110,7 @@
         });
         function anything_changed() {
             if(<?php echo json_encode($title) ?> !== String($("#editor-title").val()).replace(/"/ig, "&quot;")) return true;
-            if(is_tags_changed()) return true;
+            if(is_tags_changed() || $("form[name='note'] input[name='cd']").length) return true;
             return <?php echo @$this->is_using_buffer? "true || " : ""  ?>window.editor.session.getUndoManager().isClean() !== true;
         };
         window.saveAPI = function() {

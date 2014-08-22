@@ -460,6 +460,15 @@ class indexController extends \zinux\kernel\controller\baseController
                     }
                     break;
                 case "note":
+                    # if we are changing the parent directory
+                    if(isset($this->request->params["cd"])) {
+                        # validate the parent directory
+                        if(!\core\db\models\folder::exists(array("conditions" => array("folder_id = ? AND owner_id = ?", $this->request->params["cd"], $uid))))
+                            throw new \zinux\kernel\exceptions\accessDeniedException("The `cd` argument is not found or accessed denied.");
+                        # if we reach here, it means we are good to go with CD op
+                        # re-assign the origin parent ID
+                        $this->view->pid = $this->request->params["cd"];
+                    }
                     if($is_new) {
                         # we need to pass the edito verion too
                         $item_value = $item_ins->newItem(
@@ -476,6 +485,7 @@ class indexController extends \zinux\kernel\controller\baseController
                                 $uid,
                                 $this->request->params["{$item}_title"],
                                 $this->request->params["{$item}_body"],
+                                $this->view->pid,
                                 $nc, $nc, $nc,
                                 $editor_version_id);
                     }
@@ -555,8 +565,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 foreach($e->getCollection() as $exception)
                     $this->view->errors[] = $exception->getMessage();
             else
-                # fetch the message
-                $this->view->errors[] = $e->getMessage();
+                throw $e;
             # resore back the values to views
             $this->view->values["{$item}_title"] = $this->request->params["{$item}_title"];
             $this->view->values["{$item}_body"] = $this->request->params["{$item}_body"];

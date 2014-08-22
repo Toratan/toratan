@@ -253,6 +253,7 @@ abstract class item extends abstractModel
      * @param string $owner_id the item's owner id
      * @param string $title string the item's title
      * @param string $body the item's body
+     * @param string $parent_id the item's new parent ID, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @param boolean $is_public should it be public or not, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @param boolean $is_trash should it be trashed or not, pass '<b>item::NOCHANGE</b>' to don't chnage
      * @param boolean $is_archive should it be archived or not, pass '<b>item::NOCHANGE</b>' to don't chnage
@@ -264,6 +265,7 @@ abstract class item extends abstractModel
             $owner_id,
             $title,
             $body,
+            $parent_id = self::NOCHANGE,
             $is_public = self::NOCHANGE,
             $is_trash = self::NOCHANGE,
             $is_archive = self::NOCHANGE) {
@@ -273,6 +275,9 @@ abstract class item extends abstractModel
         $item->{"{$this->item_name}_title"} = $title;
         # set the body
         $item->{"{$this->item_name}_body"} = $body;
+        # modify the parent ID of the item if necessary
+        if($parent_id!=self::NOCHANGE)
+            $item->parent_id = $parent_id;
         # modify the publicity of the item if necessary
         if($is_public!=self::NOCHANGE)
             $item->is_public = $is_public;
