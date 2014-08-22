@@ -58,7 +58,7 @@
             var $e = $("<li>");
             if(!e.is_active) {
                 $e.append($("<a>"));
-                $e.find("a").attr("data-id", e.data_id).text(e.title);
+                $e.find("a").attr("data-id", e.data_id).text(e.title).attr("href", "/#!/d/"+e.data_id+".folders");
             } else { active_id = e.data_id;$e.addClass("active").text(e.title); }
             $epb.prepend($e);
             if(e.data_id)
