@@ -489,7 +489,7 @@ __COLLECT_GET_DATA:
                     # if we are changing the parent directory
                     if(isset($this->request->params["cd"])) {
                         # validate the parent directory
-                        if(!\core\db\models\folder::exists(array("conditions" => array("folder_id = ? AND owner_id = ?", $this->request->params["cd"], $uid))))
+                        if(!\core\db\models\folder::exists(array("conditions" => array("folder_id = ? AND (folder_id = ? OR owner_id = ?)", $this->request->params["cd"], 0, $uid))))
                             throw new \zinux\kernel\exceptions\accessDeniedException("The `cd` argument is not found or accessed denied.");
                         # if we reach here, it means we are good to go with CD op
                         # re-assign the origin parent ID
