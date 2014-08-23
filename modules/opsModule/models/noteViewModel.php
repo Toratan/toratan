@@ -358,12 +358,16 @@ class noteViewModel
                                         .append($("<div>").addClass("clearfix"));
                                     $c.append($pn);
                                 });
-                                $(".show-summary")
-                                    .click(function(){
-                                        $(".summary.f").slideUp();
-                                        $(this).parents('.popular-note').find('.summary').slideToggle(function(){$(this).toggleClass('f');});
-                                        return false;
+                                var slideshow = function() {
+                                    $(this).off('click');
+                                    $(".summary.f").slideUp();
+                                    $(this).parents('.popular-note').find('.summary').slideToggle(function(){
+                                        $(this).toggleClass('f');
+                                        $(this).on('click', slideshow);
                                     });
+                                    return false;
+                                };
+                                $(".show-summary").on('click', slideshow);
                                 $(".populate-momentize").each(function(){
                                     $(this).html(moment(moment($(this).attr("datetime")).format("ll"), "lll").format("MMM DD, YYYY")).removeClass("populate-momentize");
                                 });
