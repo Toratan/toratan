@@ -252,16 +252,21 @@ class noteViewModel
         </tbody>
     </table>
     <hr style='margin: 0'/>
-    <?php self::__renderSideBar($n); ?>
-    <div id="note-body" class="links-enabled pull-left">
-    <?php 
-        # if note's pre-processed html body exists and not empty?
-        # don't render the origin body, just echo the pre-processed one!
-        # otherwise render the note's origin body.
-        echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
-    ?>
-        <div class="clearfix"></div>
-        <?php self::__renderComments($n); ?>
+    <div class='row'>
+        <div id="note-body" class="links-enabled pull-lefta col-lg-8 col-md-8 col-sm-8">
+        <?php 
+            # if note's pre-processed html body exists and not empty?
+            # don't render the origin body, just echo the pre-processed one!
+            # otherwise render the note's origin body.
+            echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
+        ?>
+            <div class="clearfix"></div>
+            <?php self::__renderComments($n); ?>
+        </div>
+        <div class='col-lg-4 col-md-4 col-sm-4 apull-right'>
+            <div class='visible-xs' style='margin-top: -200px'></div>
+            <?php self::__renderSideBar($n); ?>
+        </div>
     </div>
     <script src="/access/js/moment.min.js"></script>
     <link rel="stylesheet" href='/access/google-code-prettify/tomorrow-night.theme.min.css' />
@@ -313,66 +318,78 @@ class noteViewModel
 <?php
     }
     public static function __renderSideBar(\core\db\models\note $note) {
+        if(!@$note->is_public) return;
         $n = $note;
 ?>
-<?php if(@$n->is_public): ?>
-    <div class="pull-right">
-        <div class="right-container">
-            <div class='author-popular-posts'>
-                <legend>
-                    <a href='/@<?php $n->user->username ?>'><?php echo ($name = $n->user->get_RealName_or_Username(0)) ?></a>'<?php echo strtolower(substr($name, -1)) === 's' ? "" : "s"?> popular posts
-                </legend>
-                <center><img src='/access/img/config-loader.gif' id='confing-loader'/></center>
-                <script type="text/javascript">
-                    (function(){
-                        <?php $s = $n->fetchStatusBits(); ?>
-                        $.ajax({
-                            global: false,
-                            url: "/fetch/popular/type/notes?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array("notes", $n->note_id, $n->owner_id, $s))?>",
-                            data: {
-                                id: <?php echo json_encode($n->note_id); ?>,
-                                uid: <?php echo json_encode($n->owner_id); ?>,
-                                s: <?php echo json_encode($s); ?>
-                            },
-                            dataType: "JSON",
-                            success: function(data) {
-                                console.log(data.items.pop());
-                                if(typeof(data.items) === "undefined")
-                                    throw "invalid data reception";
-                                $(".author-popular-posts #confing-loader").fadeOut(function(){ 
-                                    var $c = $(".author-popular-posts");
-                                    data.items.forEach(function(item){
-                                        var $pn = $("<div>").addClass("popular-note").attr({"data-id": item.id}).html(item.title);
-                                        $c.append($pn);
-                                    });
+    <div class="right-side-bar">
+        <div class='author-popular-posts-container'>
+            <legend style='margin-bottom: 0!important'>
+                <a href='/@<?php echo $n->user->username ?>'><?php echo ($name = $n->user->get_RealName_or_Username(0)) ?></a>'<?php echo strtolower(substr($name, -1)) === 's' ? "" : "s"?> popular posts
+            </legend>
+            <center style='margin-top: 10px;'><img src='/access/img/config-loader.gif' id='confing-loader'/></center>
+            <div class='author-popular-posts'></div>
+            <script type="text/javascript">
+                (function(){
+                    <?php $s = $n->fetchStatusBits(); ?>
+                    $.ajax({
+                        global: false,
+                        url: "/fetch/popular/type/notes?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array("notes", $n->note_id, $n->owner_id, $s))?>",
+                        data: {
+                            id: <?php echo json_encode($n->note_id); ?>,
+                            uid: <?php echo json_encode($n->owner_id); ?>,
+                            s: <?php echo json_encode($s); ?>
+                        },
+                        dataType: "JSON",
+                        success: function(data) {
+                            console.log(data.items.pop());
+                            if(typeof(data.items) === "undefined")
+                                throw "invalid data reception";
+                            $(".author-popular-posts-container #confing-loader").fadeOut(function(){ 
+                                var $c = $(".author-popular-posts");
+                                data.items.forEach(function(item){
+                                    var $pn = 
+                                        $("<div>").addClass("popular-note").attr({"data-id": item.id})
+                                        .append($("<a>").attr({"href": item.url.replace(/^#!/ig, "")}).text(item.title)
+                                        .append($("<time>").attr("datetime", item.created).addClass("populate-momentize")))
+                                        .append($("<div>").addClass("clearfix"));
+                                    $c.append($pn);
                                 });
-                            }
-                        }).fail(function(){
-                            $(".author-popular-posts #confing-loader").fadeOut(function(){ 
-                                $(".author-popular-posts").append("<div class='text-muted text-center'>Failed to load popular posts!!!</div>");
+                                $(".populate-momentize").each(function(){
+                                    $(this).html(moment(moment($(this).attr("datetime")).format("ll"), "lll").format("MMM DD, YYYY")).removeClass("populate-momentize");
+                                });
                             });
-                        }).always(function(){
-                            $(".author-popular-posts #confing-loader").fadeOut();
+                        }
+                    }).fail(function(){
+                        $(".author-popular-posts-container #confing-loader").fadeOut(function(){ 
+                            $(".author-popular-posts").append("<div class='text-muted text-center'>Failed to load popular posts!!!</div>");
                         });
-                    })(jQuery);
-                </script>
-            </div>
+                    }).always(function(){
+                        $(".author-popular-posts-container #confing-loader").fadeOut();
+                    });
+                })(jQuery);
+            </script>
         </div>
     </div>
-    <style type="text/css">
-        .popular-note {display: block;border-bottom: 1px solid #000;padding:10px;}
-        .right-sticky-container {margin-top: 13px; display: block;}
-        #note-body{ width: <?php echo @$n->is_public ? "75" : "100" ?>%}
-        @media screen and (max-width: 500px) {
-            #note-body{width: 100%!important;clear: both}
-            .right-container.sticked{ position: static!important }
-        }
-        .right-container {border: 1px solid #000;min-height: 300px;width: 270px;background-color: #F7F7F7;padding:10px}
-        .right-container *{font-size: small!important}
-    </style>
-    <link rel="stylesheet" href='/access/css/social/share.css' />
-    <script type="text/javascript" src="/access/css/social/share.js"></script>
-<?php endif; ?>
+</div>
+<style type="text/css">
+    .popular-note {display: block;font-size: small!important}
+    .popular-note a{display:  block;padding:10px;padding-bottom: 30px}
+    .popular-note time {color:#666;float: right;margin-top: 10px;margin-bottom: 10px}
+    .popular-note a:hover{text-decoration: none;}
+    .popular-note:hover{background-color: #F8F8F8;}
+    .popular-note:not(:last-child) {border-bottom: 1px solid #e6e6e6;}
+    .right-side-bar {margin-top: 13px; display: block;}
+    @media screen and (max-width: 500px) {
+        #note-bodya{width: 100%!important;clear: both}
+        .right-side-bar.sticked{ position: static!important }
+    }
+    @media screen and (min-width: 500px) and (max-width: 900px) {
+        .author-popular-posts-container legend {font-size: small!important;font-weight: bold}
+    }
+    .right-side-bar {min-height: 300px;padding:10px}
+</style>
+<link rel="stylesheet" href='/access/css/social/share.css' />
+<script type="text/javascript" src="/access/css/social/share.js"></script>
 <?php
     }
     public static function __renderComments(\core\db\models\note $note) {
