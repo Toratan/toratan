@@ -19,10 +19,13 @@ class itemStatus extends \zinux\kernel\model\baseModel {
     public $is_trash = 0;
     /**
      * encodes item's status
-     * @param \core\db\models\item $item
+     * @param {\core\db\models\item | itemStatus} $item item can only be one of <b>\core\db\models\item</b> or <b>itemStatus</b>
      * @return real The integer flag according to item's status
      */
-    public static function encode(\core\db\models\item $item){
+    public static function encode($item) {
+        # validate the item
+        if(!($item instanceof self || $item instanceof \core\db\models\item))
+            throw new \zinux\kernel\exceptions\invalidArgumentException("Expecting the \$item to be instance of either `".__CLASS__."` or `\\core\\db\\models\\item`");
         # lock the item
         $item->readonly();
         # numberic pattern for this format will be { 1, 9, 5, 13, 3, 11, 7, 15 }

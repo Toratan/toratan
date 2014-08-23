@@ -213,14 +213,6 @@ class user extends baseModel
             $this->Signout();
             throw new \zinux\kernel\exceptions\securityException("The user's profile with ID `{$this->user_id}` were not accessable.");
         }
-        $fn = $this->profile->first_name;
-        if($full_name)
-            $fn = "$fn {$this->profile->last_name}";
-        $fn = ucwords(strtolower($fn));
-        if(!strlen($fn))
-            $fn = $this->user_name;
-        if($restrict && !strlen($fn))
-            throw new \zinux\kernel\exceptions\appException("Empty name not expected!");
-        return $fn;
+        return $this->profile->get_RealName_or_Username($full_name, $restrict);
     }
 }

@@ -486,7 +486,7 @@ abstract class item extends abstractModel
             $options = false) {
         $options["offset"] = $offset;
         $options["limit"] = $limit;
-        $options["order"] = "popularity " . ($reverse ? "ASC" : "DESC");
+        $options["order"] = "popularity " . ($reverse ? "ASC" : "DESC").", created_at DESC";
         return $this->fetchItems($owner_id, NULL, $is_public, $is_trash, $is_archive, $options);
     }
     /**

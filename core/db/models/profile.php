@@ -268,4 +268,21 @@ class profile extends baseModel
         # dive into other parital addresses
         return $this->recursive_deletion($address_partials, $settings->$m);
     }
+    /**
+     * Returns user's realname in capitalized format if any exist; otherwise return the user's username
+     * @param bool $full_name TRUE if should be full name; FALSE if only want first name
+     * @param bool $restrict if the output name is empty throw exception?
+     * @return string
+     */
+    public function get_RealName_or_Username($full_name = 1, $restrict = 1) {
+        $fn = $this->first_name;
+        if($full_name)
+            $fn = "$fn {$this->last_name}";
+        $fn = ucwords(strtolower($fn));
+        if(!strlen($fn))
+            $fn = $this->user->username;
+        if($restrict && !strlen($fn))
+            throw new \zinux\kernel\exceptions\appException("Empty name not expected!");
+        return $fn;
+    }
 }
