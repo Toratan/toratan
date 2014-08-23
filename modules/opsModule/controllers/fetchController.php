@@ -78,11 +78,13 @@ class fetchController extends \zinux\kernel\controller\baseController
                 $instance = new $class;
                 $ps = $instance->fetchPopular($this->request->params["uid"], ($this->request->params["p"] - 1) * 10, 10, $s->is_public, \core\db\models\item::WHATEVER, \core\db\models\item::FLAG_UNSET);
                 $o = array();
+                $dt = new \modules\frameModule\models\directoryTree($this->request);
                 foreach($ps as $p) {
                     $i = new \stdClass;
                     $i->id = $p->getItemID();
                     $i->title = $p->getItemTItle();
                     $i->summary = $p->note_summary;
+                    $i-> url = $dt->getNavigationLink($p);
                     $i->owner = new \stdClass;
                     $i->owner->id = $p->owner_id;
                     $i->owner->avatar = \array_slice(\core\ui\html\avatar::get_avatar_link($this->request->params["uid"]), 0, 2);
