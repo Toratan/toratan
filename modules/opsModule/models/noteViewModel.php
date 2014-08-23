@@ -361,9 +361,10 @@ class noteViewModel
                                 var slideshow = function() {
                                     $(this).off('click');
                                     $(".summary.f").slideUp();
+                                    var _this = this;
                                     $(this).parents('.popular-note').find('.summary').slideToggle(function(){
                                         $(this).toggleClass('f');
-                                        $(this).on('click', slideshow);
+                                        $(_this).on('click', slideshow);
                                     });
                                     return false;
                                 };
