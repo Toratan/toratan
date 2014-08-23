@@ -317,7 +317,7 @@ class noteViewModel
 ?>
 <?php if(@$n->is_public): ?>
     <div class="pull-right">
-        <div class="right-sticky-container">
+        <div class="right-container">
             <div class='author-popular-posts'>
                 <legend>
                     <a href='/@<?php $n->user->username ?>'><?php echo ($name = $n->user->get_RealName_or_Username(0)) ?></a>'<?php echo strtolower(substr($name, -1)) === 's' ? "" : "s"?> popular posts
@@ -337,10 +337,14 @@ class noteViewModel
                             dataType: "JSON",
                             success: function(data) {
                                 console.log(data.items.pop());
-                                if(typeof(data.html) === "undefined")
-                                    data = { html: data };
+                                if(typeof(data.items) === "undefined")
+                                    throw "invalid data reception";
                                 $(".author-popular-posts #confing-loader").fadeOut(function(){ 
-                                    $(".author-popular-posts").append(data.html);
+                                    var $c = $(".author-popular-posts");
+                                    data.items.forEach(function(item){
+                                        var $pn = $("<div>").addClass("popular-note").attr({"data-id": item.id}).html(item.title);
+                                        $c.append($pn);
+                                    });
                                 });
                             }
                         }).fail(function(){
@@ -356,23 +360,18 @@ class noteViewModel
         </div>
     </div>
     <style type="text/css">
+        .popular-note {display: block;border-bottom: 1px solid #000;padding:10px;}
         .right-sticky-container {margin-top: 13px; display: block;}
         #note-body{ width: <?php echo @$n->is_public ? "75" : "100" ?>%}
         @media screen and (max-width: 500px) {
             #note-body{width: 100%!important;clear: both}
-            .right-sticky-container.sticked{ position: static!important }
+            .right-container.sticked{ position: static!important }
         }
-        .right-sticky-container {border: 1px solid #000;min-height: 300px;width: 270px;background-color: #F7F7F7;padding:10px}
-        .right-sticky-container *{font-size: small!important}
+        .right-container {border: 1px solid #000;min-height: 300px;width: 270px;background-color: #F7F7F7;padding:10px}
+        .right-container *{font-size: small!important}
     </style>
     <link rel="stylesheet" href='/access/css/social/share.css' />
-    <script type="text/javascript" src="/access/js/iSticky/jquery.iSticky.min.js"></script>
     <script type="text/javascript" src="/access/css/social/share.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $(".right-sticky-container").iSticky();
-        });
-    </script>
 <?php endif; ?>
 <?php
     }
