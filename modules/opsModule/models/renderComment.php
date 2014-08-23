@@ -58,7 +58,7 @@ class renderComment
             <?php list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link(\core\db\models\user::GetInstance()->user_id); ?>
             <img src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>'" height="50" width="50">
         </div>
-        <div class="col-xs-12 col-sm-11">
+        <div class="col-xs-12 col-sm-10 pull-right">
             <textarea class="form-control" name="comment" style="margin-top: -3px;max-width: 100%" placeholder="Leave a comment...."></textarea>
             <small class="text-primary"><span class="glyphicon glyphicon-hand-right"></span> Press <code class="text-primary" style="font-weight: bold">Ctrl+Enter</code> to submit the comment.</small>
             <script src="/access/js/autosize/jquery.autosize.min.js" type="text/javascript"></script>
@@ -148,7 +148,7 @@ class renderComment
         <div class="hidden-xs col-sm-1 comment-header avatar">
             <img src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>'" height="50" width="50">
         </div>
-        <div class="col-xs-12 col-sm-11 pull-right comment-body">
+        <div class="col-xs-12 col-sm-10 pull-right comment-body">
             <div class="row">
                 <div class="col-xs-12 commenter-detail">
                     <div class="commenter-link">
@@ -188,6 +188,7 @@ class renderComment
         </div>
         <div class="clearfix"></div>
     </div>
+    <hr />
 </div>
 <?php endforeach; ?>
 <?php if(!count($comments)) : ?>
