@@ -325,14 +325,18 @@ class noteViewModel
                 <center><img src='/access/img/config-loader.gif' id='confing-loader'/></center>
                 <script type="text/javascript">
                     (function(){
+                        <?php $s = $n->fetchStatusBits(); ?>
                         $.ajax({
                             global: false,
-                            url: "/fetch/popular/type/notes?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($n->note_id, $n->owner_id))?>",
+                            url: "/fetch/popular/type/notes?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array("notes", $n->note_id, $n->owner_id, $s))?>",
                             data: {
-                                nid: <?php echo json_encode($n->note_id); ?>,
+                                id: <?php echo json_encode($n->note_id); ?>,
                                 uid: <?php echo json_encode($n->owner_id); ?>,
+                                s: <?php echo json_encode($s); ?>
                             },
+                            dataType: "JSON",
                             success: function(data) {
+                                console.log(data.items.pop());
                                 if(typeof(data.html) === "undefined")
                                     data = { html: data };
                                 $(".author-popular-posts #confing-loader").fadeOut(function(){ 
@@ -340,7 +344,9 @@ class noteViewModel
                                 });
                             }
                         }).fail(function(){
-                            $(".author-popular-posts").append("<div class='text-muted'>Failed to load popular posts</div>");
+                            $(".author-popular-posts #confing-loader").fadeOut(function(){ 
+                                $(".author-popular-posts").append("<div class='text-muted text-center'>Failed to load popular posts!!!</div>");
+                            });
                         }).always(function(){
                             $(".author-popular-posts #confing-loader").fadeOut();
                         });
