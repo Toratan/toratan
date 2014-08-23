@@ -349,11 +349,21 @@ class noteViewModel
                                 data.items.forEach(function(item){
                                     var $pn = 
                                         $("<div>").addClass("popular-note").attr({"data-id": item.id})
-                                        .append($("<a>").attr({"href": item.url.replace(/^#!/ig, "")}).text(item.title)
-                                        .append($("<time>").attr("datetime", item.created).addClass("populate-momentize")))
+                                        .append(
+                                            $("<a>").attr({"href": item.url.replace(/^#!/ig, "")}).text(item.title)
+                                                .append($("<time>").attr("datetime", item.created).addClass("populate-momentize")))
+                                        .append($("<a>").attr("href", '#').text("Head Lines").addClass('show-summary'))
+                                        .append($("<div>").addClass("clearfix"))
+                                        .append($('<div>').html(item.summary).hide().addClass("summary"))
                                         .append($("<div>").addClass("clearfix"));
                                     $c.append($pn);
                                 });
+                                $(".show-summary")
+                                    .click(function(){
+                                        $(".summary.f").slideUp();
+                                        $(this).parents('.popular-note').find('.summary').slideToggle(function(){$(this).toggleClass('f');});
+                                        return false;
+                                    });
                                 $(".populate-momentize").each(function(){
                                     $(this).html(moment(moment($(this).attr("datetime")).format("ll"), "lll").format("MMM DD, YYYY")).removeClass("populate-momentize");
                                 });
@@ -372,9 +382,12 @@ class noteViewModel
     </div>
 </div>
 <style type="text/css">
+    .popular-note *{word-break: keep-all;overflow: hidden}
     .popular-note {display: block;font-size: small!important}
-    .popular-note a{display:  block;padding:10px;padding-bottom: 30px}
+    .popular-note a{display:  block;padding:10px;padding-bottom: 0px}
     .popular-note time {color:#666;float: right;margin-top: 10px;margin-bottom: 10px}
+    .popular-note .show-summary{margin-top: -10px;margin-bottom: 10px}
+    .popular-note .summary  {text-align: justify;padding: 10px; border-left: 5px solid #eee;margin: 10px;color: #999}
     .popular-note a:hover{text-decoration: none;}
     .popular-note:hover{background-color: #F8F8F8;}
     .popular-note:not(:last-child) {border-bottom: 1px solid #e6e6e6;}
