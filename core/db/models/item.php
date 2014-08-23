@@ -464,6 +464,32 @@ abstract class item extends abstractModel
         return $this->fetchItems($owner_id, NULL, self::FLAG_SET, self::FLAG_UNSET, self::WHATEVER, $options);
     }
     /**
+     * fetches the items base on their popularity
+     * @param string $owner_id
+     * @param integer $offset The offset of query
+     * @param integer $limit The limit for query
+     * @param boolean $is_public should it be public or not, pass '<b>item::WHATEVER</b>' to don't matter
+     * @param boolean $is_trash should it be trashed or not, pass '<b>item::WHATEVER</b>' to don't matter
+     * @param boolean $is_archive should it be archive or not, pass '<b>item::WHATEVER</b>' to don't matter
+     * @param boolean $reverse (default: false) if it assigned to TRUE the the result would be the LEAST popular item
+     * @param array $options see \ActiveRecord\Model::find()
+     * @return array of fetched items
+     */
+    public function fetchPopular(
+            $owner_id,
+            $offset = 0,
+            $limit = 5,
+            $is_public = self::WHATEVER,
+            $is_trash = self::WHATEVER,
+            $is_archive = self::WHATEVER,
+            $reverse = 0,
+            $options = false) {
+        $options["offset"] = $offset;
+        $options["limit"] = $limit;
+        $options["order"] = "popularity " . ($reverse ? "ASC" : "DESC");
+        return $this->fetchItems($owner_id, NULL, $is_public, $is_trash, $is_archive, $options);
+    }
+    /**
      * Increases the item's popularity
      * @param boolean $auto_save (default: true) Shoud the method attempt to autosave after the assignment?
      * @return The after increase popularity rate
@@ -514,6 +540,15 @@ __RETURN:
      */
     public function disableAutoNotification(){ unset($this->temporary_container["BSS"]); }
     /**
+     * fetch stored status bits; if no status bit assigned {0} will be returned
+     * @return binary
+     */
+    public function fetchStatusBits() {
+        if(isset($this->temporary_container["BSS"]))
+            return $this->temporary_container["BSS"];
+        return 0b0000;
+    }
+    /**
      * Updates old instance of current user
      */
     protected function storeStatusBits() {
@@ -521,28 +556,12 @@ __RETURN:
         $this->temporary_container["BSS"]  = $this->getStatusBits();
     }
     /**
-     * fetch stored status bits; if no status bit assigned {0} will be returned
-     * @return binary
-     */
-    protected function fetchStatusBits() {
-        if(isset($this->temporary_container["BSS"]))
-            return $this->temporary_container["BSS"];
-        return 0b0000;
-    }
-    /**
      * Get binary status state of current item<br />
      * The format is: 0b{public}{trash}{zero}{validateBit}
      * @return binary
      */
     protected function getStatusBits() {
-        $flag = 0b0001;
-        # is_public never selected
-        if(isset($this->is_public) && $this->is_public)
-            $flag = $flag | 0b1001;
-        # is_trash never selected
-        if(isset($this->is_trash) && $this->is_trash)
-            $flag = $flag | 0b0101;
-        return $flag;
+        return \core\db\vendors\itemStatus::encode($this);
     }
     /**
      * General validator
@@ -568,9 +587,11 @@ __RETURN:
             $cbss = $this->getStatusBits();
             # nothing notifiable has been changed
             if($obss === $cbss) return;
+            # compute the difference between two status
+            $dbss = \core\db\vendors\itemStatus::decode($obss)->diff(\core\db\vendors\itemStatus::decode($cbss));
             # validate the publicity
             # if publicity has been changed
-            if(($obss & 0b1000) !== ($cbss & 0b1000)) {
+            if($dbss->is_public) {
                 if($this->is_public)
                     \core\db\models\notification::put($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, \core\db\models\notification::NOTIF_FLAG_SHARE);
                 else
@@ -581,7 +602,7 @@ __RETURN:
                     \core\db\models\sharing_queue::add_queue($this);
             }
             # if trash state has been changed and this is a public item
-            if((($obss & 0b0100) !== ($cbss & 0b0100)) && $this->is_public) {
+            if($dbss->is_trash && $this->is_public) {
                 if($this->is_trash)
                     \core\db\models\notification::visibleNotification($this->owner_id, $this->{"{$this->item_name}_id"}, $this->item_name, 0);
                 else
