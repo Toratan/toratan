@@ -352,20 +352,25 @@ class noteViewModel
                                         .append(
                                             $("<a>").attr({"href": item.url.replace(/^#!/ig, "")}).text(item.title)
                                                 .append($("<time>").attr("datetime", item.created).addClass("populate-momentize")))
-                                        .append($("<a>").attr("href", '#').text("Head Lines").addClass('show-summary'))
+                                        .append($("<a>").attr("href", '#').text("Summary").addClass('show-summary'))
                                         .append($("<div>").addClass("clearfix"))
-                                        .append($('<div>').html(item.summary).hide().addClass("summary"))
+                                        .append($('<blockquote>').html(item.summary).hide().addClass("summary"))
                                         .append($("<div>").addClass("clearfix"));
                                     $c.append($pn);
                                 });
                                 var slideshow = function() {
                                     $(this).off('click');
-                                    $(".summary.f").slideUp();
                                     var _this = this;
-                                    $(this).parents('.popular-note').find('.summary').slideToggle(function(){
-                                        $(this).toggleClass('f');
-                                        $(_this).on('click', slideshow);
-                                    });
+                                    var _s = $(this).parents('.popular-note').find('.summary');
+                                    $(".summary.f").not(_s).slideUp().removeClass('f');
+                                    if(!$(_s).hasClass('f'))
+                                        $(_s).addClass('f').slideDown(function(){
+                                            $(_this).on('click', slideshow).attr('title', 'Hide summary').tooltip();
+                                        });
+                                    else
+                                        $(_s).removeClass('f').slideUp(function(){
+                                            $(_this).on('click', slideshow).attr('title', 'Show summary').tooltip();
+                                        });
                                     return false;
                                 };
                                 $(".show-summary").on('click', slideshow);
@@ -391,8 +396,11 @@ class noteViewModel
     .popular-note {display: block;font-size: small!important}
     .popular-note a{display:  block;padding:10px;padding-bottom: 0px}
     .popular-note time {color:#666;float: right;margin-top: 10px;margin-bottom: 10px}
-    .popular-note .show-summary{margin-top: -10px;margin-bottom: 10px}
-    .popular-note .summary  {text-align: justify;padding: 10px; border-left: 5px solid #eee;margin: 10px;color: #999}
+    .popular-note .show-summary{margin-top: -20px;margin-bottom: 10px;color:#aaa;width: content-box}
+    .popular-note .summary  {padding: 10px; border-left: 5px solid #eee;margin: 10px;color: #666}
+    .popular-note blockquote.summary {font-family:Georgia,serif;font-style:italic;font-size:14px;position:relative}
+    .popular-note blockquote.summary:before{display:block;content:"\201C";font-size:30px;position:absolute;left:0;top:-7px;color:#7a7a7a}
+    .popular-note blockquote.summary:after{display:block;content:"\201D";font-size:30px;position:absolute;right:10px;bottom:-7px;color:#7a7a7a}
     .popular-note a:hover{text-decoration: none;}
     .popular-note:hover{background-color: #F8F8F8;}
     .popular-note:not(:last-child) {border-bottom: 1px solid #e6e6e6;}
