@@ -416,8 +416,6 @@ class noteViewModel
         .author-popular-posts-container legend {font-size: small!important;font-weight: bold}
     }
 </style>
-<link rel="stylesheet" href='/access/css/social/share.css' />
-<script type="text/javascript" src="/access/css/social/share.js"></script>
 <?php
     }
     public static function __renderSocialButtons(\core\db\models\note $note, $uri) {
