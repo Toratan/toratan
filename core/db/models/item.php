@@ -188,10 +188,10 @@ abstract class item extends abstractModel
      */
     public function fetch(
             $item_id,
-            $owner_id = NULL,
+            $owner_id = self::WHATEVER,
             $options = array()) {
         $cond = array("conditions" => array("{$this->item_name}_id = ?", $item_id));
-        if($owner_id !== NULL)
+        if($owner_id != self::WHATEVER)
             $cond = array("conditions" => array("{$this->item_name}_id = ? AND (owner_id = ? OR is_public = 1)", $item_id, $owner_id));
         # normalize the conditions with any passed options
         $options = $this->normalize_conditions_options_ops($cond, $options);
