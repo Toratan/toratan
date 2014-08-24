@@ -18,7 +18,7 @@ abstract class baseModel extends \ActiveRecord\Model
      * to the query pass false, But if you are injecting it like `... IN($result_of_escape_in_query_func) ...` pass true.
      * @return string The IN(?) query value
      */
-    protected static function escape_in_query(array $in, $prepare_for_inline_injection = 1) {
+    public static function escape_in_query(array $in, $prepare_for_inline_injection = 1) {
         # glutize the array an fetch the string format of INs
         $in = implode(", ", $in);
         # secure(escape) the IN and re-normalize it to inject directly into QUERY 
