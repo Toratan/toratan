@@ -97,4 +97,11 @@ class fetchController extends \zinux\kernel\controller\baseController
         }
         die;
     }
+    /**
+    * The \modules\opsModule\controllers\fetchController::relatedAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function relatedAction()
+    {
+    }
 }
