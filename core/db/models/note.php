@@ -145,4 +145,36 @@ class note extends item
         }
         return $tags;
     }
+    /**
+     * fetches related notes to current instance by match they tag value with current instace's tag value
+     * @param integer $offset The query's offset
+     * @param integer $limit The query's limit
+     * @param string $order The order string
+     * @param string $select The select columns
+     * @return array The fetched notes
+     */
+    public function fetch_related_notes(
+            $offset = 0,
+            $limit = 10,
+            $order = "popularity DESC, created_at DESC",
+            $select  = "DISTINCT notes.note_id, note_title, note_summary, owner_id, popularity, notes.created_at, notes.updated_at") {
+        # fetch current note's tag
+        $tags = $this->tags;
+        # the tag ID container
+        $tag_ids = array();
+        # collect the tag IDs
+        foreach($tags as $tag) {$tag_ids[] = $tag->tag_id;}
+        # invoke a sql builder
+        $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
+        # build the query
+        $builder
+                ->select($select)
+                ->joins("INNER JOIN note_tags ON note_tags.note_id = notes.note_id INNER JOIN tags ON tags.tag_id = note_tags.tag_id")
+                ->where("tags.tag_id IN  ({$this->escape_in_query($tag_ids)}) AND notes.note_id <> ?", $this->getItemID())
+                ->order($order)
+                ->offset($offset)
+                ->limit($limit);
+        # execute and return the query 
+        return self::find_by_sql($builder->to_s(), $builder->bind_values());
+    }
 }
