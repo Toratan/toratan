@@ -260,6 +260,36 @@ class noteViewModel
             # otherwise render the note's origin body.
             echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
         ?>
+            <div class="social-sharing">
+                <?php global $_REQUEST; ?>
+                <?php $uri = $this->view->request->GetPrimaryURI(1); ?>
+                <style>
+                    .social-sharing {margin-bottom: -20px;margin-top: 40px}
+                    .share-buttons{list-style: none;}.share-buttons li{display: inline;}
+                    .share-buttons li a {color: #aaa!important;}
+                    .share-buttons li a:hover{color: #555!important;}
+                </style>
+                <ul class="share-buttons list-unstyled list-inline text-center">
+                    <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($uri) ?>&t=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Share on Facebook"><i class="fa fa-facebook-square fa-2x"></i></a></li>
+                    <li><a href="https://twitter.com/intent/tweet?source=<?php echo urlencode($uri) ?>&text=<?php echo urlencode($n->getItemTitle()) ?>:%20<?php echo urlencode($uri) ?>&via=toratan" target="_blank" title="Tweet"><i class="fa fa-twitter-square fa-2x"></i></a></li>
+                    <li><a href="https://plus.google.com/share?url=<?php echo urlencode($uri) ?>" target="_blank" title="Share on Google+"><i class="fa fa-google-plus-square fa-2x"></i></a></li>
+                    <li><a href="http://www.tumblr.com/share?v=3&u=<?php echo urlencode($uri) ?>&t=<?php echo urlencode($n->getItemTitle()) ?>&s=" target="_blank" title="Post to Tumblr"><i class="fa fa-tumblr-square fa-2x"></i></a></li>
+                    <li><a href="http://pinterest.com/pin/create/button/?url=<?php echo urlencode($uri) ?>&description=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Pin it"><i class="fa fa-pinterest-square fa-2x"></i></a></li>
+                    <li><a href="http://www.reddit.com/submit?url=<?php echo urlencode($uri) ?>&title=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Submit to Reddit"><i class="fa fa-reddit-square fa-2x"></i></a></li>
+                    <li><a href="http://www.linkedin.com/shareArticle?mini=true&url=<?php echo urlencode($uri) ?>&title=<?php echo urlencode($n->getItemTitle()) ?>&summary=<?php echo urlencode(strlen($n->note_summary) ? $n->note_summary : $n->getItemTitle()) ?>&source=<?php echo urlencode($uri) ?>" target="_blank" title="Share on LinkedIn"><i class="fa fa-linkedin-square fa-2x"></i></a></li>
+                    <li><a href="http://wordpress.com/press-this.php?u=<?php echo urlencode($uri) ?>&t=<?php echo urlencode($n->getItemTitle()) ?>&s=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Publish on WordPress"><i class="fa fa-wordpress fa-2x"></i></a></li>
+                    <li><a href="mailto:?subject=<?php echo urlencode($n->getItemTitle()) ?>&body=<?php echo urlencode($n->note_summary." : $uri") ?>" target="_blank" title="Email"><i class="fa fa-envelope fa-2x"></i></a></li>
+                </ul>
+                <link href="/access/css/font-awesome.min.css" rel="stylesheet">
+                <script type="text/javascript">
+                    (function(){
+                        $(".share-buttons a:has(.fa)").click(function(e){
+                            e.preventDefault();
+                            window.open($(this).attr("href"), 'newwindow', 'width=600, height=400');
+                        });
+                    })(jQuery);
+                </script>
+            </div>
             <div class="clearfix"></div>
             <?php self::__renderComments($n); ?>
         </div>
@@ -341,7 +371,6 @@ class noteViewModel
                         },
                         dataType: "JSON",
                         success: function(data) {
-                            console.log(data.items.pop());
                             if(typeof(data.items) === "undefined")
                                 throw "invalid data reception";
                             $(".author-popular-posts-container #confing-loader").fadeOut(function(){ 
@@ -397,7 +426,7 @@ class noteViewModel
     .popular-note a{display:  block;padding:10px;padding-bottom: 0px}
     .popular-note time {color:#666;float: right;margin-top: 10px;margin-bottom: 10px}
     .popular-note .show-summary{margin-top: -20px;margin-bottom: 10px;color:#aaa;width: content-box}
-    .popular-note .summary  {padding: 10px; border-left: 5px solid #eee;margin: 10px;color: #666}
+    .popular-note .summary  {padding: 10px; margin: 10px;color: #666}
     .popular-note blockquote.summary {font-family:Georgia,serif;font-style:italic;font-size:14px;position:relative}
     .popular-note blockquote.summary:before{display:block;content:"\201C";font-size:30px;position:absolute;left:0;top:-7px;color:#7a7a7a}
     .popular-note blockquote.summary:after{display:block;content:"\201D";font-size:30px;position:absolute;right:10px;bottom:-7px;color:#7a7a7a}
