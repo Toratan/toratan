@@ -117,15 +117,17 @@ class noteViewModel
         if(address.length === 0) { setTimeout(function(){ window.open_errorModal("Couldn't fetch the proper address!"); }, 500); return; }
         var $epb = $("#note-render .breadcrumb").find("li:not(.cd)").remove().end();
         address.reverse().forEach(function(e) {$epb.prepend($("<li>").append($("<a>").attr("data-id", e.data_id).text(e.title).attr("href", "/#!/d/"+e.data_id+(e.is_active ? ".notes" : ".folders"))));});
+        change_path.pid = address[0].data_id;
     };
     function change_path() {
         <?php $profile =\core\db\models\profile::getInstance(); ?>
         <?php $s = $profile->getSetting("/general/directory-tree-sort-type"); ?>
         <?php $is_valid_s = ($s && is_array($s) && count($s) === 2); ?>
         <?php $s = ($is_valid_s ? $s : array("defaultHeadIndex" => 2, "defaultHeadOrder" => 0)); ?>
+        change_path.pid = <?php echo $n->parent_id ?>;
         $.ajax({
             type: "GET",
-            url: "/ops/move?init=1&pid=<?php echo $n->parent_id ?>",
+            url: "/ops/move?init=1&pid="+change_path.pid,
             data: "type=note&items[]=<?php echo itemInfo::encode($n) ?>&sort=<?php echo $s["defaultHeadIndex"] - 1?>&order=<?php echo $s["defaultHeadOrder"] ?>"+<?php echo json_encode(\zinux\kernel\security\security::__get_uri_hash_string(array("note", $n->parent_id))) ?>,
             success: function(data){
                 window.top.open_dialogModal(data);
@@ -261,7 +263,6 @@ class noteViewModel
             echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
         ?>
             <div class="social-sharing">
-                <?php global $_REQUEST; ?>
                 <?php $uri = $this->view->request->GetPrimaryURI(1); ?>
                 <style>
                     .social-sharing {margin-bottom: -20px;margin-top: 40px}

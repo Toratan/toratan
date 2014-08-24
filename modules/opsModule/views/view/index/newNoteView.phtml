@@ -68,6 +68,7 @@
             if(e.data_id)
                 tags.push(e.title);
         });
+        change_path.pid = address[0].data_id;
         $("<input type='hidden' name='cd' value='"+active_id+"' />").appendTo("form[name='note']");
         <?php if(!$this->edit): ?>
         add_tags(tags, true);
@@ -78,10 +79,11 @@
         <?php $s = $profile->getSetting("/general/directory-tree-sort-type"); ?>
         <?php $is_valid_s = ($s && is_array($s) && count($s) === 2); ?>
         <?php $s = ($is_valid_s ? $s : array("defaultHeadIndex" => 2, "defaultHeadOrder" => 0)); ?>
+        change_path.pid = <?php echo end($this->route)->getItemID() ?>;
         window.open_waitModal();
         $.ajax({
             type: "GET",
-            url: "/ops/move?init=1&pid=<?php echo end($this->route)->getItemID() ?>&get_address_only=1",
+            url: "/ops/move?init=1&get_address_only=1&pid="+change_path.pid,
             data: "type=folder&items[]=-1;1;1&sort=<?php echo $s["defaultHeadIndex"] - 1?>&order=<?php echo $s["defaultHeadOrder"] ?>"+<?php echo json_encode(zinux\kernel\security\security::__get_uri_hash_string(array("folder", end($this->route)->getItemID(), 1))) ?>,
             success: function(data){
                 window.top.open_dialogModal(data);
