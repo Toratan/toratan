@@ -330,75 +330,91 @@ class noteViewModel
 </style>
 <?php return ; endif ?>
     <div class="right-side-bar">
-        <div class='author-popular-posts-container'>
+        <div class='author-popular-posts-container popular-posts-container'>
             <legend style='margin-bottom: 0!important'>
                 <a href='/@<?php echo $n->user->username ?>'><?php echo ($name = $n->user->get_RealName_or_Username(0)) ?></a>'<?php echo strtolower(substr($name, -1)) === 's' ? "" : "s"?> popular posts
             </legend>
             <center style='margin-top: 10px;'><img src='/access/img/config-loader.gif' id='confing-loader'/></center>
             <div class='author-popular-posts'></div>
-            <script type="text/javascript">
-                (function(){
-                    <?php $s = $n->fetchStatusBits(); ?>
-                    $.ajax({
-                        global: false,
-                        url: "/fetch/popular/type/notes?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array("notes", $n->note_id, $n->owner_id, $s))?>",
-                        data: {
-                            id: <?php echo json_encode($n->note_id); ?>,
-                            uid: <?php echo json_encode($n->owner_id); ?>,
-                            s: <?php echo json_encode($s); ?>
-                        },
-                        dataType: "JSON",
-                        success: function(data) {
-                            if(typeof(data.items) === "undefined")
-                                throw "invalid data reception";
-                            $(".author-popular-posts-container #confing-loader").fadeOut(function(){ 
-                                var $c = $(".author-popular-posts");
-                                data.items.forEach(function(item){
-                                    var $pn = 
-                                        $("<div>").addClass("popular-note").attr({"data-id": item.id})
-                                        .append(
-                                            $("<a>").attr({"href": item.url.replace(/^#!/ig, "")}).text(item.title)
-                                                .append($("<time>").attr("datetime", item.created).addClass("populate-momentize")))
-                                        .append($("<a>").attr("href", '#').text("Summary").addClass('show-summary'))
-                                        .append($("<div>").addClass("clearfix"))
-                                        .append($('<blockquote>').html(item.summary).hide().addClass("summary"))
-                                        .append($("<div>").addClass("clearfix"));
-                                    $c.append($pn);
-                                });
-                                var slideshow = function() {
-                                    $(this).off('click');
-                                    var _this = this;
-                                    var _s = $(this).parents('.popular-note').find('.summary');
-                                    $(".summary.f").not(_s).slideUp().removeClass('f');
-                                    if(!$(_s).hasClass('f'))
-                                        $(_s).addClass('f').slideDown(function(){
-                                            $(_this).on('click', slideshow).attr('title', 'Hide summary').tooltip();
-                                        });
-                                    else
-                                        $(_s).removeClass('f').slideUp(function(){
-                                            $(_this).on('click', slideshow).attr('title', 'Show summary').tooltip();
-                                        });
-                                    return false;
-                                };
-                                $(".show-summary").on('click', slideshow);
-                                $(".populate-momentize").each(function(){
-                                    $(this).html(moment(moment($(this).attr("datetime")).format("ll"), "lll").format("MMM DD, YYYY")).removeClass("populate-momentize");
-                                });
-                            });
-                        }
-                    }).fail(function(){
-                        $(".author-popular-posts-container #confing-loader").fadeOut(function(){ 
-                            $(".author-popular-posts").append("<div class='text-muted text-center'>Failed to load popular posts!!!</div>");
-                        });
-                    }).always(function(){
-                        $(".author-popular-posts-container #confing-loader").fadeOut();
-                    });
-                })(jQuery);
-            </script>
         </div>
+        <div class='global-popular-posts-container popular-posts-container'>
+            <legend style='margin-bottom: 0!important'>
+                Related popular posts
+            </legend>
+            <center style='margin-top: 10px;'><img src='/access/img/config-loader.gif' id='confing-loader'/></center>
+            <div class='global-popular-posts'></div>
+        </div>
+        <script type="text/javascript">
+            var fetch_popular =(function(_data, slice){
+                $.ajax({
+                    global: false,
+                    url: _data.url,
+                    data: {
+                        id: <?php echo json_encode($n->note_id); ?>,
+                        uid: _data.uid
+                    },
+                    dataType: "JSON",
+                    success: function(data) {
+                        if(typeof(data.items) === "undefined")
+                            throw "invalid data reception";
+                        $(_data.class + "-container #confing-loader").fadeOut(function(){ 
+                            var $c = $(_data.class);
+                            data.items.slice(slice[0], slice[1]).forEach(function(item){
+                                var $pn = 
+                                    $("<div>").addClass("popular-note").attr({"data-id": item.id})
+                                    .append(
+                                        $("<a>").attr({"href": item.url.replace(/^#!/ig, "")}).text(item.title)
+                                            .append($("<time>").attr("datetime", item.created).addClass("populate-momentize")))
+                                    .append($("<a>").attr("href", '#').text("Summary").addClass('show-summary'))
+                                    .append($("<div>").addClass("clearfix"))
+                                    .append($('<blockquote>').html(item.summary).hide().addClass("summary"))
+                                    .append($("<div>").addClass("clearfix"));
+                                $c.append($pn);
+                            });
+                            var slideshow = function() {
+                                $(this).off('click');
+                                var _this = this;
+                                var _s = $(this).parents('.popular-note').find('.summary');
+                                $(".summary.f").not(_s).slideUp().removeClass('f');
+                                if(!$(_s).hasClass('f'))
+                                    $(_s).addClass('f').slideDown(function(){
+                                        $(_this).on('click', slideshow).attr('title', 'Hide summary').tooltip();
+                                    });
+                                else
+                                    $(_s).removeClass('f').slideUp(function(){
+                                        $(_this).on('click', slideshow).attr('title', 'Show summary').tooltip();
+                                    });
+                                return false;
+                            };
+                            $(".show-summary").on('click', slideshow);
+                            $(".populate-momentize").each(function(){
+                                $(this).html(moment(moment($(this).attr("datetime")).format("ll"), "lll").format("MMM DD, YYYY")).removeClass("populate-momentize");
+                            });
+                        });
+                    }
+                }).fail(function(){
+                    $(_data.class + "-container #confing-loader").fadeOut(function(){ 
+                        $(_data.class).append("<div class='text-muted text-center'>Failed to load popular posts!!!</div>");
+                    });
+                }).always(function(){
+                    $(_data.class + "-container #confing-loader").fadeOut();
+                });
+            });
+            fetch_popular({
+                    class: '.author-popular-posts',
+                    url: "/fetch/popular/type/notes?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array("notes", $n->note_id, $n->owner_id))?>",
+                    uid: <?php echo json_encode($n->owner_id); ?>
+            }, [0, 5]);
+            fetch_popular({
+                    class: '.global-popular-posts',
+                    url: "/fetch/popular/type/notes?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array("notes", $n->note_id, \core\db\models\item::WHATEVER))?>",
+                    uid: <?php echo json_encode(\core\db\models\item::WHATEVER) ?>
+            }, [0, 10]);
+        </script>
     </div>
 </div>
 <style type="text/css">
+    .popular-posts-container {margin-bottom: 33px;}
     .popular-note *{word-break: keep-all;overflow: hidden}
     .popular-note {display: block;font-size: small!important}
     .popular-note a{display:  block;padding:10px;padding-bottom: 0px}

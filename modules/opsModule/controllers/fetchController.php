@@ -67,16 +67,15 @@ class fetchController extends \zinux\kernel\controller\baseController
     */
     public function popularAction()
     {
-        \zinux\kernel\security\security::IsSecure($this->request->params, array("type", "id", "uid", "s"), array("type" => function($type){ return in_array(strtolower($type), array("notes"));}));
-        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["type"], $this->request->params["id"], $this->request->params["uid"], $this->request->params["s"]));
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("type", "id", "uid"), array("type" => function($type){ return in_array(strtolower($type), array("notes"));}));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["type"], $this->request->params["id"], $this->request->params["uid"]));
         if(!isset($this->request->params["p"]))
             $this->request->params["p"] = 1;
-        $s =\core\db\vendors\itemStatus::decode($this->request->params["s"]);
         switch(strtolower($this->request->params["type"])) {
             case "notes":
                 $class = "\\core\\db\\models\\".\ActiveRecord\Utils::singularize($this->request->params["type"]);
                 $instance = new $class;
-                $ps = $instance->fetchPopular($this->request->params["uid"], ($this->request->params["p"] - 1) * 10, 10, $s->is_public, \core\db\models\item::WHATEVER, \core\db\models\item::FLAG_UNSET);
+                $ps = $instance->fetchPopular($this->request->params["uid"], ($this->request->params["p"] - 1) * 10, 10, \core\db\models\item::FLAG_SET, \core\db\models\item::WHATEVER, \core\db\models\item::FLAG_UNSET);
                 $o = array();
                 $dt = new \modules\frameModule\models\directoryTree($this->request);
                 foreach($ps as $p) {
@@ -87,7 +86,6 @@ class fetchController extends \zinux\kernel\controller\baseController
                     $i-> url = $dt->getNavigationLink($p);
                     $i->owner = new \stdClass;
                     $i->owner->id = $p->owner_id;
-                    $i->owner->avatar = \array_slice(\core\ui\html\avatar::get_avatar_link($this->request->params["uid"]), 0, 2);
                     $i->popularity = $p->popularity;
                     $i->created = $p->created_at->format();
                     $i->updated = $p->updated_at->format();
