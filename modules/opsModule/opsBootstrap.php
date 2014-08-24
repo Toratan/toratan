@@ -24,6 +24,8 @@ class opsBootstrap
             array("profile", "about"),
             array("profile", "posts"),
             array("profile", "avatar_view"),
+            array("fetch", "comment"),
+            array("fetch", "popular"),
         );
         # the normalized currently requested {conttroller => action} 
         $current_request = array(
