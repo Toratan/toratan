@@ -262,36 +262,8 @@ class noteViewModel
             # otherwise render the note's origin body.
             echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
         ?>
-            <div class="social-sharing">
-                <?php $uri = $this->view->request->GetPrimaryURI(1); ?>
-                <style>
-                    .social-sharing {margin-bottom: -20px;margin-top: 40px}
-                    .share-buttons{list-style: none;}.share-buttons li{display: inline;}
-                    .share-buttons li a {color: #aaa!important;}
-                    .share-buttons li a:hover{color: #555!important;}
-                </style>
-                <ul class="share-buttons list-unstyled list-inline text-center">
-                    <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($uri) ?>&t=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Share on Facebook"><i class="fa fa-facebook-square fa-2x"></i></a></li>
-                    <li><a href="https://twitter.com/intent/tweet?source=<?php echo urlencode($uri) ?>&text=<?php echo urlencode($n->getItemTitle()) ?>:%20<?php echo urlencode($uri) ?>&via=toratan" target="_blank" title="Tweet"><i class="fa fa-twitter-square fa-2x"></i></a></li>
-                    <li><a href="https://plus.google.com/share?url=<?php echo urlencode($uri) ?>" target="_blank" title="Share on Google+"><i class="fa fa-google-plus-square fa-2x"></i></a></li>
-                    <li><a href="http://www.tumblr.com/share?v=3&u=<?php echo urlencode($uri) ?>&t=<?php echo urlencode($n->getItemTitle()) ?>&s=" target="_blank" title="Post to Tumblr"><i class="fa fa-tumblr-square fa-2x"></i></a></li>
-                    <li><a href="http://pinterest.com/pin/create/button/?url=<?php echo urlencode($uri) ?>&description=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Pin it"><i class="fa fa-pinterest-square fa-2x"></i></a></li>
-                    <li><a href="http://www.reddit.com/submit?url=<?php echo urlencode($uri) ?>&title=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Submit to Reddit"><i class="fa fa-reddit-square fa-2x"></i></a></li>
-                    <li><a href="http://www.linkedin.com/shareArticle?mini=true&url=<?php echo urlencode($uri) ?>&title=<?php echo urlencode($n->getItemTitle()) ?>&summary=<?php echo urlencode(strlen($n->note_summary) ? $n->note_summary : $n->getItemTitle()) ?>&source=<?php echo urlencode($uri) ?>" target="_blank" title="Share on LinkedIn"><i class="fa fa-linkedin-square fa-2x"></i></a></li>
-                    <li><a href="http://wordpress.com/press-this.php?u=<?php echo urlencode($uri) ?>&t=<?php echo urlencode($n->getItemTitle()) ?>&s=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Publish on WordPress"><i class="fa fa-wordpress fa-2x"></i></a></li>
-                    <li><a href="mailto:?subject=<?php echo urlencode($n->getItemTitle()) ?>&body=<?php echo urlencode($n->note_summary." : $uri") ?>" target="_blank" title="Email"><i class="fa fa-envelope fa-2x"></i></a></li>
-                </ul>
-                <link href="/access/css/font-awesome.min.css" rel="stylesheet">
-                <script type="text/javascript">
-                    (function(){
-                        $(".share-buttons a:has(.fa)").click(function(e){
-                            e.preventDefault();
-                            window.open($(this).attr("href"), 'newwindow', 'width=600, height=400');
-                        });
-                    })(jQuery);
-                </script>
-            </div>
             <div class="clearfix"></div>
+            <?php self::__renderSocialButtons($n, $this->view->request->GetPrimaryURI(1)) ?>
             <?php self::__renderComments($n); ?>
         </div>
         <div class='col-lg-4 col-md-4 col-sm-4 apull-right'>
@@ -349,9 +321,14 @@ class noteViewModel
 <?php
     }
     public static function __renderSideBar(\core\db\models\note $note) {
-        if(!@$note->is_public) return;
         $n = $note;
+        $is_owner = (\core\db\models\user::IsSignedin()  && $note->owner_id == \core\db\models\user::GetInstance()->user_id);
 ?>
+<?php if(!@$note->is_public || $is_owner): ?>
+<style type="text/css">
+    #note-body{width: 100%!important;}
+</style>
+<?php return ; endif ?>
     <div class="right-side-bar">
         <div class='author-popular-posts-container'>
             <legend style='margin-bottom: 0!important'>
@@ -434,18 +411,47 @@ class noteViewModel
     .popular-note a:hover{text-decoration: none;}
     .popular-note:hover{background-color: #F8F8F8;}
     .popular-note:not(:last-child) {border-bottom: 1px solid #e6e6e6;}
-    .right-side-bar {margin-top: 13px; display: block;}
-    @media screen and (max-width: 500px) {
-        #note-bodya{width: 100%!important;clear: both}
-        .right-side-bar.sticked{ position: static!important }
-    }
+    .right-side-bar {margin-top: 13px; display: block;min-height: 300px;padding:10px}
     @media screen and (min-width: 500px) and (max-width: 900px) {
         .author-popular-posts-container legend {font-size: small!important;font-weight: bold}
     }
-    .right-side-bar {min-height: 300px;padding:10px}
 </style>
 <link rel="stylesheet" href='/access/css/social/share.css' />
 <script type="text/javascript" src="/access/css/social/share.js"></script>
+<?php
+    }
+    public static function __renderSocialButtons(\core\db\models\note $note, $uri) {
+        if(!@$note->is_public) return;
+        $n = $note;
+?>
+    <div class="social-sharing">
+        <style>
+            .social-sharing {margin-bottom: -20px;margin-top: 40px}
+            .share-buttons{list-style: none;}.share-buttons li{display: inline;}
+            .share-buttons li a {color: #aaa!important;}
+            .share-buttons li a:hover{color: #555!important;}
+        </style>
+        <ul class="share-buttons list-unstyled list-inline text-center">
+            <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($uri) ?>&t=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Share on Facebook"><i class="fa fa-facebook-square fa-2x"></i></a></li>
+            <li><a href="https://twitter.com/intent/tweet?source=<?php echo urlencode($uri) ?>&text=<?php echo urlencode($n->getItemTitle()) ?>:%20<?php echo urlencode($uri) ?>&via=toratan" target="_blank" title="Tweet"><i class="fa fa-twitter-square fa-2x"></i></a></li>
+            <li><a href="https://plus.google.com/share?url=<?php echo urlencode($uri) ?>" target="_blank" title="Share on Google+"><i class="fa fa-google-plus-square fa-2x"></i></a></li>
+            <li><a href="http://www.tumblr.com/share?v=3&u=<?php echo urlencode($uri) ?>&t=<?php echo urlencode($n->getItemTitle()) ?>&s=" target="_blank" title="Post to Tumblr"><i class="fa fa-tumblr-square fa-2x"></i></a></li>
+            <li><a href="http://pinterest.com/pin/create/button/?url=<?php echo urlencode($uri) ?>&description=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Pin it"><i class="fa fa-pinterest-square fa-2x"></i></a></li>
+            <li><a href="http://www.reddit.com/submit?url=<?php echo urlencode($uri) ?>&title=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Submit to Reddit"><i class="fa fa-reddit-square fa-2x"></i></a></li>
+            <li><a href="http://www.linkedin.com/shareArticle?mini=true&url=<?php echo urlencode($uri) ?>&title=<?php echo urlencode($n->getItemTitle()) ?>&summary=<?php echo urlencode(strlen($n->note_summary) ? $n->note_summary : $n->getItemTitle()) ?>&source=<?php echo urlencode($uri) ?>" target="_blank" title="Share on LinkedIn"><i class="fa fa-linkedin-square fa-2x"></i></a></li>
+            <li><a href="http://wordpress.com/press-this.php?u=<?php echo urlencode($uri) ?>&t=<?php echo urlencode($n->getItemTitle()) ?>&s=<?php echo urlencode($n->getItemTitle()) ?>" target="_blank" title="Publish on WordPress"><i class="fa fa-wordpress fa-2x"></i></a></li>
+            <li><a href="mailto:?subject=<?php echo urlencode($n->getItemTitle()) ?>&body=<?php echo urlencode($n->note_summary." : $uri") ?>" target="_blank" title="Email"><i class="fa fa-envelope fa-2x"></i></a></li>
+        </ul>
+        <link href="/access/css/font-awesome.min.css" rel="stylesheet">
+        <script type="text/javascript">
+            (function(){
+                $(".share-buttons a:has(.fa)").click(function(e){
+                    e.preventDefault();
+                    window.open($(this).attr("href"), 'newwindow', 'width=600, height=400');
+                });
+            })(jQuery);
+        </script>
+    </div>
 <?php
     }
     public static function __renderComments(\core\db\models\note $note) {
