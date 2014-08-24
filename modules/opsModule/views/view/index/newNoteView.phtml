@@ -18,6 +18,10 @@
 </div>
 <div id="newnote-editor-container" class="note-container container-fluid">
 <?php
+    # you can get ots application from http://libots.sourceforge.net
+    if(!shell_exec("command -v ots")) {
+        echo ("<p class='bg-danger' style='padding:10px;margin:10px;'><b>Warning:</b> OTS application does not accessable/installed system-wide, see <a target='__blank' href='http://libots.sourceforge.net'>libots</a> for more detail.</p>");
+    }
     $profile = \core\db\models\profile::getInstance(\core\db\models\user::getInstance()->user_id);
     if(!isset($this->request->params["ui"]))
         $this->request->params["ui"] =

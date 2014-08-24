@@ -522,6 +522,8 @@ __COLLECT_GET_DATA:
                                 $nc, $nc, $nc,
                                 $editor_version_id);
                     }
+                    # you can get ots application from http://libots.sourceforge.net
+                    $ots = shell_exec("command -v ots");
                     # if not tagged?
                     if(!isset($this->request->params["tagit"]) || !is_string($this->request->params["tagit"]) || !strlen($this->request->params["tagit"]))
                         # tag is as untagged!!
@@ -539,31 +541,62 @@ __COLLECT_GET_DATA:
                                                 array('<html>', '</html>', '<body>', '</body>'), '', $doc->saveHTML()
                                         )
                                 ), FALSE);
-                        # find paragraph tags
-                        $p = $doc->getElementsByTagName("p");
-                        /**
-                         * Try to locate a good paragraph
-                         */
-                        $index = 0;
-                        $purified_note = "";
-                        while($index < $p->length) {
-                            $purified_note = @($p->item($index++)->textContent);
-                            # only accept a note if it satisfy the 100 min char
-                            if(strlen($purified_note) > 100)
-                                break;
-                            # if the above cond. fails and the $index exceed from $p->length $purified_note 
-                            # will contain latest failed $purified_note, it will get currected in next section by 
-                            # {$doc->loadHTML($purified_note)} 
+__FETCH_SUMMERY:
+                        # IF OTS application has not installed
+                        if(!$ots) {
+                            # THEN just go with fetching the first paragraph as head line
+                            # find paragraph tags
+                            $p = $doc->getElementsByTagName("p");
+                            /**
+                             * Try to locate a good paragraph
+                             */
+                            $index = 0;
+                            $purified_note = "";
+                            while($index < $p->length) {
+                                $purified_note = @($p->item($index++)->textContent);
+                                # only accept a note if it satisfy the 100 min char
+                                if(strlen($purified_note) > 100)
+                                    break;
+                                # if the above cond. fails and the $index exceed from $p->length $purified_note
+                                # will contain latest failed $purified_note, it will get currected in next section by
+                                # {$doc->loadHTML($purified_note)}
+                            }
+                        } else {
+                            # ELSE IF OTS application already installed then we got with it
+                            # `Stolen` from http://php.net/manual/en/function.escapeshellcmd.php comments
+                            $input = $doc->textContent;
+                            // Escape only what is needed to get by PHP's parser; we want
+                            // the string data PHP is holding in its buffer to be passed
+                            // exactly to stdin buffer of the command.
+                            $cmd = escapeshellarg(str_replace(array('\\', '%'), array('\\\\', '%%'), $input));
+                            # execute the ots application
+                            $purified_note  = trim(shell_exec("printf $cmd | ots --ratio 20 stdin"));
+                            # if any error happened, the output willbe NULL
+                            if(!$purified_note) {
+                                # indicate the error
+                                $p = new \core\utiles\messagePipe;
+                                $p->write("Couldn't fetch any valid summary, used headline as summary instead.");
+                                # uncheck using ots application
+                                $ots = NULL;
+                                # go for fetch headline instead
+                                goto __FETCH_SUMMERY;
+                            }
                         }
-                        $summary = "";
+                        # the primary summary value
+                        $summary = "No valid summary detected!";
                         if(strlen($purified_note)) {
                             /**
                              * Prepare the purified note to get saved as note's summary
                              */
-                            # try to normalize the purified note
-                            if(@$doc->loadHTML(trim(substr($purified_note, 0, 597), " .,\t\n\r\0\x0B") . "..."))
-                                # fetch the first valid summary
-                                $summary = @$doc->getElementsByTagName("p")->item(0)->textContent;
+                            # if summary length overflowed?
+                            if(strlen($purified_note) > 597) {
+                                # try to normalize the purified note
+                                if(@$doc->loadHTML(trim(substr($purified_note, 0, 597), " .,\t\n\r\0\x0B") . "..."))
+                                    # fetch the first valid summary
+                                    $purified_note = @$doc->getElementsByTagName("p")->item(0)->textContent;
+                            }
+                            # submit the valid summary 
+                            $summary = $purified_note;
                         }
                         # save the summary into database
                         $item_value->apply_summary($summary);
