@@ -61,6 +61,24 @@ class fetchController extends \zinux\kernel\controller\baseController
         }
         die;
     }
+    private function __fetch_json_note_data($ps) {
+        $o = array();
+        $dt = new \modules\frameModule\models\directoryTree($this->request);
+        foreach($ps as $p) {
+            $i = new \stdClass;
+            $i->id = $p->getItemID();
+            $i->title = $p->getItemTItle();
+            $i->summary = $p->note_summary;
+            $i-> url = $dt->getNavigationLink($p);
+            $i->owner = new \stdClass;
+            $i->owner->id = $p->owner_id;
+            $i->popularity = $p->popularity;
+            $i->created = $p->created_at->format();
+            $i->updated = $p->updated_at->format();
+            $o["items"][] = $i;
+        }
+        return $o;
+    }
     /**
     * The \modules\opsModule\controllers\fetchController::popularAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -76,22 +94,7 @@ class fetchController extends \zinux\kernel\controller\baseController
                 $class = "\\core\\db\\models\\".\ActiveRecord\Utils::singularize($this->request->params["type"]);
                 $instance = new $class;
                 $ps = $instance->fetchPopular($this->request->params["uid"], ($this->request->params["p"] - 1) * 10, 10, \core\db\models\item::FLAG_SET, \core\db\models\item::WHATEVER, \core\db\models\item::FLAG_UNSET);
-                $o = array();
-                $dt = new \modules\frameModule\models\directoryTree($this->request);
-                foreach($ps as $p) {
-                    $i = new \stdClass;
-                    $i->id = $p->getItemID();
-                    $i->title = $p->getItemTItle();
-                    $i->summary = $p->note_summary;
-                    $i-> url = $dt->getNavigationLink($p);
-                    $i->owner = new \stdClass;
-                    $i->owner->id = $p->owner_id;
-                    $i->popularity = $p->popularity;
-                    $i->created = $p->created_at->format();
-                    $i->updated = $p->updated_at->format();
-                    $o["items"][] = $i;
-                }
-                die(json_encode($o));
+                die(json_encode($this->__fetch_json_note_data($ps)));
             default:
                 throw new \zinux\kernel\exceptions\invalidArgumentException("Invalid type `{$this->request->params["type"]}`");
         }
@@ -107,7 +110,16 @@ class fetchController extends \zinux\kernel\controller\baseController
         \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["id"], $this->request->params["uid"]));
         if(!isset($this->request->params["p"]))
             $this->request->params["p"] = 1;
-        echo __METHOD__;
-        die;
+        # everything in one line :)
+        # 1. fetches the note; if no note found an exception will be raised
+        # 2. fetches the related notes
+        # 3. prepare fetched notes for json encoding output
+        # 4. encode the data with json format
+        # 5. die
+        die(
+                json_encode(
+                        $this->__fetch_json_note_data(
+                            (new \core\db\models\note)->fetch($this->request->params["id"], $this->request->params["uid"])
+                                ->fetch_related_notes(($this->request->params["p"] - 1) * 10, 10))));
     }
 }

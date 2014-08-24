@@ -355,6 +355,10 @@ class noteViewModel
                     },
                     dataType: "JSON",
                     success: function(data) {
+                        if(data.length === 0) {
+                            $(_data.class + "-container").fadeOut('fast', function(){$(this).remove();});
+                            return;
+                        }
                         if(typeof(data.items) === "undefined")
                             throw "invalid data reception";
                         $(_data.class + "-container #confing-loader").fadeOut(function(){ 
@@ -386,8 +390,8 @@ class noteViewModel
                                     });
                                 return false;
                             };
-                            $(".show-summary").on('click', slideshow);
-                            $(".populate-momentize").each(function(){
+                            $(_data.class + "-container .show-summary").on('click', slideshow);
+                            $(_data.class + "-container .populate-momentize").each(function(){
                                 $(this).html(moment(moment($(this).attr("datetime")).format("ll"), "lll").format("MMM DD, YYYY")).removeClass("populate-momentize");
                             });
                         });
