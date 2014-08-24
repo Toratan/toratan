@@ -591,7 +591,7 @@ __ERROR:
             $cond = array("EXTRACT(YEAR FROM updated_at) <= ?", $this->request->params["timeline"]);
         # fetch public notes
         $this->view->posts = 
-                $n->fetchItems($this->view->profile->user_id, NULL,
+                $n->fetchItems($this->view->profile->user_id, \core\db\models\item::WHATEVER,
                     # public
                     \core\db\models\note::FLAG_SET, 
                     # not trash

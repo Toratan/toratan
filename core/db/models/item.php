@@ -213,16 +213,20 @@ abstract class item extends abstractModel
      * @return array of items
      */
     public function fetchItems(
-            $owner_id,
-            $parent_id = NULL,
+            $owner_id = self::WHATEVER,
+            $parent_id = self::WHATEVER,
             $is_public = self::WHATEVER,
             $is_trash = self::WHATEVER,
             $is_archive = self::WHATEVER,
             $options = array()) {
         # general conditions
-        $item_cond = "(owner_id = ?) ";
-        $cond = array($item_cond, $owner_id);
-        if($parent_id !== NULL) {
+        $cond = array("1 ");
+        # if owner item specified?
+        if($owner_id != self::WHATEVER) {
+            $cond[0] .= "AND owner_id = ? ";
+            $cond[] = $owner_id;
+        }
+        if($parent_id != self::WHATEVER) {
             $cond[0] .= "AND parent_id = ? ";
             $cond[] = $parent_id;
         }
@@ -445,7 +449,7 @@ abstract class item extends abstractModel
      * @return array the trash items
      */
     public function fetchTrashes($owner_id, $options = array()) {
-        return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_SET, self::WHATEVER, $options);
+        return $this->fetchItems($owner_id, self::WHATEVER, self::WHATEVER, self::FLAG_SET, self::WHATEVER, $options);
     }
     /**
      * Fetches all archived items that the owner has
@@ -453,7 +457,7 @@ abstract class item extends abstractModel
      * @return array the archive items
      */
     public function fetchArchives($owner_id, $options = array()) {
-        return $this->fetchItems($owner_id, NULL, self::WHATEVER, self::FLAG_UNSET, self::FLAG_SET, $options);
+        return $this->fetchItems($owner_id, self::WHATEVER, self::WHATEVER, self::FLAG_UNSET, self::FLAG_SET, $options);
     }
     /**
      * Fetches all shared items that the owner has
@@ -461,7 +465,7 @@ abstract class item extends abstractModel
      * @return array the shared items
      */
     public function fetchShared($owner_id, $options = array()) {
-        return $this->fetchItems($owner_id, NULL, self::FLAG_SET, self::FLAG_UNSET, self::WHATEVER, $options);
+        return $this->fetchItems($owner_id, self::WHATEVER, self::FLAG_SET, self::FLAG_UNSET, self::WHATEVER, $options);
     }
     /**
      * fetches the items base on their popularity
@@ -476,7 +480,7 @@ abstract class item extends abstractModel
      * @return array of fetched items
      */
     public function fetchPopular(
-            $owner_id,
+            $owner_id = self::WHATEVER,
             $offset = 0,
             $limit = 5,
             $is_public = self::WHATEVER,
@@ -487,7 +491,7 @@ abstract class item extends abstractModel
         $options["offset"] = $offset;
         $options["limit"] = $limit;
         $options["order"] = "popularity " . ($reverse ? "ASC" : "DESC").", created_at DESC";
-        return $this->fetchItems($owner_id, NULL, $is_public, $is_trash, $is_archive, $options);
+        return $this->fetchItems($owner_id, self::WHATEVER, $is_public, $is_trash, $is_archive, $options);
     }
     /**
      * Increases the item's popularity

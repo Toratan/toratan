@@ -227,7 +227,7 @@ class eController extends \zinux\kernel\controller\baseController
         $args = array(\core\db\models\user::GetInstance()->user_id);
         switch ($category) {
             case \modules\frameModule\models\directoryTree::RECENT: 
-                $args = array_merge($args, array(NULL, item::WHATEVER, item::WHATEVER, item::WHATEVER));
+                $args = array_merge($args, array(item::WHATEVER, item::WHATEVER, item::WHATEVER, item::WHATEVER));
                 $func = "fetchItems";
                 break;
             case \modules\frameModule\models\directoryTree::ARCHIVE: $func = "fetchArchives"; break;
