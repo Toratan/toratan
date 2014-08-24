@@ -487,7 +487,7 @@ abstract class item extends abstractModel
             $is_trash = self::WHATEVER,
             $is_archive = self::WHATEVER,
             $reverse = 0,
-            $options = false) {
+            $options = array()) {
         $options["offset"] = $offset;
         $options["limit"] = $limit;
         $options["order"] = "popularity " . ($reverse ? "ASC" : "DESC").", created_at DESC";
