@@ -54,7 +54,7 @@ class renderComment
     <div class="row">
 <?php if(!\core\db\models\user::IsSignedin()): ?>
         <div class="text-center col-xs-12 comment-signin-container" style="border: 1px solid #ddd;height: 55px;padding:15px;font-weight: bold">
-            <span class="glyphicon glyphicon-warning-sign"></span> <span class="burden">You must </span><a href="/signup">Signup</a> or <a href="/signin">Signin</a> to comment.
+            <span class="glyphicon glyphicon-warning-sign"></span> <span class="burden">You must </span><a href="/signin">Signin</a> or <a href="/signup">Signup</a> to comment.
         </div>
 <?php else: ?>
         <div class="hidden-xs col-sm-1 avatar">
