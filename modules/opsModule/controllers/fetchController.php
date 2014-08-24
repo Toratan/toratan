@@ -103,5 +103,11 @@ class fetchController extends \zinux\kernel\controller\baseController
     */
     public function relatedAction()
     {
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("id", "uid"));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["id"], $this->request->params["uid"]));
+        if(!isset($this->request->params["p"]))
+            $this->request->params["p"] = 1;
+        echo __METHOD__;
+        die;
     }
 }

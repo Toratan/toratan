@@ -19,7 +19,7 @@ class opsBootstrap
         $signin_free_ops = array(
             "index"  => array("view", "goto", "explorer"),
             "profile" => array("index", "about", "posts", "avatar_view"),
-            "fetch"   => array("comment", "popular")
+            "fetch"   => array("comment", "popular", "related")
         );
         # the normalized currently requested {conttroller => action} 
         $current_request = array(

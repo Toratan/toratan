@@ -407,7 +407,7 @@ class noteViewModel
             }, [0, 5]);
             fetch_popular({
                     class: '.global-popular-posts',
-                    url: "/fetch/popular/type/notes?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array("notes", $n->note_id, \core\db\models\item::WHATEVER))?>",
+                    url: "/fetch/related?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($n->note_id, \core\db\models\item::WHATEVER))?>",
                     uid: <?php echo json_encode(\core\db\models\item::WHATEVER) ?>
             }, [0, 10]);
         </script>
