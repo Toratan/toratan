@@ -145,6 +145,7 @@ class renderComment
     public function __render_prev_comments() {
         $cuid = @\core\db\models\user::GetInstance()->user_id;
         $comments = $this->comments;
+        $sigined =  \core\db\models\user::IsSignedin();
 ?>
 <?php foreach($comments as $comment): ?>
 <?php $vote_status = \core\db\models\comment_voter::__voter_exists($comment->comment_id, $cuid); ?>
@@ -180,11 +181,11 @@ class renderComment
                 <div class="clearfix"></div>
                 <div class="col-xs-12 comment-data"><?php echo $comment->comment ?></div>
                 <div class="col-xs-12 comment-footer">
-                    <a href="#" class="vote vote-up text-success <?php echo $vote_status === 1 ? "voted" : "" ?>">
+                    <a href="#" class="vote vote-up text-success <?php echo $vote_status === 1 ? "voted" : "" ?> <?php echo !$sigined ? "disabled" : ""?>">
                         <span class="vote-val vote-up-val"><?php echo $comment->vote_up ? $comment->vote_up : "" ?></span> <span class="glyphicon glyphicon-chevron-up"></span>
                     </a>
                     <div class="divider"></div>
-                    <a href="#" class="vote vote-down text-danger <?php echo $vote_status === 0 ? "voted" : "" ?>">
+                    <a href="#" class="vote vote-down text-danger <?php echo $vote_status === 0 ? "voted" : "" ?> <?php echo !$sigined ? "disabled" : ""?>">
                         <span class="vote-val vote-down-val"><?php echo $comment->vote_down ? $comment->vote_down : "" ?></span> <span class="glyphicon glyphicon-chevron-down"></span>
                     </a>
                     <div class="actions pull-right">
