@@ -141,6 +141,7 @@ class noteViewModel
 <?php endif; ?>
 </script>
 <div id="note-render">
+<?php if($is_owner) : ?>
     <ol class="breadcrumb">
         <?php $count = 0; foreach($this->view->route as $folder) : $active = count($this->view->route) == ++$count; $should_link = ($is_owner && strlen($folder->folder_title)); ?>
             <li <?php echo $active?"class='active'":""?>><?php echo $should_link ? "<a href='/#!/d/{$folder->folder_id}.".(!$active?"folders":"notes")."'>":"", $folder->folder_title, $should_link ? "</a>" : "" ?></li>
@@ -149,6 +150,9 @@ class noteViewModel
             <li class="pull-right no-bc-slash cd"><a href="#" onclick="change_path();return false;" data-toggle="tooltip" title="Change the path where the note will is saved.">Change</a></li>
             <?php endif; ?>
     </ol>
+<?php else: ?>
+    <div style="margin-top: 56px;"></div>
+<?php endif; ?>
     <table class="table table-responsive " id="title">
         <tbody>
             <tr>
