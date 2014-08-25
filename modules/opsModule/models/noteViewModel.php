@@ -180,7 +180,7 @@ class noteViewModel
                             <?php echo $writer->get_RealName_or_Username() ?>
                         </a>
                         &angmsd;
-                        <?php $dt = $n->updated_at ?>
+                        <?php $dt = $n->created_at ?>
                         <abbr title="<?php echo $dt; ?>" class="initialism timeago" style='cursor: pointer!important'>
                             <time datetime="<?php echo $dt; ?>">
                                 <?php echo $dt; ?>
@@ -294,11 +294,10 @@ class noteViewModel
                     var time = moment(sTime).format("lll");
                     var time_str = (moment(sTime).fromNow("lll")) + " ago";
                     $(this)
-                        .attr('title', 'Updated at : ' + time)
+                        .attr('title', 'Created at : ' + time)
                         .children('time')
-                        .attr('title', $(this).attr('title'))
-                        .addClass(".time-inited")
-                        .html(time_str);
+                            .addClass(".time-inited")
+                            .html(time_str);
                 });
             };
             if(typeof(moment) !== "undefined")
