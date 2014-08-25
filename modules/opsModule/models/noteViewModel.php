@@ -118,6 +118,7 @@ class noteViewModel
         var $epb = $("#note-render .breadcrumb").find("li:not(.cd)").remove().end();
         address.reverse().forEach(function(e) {$epb.prepend($("<li>").append($("<a>").attr("data-id", e.data_id).text(e.title).attr("href", "/#!/d/"+e.data_id+(e.is_active ? ".notes" : ".folders"))));});
         change_path.pid = address[0].data_id;
+        $("#note-render .breadcrumb a").click(function(){window.location = $(this).attr('href');});
     };
     function change_path() {
         <?php $profile =\core\db\models\profile::getInstance(); ?>
