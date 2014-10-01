@@ -20,3 +20,6 @@
 [submodule "public_html/access/js/autosize"]
 	path = public_html/access/js/autosize
 	url = git@github.com:jackmoore/autosize.git
+[submodule "public_html/access/js/sticky"]
+	path = public_html/access/js/sticky
+	url = git@github.com:noise2/sticky.git
