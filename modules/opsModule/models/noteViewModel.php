@@ -188,6 +188,7 @@ class noteViewModel
                             </time>
                         </abbr>
                         <?php unset($dt); ?>
+                        <span class="glyphicon glyphicon-signal"></span> Rated 4.7
                     </topic-meta>
                 </td>
                 <td class="pull-right">
@@ -268,6 +269,7 @@ class noteViewModel
             echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
         ?>
             <div class="clearfix"></div>
+            <?php self::__renderRateButtons($n, $this->view->request->GetPrimaryURI(1)) ?>
             <?php self::__renderSocialButtons($n, $this->view->request->GetPrimaryURI(1)) ?>
             <?php self::__renderComments($n); ?>
         </div>
@@ -442,12 +444,39 @@ class noteViewModel
 </style>
 <?php
     }
+    public static function __renderRateButtons(\core\db\models\note $note, $uri) {
+?>
+<div class="pull-right rate-this">
+    <style type="text/css">
+            .rate-this {margin-bottom: -20px;margin-top: 40px}
+            .rates .rate {margin: 0;padding: 0}
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".rates .rate").hover(function(){
+                $(this).css("color", "#0088cc").prevAll(".rate").css("color", "#0088cc");
+            }, function(){
+                $(this).css("color", "initial").prevAll(".rate").css("color", "initial");
+            });
+        });
+    </script>
+    <ul class="list-inline rates">
+        <li>Rate This Note</li>
+    <?php for($i=0;$i<5;$i++): ?>
+        <li class="rate">
+            <span class="glyphicon glyphicon-star-empty"></span>
+        </li>
+    <?php endfor; ?>
+    </ul>
+</div>
+<?php 
+    }
     public static function __renderSocialButtons(\core\db\models\note $note, $uri) {
         if(!@$note->is_public) return;
         $n = $note;
 ?>
     <div class="social-sharing">
-        <style>
+        <style type="text/css">
             .social-sharing {margin-bottom: -20px;margin-top: 40px}
             .share-buttons{list-style: none;}.share-buttons li{display: inline;}
             .share-buttons li a {color: #aaa!important;}
