@@ -35,21 +35,23 @@ class note_vote extends baseModel
             $nv->save();
         }
         $nv->note->save();
+        return $nv;
     }
     /**
      * Un-votes a note
      * @param $note_id The note ID
      * @param $user_id The un-voter's user ID
+     * @retrun true if successful
      */
     public function  unvote($note_id, $user_id) {
         $nv = self::find("first", array("conditions" => array("note_id = ? AND user_id = ?", $note_id, $user_id)));
-        if(!$nv) return;
+        if(!$nv) return true;
         $n_nv = $nv->note->vote_value;
         $n_nc = $nv->note->vote_count;
-        $nv->note->vote_value = ($n_nc * $n_nv - $nv->vote) / ($n_nc - 1);
-        $nv->note->vote_count--;
+        $nv->note->vote_value = ($n_nc == 1 ? 0 : ($n_nc * $n_nv - $nv->vote) / ($n_nc - 1));
+        $nv->note->vote_count = ($n_nc <= 1 ? 0 : $n_nc - 1);
         $nv->note->save();
-        $nv->delete();
+        return $nv->delete();
     }
     /**
      * Checks if a note has been voted by a user or not
