@@ -190,7 +190,7 @@ class noteViewModel
                         <?php unset($dt); ?>
                         <?php if($n->is_public || $n->vote_count) : ?>
                         <a href="#rate-note" class="text-muted" style="cursor: pointer">
-                            <span class="glyphicon glyphicon-signal"></span> Rated: <?php if($n->vote_count): ?><strong><?php echo $n->vote_value ?> / 5</strong> (<?php echo $n->vote_count ?> votes cast) <?php else: ?> Never <?php endif; ?>
+                            <span class="glyphicon glyphicon-signal"></span> Rated: <strong><span class="vote_value"><?php echo $n->vote_value ?></span> / 5</strong> (<span class="vote_count"><?php echo $n->vote_count ?></span> votes cast )
                         </a>
                         <?php endif; ?>
                     </topic-meta>
@@ -461,19 +461,51 @@ class noteViewModel
     <script type="text/javascript">
         $(document).ready(function(){
             var mvote = <?php echo $nv->is_voted($note->note_id, \core\db\models\user::GetInstance()->user_id); ?>;
+            var voting  = false;
             function init_stars() {
+                if(voting) return;
                 $(".rates .rate").each(function(index, elem) {
-                    if(index > mvote)
+                    if(index < mvote)
                         $(elem).addClass("vote-marked");
-                    else return false;
+                    else $(elem).removeClass("vote-marked");
                 });
                 update_vote_stars();
+                $(".rates .unvote").remove();
+                if(mvote)
+                    $(".rates>:last").append("<small style='' class='unvote'><a href='#'>Un-vote</span></small>").click(function(e){ if(voting) return; e.preventDefault(); vote(0, $(this)); });
+            }
+            function vote(vote, $this) {
+                $.ajax({
+                    global: false,
+                    beforeSend: function() { voting = true; update_vote_stars("#e8e8e8", true);$this.parent(".rates").children(".rate").css("cursor", "wait");},
+                    complete: function() { voting = false;$this.parent(".rates").children(".rate").css("cursor", "pointer");},
+                    url: "/vote/type/note/i/<?php echo $note->getItemID() ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array("note", $note->getItemID(), \core\db\models\user::GetInstance()->user_id))?>",
+                    data: {vote: $this.addClass("rated").prevAll(".rate").length + 1, o: vote},
+                    dataType: "JSON",
+                    success: function(data){
+                        for(var propertyName in data) {
+                            if(data[propertyName] === null)
+                                data[propertyName] = 0;
+                        }
+                        if(typeof(data.voted) === "undefined" || typeof(data.vote) === "undefined" || typeof(data.vote_value) === "undefined" || typeof(data.vote_count) === "undefined"){
+                            window.open_errorModal("Unable to get a proper respond from the server!");
+                            return;
+                        }
+                        mvote = data.vote;
+                        $this.addClass("rated");
+                        $(".vote_value").text(data.vote_value);
+                        $(".vote_count").text(data.vote_count);
+                        setTimeout(function(){init_stars();}, 100);
+                    }
+                });
             }
             init_stars();
             $(".rates").hover(function(){}, function(){
-                    init_stars();
+                if(voting) return;
+                init_stars();
             });
             $(".rates .rate").hover(function(){
+                if(voting) return;
                 $(this)
                         .addClass("vote-marked")
                             .prevAll(".rate")
@@ -481,6 +513,7 @@ class noteViewModel
                 $(this).nextAll(".rate").removeClass("vote-marked");
                 update_vote_stars();
             }, function(){
+                if(voting) return;
                 $(this)
                         .removeClass("vote-marked")
                             .prevAll(".rate")
@@ -488,13 +521,16 @@ class noteViewModel
                 $(this).nextAll(".rate").removeClass("vote-marked");
                 update_vote_stars();
             }).click(function(){
-                $(this).addClass("rated");
-                mvote = $(this).addClass("rated").prevAll(".rate").length + 1;
+                if(voting) return;
+                vote(1, $(this), $);
             });
-            function update_vote_stars(){
+            function update_vote_stars(color, force){
+                if(voting && (typeof(force) === "undefined" || !force)) return;
+                if(typeof(color) === "undefined")
+                    color = "#0088cc";
                 $(".rates .rate.vote-marked span").each(function(){
                         $(this)
-                                .css("color", "#0088cc")
+                                .css("color", color)
                                 .removeClass("glyphicon-star-empty")
                                 .addClass("glyphicon-star");
                 });
@@ -513,9 +549,9 @@ class noteViewModel
             <span class="glyphicon glyphicon-star-empty"></span>
         </li>
     <?php endfor; ?>
-        <li style="display: block!important" class="text-muted">
+        <li style="display: block!important" class="text-muted vote-statistic">
             <small>
-                Voted: <strong><?php echo $note->vote_value ?> / 5</strong> (<?php echo $note->vote_count ?> votes cast)
+                Rated: <strong><span class="vote_value"><?php echo $note->vote_value ?></span> / 5</strong> (<span class="vote_count"><?php echo $note->vote_count ?></span> votes cast)
             </small>
         </li>
     </ul>

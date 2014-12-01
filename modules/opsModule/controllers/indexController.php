@@ -1058,7 +1058,9 @@ __USE_DEFAULT:
         return null;
     }
     /**
-    * The \modules\opsModule\controllers\indexController::moveAction()
+    * Moves an item or provides a UI for it
+    * @access via /ops/move
+    * @hash-sum (type).(pid).(get_address_only?)
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function moveAction()
@@ -1112,13 +1114,43 @@ __USE_DEFAULT:
         $item_ins->move($items, \core\db\models\user::GetInstance()->user_id, $this->request->params["cpid"]);
         die;
     }
-
     /**
-    * The \modules\opsModule\controllers\indexController::voteAction()
+    * Moves an item or provides a UI for it
+    * @access via /ops/vote/type/{note}/i/(ID)/o/(OPR)
+    * @hash-sum (type).(i).(USERID)
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function voteAction()
     {
-        
+        $this->layout->SuppressLayout();
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("type", "i", "o"), 
+            array(
+                "type" => function(){ return in_array($this->request->params["type"], array("note"));},
+                "o"      => function(){ return in_array($this->request->params["o"], array(0, 1));},
+            )
+        );
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["type"], $this->request->params["i"], \core\db\models\user::GetInstance()->user_id));
+        $type = $this->request->params["type"];
+        $item_class = "\\core\\db\\models\\{$type}_vote";
+        $item_ins = new $item_class;
+        switch($this->request->params["o"]) {
+            case 0:
+                # unvote
+                $item_ins = $item_ins->unvote($this->request->params["i"], \core\db\models\user::GetInstance()->user_id);
+                break;
+            case 1:
+                # vote
+                $item_ins = $item_ins->vote($this->request->params["i"], \core\db\models\user::GetInstance()->user_id, $this->request->params["vote"]);
+                break;
+        }
+        die(json_encode(
+                array(
+                    "voted" => 1, 
+                    "vote" => @$item_ins->vote, 
+                    "vote_value" => @$item_ins->note->vote_value,
+                    "vote_count" => @$item_ins->note->vote_count
+                )
+            )
+        );
     }
 }
