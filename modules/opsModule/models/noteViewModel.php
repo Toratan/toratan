@@ -188,7 +188,11 @@ class noteViewModel
                             </time>
                         </abbr>
                         <?php unset($dt); ?>
-                        <span class="glyphicon glyphicon-signal"></span> Rated 4.7
+                        <?php if($n->is_public || $n->vote_count) : ?>
+                        <a href="#rate-note" class="text-muted" style="cursor: pointer">
+                            <span class="glyphicon glyphicon-signal"></span> Rated: <?php if($n->vote_count): ?><strong><?php echo $n->vote_value ?> / 5</strong> (<?php echo $n->vote_count ?> votes cast) <?php else: ?> Never <?php endif; ?>
+                        </a>
+                        <?php endif; ?>
                     </topic-meta>
                 </td>
                 <td class="pull-right">
@@ -445,28 +449,75 @@ class noteViewModel
 <?php
     }
     public static function __renderRateButtons(\core\db\models\note $note, $uri) {
+        # no rating if not signed in!!
+        if(!\core\db\models\user::IsSignedin() || !$note->is_public) return;
+        $nv = new \core\db\models\note_vote;
 ?>
-<div class="pull-right rate-this">
+<div class="block text-center rate-this" id="rate-note">
     <style type="text/css">
-            .rate-this {margin-bottom: -20px;margin-top: 40px}
-            .rates .rate {margin: 0;padding: 0}
+            .rate-this {margin-bottom: -20px;margin-top: 60px;}
+            .rates .rate {margin: -1px;padding: 10px auto 10px auto;width: 15px;cursor: pointer;font-size: large;}
     </style>
     <script type="text/javascript">
         $(document).ready(function(){
-            $(".rates .rate").hover(function(){
-                $(this).css("color", "#0088cc").prevAll(".rate").css("color", "#0088cc");
-            }, function(){
-                $(this).css("color", "initial").prevAll(".rate").css("color", "initial");
+            var mvote = <?php echo $nv->is_voted($note->note_id, \core\db\models\user::GetInstance()->user_id); ?>;
+            function init_stars() {
+                $(".rates .rate").each(function(index, elem) {
+                    if(index > mvote)
+                        $(elem).addClass("vote-marked");
+                    else return false;
+                });
+                update_vote_stars();
+            }
+            init_stars();
+            $(".rates").hover(function(){}, function(){
+                    init_stars();
             });
+            $(".rates .rate").hover(function(){
+                $(this)
+                        .addClass("vote-marked")
+                            .prevAll(".rate")
+                                .addClass("vote-marked");
+                $(this).nextAll(".rate").removeClass("vote-marked");
+                update_vote_stars();
+            }, function(){
+                $(this)
+                        .removeClass("vote-marked")
+                            .prevAll(".rate")
+                                .removeClass("vote-marked");
+                $(this).nextAll(".rate").removeClass("vote-marked");
+                update_vote_stars();
+            }).click(function(){
+                $(this).addClass("rated");
+                mvote = $(this).addClass("rated").prevAll(".rate").length + 1;
+            });
+            function update_vote_stars(){
+                $(".rates .rate.vote-marked span").each(function(){
+                        $(this)
+                                .css("color", "#0088cc")
+                                .removeClass("glyphicon-star-empty")
+                                .addClass("glyphicon-star");
+                });
+                $(".rates .rate:not(.vote-marked) span").each(function(){
+                        $(this)
+                                .css("color", "initial")
+                                .removeClass("glyphicon-star")
+                                .addClass("glyphicon-star-empty");
+                });
+            };
         });
     </script>
     <ul class="list-inline rates">
-        <li>Rate This Note</li>
     <?php for($i=0;$i<5;$i++): ?>
         <li class="rate">
             <span class="glyphicon glyphicon-star-empty"></span>
         </li>
     <?php endfor; ?>
+        <li style="display: block!important" class="text-muted">
+            <small>
+                Voted: <strong><?php echo $note->vote_value ?> / 5</strong> (<?php echo $note->vote_count ?> votes cast)
+            </small>
+        </li>
     </ul>
 </div>
 <?php 
