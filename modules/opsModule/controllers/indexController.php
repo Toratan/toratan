@@ -1112,4 +1112,13 @@ __USE_DEFAULT:
         $item_ins->move($items, \core\db\models\user::GetInstance()->user_id, $this->request->params["cpid"]);
         die;
     }
+
+    /**
+    * The \modules\opsModule\controllers\indexController::voteAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function voteAction()
+    {
+        
+    }
 }
