@@ -125,10 +125,9 @@ class conversation extends communicationModel
     public function  marked_as_read($current_user) {
         if($this->user1 != $current_user && $this->user2 != $current_user)
             throw new \zinux\kernel\exceptions\invalidOperationException("The user#`$current_user` is not part of conversation#`$this->conversation_id`.");
-        $lm = message::find('last', array("conditions" => array("conversation_id = ? AND receiver_id = ?", $this->conversation_id, $current_user)));
-        if(!$lm) return;
-        $lm->is_read = 1;
-        $lm->save();
+        message::update_all(array("set" => array("is_read" => 1), "conditions" => array("conversation_id = ? AND receiver_id = ? AND is_read <> 1", $this->conversation_id, $current_user)));
+        $this->is_read = 1;
+        $this->save();
     }
     /**
      * Checks if current conversation is seen by current user?
@@ -138,11 +137,7 @@ class conversation extends communicationModel
     public function is_conversation_seen($current_user) {
         if($this->user1 != $current_user && $this->user2 != $current_user)
             throw new \zinux\kernel\exceptions\invalidOperationException("The user#`$current_user` is not part of conversation#`$this->conversation_id`.");
-        $lm = message::find('last', array("readonly" => true, "conditions" => array("conversation_id = ? AND receiver_id = ?", $this->conversation_id, $current_user)));
-        if(!$lm) return true;
-        if($lm->is_read)
-            return true;
-        return false;
+        return (bool)($this->is_read || message::last($this->user1, $this->user2, $current_user)->sender_id == $current_user);
     }
     /**
      * Fetch messages based on current conversation

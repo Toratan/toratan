@@ -6,6 +6,9 @@ namespace core\db\models;
  */
 class message extends communicationModel
 {
+    static $belongs_to = array(
+            "conversation"
+    );
     static $validates_presence_of = array(
         array("conversation_id", "sender_id", "receiver_id", "message_data")
     );
@@ -24,6 +27,7 @@ class message extends communicationModel
         $this->receiver_id = $reciever_id;
         $this->message_data = $message;
         $this->save();
+        $c->is_read = 0;
         $c->update2date($this->created_at);
         return $this;
     }
