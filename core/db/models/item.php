@@ -22,23 +22,6 @@ abstract class item extends abstractModel
      */
     static $after_save = array('after_save_update_notifications');
     /**
-     * In certain operations that we want to do NOOP on some
-     * prespective of item we pass this
-     */
-    const NOOP = -1;
-    /**
-     * the set flag value
-     */
-    const FLAG_SET = 1;
-    /**
-     * the unset flag value
-     */
-    const FLAG_UNSET = 0;
-    /**
-     * flag whatever
-     */
-    const WHATEVER = self::NOOP;
-    /**
      * flag no-change
      */
     const NOCHANGE= self::NOOP;

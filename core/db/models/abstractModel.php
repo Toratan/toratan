@@ -4,6 +4,23 @@ namespace core\db\models;
 abstract class abstractModel extends baseModel
 {
     /**
+     * In certain operations that we want to do NOOP on some
+     * prespective of item we pass this
+     */
+    const NOOP = -1;
+    /**
+     * the set flag value
+     */
+    const FLAG_SET = 1;
+    /**
+     * the unset flag value
+     */
+    const FLAG_UNSET = 0;
+    /**
+     * flag whatever
+     */
+    const WHATEVER = self::NOOP;
+    /**
      * Get/Set item's table name
      * @var string
      */
