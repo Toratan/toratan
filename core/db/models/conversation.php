@@ -100,11 +100,17 @@ class conversation extends communicationModel
      * @param $user_id The user's ID for whom is fetching for
      * @return integer # of user's conversations
      */
-    public static function countAll($user_id, $non_deleted = 1) {
+    public static function countAll($user_id, $non_deleted = self::FLAG_SET, $is_read = self::WHATEVER, $maked_as = self::WHATEVER) {
         $cond = array('(user1 = ? OR user2 = ?)', $user_id, $user_id);
-        if($non_deleted) {
+        if($non_deleted == self::FLAG_SET) {
             $cond[0] .= " AND (deleted_id IS NULL OR deleted_id != ?)";
             $cond[] = $user_id;
+        }
+        foreach(array("is_read" => $is_read, "marked_as" => $maked_as) as $column => $value) {
+            if($value != self::WHATEVER) {
+                $cond[0] .= " AND $column = ?";
+                $cond[] = $value;
+            }
         }
         return parent::count(array('conditions' => $cond));
     }
