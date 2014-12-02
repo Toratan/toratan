@@ -60,7 +60,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
                     <div class="col-md-3 col-sm-3 col-xs-3" style="max-width: 100px!important;padding-left: 5px;<?php echo !@$this->view->conv_last_message[$index]->is_read ? "margin-top:-10px" : "" ?>">
                         <?php list($avatar, $def_avatar) = \core\ui\html\avatar::get_avatar_link($user->user_id); ?>
                         <?php if(!@$this->view->conv_last_message[$index]->is_read): ?>
-                            <small style="color: #0088cc;font-size: 80%;margin: 0px!important;margin-bottom: -10px;margin-right: 5px;font-weight: bold;width: 100%" class="pull-left text-center">New</small>
+                            <small style="color: #0088cc;font-size: 80%;margin: 0px!important;margin-bottom: -10px;margin-right: 5px;font-weight: bold;width: 100%" class="pull-left text-center new-conv">New</small>
                         <?php endif; ?>
                         <img src="<?php echo $avatar ?>" class="image img-thumbnail img-responsive img avatar" onerror="this.src='<?php echo $def_avatar ?>'"/>
                     </div>
@@ -157,6 +157,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
             });
             $("#conv-messages-placeholder").html('');
             $("#conv-load-ui").show();
+            var $this = $(this);
             $.ajax({
                 type: "POST",
                 url: $(this).attr("target-href"),
@@ -164,6 +165,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
                 success: function(data) {
                     $("#conv-load-ui").hide();
                     $("#conv-messages-placeholder").prepend(data);
+                    $this.removeClass("unseen").addClass("seen").find(".new-conv").html("&nbsp;");
                 }
             }).fail(function(xhr) {
                 setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);
