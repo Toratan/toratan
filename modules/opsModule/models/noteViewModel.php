@@ -273,7 +273,7 @@ class noteViewModel
             echo isset($n->note_html_body) && strlen($n->note_html_body) ? $n->note_html_body : self::__renderText($n->note_body); 
         ?>
             <div class="clearfix"></div>
-            <?php self::__renderRateButtons($n, $this->view->request->GetPrimaryURI(1)) ?>
+            <?php self::__renderRateButtons($n) ?>
             <?php self::__renderSocialButtons($n, $this->view->request->GetPrimaryURI(1)) ?>
             <?php self::__renderComments($n); ?>
         </div>
@@ -448,9 +448,9 @@ class noteViewModel
 </style>
 <?php
     }
-    public static function __renderRateButtons(\core\db\models\note $note, $uri) {
+    public static function __renderRateButtons(\core\db\models\note $note) {
         # no rating if not signed in!!
-        if(!\core\db\models\user::IsSignedin() || !$note->is_public) return;
+        if(!\core\db\models\user::IsSignedin() || !$note->is_public || $note->owner_id == \core\db\models\user::GetInstance()->user_id) return;
         $nv = new \core\db\models\note_vote;
 ?>
 <div class="block text-center rate-this" id="rate-note">
