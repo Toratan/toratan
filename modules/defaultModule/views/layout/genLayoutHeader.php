@@ -29,6 +29,8 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
         <link rel="stylesheet" href="/access/css/bootstrap-theme.min.css">
         <!-- jQuery -->
         <script type="text/javascript" src="/access/js/jquery-1.11.1.min.js"></script>
+        <!-- font awsome -->
+        <link  rel="stylesheet" href="/access/css/font-awesome.min.css">
         <link rel="shortcut icon" href="/favicon.ico">
         <?php $this->layout->RenderTitle();?>
         <?php $this->layout->RenderImports(); ?>
@@ -49,28 +51,97 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
         <div class="header">
             <style type="text/css">
                 .header .nav .badge {background-color:#4488cc;}
-                .notificationdropdown-menu{padding: 0;max-height: 100px;overflow-y: auto}
-                .header .nav .notification{padding: 10px;width: 400px;}
+                .notifications.dropdown-menu{padding: 0;width: 400px;}
+                .header .nav .notification {}
                 .header .nav .notification-label {display: block!important}
-                .header .nav .notification-core-text {margin-left: 40px; word-break: break-all;}
+                .header .nav .notification-core {padding: 10px;}
+                .header .nav .notification-core-text {margin-left: 10px;word-wrap: break-word!important;white-space: normal}
+                .header .nav .notifs-ops {padding:3px 10px 10px 10px;border-bottom: 1px solid #e9e9e9;}
+                .header .nav .notifications {max-height: 400px;overflow-x: hidden;overflow-y: auto}
+                .header .nav .notifications.dropdown-menu li.no-notification {padding:10px;font-variant: small-caps}
+                .header .nav .notifications.dropdown-menu li.no-notification > a:hover,
+                .header .nav .notifications.dropdown-menu li.no-notification > a:focus,
+                .header .nav .notifications.dropdown-submenu:hover > a
+                {background-image: none; background-color:transparent}
+                
             </style>
+            <script type='text/javascript'>
+                $(document).ready(function(){
+                    function init_notifications() {
+                        if($(".notification").length === 0) {
+                            $(".notifications").append("<li class='no-notification notification text-center'><a style='font-weight: bold;color:#9e9e9e'>No notification!</a></li>");
+                            $(".notification-badge.badge").remove();
+                            $(".notification-clear-all").remove();
+                        } else {
+                            $(".notification:not(.init)").click(function(e){
+                                e.stopPropagation();
+                            }).addClass("init");
+                        }
+                    }
+                    init_notifications();
+                    $(".notification-clear-all").click(function(e){
+                        e.stopPropagation();
+                        e.preventDefault();
+                        function rename_attrib($they, from, to) {
+                            $they.each(function(){
+                                $(this).attr(to, $(this).attr(from));
+                                $(this).removeAttr(from);
+                            });
+                        }
+                        $.ajax({
+                            global: false,
+                            beforeSend:  function() {
+                                $(".notification-clear-all").hide().parent().append("<span class='fa fa-spin fa-spinner notification-clear-spin'><span>");
+                               rename_attrib($(".notification").addClass("disabled").find("a"), "href", "data-href");
+                            },
+                            complete:  function() {
+                                setTimeout(function(){ $(".notification-clear-spin").remove(); $(".notification-clear-all").show(); }, 750);
+                                rename_attrib($(".notification").removeClass("disabled").find("a"), "data-href", "href");
+                            },
+                            url: "/notifications/clear?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(0, 10, \core\db\models\user::GetInstance()->user_id))?>",
+                            data: {o: 0, l: 10},
+                            success: function(data){ 
+                                $(".notification").each(function(){
+                                    $(this).slideUp(function(){$(this).remove();init_notifications();});
+                                });
+                            },
+                            error: function(data) {
+                                window.open_errorModal("Couldn't complete the operation. please try later.");
+                            }
+                        });
+                    });
+                });
+            </script>
             <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
                 <?php if(($user_logged = \core\db\models\user::IsSignedin())): ?>
                 <li class='hidden-lg hidden-md'><a href='#'><span class='glyphicon glyphicon-flash'></span> Feeds</a></li>
                 <li class="dropdown">
                     <?php
                         $n = new \core\db\models\notification;
-                        $notif_pulls = $n->pull();
+                        $notif_pulls = $n->pull(\core\db\models\user::GetInstance()->user_id);
                     ?>
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo count($notif_pulls) ? "<span class='badge'>".count($notif_pulls)."</span>" : "" ?> Notifications<b class="caret"></b></a>
-                    <ul class="dropdown-menu pull-right notification-dropdown-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span  data-toggle='tooltip' title='Notification' data-placement='bottom'>
+                            <?php echo count($notif_pulls) ? "<span class='notification-badge badge'>".count($notif_pulls)."</span>" : "" ?> <span class="fa fa-bell" ></span><b class="caret"></b>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu pull-right notifications">
+                        <li class="notifs-ops">
+                            <div class="pull-left">
+                                <strong>Notifications</strong>
+                            </div>
+                            <div class="pull-right">
+                                <a href='#' class='notification-clear-all'>Clear these</a>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
                         <?php
                             foreach($notif_pulls as $notif) :
                         ?>
                         <li class="notification">
-                            <a href='<?php echo substr($notif->notification_link, 2)?>'>
-                                <small class="text-muted block notification-label"><?php echo ucwords($notif->notification_title)?> &cross; <span class='badge'><?php echo $notif->count?></span></small>
-                                <span class="notification-core-text"><?php echo $notif->notification_message?></span>
+                            <a href='<?php echo substr($notif->notification_link, 2)?>' class="notification-core">
+                                <small class="text-muted block notification-label" style="font-variant: small-caps"><?php echo ucwords($notif->notification_title)?> &cross; <span class='badge'><?php echo $notif->count?></span></small>
+                                <div class="notification-core-text"><?php echo $notif->notification_message?></div>
                             </a>
                         </li>
                         <?php
@@ -78,13 +149,13 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
                         ?>
                     </ul>
                 </li>
-                <li><a href='/messages'>
+                <li><a href='/messages' data-toggle='tooltip' title='Inbox' data-placement='bottom'>
                 <?php 
                     $inbox_count = \core\db\models\conversation::countAll(\core\db\models\user::GetInstance()->user_id, \core\db\models\abstractModel::FLAG_SET, \core\db\models\abstractModel::FLAG_UNSET);
                     if($inbox_count)
                         echo "<span class='badge'>$inbox_count</span>";
                     unset($inbox_count);
-                ?></span> <span class='glyphicon glyphicon-inbox'></span> Inbox</a></li>
+                ?></span> <span class='glyphicon glyphicon-inbox'></span></a></li>
                 <li class="dropdown">
                     <?php list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link(\core\db\models\user::GetInstance()->user_id); ?>
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src='<?php echo $avatar_uri ?>' height="20" width="20" class='imageblock img-rounded' onerror="this.src='<?php echo $def_avatar ?>'"/> Account <b class="caret"></b></a>

@@ -26,7 +26,7 @@ class commentController extends \zinux\kernel\controller\baseController
         $is_owner = ($note->owner_id == \core\db\models\user::GetInstance()->user_id);
         if(!$is_owner) {
             $n = new \core\db\models\notification;
-            $n->push(\core\db\models\notification::NOTIF_COMMENT, $note, $c);
+            $n->push(\core\db\models\notification::NOTIF_TYPE_COMMENT, $note, $c);
         }
         $cr =new \modules\opsModule\models\renderComment($this->request->params["nid"], $is_owner, array($c));
         $cr->__render_prev_comments();

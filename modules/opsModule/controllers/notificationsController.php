@@ -21,6 +21,7 @@ class notificationsController extends \zinux\kernel\controller\baseController
     */
     public function pullAction()
     {
+        throw new \zinux\kernel\exceptions\notImplementedException;
         $this->layout->SuppressLayout();
         if(false && !$this->request->IsPOST())
             throw new \zinux\kernel\exceptions\invalidOperationException;
@@ -52,5 +53,18 @@ class notificationsController extends \zinux\kernel\controller\baseController
         \zinux\kernel\utilities\debug::_var($this->request->params["since"]);
         \zinux\kernel\utilities\debug::_var(\json_decode($this->view->notifs));
         \trigger_error("Security concerns, for providing solid general hashing style for pulling notifs!!");
+    }
+
+    /**
+    * The \modules\opsModule\controllers\notificationsController::clearAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function clearAction()
+    {
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("o", "l"), array("o" => "is_numeric", "l" => "is_numeric"));
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["o"], $this->request->params["l"], \core\db\models\user::GetInstance()->user_id));
+        $n = new \core\db\models\notification;
+        $n->clear(\core\db\models\user::GetInstance()->user_id, $this->request->params["l"], $this->request->params["o"]);
+        die;
     }
 }
