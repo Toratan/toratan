@@ -47,6 +47,9 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
             <?php \core\ui\html\alert::Tout("Your browser's javascript <b>is not</b> enabled. To site be able to work you have to enable your javascript.", \core\ui\html\alert::ALERT_DANGER); ?>
         </noscript>
         <div class="header">
+            <style type="text/css">
+                .header .nav .badge {background-color:#4488cc;}
+            </style>
             <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
                 <?php if(($user_logged = \core\db\models\user::IsSignedin())): ?>
                 <li class='hidden-lg hidden-md'><a href='#'><span class='glyphicon glyphicon-flash'></span> Feeds</a></li>
@@ -57,7 +60,13 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
                         <li><a href="#">Some other stuff</a></li>
                     </ul>
                 </li>
-                <li><a href='/messages'><span class='glyphicon glyphicon-inbox'></span> Inbox</a></li>
+                <li><a href='/messages'>
+                <?php 
+                    $inbox_count = \core\db\models\conversation::countAll(\core\db\models\user::GetInstance()->user_id, \core\db\models\abstractModel::FLAG_SET, \core\db\models\abstractModel::FLAG_UNSET);
+                    if($inbox_count)
+                        echo "<span class='badge'>$inbox_count</span>";
+                    unset($inbox_count);
+                ?></span> <span class='glyphicon glyphicon-inbox'></span> Inbox</a></li>
                 <li class="dropdown">
                     <?php list($avatar_uri , $def_avatar) = \core\ui\html\avatar::get_avatar_link(\core\db\models\user::GetInstance()->user_id); ?>
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src='<?php echo $avatar_uri ?>' height="20" width="20" class='imageblock img-rounded' onerror="this.src='<?php echo $def_avatar ?>'"/> Account <b class="caret"></b></a>
