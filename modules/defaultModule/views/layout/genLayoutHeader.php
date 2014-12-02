@@ -49,15 +49,33 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
         <div class="header">
             <style type="text/css">
                 .header .nav .badge {background-color:#4488cc;}
+                .notificationdropdown-menu{padding: 0;max-height: 100px;overflow-y: auto}
+                .header .nav .notification{padding: 10px;width: 400px;}
+                .header .nav .notification-label {display: block!important}
+                .header .nav .notification-core-text {margin-left: 40px; word-break: break-all;}
             </style>
             <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
                 <?php if(($user_logged = \core\db\models\user::IsSignedin())): ?>
                 <li class='hidden-lg hidden-md'><a href='#'><span class='glyphicon glyphicon-flash'></span> Feeds</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge">2</span> Notifications<b class="caret"></b></a>
-                    <ul class="dropdown-menu pull-right">
-                        <li><a href="#">Some stuff</a></li>
-                        <li><a href="#">Some other stuff</a></li>
+                    <?php
+                        $n = new \core\db\models\notification;
+                        $notif_pulls = $n->pull();
+                    ?>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo count($notif_pulls) ? "<span class='badge'>".count($notif_pulls)."</span>" : "" ?> Notifications<b class="caret"></b></a>
+                    <ul class="dropdown-menu pull-right notification-dropdown-menu">
+                        <?php
+                            foreach($notif_pulls as $notif) :
+                        ?>
+                        <li class="notification">
+                            <a href='<?php echo substr($notif->notification_link, 2)?>'>
+                                <small class="text-muted block notification-label"><?php echo ucwords($notif->notification_title)?> &cross; <span class='badge'><?php echo $notif->count?></span></small>
+                                <span class="notification-core-text"><?php echo $notif->notification_message?></span>
+                            </a>
+                        </li>
+                        <?php
+                            endforeach;
+                        ?>
                     </ul>
                 </li>
                 <li><a href='/messages'>
