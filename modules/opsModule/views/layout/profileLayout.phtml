@@ -138,7 +138,7 @@
                             </a>
                         <?php endif;endif ; ?>
                             <a href="/profile/avatar/view/<?php echo $profile->user_id, "?", \zinux\kernel\security\security::__get_uri_hash_string(array($profile->user_id)) ?>" title="Click to view the original avatar">
-                                <img id="thumbnail" class='image img-thumbnail img-responsive 'src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>';"  />
+                                <img id="thumbnail" class='image img-thumbnail img-responsive 'src="<?php echo $avatar_uri ?>" onerror="this.src='<?php echo $def_avatar ?>';$('.crop').remove()"  />
                             </a>
                         </div>
                         <div class='clearfix'></div>
@@ -211,4 +211,41 @@
 <?php endif; ?>
     });
 </script>
+<?php if($is_profile_owner): ?>
+<form name="avatar" class="hidden" action="/profile/avatar/?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(\core\db\models\user::GetInstance()->user_id, session_id())) ?>" method="POST" enctype="multipart/form-data">
+    <input type="file" name="upload-avatar" accept="image/*"/>
+</form>
+<script type="text/javascript">
+    (function(){
+        $("a#change-avatar").click(function(e){
+            e.preventDefault();
+            $("input[name='upload-avatar']").click();
+            if(typeof(window.is_check_cover_load_in_effect) === "undefined")
+                window.is_check_cover_load_in_effect = 0;
+            $("input[name='upload-avatar']").val('');
+            function check_cover_load(){
+                window.is_check_cover_load_in_effect = 1;
+                if($("input[name='upload-avatar']").val().length) {
+                    // time to load the selected image
+                    // no need for further change-avatar click event
+                    // which can be bug-prone
+                    $("a#change-avatar").unbind('click');
+                    // NOT any more `check_cover_load` is in effect
+                    delete(window.is_check_cover_load_in_effect);
+                    // invoke cover-load event
+                   $("a#change-avatar").trigger('load-cover');
+                    // do not proceed to next interval call
+                    return;
+                }
+                setTimeout(check_cover_load, 750);
+            };
+            if(!window.is_check_cover_load_in_effect)
+                setTimeout(check_cover_load, 500);
+        }).on("load-cover", function(){
+            window.load_bar();
+            $("form[name='avatar']").submit();
+        });
+    })(jQuery);
+</script>
+<?php endif; ?>
 <?php $glayout->render_footer(); ?>
