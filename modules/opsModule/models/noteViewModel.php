@@ -46,6 +46,12 @@ class noteViewModel
         if($is_preview) return "#";
         $uri = '';
         switch(strtolower($type)) {
+            case "no-notif":
+                $uri = "/notifications/stop/{$note->WhoAmI()}/{$note->getItemID()}?".\zinux\kernel\security\security::__get_uri_hash_string(array($note->WhoAmI(), $note->getItemID(), session_id()));
+                break;
+            case "ay-notif":
+                $uri = "/notifications/start/{$note->WhoAmI()}/{$note->getItemID()}?".\zinux\kernel\security\security::__get_uri_hash_string(array($note->WhoAmI(), $note->getItemID(), session_id()));
+                break;
             case "delete":
                 $uri =
                     "/delete/".
@@ -207,6 +213,11 @@ class noteViewModel
                                     <li>
                                         <a href="<?php echo $get_options_links($n, 'edit', $cURL) ?>" style="color:#111100">
                                             <span class='glyphicon glyphicon-edit'></span> Edit
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="<?php echo $get_options_links($n, ($n->get_notification?'no':'ay').'-notif', $cURL) ?>" style="color:#111100">
+                                            <span class="fa fa-volume-<?php  echo $n->get_notification?'off':'up' ?>"></span> <?php echo $n->get_notification?'Stop':'Get' ?> Notifications
                                         </a>
                                     </li>
                                     <?php if($this->view->is_trash): ?>
