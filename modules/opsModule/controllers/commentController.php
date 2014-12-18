@@ -22,11 +22,11 @@ class commentController extends \zinux\kernel\controller\baseController
         \zinux\kernel\security\security::IsSecure($this->request->params, array("nid", "c"), array("c" => array("is_string", "strlen")));
         \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["nid"]));
         $c = \core\db\models\comment::__new($this->request->params["c"], $this->request->params["nid"], \core\db\models\user::GetInstance()->user_id);
-        $note = (new \core\db\models\note)->find(array("conditions" => array("note_id = ?", $this->request->params["nid"]), "select" => "note_id, note_title, owner_id"));
+        $note = (new \core\db\models\note)->find(array("conditions" => array("note_id = ?", $this->request->params["nid"]), "select" => "note_id, note_title, owner_id, get_notification"));
         $is_owner = ($note->owner_id == \core\db\models\user::GetInstance()->user_id);
         if(!$is_owner) {
             $n = new \core\db\models\notification;
-            $n->push(\core\db\models\notification::NOTIF_TYPE_COMMENT, $note, $c);
+            $n->push_item(\core\db\models\notification::NOTIF_TYPE_COMMENT, $note, $c);
         }
         $cr =new \modules\opsModule\models\renderComment($this->request->params["nid"], $is_owner, array($c));
         $cr->__render_prev_comments();

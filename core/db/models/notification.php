@@ -33,9 +33,11 @@ class notification extends \core\db\models\baseModel
      * @param \core\db\models\item $item The related not
      * @param \core\db\models\abstractModel $model The notification triggered model
      */
-    public function push($type, item $item, abstractModel $model) {
+    public function push_item($type, item $item, abstractModel $model) {
         if(!in_array($type, array(self::NOTIF_TYPE_COMMENT)))
                 throw new \zinux\kernel\exceptions\invalidArgumentException("`$type` is in valid as a notification type.");
+        # if get notification is not enabled?
+        if(isset($item->get_notification) && !$item->get_notification) return;
         $this->user_id = $item->owner_id;
         $this->item_id = $this->build_item_id($item);
         $this->notification_type_id = $type;
