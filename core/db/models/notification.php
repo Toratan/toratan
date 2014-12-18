@@ -90,7 +90,7 @@ class notification extends \core\db\models\baseModel
      * @param \core\db\models\item $item
      * @return affected rows#
      */
-    public function clear(item $item){
+    public function clear_item(item $item){
         $builder = new \ActiveRecord\SQLBuilder(self::connection(), self::table_name());
         $builder
                 ->delete()

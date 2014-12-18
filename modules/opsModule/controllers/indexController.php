@@ -720,7 +720,7 @@ __FETCH_SUMMERY:
                 # invoke a notification instance
                 $n = new \core\db\models\notification;
                 # clear all notifications about this note.
-                $n->clear($item_value);
+                $n->clear_item($item_value);
             }
         }
         # pass the item's instance to view
