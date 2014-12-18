@@ -139,7 +139,7 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
                             foreach($notif_pulls as $notif) :
                         ?>
                         <li class="notification">
-                            <a href='<?php echo substr($notif->notification_link, 2)?>' class="notification-core">
+                            <a href='<?php echo array_shift(explode("#", substr($notif->notification_link, 2)))?>?ref=notif' class="notification-core">
                                 <small class="text-muted block notification-label" style="font-variant: small-caps"><?php echo ucwords($notif->notification_title)?> &cross; <span class='badge'><?php echo $notif->count?></span></small>
                                 <div class="notification-core-text"><?php echo $notif->notification_message?></div>
                             </a>

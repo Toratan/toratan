@@ -647,9 +647,6 @@ __FETCH_SUMMERY:
     */
     public function viewAction()
     {
-        # check we have our 2 params loaded
-        if($this->request->CountIndexedParam()!=2)
-            throw new \zinux\kernel\exceptions\invalidOperationException;
         # if reach here we are OK to proceed the opt
         switch (strtoupper($this->request->GetIndexedParam(0)))
         {
@@ -716,6 +713,15 @@ __FETCH_SUMMERY:
             if(!$abort_popularity)
                 # increase the popularity of the item
                 $item_value->increase_popularity();
+        } else {
+            # it the viewer is the owner
+            # if it has the ref flag and it's pointing to notification
+            if(@$this->request->params["ref"] == "notif") {
+                # invoke a notification instance
+                $n = new \core\db\models\notification;
+                # clear all notifications about this note.
+                $n->clear($item_value);
+            }
         }
         # pass the item's instance to view
         $this->view->instance = $item_value;

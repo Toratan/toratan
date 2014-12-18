@@ -64,7 +64,7 @@ class notificationsController extends \zinux\kernel\controller\baseController
         \zinux\kernel\security\security::IsSecure($this->request->params, array("o", "l"), array("o" => "is_numeric", "l" => "is_numeric"));
         \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->params["o"], $this->request->params["l"], \core\db\models\user::GetInstance()->user_id));
         $n = new \core\db\models\notification;
-        $n->clear(\core\db\models\user::GetInstance()->user_id, $this->request->params["l"], $this->request->params["o"]);
+        $n->clear_all(\core\db\models\user::GetInstance()->user_id, $this->request->params["l"], $this->request->params["o"]);
         die;
     }
 }
