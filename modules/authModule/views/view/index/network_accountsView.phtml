@@ -1,6 +1,4 @@
-<?php
-$gauth = new modules\authModule\models\gAuth();
-?>
+<?php $gauth = new modules\authModule\models\gAuth(); ?>
 <div class="">
     <div  class="googleplus-container">
         <a href="<?php echo $gauth->getAuthURI() ?>" class="btn btn-danger" id="gauth" style="padding-top: 0;padding-bottom: 0;height: 40px" >
@@ -14,30 +12,3 @@ $gauth = new modules\authModule\models\gAuth();
     .sicon{font-size: x-large; padding-right: 10px; border-right:1px solid #a02b29;height: 39px;padding-top: 10px;float: left}
     .stext {width: 200px;padding:10px;float: right}
 </style>
-<script type="text/javascript">
-    $(function(){
-        $("#gauth").click(function(e) {
-            e.preventDefault();
-            var signinWin = popupCenter($(this).attr('href'), "SignIn", 600, 600);
-            signinWin.focus();
-            return false;
-        });
-        function popupCenter(url, title, w, h) {
-            // Fixes dual-screen position                         Most browsers      Firefox
-            var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
-            var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
-
-            width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
-            height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
-
-            var left = ((width / 2) - (w / 2)) + dualScreenLeft;
-            var top = ((height / 2) - (h / 2)) + dualScreenTop;
-            var newWindow = window.open(url, title, 'scrollbars=yes, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
-
-            // Puts focus on the newWindow
-            if (window.focus) {
-                newWindow.focus();
-            }
-        }
-    });
-</script>

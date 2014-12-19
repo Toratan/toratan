@@ -369,10 +369,11 @@ __CHECK_ERROR:
     */
     public function oauth2callbackAction()
     {
+        if(!isset($_GET["code"]) || empty($_GET['code'])) { header("location: /signin"); exit; }
         $gauth = new \modules\authModule\models\gAuth();
-        if(!$gauth->getInfo())
-            die("No data has been recieved");
         $gauth->authenticate($_GET["code"]);
+        if(!$gauth->getInfo())
+            throw new \zinux\kernel\exceptions\accessDeniedException("Couldn't get the code from google auth!");
         \zinux\kernel\utilities\debug::_var($gauth->getInfo(), 1);
     }
 }
