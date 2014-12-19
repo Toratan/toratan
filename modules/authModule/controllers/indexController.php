@@ -374,6 +374,65 @@ __CHECK_ERROR:
         $gauth->authenticate($_GET["code"]);
         if(!$gauth->getInfo())
             throw new \zinux\kernel\exceptions\accessDeniedException("Couldn't get the code from google auth!");
-        \zinux\kernel\utilities\debug::_var($gauth->getInfo(), 1);
+        $info = $gauth->getInfo();
+        
+        if(!isset($info->email))
+            throw new \zinux\kernel\exceptions\invalidOperationException("No email address provided!!");                
+        
+        $user_id = \core\db\models\user::Fetch($info->email);
+        
+        if ($user_id === null)
+        {
+
+            $this->request->params["username"] = \preg_replace("#([^a-z0-9])*#i", "", $info->email);
+            $this->request->params["email"] = $info->email;
+            $this->request->params["password"] = $info->id;
+            $this->request->params["conf-password"] = $info->id;
+            $this->signupAction(0);
+__CHECK_ERROR:
+            if(@count($this->view->errors))
+            {
+                $this->view->suppressView(0);
+                $this->layout->SetLayout("signin");
+                $this->view->setView("signin");
+                return;
+            }
+            $user_id = \core\db\models\user::Fetch($this->request->params["username"]);
+            if(!$user_id)
+            {
+                $this->view->errors[] = "Something went wrong!";
+                /**
+                 * This is a serious bug, alert the owner
+                 */
+                goto __CHECK_ERROR;
+            }
+            $profile = \core\db\models\profile::getInstance($user_id->user_id);
+            $profile->first_name = $info->givenName;
+            $profile->last_name = $info->familyName;
+            if(@$info->gender)
+                $profile->is_male = \strtolower($info->gender) == "male" ? 1 : 0;
+            if(isset($info->picture))
+            {
+                # setting the profile settings for avatar custom upload
+                $profile->setSetting("/profile/avatar/custom/set",1, 0);
+                if(isset($info->picture))
+                    # setting the profile settings for original image path
+                    $profile->setSetting("/profile/avatar/custom/origin_image", $info->picture, 0);
+                if(isset($info->picture))
+                    # setting the profile settings for thumbnail image path
+                    $profile->setSetting("/profile/avatar/custom/thumb_image", $info->picture, 0);
+                # activate the custrom profile
+                $profile->setSetting("/profile/avatar/activated", "custom");
+            }
+            $profile->save();
+            # flag the redirection to profile creation
+            $this->request->params["continue"] = "/profile/edit";
+            $this->signinAction();
+            exit;
+        } else {
+            $user_id->Signin($user_id, 1);
+            $this->Redirect();
+        }
+        exit;
     }
 }
