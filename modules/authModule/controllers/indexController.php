@@ -174,6 +174,7 @@ class indexController extends authController
         (new \vendor\PHPMailer\phpMailerInitializer())->Execute();
         # factor an instance of php mailer
         $mail = new \PHPMailer;
+        $mail->SMTPDebug = 4;
         # add a subject indicating the content of the mail
         $mail->Subject = "Toratan.org : Password Reset";
         # add the sender address
