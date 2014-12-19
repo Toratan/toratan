@@ -1,6 +1,5 @@
 <?php
 namespace modules\authModule\models;
-(new \vendor\gAPI\googleAPIInitializer)->Execute();
 /**
 * The modules\authModule\models\gAuth
 * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -20,7 +19,7 @@ class gAuth
     protected $objOAuthService;
     public function __construct()
     {
-
+        (new \vendor\gAPI\googleAPIInitializer)->Execute();
         //Create Client Request to access Google API
         $this->client = new \Google_Client();
         $this->client->setApplicationName("Toratan");
@@ -36,13 +35,20 @@ class gAuth
     
     public function logout() { $this->client->revokeToken(); }
     public function authenticate($auth_code){
-          $this->client->authenticate($auth_code);
-          $_SESSION[self::SESSION_LABEL] = $this->client->getAccessToken();
+        try{
+            $this->client->authenticate($auth_code);
+        }
+        catch(\Google_Auth_Exception $e) {
+            if($e->getCode() == 400)
+                /* ignore the : Error fetching OAuth2 access token, message: 'invalid_grant: Code was already redeemed.' */
+                $this->client->setAccessToken($_SESSION[self::SESSION_LABEL]);
+        }
+        $_SESSION[self::SESSION_LABEL] = $this->client->getAccessToken();
     }
     public function getInfo() {
-          $userData = $this->objOAuthService->userinfo->get();
-          $_SESSION[self::SESSION_LABEL] = $this->client->getAccessToken();
-          return empty($userData) ? NULL : $userData;
+        $userData = $this->objOAuthService->userinfo->get();
+        $_SESSION[self::SESSION_LABEL] = $this->client->getAccessToken();
+        return empty($userData) ? NULL : $userData;
     }
     public function getAuthURI() { return $this->client->createAuthUrl(); }
 }
