@@ -49,6 +49,7 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
             <?php \core\ui\html\alert::Tout("Your browser's javascript <b>is not</b> enabled. To site be able to work you have to enable your javascript.", \core\ui\html\alert::ALERT_DANGER); ?>
         </noscript>
         <div class="header">
+            <?php if(($user_logged = \core\db\models\user::IsSignedin())): ?>
             <style type="text/css">
                 .header .nav .badge {background-color:#4488cc;}
                 .notifications.dropdown-menu{padding: 0;width: 400px;}
@@ -61,9 +62,7 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
                 .header .nav .notifications.dropdown-menu li.no-notification {padding:10px;font-variant: small-caps}
                 .header .nav .notifications.dropdown-menu li.no-notification > a:hover,
                 .header .nav .notifications.dropdown-menu li.no-notification > a:focus,
-                .header .nav .notifications.dropdown-submenu:hover > a
-                {background-image: none; background-color:transparent}
-                
+                .header .nav .notifications.dropdown-submenu:hover > a {background-image: none; background-color:transparent}
             </style>
             <script type='text/javascript'>
                 $(document).ready(function(){
@@ -112,8 +111,9 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
                     });
                 });
             </script>
+            <?php endif; ?>
             <ul class="nav nav-pills pull-right" style="padding-top: 0.25%;">
-                <?php if(($user_logged = \core\db\models\user::IsSignedin())): ?>
+                <?php if($user_logged): ?>
                 <li class='hidden-lg hidden-md'><a href='#'><span class='glyphicon glyphicon-flash'></span> Feeds</a></li>
                 <li class="dropdown">
                     <?php
