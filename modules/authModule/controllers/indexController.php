@@ -418,7 +418,7 @@ __CHECK_ERROR:
         } else {
           $authUrl = $client->createAuthUrl();
         }
-        \zinux\kernel\utilities\debug::_var(array($authUrl, $this->request->params));
+        \zinux\kernel\utilities\debug::_var(array($authUrl, $this->request->params, $_SESSION));
         die("<a href='$authUrl'>Auth</a>");
     }
 }
