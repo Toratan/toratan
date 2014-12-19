@@ -362,4 +362,13 @@ __CHECK_ERROR:
                */
         }
     }
+
+    /**
+    * The \modules\authModule\controllers\indexController::oauth2callbackAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function oauth2callbackAction()
+    {
+        \zinux\kernel\utilities\debug::_var($this->request->params, 1);
+    }
 }
