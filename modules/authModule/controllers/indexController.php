@@ -174,11 +174,19 @@ class indexController extends authController
         (new \vendor\PHPMailer\phpMailerInitializer())->Execute();
         # factor an instance of php mailer
         $mail = new \PHPMailer;
+        
+        $mail->SMTPDebug = 3;                               // Enable verbose debug output
+        
+        $mail->isSMTP();
+        $mail->Host = 'mail.toratan.org';
         $mail->SMTPDebug = 4;
-        # add a subject indicating the content of the mail
+        $mail->SMTPAuth = true;
+        $mail->Port            = 587; 
+        $mail->Username = 'noreply@toratan.org';
+        $mail->Password  = \zinux\kernel\application\config::GetConfig("toratan.mail.noreply.password");
         $mail->Subject = "Toratan.org : Password Reset";
         # add the sender address
-        $mail->setFrom('noreply@toratan.org', 'Toratan');
+        $mail->setFrom($mail->Username, 'Toratan');
         # add the reciever address
         $mail->addAddress($this->request->params["email"]);
         # start reading the html context of reset mail
@@ -192,7 +200,7 @@ class indexController extends authController
         $mail->addAddress($this->request->params["email"]);
         # try to send the email
         if (!$mail->send()) 
-            throw new \RuntimeException("Counld'n send email to `{$this->request->params["email"]}` due to error : `{$mail->ErrorInfo}`");        
+            throw new \RuntimeException("Counld'n send email to `{$this->request->params["email"]}` due to error : `{$mail->ErrorInfo}`");  
         # open up a message pipe
         $mp = new \core\utiles\messagePipe("recovery");
         # purge the message, with 60 second expiration time
