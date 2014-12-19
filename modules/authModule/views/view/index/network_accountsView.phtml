@@ -1,28 +1,43 @@
+<?php
+$gauth = new modules\authModule\models\gAuth();
+?>
+<div class="">
+    <div  class="googleplus-container">
+        <a href="<?php echo $gauth->getAuthURI() ?>" class="btn btn-danger" id="gauth" style="padding-top: 0;padding-bottom: 0;height: 40px" >
+            <span class="sicon fa fa-google-plus"></span> 
+            <span class="stext">Sign with Google</span>
+        </a>
+    </div> 
+</div>
+<style type="text/css">
+    .googleplus-container span{color:white;font-weight: bold;}
+    .sicon{font-size: x-large; padding-right: 10px; border-right:1px solid #a02b29;height: 39px;padding-top: 10px;float: left}
+    .stext {width: 200px;padding:10px;float: right}
+</style>
 <script type="text/javascript">
-    var oneall_subdomain = 'toratan';
-    /* The library is loaded asynchronously */
-    var oa = document.createElement('script');
-    oa.type = 'text/javascript'; oa.async = true;
-    oa.src = '//' + oneall_subdomain + '.api.oneall.com/socialize/library.js';
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(oa, s);
+    $(function(){
+        $("#gauth").click(function(e) {
+            e.preventDefault();
+            var signinWin = popupCenter($(this).attr('href'), "SignIn", 600, 600);
+            signinWin.focus();
+            return false;
+        });
+        function popupCenter(url, title, w, h) {
+            // Fixes dual-screen position                         Most browsers      Firefox
+            var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
+            var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
 
-</script>
-<center>
-    <div style="border-bottom:1px solid #aaaaaa;margin: 0%"></div>
-    <label class="pull-left" style="margin: 1% auto 1% auto">Signin with your social accounts ....</label>
-    <div class="clearfix"></div>
-    <div id="oa_social_login_container" style="display: block;width: 330px;height: 130px;">
-        <center class="text-muted">
-            <img src="/access/img/ajax-loader.gif"></img> Loading your connection options...
-        </center>
-    </div>
-</center>
-<script type="text/javascript"> 
-    var your_callback_script = '//<?php echo \__SERVER_NAME__ ?>/auth/remote_con';
-    var _oneall = _oneall || [];
-    _oneall.push(['social_login', 'set_callback_uri', your_callback_script]);
-    _oneall.push(['social_login', 'set_providers', ['facebook', 'google', 'twitter', 'wordpress', 'youtube', 'blogger', 'yahoo', 'openid', 'windowslive', 'stackexchange']]);
-    _oneall.push(['social_login', 'set_grid_sizes', [5,2]]);
-    _oneall.push(['social_login', 'do_render_ui', 'oa_social_login_container']);
+            width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+            height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+            var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+            var top = ((height / 2) - (h / 2)) + dualScreenTop;
+            var newWindow = window.open(url, title, 'scrollbars=yes, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+
+            // Puts focus on the newWindow
+            if (window.focus) {
+                newWindow.focus();
+            }
+        }
+    });
 </script>

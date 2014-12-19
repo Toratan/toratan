@@ -26,3 +26,6 @@
 [submodule "vendor/gAPI/google-api-php-client"]
 	path = vendor/gAPI/google-api-php-client
 	url = git@github.com:google/google-api-php-client.git
+[submodule "public_html/access/css/css-social-buttons"]
+	path = public_html/access/css/css-social-buttons
+	url = git@github.com:samcollins/css-social-buttons.git
