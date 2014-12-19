@@ -468,46 +468,18 @@ __ERROR:
         # check format
         if(!in_array($_FILES[$index_name]["type"], $image_support_types))
                 throw new \zinux\kernel\exceptions\appException("Only the following file types are supported `".implode(", ", array_keys($image_support_types))."`.");
-        # fetch upload location for original image 
-        $orig_path = \zinux\kernel\application\config::GetConfig("upload.avatar.original_image_path");
-        # fetch upload location for original image 
-        $thum_path = \zinux\kernel\application\config::GetConfig("upload.avatar.thumbnail_image_path");
-        # if we have a miss configured project
-        if(!$orig_path || !$thum_path)
-            # indecate it
-            throw new \zinux\kernel\exceptions\invalidArgumentException("No configuration found for `upload.avatar`!!");
-        # fetch file's extention
-        $ext = end(\array_filter(explode(".", $_FILES[$index_name]["name"])));
-        # fetch file's original name
-        $alt_name = $_FILES[$index_name]["name"];
-        # define a counter for naming
-        $counter = 0;
-        # unlink any possible perviously profile picture
-        @\shell_exec("rm -f .".$profile->getSetting("/profile/avatar/image"));
-        # while original image file already exists, increase the counters
-        while(\file_exists($orig_path.sha1($alt_name.(++$counter)).".$ext")) ;
-        # generate a new name for original image
-        $alt_name = sha1($alt_name.$counter);
-        # generate the original image's paths
-        $orig_path .= "$alt_name.$ext";
-        # define a counter for naming
-        $counter = 0;
-        # unlink any possible perviously profile picture
-        @\shell_exec("rm -f .".$profile->getSetting("/profile/avatar/thumbnail"));
-        # while thumbnail image file already exists, increase the counters
-        while(\file_exists($thum_path.sha1($alt_name.(++$counter)."-tmb").".$ext")) ;
-        # generate the new name for thumbnail
-        $thum_path .= sha1($alt_name.$counter."-tmb").".$ext";
+        # get complete path of origin image and its thumbnail path
+        list($orig_path, $thum_path) =\modules\opsModule\models\avatarPathName::generate($_FILES[$index_name]["name"], $profile);
         # move uplaoded file to its proper location and name
         if(!\move_uploaded_file($_FILES[$index_name]["tmp_name"], $orig_path))
             throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
-        # setting the profile settings for original image path
-        $profile->setSetting("/profile/avatar/image", "/$orig_path", 0);
+        # set origin path in profile
+        \modules\opsModule\models\avatarPathName::setProfile($profile, "/$orig_path");
         # create a thumbnail for original image
         if(!@\core\ui\html\avatar::make_thumbnail($orig_path, $thum_path))
             throw new \zinux\kernel\exceptions\invalidOperationException("File uploaded but unable to create thumbnail!");
-        # setting the profile settings for thumbnail image path
-        $profile->setSetting("/profile/avatar/thumbnail", "/$thum_path", 0);
+        # set thumbnail path in profile
+        \modules\opsModule\models\avatarPathName::setProfile($profile, NULL, "/$thum_path");
     }
     
 
