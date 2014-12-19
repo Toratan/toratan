@@ -370,10 +370,9 @@ __CHECK_ERROR:
     public function oauth2callbackAction()
     {
         (new \vendor\gAPI\googleAPIInitializer)->Execute();
-        $client_id = '607900320764-1utavhv74k7np0h62c4n47c6pp73t9ap.apps.googleusercontent.com';
-        $client_secret = 'ii61rYzQt1W_gvd1ga01avr5';
-        $redirect_uri = 'http://www.toratan.org/auth/oauth2callback';
-        $simple_api_key = 'AIzaSyCtY6WfVxQ2T3C-Jja9E7eX-RJzPu6NtDY';
+        $client_id =\zinux\kernel\application\config::GetConfig('auth.google.client_id');
+        $client_secret = \zinux\kernel\application\config::GetConfig('auth.google.client_secret');
+        $redirect_uri = \zinux\kernel\application\config::GetConfig('auth.google.redirect_uri');
 
         //Create Client Request to access Google API
         $client = new \Google_Client();
@@ -381,7 +380,6 @@ __CHECK_ERROR:
         $client->setClientId($client_id);
         $client->setClientSecret($client_secret);
         $client->setRedirectUri($redirect_uri);
-        $client->setDeveloperKey($simple_api_key);
         $client->addScope("https://www.googleapis.com/auth/plus.me");
         $client->addScope("https://www.googleapis.com/auth/userinfo.email");
         $client->addScope("https://www.googleapis.com/auth/userinfo.profile");
