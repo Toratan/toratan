@@ -174,17 +174,10 @@ class indexController extends authController
         (new \vendor\PHPMailer\phpMailerInitializer())->Execute();
         # factor an instance of php mailer
         $mail = new \PHPMailer;
-        
-        $mail->SMTPDebug = 3;                               // Enable verbose debug output
-        
-        $mail->isSMTP();
-        $mail->Host = 'mail.toratan.org';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'noreply@toratan.org';
-        $mail->Password  = \zinux\kernel\application\config::GetConfig("toratan.mail.noreply.password");
+        # add a subject indicating the content of the mail
         $mail->Subject = "Toratan.org : Password Reset";
         # add the sender address
-        $mail->setFrom($mail->Username, 'Toratan');
+        $mail->setFrom('noreply@toratan.org', 'Toratan');
         # add the reciever address
         $mail->addAddress($this->request->params["email"]);
         # start reading the html context of reset mail
