@@ -1,5 +1,5 @@
 <?php
-namespace vendor\gAPI;
+namespace vendor\PHPMailer;
 
 
 class phpMailerInitializer extends \zinux\kernel\application\baseInitializer

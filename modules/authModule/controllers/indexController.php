@@ -170,12 +170,35 @@ class indexController extends authController
             $this->view->errors[] = "The email not registered ...";
             return;
         }
-        /**
-         * Send a recovery email here
-         */
-        /**
-         * indicate the recovery has been sent
-         */
+        # invoke the php mailer
+        (new \vendor\PHPMailer\phpMailerInitializer())->Execute();
+        # factor an instance of php mailer
+        $mail = new \PHPMailer;
+        
+        $mail->SMTPDebug = 3;                               // Enable verbose debug output
+        
+        $mail->isSMTP();
+        $mail->Host = 'mail.toratan.org';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'noreply@toratan.org';
+        $mail->Password  = \zinux\kernel\application\config::GetConfig("toratan.mail.noreply.password");
+        $mail->Subject = "Toratan.org : Password Reset";
+        # add the sender address
+        $mail->setFrom($mail->Username, 'Toratan');
+        # add the reciever address
+        $mail->addAddress($this->request->params["email"]);
+        # start reading the html context of reset mail
+        ob_start();
+            $this->view->RenderPartial("recover_passwd_reset");
+        # set the html msg and clean the ob's buffer
+        $mail->msgHTML(ob_get_clean());
+        # msgHTML also sets AltBody, but if you want a custom one, set it afterwards
+        $mail->AltBody = 'To view the message, please use an HTML compatible email viewer!';
+        # add the reciever address
+        $mail->addAddress($this->request->params["email"]);
+        # try to send the email
+        if (!$mail->send()) 
+            throw new \RuntimeException("Counld'n send email to `{$this->request->params["email"]}` due to error : `{$mail->ErrorInfo}`");        
         # open up a message pipe
         $mp = new \core\utiles\messagePipe("recovery");
         # purge the message, with 60 second expiration time
