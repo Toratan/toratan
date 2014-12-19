@@ -23,3 +23,6 @@
 [submodule "public_html/access/js/sticky"]
 	path = public_html/access/js/sticky
 	url = git@github.com:noise2/sticky.git
+[submodule "vendor/gAPI/google-api-php-client"]
+	path = vendor/gAPI/google-api-php-client
+	url = git@github.com:google/google-api-php-client.git
