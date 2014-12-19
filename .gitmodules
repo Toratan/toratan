@@ -29,3 +29,6 @@
 [submodule "public_html/access/css/css-social-buttons"]
 	path = public_html/access/css/css-social-buttons
 	url = git@github.com:samcollins/css-social-buttons.git
+[submodule "vendor/PHPMailer/lib"]
+	path = vendor/PHPMailer/lib
+	url = git@github.com:PHPMailer/PHPMailer.git
