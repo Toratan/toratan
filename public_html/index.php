@@ -6,6 +6,8 @@
         echo ("Your PHP version is: <b>".\PHP_VERSION);
         die ("</b>.<br />Upgrade your server php.</center>");
     }
+    # force browser not to cache the website
+    header("Cache-Control: no-cache, must-revalidate");
     # we will work with UTC standard timezone 
     date_default_timezone_set("UTC");
     # opening a session socket
