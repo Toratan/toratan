@@ -469,7 +469,7 @@ __ERROR:
         if(!in_array($_FILES[$index_name]["type"], $image_support_types))
                 throw new \zinux\kernel\exceptions\appException("Only the following file types are supported `".implode(", ", array_keys($image_support_types))."`.");
         # get complete path of origin image and its thumbnail path
-        list($orig_path, $thum_path) =\modules\opsModule\models\avatarPathName::generate($_FILES[$index_name]["name"], $profile);
+        list($orig_path, $thum_path) = \modules\opsModule\models\avatarPathName::generate($_FILES[$index_name]["tmp_name"], $profile);
         # move uplaoded file to its proper location and name
         if(!\move_uploaded_file($_FILES[$index_name]["tmp_name"], $orig_path))
             throw new \core\exceptions\uploadException(UPLOAD_ERR_CANT_WRITE);
