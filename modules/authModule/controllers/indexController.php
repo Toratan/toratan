@@ -10,11 +10,10 @@ class indexController extends authController
     public function Initiate()
     {
         parent::Initiate();
-        if(array_key_exists("suppress_layout", $this->request->params))
-        {
-            $this->layout->SuppressLayout ();
-            unset($this->request->params["suppress_layout"]);
-        }
+        # only non-signed users can have access to this controller
+        if(\core\db\models\user::IsSignedin() && !in_array($this->request->action->name, array("signout"))) { $this->Redirect(); exit; }
+        # validate the layout suppressness
+        if(array_key_exists("suppress_layout", $this->request->params)) { $this->layout->SuppressLayout (); unset($this->request->params["suppress_layout"]); }
     }
     /**
     * The modules\authModule\controllers\indexController::IndexAction()
@@ -150,7 +149,7 @@ class indexController extends authController
     public function recoveryAction()
     {
         $this->layout->SetLayout("signin");
-        $this->layout->AddTitle("Toratan Account Recovery");
+        $this->layout->AddTitle("Account Recovery - Toratan");
         if(!$this->request->IsPOST())
             return;
         \zinux\kernel\security\security::IsSecure($this->request->params, array("email"));
@@ -265,6 +264,7 @@ __CHECK_ERROR:
     */
     public function recovery_resetAction()
     {
+        $this->layout->AddTitle("Account Recovery - Toratan");
         # there should be a request ID and its hash param(manually hashed not with security class)
         if($this->request->CountIndexedParam() < 2)
             throw new \zinux\kernel\exceptions\accessDeniedException;
