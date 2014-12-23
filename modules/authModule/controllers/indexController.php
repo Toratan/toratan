@@ -165,11 +165,9 @@ class indexController extends authController
         # we are all good
         $user = new \core\db\models\user;
         $fetched_user = $user->Fetch($this->request->params["email"]);
-        if(!$fetched_user)
-        {
-            $this->view->errors[] = "The email not registered ...";
-            return;
-        }
+        if(!$fetched_user) { $this->view->errors[] = "The email not registered ..."; return; }
+        # validate recaptcha
+        if(!(new \vendor\recaptcha\recaptcha)->is_recaptcha_valid()) { $this->view->errors[] = "Invalid recaptcha!"; return; }
         # factor an instance of php mailer
         $mail = new \core\utiles\Mailer("noreply", \zinux\kernel\application\config::GetConfig("toratan.mail.noreply.password"));
         # add a subject

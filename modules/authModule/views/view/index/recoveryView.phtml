@@ -10,7 +10,11 @@
     <?php endif; ?>
     <form class="form-signin" action="/auth/recovery?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array(session_id(), "r3c0veRI"))?>" method="post"  role="form" style="padding-top: 10px;">
         <input type="text" class="form-control" placeholder="Email address" name="email"  style="margin-bottom: 10px;" required autofocus>
-        <input type="submit" class="btn btn-lg btn-primary pull-right" id="submit-btn" value="Send recovery link" />
+        <?php (new \vendor\recaptcha\recaptcha)->__render_js(); ?>
+        <input type="submit" class="btn btn-lg btn-primary pull-right" id="submit-btn" value="Send recovery link" style="margin-top: 10px;"/>
         <div class="clearfix" />
     </form>
 </div>
+<style type="text/css">
+    #recaptcha_table {width: 100%;}
+</style>

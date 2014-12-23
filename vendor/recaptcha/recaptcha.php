@@ -45,7 +45,7 @@ class recaptcha {
      */
     public function __render_JS($theme = "clean") {
         echo 
-        "<div id='recaptchadiv'><b>LOADING CAPTCHA....</b></div>
+        "<div id='recaptchadiv'><b  style='font-variant:small-caps;font-size:large'>Loading Recaptcha....</b></div>
         <script type='text/javascript'>
             $(function() { 
                 $.getScript( '//www.google.com/recaptcha/api/js/recaptcha_ajax.js', function() {
@@ -60,8 +60,8 @@ class recaptcha {
     public function is_recaptcha_valid() {
         $resp = recaptcha_check_answer ($this->get_private_key(),
                                       $_SERVER["REMOTE_ADDR"],
-                                      $_REQUEST["recaptcha_challenge_field"],
-                                      $_REQUEST["recaptcha_response_field"]);
+                                      @$_REQUEST["recaptcha_challenge_field"],
+                                      @$_REQUEST["recaptcha_response_field"]);
 
         if (!$resp->is_valid) {
             $this->last_error = $resp->error;
