@@ -274,6 +274,11 @@ __CHECK_ERROR:
     */
     public function recovery_resetAction()
     {
+        if(!$this->request->CountIndexedParam())
+            throw new \zinux\kernel\exceptions\accessDeniedException;
+        $user = \core\db\models\password_reset::__get_user_from_request_id($this->request->GetIndexedParam(0), 0);
+        unset($this->request->params["__s_58e6b"]);
+        \zinux\kernel\security\security::__validate_request($this->request->params, array($this->request->GetIndexedParam(0), $user->email), 0 /* HAS EXPIRATION */);
         \zinux\kernel\utilities\debug::_var($this->request->params, 1);
     }
 }
