@@ -181,11 +181,14 @@ __DEFAULT:
             # set application's db bootstrap 
             ->SetBootstrap(new application\dbBootstrap)
             
-            # init activerecord as db handler
-            ->SetInitializer(new \vendor\activeRecord\ARInitializer())
-            
             # load project basic config initializer
             ->SetConfigIniliazer(new \zinux\kernel\utilities\iniParser(PROJECT_ROOT."/config/default.cfg", RUNNING_ENV))
+            
+            # init activerecord as db handler
+            ->SetInitializer(new \vendor\activeRecord\ARInitializer)
+            
+            # register PHPMailer plugin
+            ->SetInitializer(new vendor\PHPMailer\phpMailerInitializer)
             # register php markdown parser 
             # repo : https://github.com/michelf/php-markdown
             # @notice : from markdown version 1.0.2 this it not valid according 
