@@ -274,11 +274,33 @@ __CHECK_ERROR:
     */
     public function recovery_resetAction()
     {
-        if($this->request->CountIndexedParam() != 2)
+        # there should be a request ID and its hash param(manually hashed not with security class)
+        if($this->request->CountIndexedParam() < 2)
             throw new \zinux\kernel\exceptions\accessDeniedException;
+        # cross-validate the hash param with request ID
         if($this->request->GetIndexedParam(1) !== \zinux\kernel\security\hash::Generate($this->request->GetIndexedParam(0), 1, 1))
                 throw new \zinux\kernel\exceptions\invalidOperationException;
-        $user = \core\db\models\password_reset::__get_user_from_request_id($this->request->GetIndexedParam(0), 0);
-        \zinux\kernel\utilities\debug::_var(array($this->request->params, $user), 1);
+        # we are using the sign-in layout because it is cool :D
+        $this->layout->SetLayout("signin");
+        # get the user instance related to the request ID
+        $this->view->user = \core\db\models\password_reset::__get_user_from_request_id($this->request->GetIndexedParam(0), 0);
+        # if it is not a post request
+        if(!$this->request->IsPOST()) 
+            return;
+        # validate the input existance
+        \zinux\kernel\security\security::IsSecure($this->request->params, array("password", "conf-password"));
+        # validate the password
+        if($this->request->params["password"] != $this->request->params["conf-password"]) { $this->view->errors[] = "Password didn't match!"; return; }
+        # fetch the user
+        $u = $this->view->user;
+        # set the new password
+        $u->password =\core\db\models\user::generateHashedPassword($this->request->params["password"]);
+        # save the user
+        $u->save();
+        # delete the password reset request
+        \core\db\models\password_reset::__delete_request($this->request->GetIndexedParam(0));
+        # redirect
+        $this->Redirect();
+        exit;
     }
 }

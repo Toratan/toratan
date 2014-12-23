@@ -1,8 +1,24 @@
-<!--
- The \modules\authModule\views\view\index\recovery_resetView
- @by Zinux Generator <b.g.dariush@gmail.com>
- -->
-<p>
-    A view for '<b>\modules\authModule\controllers\indexController::recovery_resetAction()</b>'<br />
-    Location: '<b>/var/www/toratan/modules/authModule/views/view/index/recovery_resetView.phtml</b>'
-</p>
+<style type="text/css">
+    .form-reset {width: 420px;padding: 15px;margin: 10px auto;background-color: #efefef;border: 1px solid #e4e4e4;}
+    .form-reset .form-control { position: relative; height: auto; -webkit-box-sizing: border-box; -moz-box-sizing: border-box;box-sizing: border-box; padding: 10px;font-size: 16px;}
+    .form-reset .form-control:focus {z-index: 2;}
+</style>
+<form class="form-reset" action="/recovery/reset/<?php echo $this->request->GetIndexedParam(0) ?>/<?php echo $this->request->GetIndexedParam(1) ?>" method="post"  role="form">
+    <input type="hidden" name="continue" value="/signin" />
+    <h4>Reset your password</h4>
+    <?php if(count($this->errors)) : ?>
+        <ul style="padding:10px;padding-left: 0px;font-weight: bold;" class="list-unstyled">
+        <?php foreach ($this->errors as $error) : ?>
+            <li class='text-danger'>&nbsp<?php echo $error ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+    <input type="password" class="form-control" placeholder="Enter your new password"  name ="password" required autocomplete="off" autofocus>
+    <input type="password" class="form-control" placeholder="Confirm the new password"  name ="conf-password" required autocomplete="off">
+    <div class='form-group' style="margin: 10px;">
+        <div class="pull-right">
+            <button class="btn btn-lg btn-primary " type="submit" id="submit-btn">Change it</button>
+        </div>
+    </div>
+    <div class='clearfix'></div>
+</form>
