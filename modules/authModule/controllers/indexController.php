@@ -163,9 +163,7 @@ class indexController extends authController
         \zinux\kernel\security\security::IsSecure($this->request->params, array("email"));
         \zinux\kernel\security\security::__validate_request($this->request->params, array(session_id(), "r3c0veRI"));
         # we are all good
-        $user = new \core\db\models\user;
-        $fetched_user = $user->Fetch($this->request->params["email"]);
-        if(!$fetched_user) { $this->view->errors[] = "The email not registered ..."; return; }
+        if(!($fetched_user = (new \core\db\models\user)->Fetch($this->request->params["email"]))) { $this->view->errors[] = "The email not registered ..."; return; }
         # validate recaptcha
         if(!(new \vendor\recaptcha\recaptcha)->is_recaptcha_valid()) { $this->view->errors[] = "Invalid recaptcha!"; return; }
         # factor an instance of php mailer
@@ -176,7 +174,7 @@ class indexController extends authController
         $mail->addAddress($this->request->params["email"]);
         # start reading the html context of reset mail
         ob_start();
-            $this->view->RenderPartial("recover_passwd_reset");
+            $this->view->RenderPartial("recover_passwd_reset", array("user" => $fetched_user));
         # set the html msg and clean the ob's buffer
         $mail->msgHTML(ob_get_clean());
         # msgHTML also sets AltBody, but if you want a custom one, set it afterwards
