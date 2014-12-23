@@ -267,4 +267,13 @@ __CHECK_ERROR:
         $this->Redirect();
         exit;
     }
+
+    /**
+    * The \modules\authModule\controllers\indexController::recovery_resetAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function recovery_resetAction()
+    {
+        \zinux\kernel\utilities\debug::_var($this->request->params, 1);
+    }
 }

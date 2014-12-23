@@ -8,6 +8,13 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
     public function Fetch()
     {
         /**
+         * Routes
+         *      {/recovery/reset} to {/recovery_reset}
+         * Note:
+         *      This route needs to be before {$this->addRoute("^/(recovery)$2", "/auth/$1$2");}
+         */
+        $this->addRoute("^/(recovery)/(reset)$2", "/$1_$2$3");
+        /**
          * Routes 
          *      {/signin} to {/auth/signin}
          *      {/signup} to {/auth/signup} 
