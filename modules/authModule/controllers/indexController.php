@@ -20,11 +20,7 @@ class indexController extends authController
     * The modules\authModule\controllers\indexController::IndexAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function IndexAction()
-    {
-        $this->signinAction();
-    }
-
+    public function IndexAction() { $this->signinAction(); }
     /**
     * The \modules\authModule\controllers\indexController::signinAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -34,7 +30,7 @@ class indexController extends authController
         # no layout for signin, it has embed layout in it.
         $this->layout->SetLayout("signin");
         # set title
-        $this->layout->AddTitle("Sign in toratan");
+        $this->layout->AddTitle("Signin - Toratan");
         # if user already signed in
         if(\core\db\models\user::IsSignedin())
             # abort
@@ -73,20 +69,18 @@ class indexController extends authController
             $this->Redirect();
         }
     }
-
     /**
     * Signouts the user
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
     public function signoutAction()
     {
-        $this->layout->AddTitle("Signing out....");
+        $this->layout->AddTitle("Signing out - Toratan");
         \core\db\models\user::Signout();
         $sec_cookie = new \zinux\kernel\security\secureCookie;
         $sec_cookie->delete(\zinux\kernel\security\hash::Generate(\core\db\models\user::USER_OBJECT), "/", __SERVER_NAME__);
         $this->Redirect();
     }
-
     /**
     * The \modules\authModule\controllers\indexController::signupAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -97,7 +91,7 @@ class indexController extends authController
         $this->view->username = $this->view->email = "";
         if(\core\db\models\user::IsSignedin())
             $this->Redirect();
-        $this->view->layout->AddTitle("Sign up in toratan");
+        $this->view->layout->AddTitle("Signup - Toratan");
         # set default continue value
         $this->view->continue = "/";
         # update the continue value  if provided
@@ -149,7 +143,6 @@ class indexController extends authController
         else
             return  $new_user;
     }
-
     /**
     * The \modules\authModule\controllers\indexController::recoveryAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -157,7 +150,7 @@ class indexController extends authController
     public function recoveryAction()
     {
         $this->layout->SetLayout("signin");
-        $this->layout->AddTitle("Account Recovery...");
+        $this->layout->AddTitle("Toratan Account Recovery");
         if(!$this->request->IsPOST())
             return;
         \zinux\kernel\security\security::IsSecure($this->request->params, array("email"));
@@ -189,7 +182,6 @@ class indexController extends authController
         # purge the message, with 60 second expiration time
         $mp->write("The recovery link has been sent to your email address...", 60);
     }
-
     /**
     * The \modules\authModule\controllers\indexController::oauth2callbackAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
@@ -267,7 +259,6 @@ __CHECK_ERROR:
         $this->Redirect();
         exit;
     }
-
     /**
     * The \modules\authModule\controllers\indexController::recovery_resetAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
