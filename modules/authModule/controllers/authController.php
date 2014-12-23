@@ -22,7 +22,7 @@ abstract class authController extends \zinux\kernel\controller\baseController
         
         if(headers_sent())
         {
-            echo "<div><b>Header has been sent, Please click on <a href='".(isset($params["continue"])?$request->params["continue"]:"/")."'>this</a> to redirect.</b></div>";
+            echo "<div><b>Header has been sent, Please click on <a href='".(isset($params["continue"])?$params["continue"]:"/")."'>this</a> to redirect.</b></div>";
         }
         if(isset($params["continue"]))
             header("location: {$params["continue"]}");
