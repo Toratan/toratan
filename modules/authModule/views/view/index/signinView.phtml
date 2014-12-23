@@ -5,11 +5,13 @@
 </style>
 <form class="form-signin" action="/auth/signin" method="post"  role="form">
     <input type="hidden" name="continue" value="<?php echo $this->continue; ?>" />
-    <ul style="color:red;font-variant: small-caps;padding:10px;padding-left: 0;font-weight: bold" class="list-unstyled">
-    <?php foreach ($this->errors as $error) : ?>
-        <li>&gt;&nbsp<?php echo $error ?></li>
-    <?php endforeach; ?>
-    </ul>
+    <?php if(count($this->errors)) : ?>
+        <ul style="padding:10px;padding-left: 0px;font-weight: bold;" class="list-unstyled">
+        <?php foreach ($this->errors as $error) : ?>
+            <li class='text-danger'>&nbsp<?php echo $error ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
     <input type="text" class="form-control" placeholder="Username or Email address" name="username"  required autofocus>
     <input type="password" class="form-control" placeholder="Password"  name ="password" required>
     <label class="checkbox" style="margin-left: 20px;">
