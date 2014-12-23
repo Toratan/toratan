@@ -8,7 +8,7 @@ namespace core\utiles;
  */
 class Mailer extends \PHPMailer
 {
-    public function __construct($user_name, $password, $exceptions=false)
+    public function __construct($user_name, $password, $exceptions=true)
     {
         \zinux\kernel\security\security::IsSecure(
                 array('u'=>$user_name, 'p' =>$password), 

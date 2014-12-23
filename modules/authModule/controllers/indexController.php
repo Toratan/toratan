@@ -170,12 +170,9 @@ class indexController extends authController
             $this->view->errors[] = "The email not registered ...";
             return;
         }
-        
         # factor an instance of php mailer
         $mail = new \core\utiles\Mailer("noreply", \zinux\kernel\application\config::GetConfig("toratan.mail.noreply.password"));
-        
-        $mail->SMTPDebug = 3;                               // Enable verbose debug output
-        
+        # add a subject
         $mail->Subject = "Password Reset";
         # add the reciever address
         $mail->addAddress($this->request->params["email"]);
