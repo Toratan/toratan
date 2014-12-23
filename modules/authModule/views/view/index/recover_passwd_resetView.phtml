@@ -32,7 +32,7 @@
                                         To get back into your account, you'll need to reset your password. By clicking the following reset button you will be redirected to a page which you will be asked to re-assign your password.
                                         <br>
                                         <br>
-                                        <a href="<?php echo zinux\kernel\application\config::GetConfig("toratan.web_root") ?>/recovery/reset/<?php echo $recovery_id ?>?<?php echo \zinux\kernel\security\security::__get_uri_hash_string(array($recovery_id, $u->email), 1, 3*60*60 /* 3 hours */)?>" style="text-align:center;font-size:11px;font-family:arial,sans-serif;color:white;font-weight:bold;border-color:#3079ed;background-color:#4d90fe;background-image:linear-gradient(top,#4d90fe,#4787ed);text-decoration:none;display:inline-block;min-height:27px;padding-left:8px;padding-right:8px;line-height:27px;border-radius:2px;border-width:1px" target="_blank">
+                                        <a href="<?php echo zinux\kernel\application\config::GetConfig("toratan.web_root") ?>/recovery/reset/<?php echo $recovery_id ?>/<?php echo zinux\kernel\security\hash::Generate($recovery_id, 1, 1) ?>" style="text-align:center;font-size:11px;font-family:arial,sans-serif;color:white;font-weight:bold;border-color:#3079ed;background-color:#4d90fe;background-image:linear-gradient(top,#4d90fe,#4787ed);text-decoration:none;display:inline-block;min-height:27px;padding-left:8px;padding-right:8px;line-height:27px;border-radius:2px;border-width:1px" target="_blank">
                                         <span style="color:white">
                                         Reset password
                                         </span>
