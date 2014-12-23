@@ -72,7 +72,7 @@ class user extends baseModel
         # add username
         $this -> username = $username;
         # add hashed password
-        $this -> password = \zinux\kernel\security\hash::Generate($password,1);
+        $this -> password = self::generateHashedPassword($password);
         # generate a new user ID
         $this -> user_id = \zinux\kernel\security\hash::Generate($this->email . $this->username);
         # save into database
@@ -202,6 +202,12 @@ class user extends baseModel
         # set the cookie
         $sec_cookie->set($name, $value, $expire_from_now, $path, $domain, $secure, $httponly);
     }
+    /**
+     * Generates hashed password
+     * @param $password The base password
+     * @return string
+     */
+    public static function generateHashedPassword($password) { return \zinux\kernel\security\hash::Generate($password,1); }
     /**
      * Returns user's realname in capitalized format if any exist; otherwise return the user's username
      * @param bool $full_name TRUE if should be full name; FALSE if only want first name
