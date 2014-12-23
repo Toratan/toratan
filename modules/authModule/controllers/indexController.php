@@ -274,7 +274,7 @@ __CHECK_ERROR:
     */
     public function recovery_resetAction()
     {
-        if(!$this->request->CountIndexedParam() != 2)
+        if($this->request->CountIndexedParam() != 2)
             throw new \zinux\kernel\exceptions\accessDeniedException;
         if($this->request->GetIndexedParam(1) !== \zinux\kernel\security\hash::Generate($this->request->GetIndexedParam(0), 1, 1))
                 throw new \zinux\kernel\exceptions\invalidOperationException;
