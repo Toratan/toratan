@@ -84,5 +84,12 @@ class appRoutes extends \zinux\kernel\routing\routerBootstrap
          *      {/tag/@TAG(/@WHATEVER)?/list(/@WHATEVER)?} to {/tag/list/@TAG/@WHATEVER}
          */
         $this->addRoute("^/tag/(.*[^/])/list$2", "/tag/list/$1$2");
+        /**
+         * Routes:
+         *      What ever statments in configuration to its module
+         */
+        $route_pattern = "^/(";
+        foreach(\zinux\kernel\application\config::GetConfig("toratan.statement") as $key => $value) { $route_pattern .= "$key|"; } $route_pattern = substr($route_pattern, 0, strlen($route_pattern) -1).")";
+        $this->addRoute($route_pattern, "/statements/$1/$2");
     }
 }

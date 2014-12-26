@@ -188,6 +188,28 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
     }
     public function render_footer() {
 ?>
+        <style type="text/css">
+            div#global-footer {border-top: 1px solid #e6e6e6; margin-top: 15px; padding:15px 10px 0 10px;}
+            div#global-footer .separator {color:#e6e6e6}
+            div#global-footer .separator:after {content: '|';}
+        </style>
+        <div id="global-footer">
+            <ul class="list-inline pull-left" id="footer-left" style="color: #a6a6a6">
+                <li>&COPY; <?php echo  date('Y') ?> Toratan</li>
+            </ul>
+            <ul class="list-inline pull-right" id="footer-statements">
+                <li><a href="<?php echo \zinux\kernel\application\config::GetConfig("toratan.statement.about") ?>">About</a></li>
+                <li class="separator"></li>
+                <li><a href="<?php echo \zinux\kernel\application\config::GetConfig("toratan.help") ?>">Help</a></li>
+                <li class="separator"></li>
+                <li><a href="<?php echo \zinux\kernel\application\config::GetConfig("toratan.statement.terms") ?>">Terms</a></li>
+                <li class="separator"></li>
+                <li><a href="<?php echo \zinux\kernel\application\config::GetConfig("toratan.statement.privacy") ?>">Privacy</a></li>
+                <li class="separator"></li>
+                <li><a href="<?php echo \zinux\kernel\application\config::GetConfig("toratan.statement.cookies") ?>">Cookies</a></li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
         <script type='text/javascript'>
                 $(document).ready(function(){
                     $('[data-toggle="tooltip"]:not([data-placement])').attr("data-placement", 'top');
