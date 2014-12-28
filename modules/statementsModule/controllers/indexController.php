@@ -21,7 +21,7 @@ class indexController extends \zinux\kernel\controller\baseController
     * The \modules\statementsModule\controllers\indexController::termsAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function termsAction() { throw new \zinux\kernel\exceptions\notImplementedException; }
+    public function termsAction() { }
     /**
     * The \modules\statementsModule\controllers\indexController::privacyAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
