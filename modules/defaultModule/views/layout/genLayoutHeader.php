@@ -188,8 +188,9 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
     }
     public function render_footer() {
 ?>
+        <div class='clearfix' style='height: 50px;'></div>
         <style type="text/css">
-            div#global-footer {border-top: 1px solid #e6e6e6; margin-top: 15px; padding:15px 10px 0 10px;}
+            div#global-footer {border-top: 1px solid #e6e6e6; margin-top: 15px; padding:15px 10px 0 10px;position: fixed; bottom: 0;width: 100%;background-color: inherit;}
             div#global-footer .separator {color:#e6e6e6}
             div#global-footer .separator:after {content: '|';}
         </style>
