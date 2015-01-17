@@ -1,0 +1,17 @@
+#!/bin/bash
+
+command -v convert >/dev/null 2>&1 || {
+   echo -e "\e[31mError:"
+   echo '    Install `imagemagic` first.'
+   echo -e "\e[33m    apt-get install imagemagick"
+   echo -e "\e[31m[ABORT]\e[m"
+}
+
+RESIZE='960'
+
+for I in $(ls *.jpg); do
+  NAME=`basename $I .jpg`
+  if [[ $NAME == *.thumb ]]; then continue; fi
+  convert -resize $RESIZE $I "$NAME.res.jpg"
+done
+
