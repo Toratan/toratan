@@ -664,7 +664,7 @@ __ERROR:
         if(!$this->view->samples_path)
             throw new \zinux\kernel\exceptions\notFoundException("No configuartion found for `upload.cover.sample_path`.");
         if($this->request->IsGET()) {
-            $this->layout->AddTitle("Change Cover |  Toratan");
+            $this->layout->AddTitle("Change Cover -  Toratan");
             $this->layout->SetLayout("wide");
             return;
         }
@@ -679,8 +679,8 @@ __ERROR:
             \zinux\kernel\security\security::IsSecure($this->request->params, array("sample", "id", "info", "ajax"));
             # if we reach here it means we are going to use sample cover images
             $profile = \core\db\models\profile::getInstance(NULL, 0, 0);
-            # unlink any possible perviously profile picture
-            @\shell_exec("rm -f .".$profile->getSetting("/profile/cover/image"));
+            # suitably remove currently custom profile
+            $this->removeCoverAction($profile);
             # set the cover image path, in this part treat the sample cover as a normal cover photo
             $profile->setSetting("/profile/cover/image", "/{$this->view->samples_path}".$this->request->params["id"], 0);
             # we save the sample-cover information as well
