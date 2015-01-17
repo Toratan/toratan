@@ -84,13 +84,12 @@
         var basedir = '/<?php echo $this->samples_path ?>';
         for(var i in images) {
             $("#cover-selection #placeholder").append(
-                    "<img src='"+basedir + "/" + images[i].file_name+"' class='img sample-cover cover-"+images[i].file_name+" image' data-id='"+images[i].file_name+"' data-copyright='&COPY; <a href=\""+images[i].origin_link+"\" target=\"__blank\">`"+images[i].title+"` @"+images[i].by+"</a> <span class=\"glyphicon glyphicon-share-alt small\"></span>' />");
+                    "<img src='"+basedir + images[i].thumbnail_name+"' class='img sample-cover cover-"+images[i].file_name+" image' data-id='"+images[i].file_name+"' data-copyright='&COPY; <a href=\""+images[i].origin_link+"\" target=\"__blank\">`"+images[i].title+"` @"+images[i].by+"</a> <span class=\"glyphicon glyphicon-share-alt small\"></span>' />");
         }
         $("#cover-selection #placeholder img:not(.plus_new)").click(function() {
             $(this).addClass("selected").siblings().removeClass("selected");
-            var $this = $(this).clone();
             $(".container#outline-image #placeholder #outline-image-container")
-                    .html($this.removeAttr('width').removeAttr('height').addClass('img-responsive img-thumbnail'));
+                    .html("<img src='"+basedir+$(this).attr('data-id')+"' />").find('img').addClass('img-responsive img-thumbnail');
         });
         $("#outline-image-info").click(function() {
             window.open_infoModal("<center>"+$(".container#outline-image #placeholder #outline-image-container img").attr('data-copyright')+"</center>");

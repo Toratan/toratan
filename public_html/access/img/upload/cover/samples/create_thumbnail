@@ -1,0 +1,16 @@
+#!/bin/bash
+
+command -v convert >/dev/null 2>&1 || {
+   echo -e "\e[31mError:"
+   echo '    Install `imagemagic` first.'
+   echo -e "\e[33m    apt-get install imagemagick"
+   echo -e "\e[31m[ABORT]\e[m"
+}
+
+THUMBNAIL_SIZE='195x95'
+
+for I in $(ls *.jpg); do
+  NAME=`basename $I .jpg`
+  convert -thumbnail $THUMBNAIL_SIZE $I "$NAME.thumb.jpg"
+done
+
