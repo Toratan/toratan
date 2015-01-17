@@ -89,7 +89,7 @@
         $("#cover-selection #placeholder img:not(.plus_new)").click(function() {
             $(this).addClass("selected").siblings().removeClass("selected");
             $(".container#outline-image #placeholder #outline-image-container")
-                    .html("<img src='"+basedir+$(this).attr('data-id')+"' />").find('img').addClass('img-responsive img-thumbnail');
+                    .html("<img src='"+basedir+$(this).attr('data-id')+"' data-id='"+$(this).attr('data-id')+"' data-copyright='"+$(this).attr('data-copyright')+"'/>").find('img').addClass('img-responsive img-thumbnail');
         });
         $("#outline-image-info").click(function() {
             window.open_infoModal("<center>"+$(".container#outline-image #placeholder #outline-image-container img").attr('data-copyright')+"</center>");
