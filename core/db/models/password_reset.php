@@ -11,8 +11,8 @@ class password_reset extends \core\db\models\baseModel
      */
     public static function __create_request_id($email, $second_to_expire = 0) {
         $ins = new self;
-        $ins->password_reset_id =\zinux\kernel\security\hash::Generate($email);
-        $ins->user_email = $email;
+        $ins->password_reset_id = \zinux\kernel\security\hash::Generate($email);
+        self::delete_all(array("conditions" => array("password_reset_id = ?", $ins->password_reset_id)));
         if($second_to_expire)
             $ins->expires_at = date(\ActiveRecord\DateTime::get_format(), time() + $second_to_expire);
         $ins->save();
