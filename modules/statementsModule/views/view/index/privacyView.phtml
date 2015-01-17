@@ -196,6 +196,6 @@
         <br />
         <div class='innerText'>If there are any questions regarding this privacy policy you may contact us using the information below.<br /><br /></div>
         <div class='innerText'><?php echo ucfirst(zinux\kernel\application\config::GetConfig("toratan.domain"))?></div>
-        <div class='innerText'><a href='mailto:<?php echo zinux\kernel\application\config::GetConfig('toratan.contact.email') ?>'>Contact Email</a></div>
+        <div class='innerText'>Email: <?php echo (new vendor\recaptcha\recaptcha)->mailhide(\zinux\kernel\application\config::GetConfig('toratan.contact.email'), 1) ?></div>
     </div>
 </div>
