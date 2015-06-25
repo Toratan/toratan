@@ -172,6 +172,7 @@ class renderConversation extends \zinux\kernel\model\baseModel {
                         else  {$msg_badge_elem.html(unseen_count - 1); }
                     }
                     $this.removeClass("unseen").addClass("seen").find(".new-conv").html("&nbsp;");
+                    $('[data-toggle="tooltip"]').tooltip();
                 }
             }).fail(function(xhr) {
                 setTimeout(function() { window.open_errorModal(xhr.responseText, -1, true); }, 500);

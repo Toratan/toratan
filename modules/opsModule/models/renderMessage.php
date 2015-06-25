@@ -14,25 +14,27 @@ class renderMessage extends \zinux\kernel\model\baseModel {
     public function __construct(\zinux\kernel\view\baseView $view) { $this->view = $view; $this->ommit_body = !count($this->view->messages); }
     public function __render_header() { if($this->ommit_body) return;
 ?>
+<style type="text/css">
+    .conversation .btn-default {background-color: #fff; background-image: none}
+</style>
 <div class="conversation">
     <div class="topbar">
         <div class="pull-left">
-            <a class="btn btn-default" href="<?php echo "#!/send/message/to/{$this->view->target_user->username}/from/inbox?".\zinux\kernel\security\security::__get_uri_hash_string(array($this->view->target_user->user_id))?>" id="send-message">
+            <a class="btn btn-default" href="<?php echo "#!/send/message/to/{$this->view->target_user->username}/from/inbox?".\zinux\kernel\security\security::__get_uri_hash_string(array($this->view->target_user->user_id))?>" id="send-message" style="border-radius: 0">
                 <span class="glyphicon glyphicon-retweet"></span> Reply
             </a>
         </div>
-        <div class='pull-right conversation-options' style="margin-bottom: 10px;">
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    <span class='glyphicon glyphicon-cog'></span>
-                    <span class="caret"></span>
+        <div class="pull-right conversation-options" style="margin-bottom: 10px;">
+            <div class="btn-groupx">
+                <button type="button" class="btn btn-default" style="border-radius: 0"  data-toggle='tooltip' title='Delete Messages' data-placement='top' id="delete-messages-view">
+                        <i class="fa fa-times" style="position: relative;right:-5px;"></i><i class="fa fa-comment-o"></i>
                 </button>
-                <ul class="dropdown-menu pull-right">
-                    <li><a href="#" id="delete-messages-view">Delete Messages</a></li>
-                    <li><a href="#" id="report-conv-view">Report Conversation</a></li>
-                    <li class='divider'></li>
-                    <li><a href="#" id="delete-conversation-view">Delete Conversation</a></li>
-                </ul>
+                <button type="button" class="btn btn-default" data-toggle='tooltip' title='Report Conversation' data-placement='top' id="report-conv-view">
+                    <i class="fa fa-exclamation"></i>
+                </button>
+                <button type="button" class="btn btn-default" style="border-radius: 0" data-toggle='tooltip' title='Delete Conversation' data-placement='top' id="delete-conversation-view">
+                    <i class="fa fa-times" style="position: relative;right:-5px;"></i><i class="fa fa-comments-o"></i>
+                </button>
             </div>
         </div>
         <div class="clearfix"></div>
