@@ -104,7 +104,7 @@ class indexController extends \zinux\kernel\controller\baseController
                 case "remove":
                     $flag = \core\db\models\item::DELETE_PERIOD;
     __OP_FUNC:
-                    $func = "delete";
+                    $func = "delete_item";
                     $counter = $ins->$func($items_id, $uid, $flag);
                     break;
             }
@@ -784,7 +784,7 @@ __FETCH_SUMMERY:
         # fetch for redirection purposes
         $deleted_item = $item_ins->fetch($this->request->GetIndexedParam(1), \core\db\models\user::GetInstance()->user_id);
         # delete the item
-        $item_ins->delete(array($deleted_item->getItemID()), \core\db\models\user::GetInstance()->user_id, $is_trash);
+        $item_ins->delete_item(array($deleted_item->getItemID()), \core\db\models\user::GetInstance()->user_id, $is_trash);
         # if not suppressing redirection
         if(!$this->suppress_redirect) {
             # invoke a message pipe line

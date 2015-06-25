@@ -290,7 +290,7 @@ abstract class item extends abstractModel
      * @throws \zinux\kernel\exceptions\invalidOperationException if $TRASH_OPS is not valid
      * @return integer Number of rows affected
      */
-    public function delete(
+    public function delete_item(
             array $items_id,
             $owner_id,
             $TRASH_OPS = self::DELETE_PUT_TARSH) {
