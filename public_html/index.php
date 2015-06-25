@@ -120,7 +120,7 @@ __DEFAULT:
                             if(\file_exists(\ERROR_LOG_CACHE) && @\filesize(\ERROR_LOG_CACHE)> 2097152 /* 2MB */)
                             {
                                 # Open the gz file (w9 is the highest compression)
-                                $fp = gzopen (\ERROR_LOG_CACHE.date("ymdhis").".gz", 'w9');
+                                $fp = gzopen64 (\ERROR_LOG_CACHE.date("ymdhis").".gz", 'w9');
                                 # Compress the file
                                 gzwrite ($fp, file_get_contents(\ERROR_LOG_CACHE));
                                 # Close the gz file and we are done
