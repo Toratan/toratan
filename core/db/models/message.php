@@ -27,7 +27,8 @@ class message extends communicationModel
         $this->receiver_id = $reciever_id;
         $this->message_data = $message;
         $this->save();
-        $c->is_read = 0;
+        $c->has_read_user1 = ($sender_id == $c->user1 ? 1 : 0);
+        $c->has_read_user2 = ($sender_id == $c->user2 ? 1 : 0);
         $c->update2date($this->created_at);
         return $this;
     }

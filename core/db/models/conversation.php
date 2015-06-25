@@ -101,18 +101,22 @@ class conversation extends communicationModel
      * @return integer # of user's conversations
      */
     public static function countAll($user_id, $non_deleted = self::FLAG_SET, $is_read = self::WHATEVER, $maked_as = self::WHATEVER) {
-        $cond = array('(user1 = ? OR user2 = ?)', $user_id, $user_id);
-        if($non_deleted == self::FLAG_SET) {
-            $cond[0] .= " AND (deleted_id IS NULL OR deleted_id != ?)";
-            $cond[] = $user_id;
-        }
-        foreach(array("is_read" => $is_read, "marked_as" => $maked_as) as $column => $value) {
-            if($value != self::WHATEVER) {
-                $cond[0] .= " AND $column = ?";
-                $cond[] = $value;
+        $count = 0;
+        foreach(array("user1", "user2") as $user_side) {
+            $cond = array("$user_side  = ?", $user_id);
+            if($non_deleted == self::FLAG_SET) {
+                $cond[0] .= " AND (deleted_id IS NULL OR deleted_id != ?)";
+                $cond[] = $user_id;
             }
+            foreach(array("has_read_$user_side" => $is_read, "marked_as" => $maked_as) as $column => $value) {
+                if($value != self::WHATEVER) {
+                    $cond[0] .= " AND $column = ?";
+                    $cond[] = $value;
+                }
+            }
+            $count += parent::count(array('conditions' => $cond));
         }
-        return parent::count(array('conditions' => $cond));
+        return $count;
     }
     /**
      * Updates the current conversation's date
@@ -132,7 +136,8 @@ class conversation extends communicationModel
         if($this->user1 != $current_user && $this->user2 != $current_user)
             throw new \zinux\kernel\exceptions\invalidOperationException("The user#`$current_user` is not part of conversation#`$this->conversation_id`.");
         message::update_all(array("set" => array("is_read" => 1), "conditions" => array("conversation_id = ? AND receiver_id = ? AND is_read <> 1", $this->conversation_id, $current_user)));
-        $this->is_read = 1;
+        $is_read = "has_read_".($this->user1 == $current_user ? "user1" : "user2");
+        $this->$is_read = 1;
         $this->save();
     }
     /**
@@ -143,7 +148,8 @@ class conversation extends communicationModel
     public function is_conversation_seen($current_user) {
         if($this->user1 != $current_user && $this->user2 != $current_user)
             throw new \zinux\kernel\exceptions\invalidOperationException("The user#`$current_user` is not part of conversation#`$this->conversation_id`.");
-        return (bool)($this->is_read || message::last($this->user1, $this->user2, $current_user)->sender_id == $current_user);
+        $is_read = "has_read_".($this->user1 == $current_user ? "user1" : "user2");
+        return (bool)($this->$is_read || message::last($this->user1, $this->user2, $current_user)->sender_id == $current_user);
     }
     /**
      * Fetch messages based on current conversation

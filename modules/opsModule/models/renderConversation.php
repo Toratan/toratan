@@ -165,6 +165,12 @@ class renderConversation extends \zinux\kernel\model\baseModel {
                 success: function(data) {
                     $("#conv-load-ui").hide();
                     $("#conv-messages-placeholder").prepend(data);
+                    if($this.hasClass("unseen")) {
+                        var $msg_badge_elem = $("[href='/messages'] .badge");
+                        var unseen_count = parseInt($msg_badge_elem.html());
+                        if(unseen_count === 1) { $msg_badge_elem.remove(); }
+                        else  {$msg_badge_elem.html(unseen_count - 1); }
+                    }
                     $this.removeClass("unseen").addClass("seen").find(".new-conv").html("&nbsp;");
                 }
             }).fail(function(xhr) {
