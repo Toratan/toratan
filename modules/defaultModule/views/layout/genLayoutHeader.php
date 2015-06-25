@@ -29,6 +29,7 @@ class genLayoutHeader extends \zinux\kernel\layout\baseLayout
         <link rel="stylesheet" href="/access/css/bootstrap-theme.min.css">
         <!-- jQuery -->
         <script type="text/javascript" src="/access/js/jquery-1.11.1.min.js"></script>
+        <link rel="stylesheet" href="/access/css/generic.css">
         <!-- font awsome -->
         <link  rel="stylesheet" href="/access/css/font-awesome.min.css">
         <link rel="shortcut icon" href="/favicon.ico">

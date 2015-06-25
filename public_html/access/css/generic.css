@@ -1,0 +1,10 @@
+/**
+Solid dropdown
+*/
+.solid-dropdown .dropdown-menu { margin: 0; border-radius: 0; padding: 0; }
+.solid-dropdown .dropdown-menu li:not(.divider) { display: block; height: 45px; padding-top: 8px; border-bottom: 1px solid #eee; }
+.solid-dropdown .dropdown-menu li.divider {margin: 0}
+.solid-dropdown .dropdown-menu > li > a:hover,
+.solid-dropdown .dropdown-menu > li > a:focus  { color: #555; background-color: transparent; background-image: none; }
+.solid-dropdown .dropdown-menu > li:hover,
+.solid-dropdown  .dropdown-menu > li:focus  { background-color: #e7e7e7;}

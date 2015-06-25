@@ -20,9 +20,9 @@
                 $(".checked-opt").removeClass("hidden");
                 $(".unchecked-opt").addClass("hidden");
                 if($("input[type='checkbox'].item-checkbox:checked").length === 1)
-                    $(".checked-opt.checked-opt-unique").removeClass("hidden");
+                    $(".checked-opt.checked-opt-unique").parents("li").removeClass("hidden");
                 else
-                    $(".checked-opt.checked-opt-unique").addClass("hidden");
+                    $(".checked-opt.checked-opt-unique").parents("li").addClass("hidden");
             }
         };
         /**
