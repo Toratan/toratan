@@ -294,4 +294,13 @@ __CHECK_ERROR:
         $this->Redirect();
         exit;
     }
+
+    /**
+    * The \modules\authModule\controllers\indexController::oauth2callback_twitterAction()
+    * @by Zinux Generator <b.g.dariush@gmail.com>
+    */
+    public function oauth2callback_twitterAction()
+    {
+        
+    }
 }
