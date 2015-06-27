@@ -185,7 +185,7 @@ class indexController extends authController
     * The \modules\authModule\controllers\indexController::oauth2callbackAction()
     * @by Zinux Generator <b.g.dariush@gmail.com>
     */
-    public function oauth2callbackAction()
+    public function oauth2callback_googleAction()
     {
         if(!isset($_GET["code"]) || empty($_GET['code'])) { header("location: /signin"); exit; }
         $gauth = new \modules\authModule\models\gAuth();
